@@ -1,9 +1,6 @@
- CREATE TABLE Teachers (
-    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+CREATE TABLE Teachers (
+    id INTEGER NOT NULL PRIMARY KEY,
     experience TEXT,
     is_activated BOOL NOT NULL,
     CONSTRAINT fk_user_teacher FOREIGN KEY (id) REFERENCES User (id)
-
  );
-
-   
