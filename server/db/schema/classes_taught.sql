@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS classes_taught (
-    class_id INT NOT NULL,
-    teacher_id INT NOT NULL,
+    class_id INTEGER NOT NULL,
+    teacher_id INTEGER NOT NULL,
     
     CONSTRAINT fk_class
         FOREIGN KEY(class_id)
