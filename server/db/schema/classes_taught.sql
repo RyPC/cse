@@ -7,6 +7,9 @@ CREATE TABLE IF NOT EXISTS classes_taught (
         REFERENCES classes(id)
         ON DELETE CASCADE,
     
+    CONSTRAINT Pk_class_id_teacher_id
+        PRIMARY KEY(class_id, teacher_id),
+    
     CONSTRAINT fk_teacher
         FOREIGN KEY(teacher_id)
         REFERENCES teacher(id)
