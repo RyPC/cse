@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS public.classes
     description TEXT,
     location VARCHAR(256) NOT NULL,
     capacity INT NOT NULL,
-    level LEVEL, 
+    level LEVEL NOT NULL, 
     costume TEXT NOT NULL,
     CONSTRAINT class_pkey PRIMARY KEY (id),
 )
