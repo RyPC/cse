@@ -7,6 +7,5 @@ CREATE TABLE class_videos (
   description TEXT NOT NULL,
   media_url TEXT NOT NULL,
   class_id INTEGER NOT NULL,
-  FOREIGN KEY (class_id) REFERENCES classes(id)
+  FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE
 );
-
