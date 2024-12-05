@@ -11,8 +11,7 @@
     "start": "yarn tsx concurrently.ts",
     "prepare": "husky install",
     "lint": "eslint",
-    "format": "npx prettier --write .",
-    "postinstall": "cd client && npx patch-package"
+    "format": "npx prettier --write ."
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": "yarn run eslint"
