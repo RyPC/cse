@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS Events;
-DROP TYPE IF EXISTS level;
+DROP TYPE IF EXISTS LEVEL;
 
 CREATE TYPE LEVEL AS ENUM ('beginner', 'intermediate', 'advanced');
 
