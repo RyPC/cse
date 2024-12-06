@@ -1,12 +1,7 @@
--- DROP TABLE IF EXISTS Events;
--- DROP TABLE IF EXISTS Classes;
-
+DROP TABLE IF EXISTS Events;
 DROP TYPE IF EXISTS level;
-CREATE TYPE level AS ENUM ('beginner', 'intermediate', 'advanced');
 
--- CREATE TABLE Classes (
---     id SERIAL PRIMARY KEY
--- );
+CREATE TYPE LEVEL AS ENUM ('beginner', 'intermediate', 'advanced');
 
 CREATE TABLE Events (
     id SERIAL PRIMARY KEY,
@@ -19,6 +14,6 @@ CREATE TABLE Events (
     end_time TIME NOT NULL,
     call_time TIME NOT NULL,
     class_id INTEGER NOT NULL,
-    FOREIGN KEY (class_id) REFERENCES Classes(id),
-    costume TEXT NOT NULL
+    costume TEXT NOT NULL,
+    FOREIGN KEY (class_id) REFERENCES Classes(id) ON DELETE CASCADE
 );
