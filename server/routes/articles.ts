@@ -23,7 +23,7 @@ interface ArticleRequest {
 articlesRouter.get("/:id", async (req, res) => {
   try {
     // Select rows where the id matches the id in the request parameters
-    const { rows } = await db.query("SELECT * FROM articles WHERE id = $1", [
+    const rows = await db.query("SELECT * FROM articles WHERE id = $1", [
       req.params.id,
     ]);
     // If no rows are returned, send a 404 response
@@ -41,7 +41,7 @@ articlesRouter.get("/:id", async (req, res) => {
 articlesRouter.get("/", async (req, res) => {
   try {
     // Select all rows from the articles table
-    const { rows } = await db.query("SELECT * FROM articles");
+    const rows = await db.query("SELECT * FROM articles");
     // Convert the snake_case keys to camelCase and send the response
     res.json(keysToCamel(rows) as Article[]);
   } catch (error) {
@@ -56,7 +56,7 @@ articlesRouter.post("/", async (req, res) => {
     const { s3_url, description, media_url } = req.body as ArticleRequest;
     // Insert the new article into the database
     // Returning * will return the newly inserted row in the response
-    const { rows } = await db.query(
+    const rows = await db.query(
       "INSERT INTO articles (s3_url, description, media_url) VALUES ($1, $2, $3) RETURNING *",
       [s3_url, description, media_url]
     );
@@ -73,7 +73,7 @@ articlesRouter.put("/:id", async (req, res) => {
     // Destructure the request body
     const { s3_url, description, media_url } = req.body as ArticleRequest;
     // Update the article with the matching id
-    const { rows } = await db.query(
+    const rows = await db.query(
       "UPDATE articles SET s3_url = $1, description = $2, media_url = $3 WHERE id = $4 RETURNING *",
       [s3_url, description, media_url, req.params.id]
     );
@@ -94,7 +94,7 @@ articlesRouter.put("/:id", async (req, res) => {
 articlesRouter.delete("/:id", async (req, res) => {
   try {
     // Delete the article with the matching id
-    const { rows } = await db.query(
+    const rows = await db.query(
       "DELETE FROM articles WHERE id = $1 RETURNING *",
       [req.params.id]
     );
@@ -112,4 +112,5 @@ articlesRouter.delete("/:id", async (req, res) => {
 });
 
 
+// Export the router made to handle these new routes
 export default articlesRouter;
