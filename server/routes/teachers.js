@@ -1,8 +1,8 @@
 import express from 'express';
 import { keysToCamel } from '../common/utils';
-import { db } from '../db/db-mysql';
+import { db } from "../db/db-pgp"; // TODO: replace this db with
 
-const teachersRouter = express.Router();
+export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
 teachersRouter.post("/teachers", async(req, res) => {
