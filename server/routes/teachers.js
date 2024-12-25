@@ -5,7 +5,7 @@ import { db } from "../db/db-pgp"; // TODO: replace this db with
 export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
-// Postman Screenshot: https://img001.prntscr.com/file/img001/O6IJKW_DT3C8t0DV918TWg.png
+// Postman Screenshot: https://img001.prntscr.com/file/img001/r7f400d1Q_K4fpLr42zpxg.png
 teachersRouter.get("/:id", async(req, res) => {
     try {
         const id = req.params.id
@@ -25,8 +25,7 @@ teachersRouter.get("/:id", async(req, res) => {
     }
 });
 
-
-// Postman Screenshot: https://img001.prntscr.com/file/img001/KbYtu2y2TNWejvaw2nmCkA.png
+// Postman Screenshot: https://img001.prntscr.com/file/img001/aaW5w8onRLmmqpuvSwdTWQ.png
 teachersRouter.post("", async(req, res) => {
     try {
         const { firstName, lastName, role, userRole, email, experience } = req.body;
@@ -49,7 +48,7 @@ teachersRouter.post("", async(req, res) => {
             [userId, experience]
         )
         
-        res.redirect(`/teacher/${userId}`)
+        res.redirect(`/teachers/${userId}`)
 
     } catch (err) {
         console.log(err)
