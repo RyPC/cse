@@ -5,29 +5,54 @@ import { db } from "../db/db-pgp"; // TODO: replace this db with
 export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
-teachersRouter.post("/teachers", async(req, res) => {
+// Postman Screenshot: https://img001.prntscr.com/file/img001/O6IJKW_DT3C8t0DV918TWg.png
+teachersRouter.get("/:id", async(req, res) => {
     try {
-        const { first_name, last_name, role, user_role, email, experience } = req.params;
+        const id = req.params.id
+
+        const teacher = await db.query(
+            "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id WHERE Teachers.id = $1",
+            [id]
+        )
+
+        res.status(200).json(keysToCamel(teacher[0]));
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+});
+
+
+// Postman Screenshot: https://img001.prntscr.com/file/img001/KbYtu2y2TNWejvaw2nmCkA.png
+teachersRouter.post("", async(req, res) => {
+    try {
+        const { firstName, lastName, role, userRole, email, experience } = req.body;
+        const firebaseUid = Math.random().toString(36).slice(2, 7) // TODO: Need to obtain the actual firebaseUid
 
         await db.query(
-        `
-            INSERT INTO teachers(id, experience, is_activated)
-            VALUES
-            ($1, $2, $3, $4, $5, $6);`,
-            [
-                first_name,
-                last_name,
-                role,
-                user_role,
-                email,
-                experience
-        ],
-        );
+            "INSERT INTO Users (first_name, last_name, role, user_role, email, firebase_uid) VALUES ($1, $2, $3, $4, $5, $6)",
+            [firstName, lastName, role, userRole, email, firebaseUid]
+        )
+
+        const user = await db.query(
+            "SELECT * FROM Users WHERE email = $1",
+            [email]
+        )
         
-        res.status(200).json({
-            status: "Success",
-        });
+        const userId = keysToCamel(user)[0].id;
+
+        await db.query(
+            "INSERT INTO Teachers (id, experience, is_activated) OVERRIDING SYSTEM VALUE VALUES ($1, $2, false)",
+            [userId, experience]
+        )
+        
+        res.redirect(`/teacher/${userId}`)
+
     } catch (err) {
+        console.log(err)
         res.status(500).json({
             status: "Failed",
             msg: err.message,
