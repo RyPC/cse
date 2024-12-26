@@ -8,6 +8,7 @@ import { sampleRouter } from "../routes/sample"; // TODO: delete sample router
 import { usersRouter } from "../routes/users";
 import { verifyToken } from "./middleware";
 import articlesRouter from "../routes/articles";
+import eventEnrollmentRouter from "../routes/event_enrollments";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.use("/users", usersRouter);
 // connecting made router with the app
 app.use("/articles", articlesRouter);
 // TODO: Adarsh will add route for event enrollments here :3
+app.use('/eventEnrollments', eventEnrollmentRouter);
 
 app.listen(SERVER_PORT, () => {
   console.info(`Server listening on ${SERVER_PORT}`);
