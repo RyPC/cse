@@ -42,6 +42,27 @@ teachersRouter.get("", async(req, res) => {
     }
 });
 
+// Postman Screenshot: https://img001.prntscr.com/file/img001/KS97e25SRRSSCmbls-aKIg.png
+teachersRouter.get("/classes/:id", async(req, res) => {
+    try {
+        const teacherId = req.params.id
+
+        const classes = await db.query(
+            "SELECT classes.id, classes.title FROM classes INNER JOIN classes_taught ON classes_taught.class_id = classes.id WHERE classes_taught.teacher_id = $1",
+            [teacherId]
+        )
+
+        res.status(200).json(keysToCamel(classes))
+
+    } catch(err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+})
+
 // Postman Screenshot: https://img001.prntscr.com/file/img001/aaW5w8onRLmmqpuvSwdTWQ.png
 teachersRouter.post("", async(req, res) => {
     try {
