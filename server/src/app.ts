@@ -42,7 +42,6 @@ app.use("/", sampleRouter); // TODO: delete sample endpoint
 app.use("/users", usersRouter);
 // connecting made router with the app
 app.use("/articles", articlesRouter);
-// TODO: Adarsh will add route for event enrollments here :3
 app.use('/eventEnrollments', eventEnrollmentRouter);
 
 app.listen(SERVER_PORT, () => {
