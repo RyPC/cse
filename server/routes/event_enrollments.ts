@@ -10,33 +10,32 @@ eventEnrollmentRouter.use(express.json());
 
 interface EventEnrollment {
   id: number;
-  student_id: string;
-  event_id: string;
-  attendance: string;
+  student_id: number;
+  event_id: number;
+  attendance: boolean;
 }
 
 interface EventEnrollmentRequest {
-  student_id: string;
-  event_id: string;
+  student_id: number;
+  event_id: number;
+  attendance?: boolean;
 }
 
-// get all
+// GET /
 eventEnrollmentRouter.get("/", async (req, res) => {
   try {
-    // Select all rows from the articles table
-    const events = await db.query("SELECT * FROM event-enrollments");
-    // Convert the snake_case keys to camelCase and send the response
+    const events = await db.query("SELECT * FROM event_enrollments");
     res.json(keysToCamel(events) as EventEnrollment[]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// get by id
+
+// GET /:id
 eventEnrollmentRouter.get("/:id", async (req, res) => {
   try {
-    // Select rows where the id matches the id in the request parameters
-    const events = await db.query("SELECT * FROM event-enrollments WHERE id = $1", [
+    const events = await db.query("SELECT * FROM event_enrollments WHERE id = $1", [
       req.params.id,
     ]);
     // If no rows are returned, send a 404 response
@@ -50,15 +49,17 @@ eventEnrollmentRouter.get("/:id", async (req, res) => {
   }
 });
 
-// add event_enrollment
+// POST /event-enrollments
 eventEnrollmentRouter.post("/", async (req, res) => {
   try {
     // Destructure the request body
     const { student_id, event_id } = req.body as EventEnrollmentRequest;
     // Insert the new article into the database
     // Returning * will return the newly inserted row in the response
+
+    // By default the attendance will be false as mentioned in the table
     const rows = await db.query(
-      "INSERT INTO articles (student_id, event_id) VALUES ($1, $2) RETURNING *",
+      "INSERT INTO event_enrollments (student_id, event_id, attendance) VALUES ($1, $2, false) RETURNING *",
       [student_id, event_id]
     );
     // Convert the snake_case keys to camelCase and send the response with status 201 (Created)
@@ -69,15 +70,15 @@ eventEnrollmentRouter.post("/", async (req, res) => {
 });
 
 
-// replace row
+// PUT /:id
 eventEnrollmentRouter.put("/:id", async (req, res) => {
   try {
     // Destructure the request body
-    const { student_id, event_id } = req.body as EventEnrollmentRequest;
+    const { student_id, event_id, attendance } = req.body as EventEnrollmentRequest;
     // Update the article with the matching id
     const events = await db.query(
-      "UPDATE articles SET s3_url = $1, description = $2, media_url = $3 WHERE id = $4 RETURNING *",
-      [student_id, event_id, req.params.id]
+      "UPDATE event_enrollments SET student_id = $1, event_id = $2, attendance = $3 WHERE id = $4 RETURNING *",
+      [student_id, event_id, attendance, req.params.id]
     );
     // If no rows are returned, send a 404 response
     if (events.length === 0) {
