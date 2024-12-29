@@ -8,11 +8,11 @@ teachersRouter.use(express.json());
 // Postman Screenshot: https://img001.prntscr.com/file/img001/r7f400d1Q_K4fpLr42zpxg.png
 teachersRouter.get("/:id", async(req, res) => {
     try {
-        const id = req.params.id
+        const teacherId = req.params.id
 
         const teacher = await db.query(
             "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id WHERE Teachers.id = $1",
-            [id]
+            [teacherId]
         )
 
         res.status(200).json(keysToCamel(teacher[0]));
@@ -79,14 +79,14 @@ teachersRouter.post("", async(req, res) => {
             [email]
         )
         
-        const userId = keysToCamel(user)[0].id;
+        const teacherId = keysToCamel(user)[0].id;
 
         await db.query(
             "INSERT INTO Teachers (id, experience, is_activated) OVERRIDING SYSTEM VALUE VALUES ($1, $2, false)",
-            [userId, experience]
+            [teacherId, experience]
         )
         
-        res.redirect(`/teachers/${userId}`)
+        res.redirect(`/teachers/${teacherId}`)
 
     } catch (err) {
         console.log(err)
@@ -96,3 +96,54 @@ teachersRouter.post("", async(req, res) => {
         });
     }
 });
+
+// Postman Screenshot: https://img001.prntscr.com/file/img001/GtiUoMMlQz-6eT1Qfq1K9Q.png
+teachersRouter.put("/:id", async(req, res) => {
+    try {
+        const { experience, isActivated } = req.body;
+        const teacherId = req.params.id
+
+        await db.query(
+            "UPDATE Teachers SET experience = $1, is_activated = $2 WHERE id = $3",
+            [experience, isActivated, teacherId]
+        )
+        
+        res.status(200).json({
+            "id": teacherId,
+            "experience": experience,
+            "isActivated": isActivated
+        })
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+})
+
+// Postman Screenshot: https://img001.prntscr.com/file/img001/tJLH9FmfS1i7NSh8OM0OHA.png
+teachersRouter.delete("/:id", async(req, res) => {
+    try {
+        const teacherId = req.params.id
+
+        const teacher = await db.query(
+            "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id WHERE Teachers.id = $1",
+            [teacherId]
+        )
+
+        await db.query(
+            "DELETE FROM Teachers WHERE id = $1",
+            [teacherId]
+        )
+
+        res.status(200).json(keysToCamel(teacher[0]));
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+})
