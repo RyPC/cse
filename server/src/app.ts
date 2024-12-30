@@ -40,7 +40,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use("/", sampleRouter); // TODO: delete sample endpoint
 app.use("/users", usersRouter);
-app.use("/classes_taught", classesTaughtRouter);
+app.use("/classes-taught", classesTaughtRouter);
 app.use("/class-enrollments", classEnrollmentsRouter);
 
 app.listen(SERVER_PORT, () => {
