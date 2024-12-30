@@ -27,23 +27,19 @@ classEnrollmentsRouter.get("/", async (req, res) => {
   }
 });
 
-classEnrollmentsRouter.post("/class_enrollments", async (req, res) => {
-  const { student_id, class_id, enrollment_date } = req.body;
+classEnrollmentsRouter.post("/", async (req, res) => {
+  const { student_id, class_id, attendance } = req.body;
   try {
-    const createStudent = await db.query(
-      "INSERT INTO student (id, level, date) VALUES ($1, $2, $3)",
-      [student_id, class_id, enrollment_date]
-    );
-
-    const recordId = await db.query(
-      `SELECT id FROM class_enrollments WHERE student_id='${student_id}' AND class_id='${class_id}'`
+    const result = await db.query(
+      "INSERT INTO class_enrollments (student_id, class_id, attendance) VALUES ($1, $2, $3) RETURNING id",
+      [student_id, class_id, attendance]
     );
 
     res.status(200).send({
-      id: recordId,
+      id: result.rows[0].id,
       student_id: student_id,
       class_id: class_id,
-      enrollment_date: enrollment_date,
+      attendance: attendance,
     });
   } catch (err) {
     res.status(500).send(err.message);
