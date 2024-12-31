@@ -9,8 +9,9 @@ classEnrollmentsRouter.use(express.json());
 
 classEnrollmentsRouter.get("/:id", async (req, res) => {
   try {
+    const id = req.params.id;
     const classById = await db.query(
-      `SELECT * FROM class_enrollments WHERE ${id};`
+      `SELECT * FROM class_enrollments WHERE id = ${id};`
     );
     res.status(200).json(classById);
   } catch (err) {
@@ -28,17 +29,17 @@ classEnrollmentsRouter.get("/", async (req, res) => {
 });
 
 classEnrollmentsRouter.post("/", async (req, res) => {
-  const { student_id, class_id, attendance } = req.body;
+  const { studentId, classId, attendance } = req.body;
   try {
     const result = await db.query(
       "INSERT INTO class_enrollments (student_id, class_id, attendance) VALUES ($1, $2, $3) RETURNING id",
-      [student_id, class_id, attendance]
+      [studentId, classId, attendance]
     );
 
     res.status(200).send({
-      id: result.rows[0].id,
-      student_id: student_id,
-      class_id: class_id,
+      id: result[0].id,
+      student_id: studentId,
+      class_id: classId,
       attendance: attendance,
     });
   } catch (err) {
