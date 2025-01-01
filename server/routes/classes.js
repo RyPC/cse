@@ -33,18 +33,12 @@ classesRouter.post("/", async (req, res) => {
     // Destructure req.body
     const {title, description, location, capacity, level, costume} = req.body;
 
-    try {
-        const data = await db.query(`
-            INSERT INTO classes (title, description, location, capacity, level, costume)
-            VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`, 
-            [title, description, location, capacity, level, costume]
-        );
-        
-        res.status(200).json(keysToCamel(data));
-    } catch (err) {
-        res.status(500).json(err.message);
-    }
-
+    const data = await db.query(`
+        INSERT INTO classes (title, description, location, capacity, level, costume)
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`, 
+        [title, description, location, capacity, level, costume]
+    );
+    
     res.status(200).json(keysToCamel(data));
   } catch (err) {
     res.status(500).send(err.message);
