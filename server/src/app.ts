@@ -4,7 +4,8 @@ import dotenv from "dotenv";
 import express from "express";
 import schedule from "node-schedule"; // TODO: Keep only if scheduling cronjobs
 
-import { classesRouter } from "../routes/classes"; // TODO: delete sample router
+import { classesRouter } from "../routes/classes";
+import { scheduledClassesRouter } from "../routes/scheduled_classes";
 import { usersRouter } from "../routes/users";
 import { verifyToken } from "./middleware";
 
@@ -37,6 +38,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use("/classes", classesRouter);
+app.use("/scheduled-classes", scheduledClassesRouter);
 app.use("/users", usersRouter);
 
 app.listen(SERVER_PORT, () => {

@@ -1,0 +1,64 @@
+import express from "express";
+import { keysToCamel } from "../common/utils";
+import { db } from "../db/db-pgp"
+
+const scheduledClassesRouter = express.Router();
+scheduledClassesRouter.use(express.json());
+
+scheduledClassesRouter.get("/:id", async (req, res) => {
+  try {
+    // Query database
+    const { id } = req.params;
+    const data = await db.query(`SELECT * FROM scheduled_classes WHERE class_id = $1;`, [id]);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+scheduledClassesRouter.get("/", async (req, res) => {
+    try {
+      // Query database
+      const data = await db.query(`SELECT * FROM scheduled_classes;`);
+  
+      res.status(200).json(keysToCamel(data));
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+  });
+
+scheduledClassesRouter.post("/", async (req, res) => {
+  try {
+    // Destructure req.body
+    const { class_id, date, start_time, end_time } = req.body;
+
+    const data = await db.query(`
+        INSERT INTO scheduled_classes (class_id, date, start_time, end_time)
+        VALUES ($1, $2, $3, $4) RETURNING *;`, 
+        [class_id, date, start_time, end_time]
+    );
+    
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+scheduledClassesRouter.put("/", async (req, res) => {
+    try {
+        const { class_id, date, start_time, end_time } = req.body;
+        
+        const data = await db.query(`
+            UPDATE scheduled_classes SET start_time = $3, end_time = $4
+            WHERE class_id = $1 and date = $2 RETURNING *;`, 
+            [class_id, date, start_time, end_time]
+        );
+    
+        res.status(200).json(keysToCamel(data));
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+  });
+
+export { scheduledClassesRouter };
