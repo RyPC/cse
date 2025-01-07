@@ -14,9 +14,9 @@ interface Article {
 }
 
 interface ArticleRequest {
-  s3_url: string;
-  description: string;
-  media_url: string;
+  s3_url?: string;
+  description?: string;
+  media_url?: string;
 }
 
 // GET /articles/:id
@@ -31,7 +31,7 @@ articlesRouter.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "Article not found" });
     }
     // Convert the snake_case keys to camelCase and send the response
-    res.json(keysToCamel(rows[0] as Article));
+    res.status(200).json(keysToCamel(rows[0] as Article));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -43,7 +43,7 @@ articlesRouter.get("/", async (req, res) => {
     // Select all rows from the articles table
     const rows = await db.query("SELECT * FROM articles");
     // Convert the snake_case keys to camelCase and send the response
-    res.json(keysToCamel(rows) as Article[]);
+    res.status(200).json(keysToCamel(rows) as Article[]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -83,7 +83,7 @@ articlesRouter.put("/:id", async (req, res) => {
       return res.status(404).json({ error: "Article not found" });
     }
     // Convert the snake_case keys to camelCase and send the response
-    res.json(keysToCamel(rows[0]) as Article);
+    res.status(200).json(keysToCamel(rows[0]) as Article);
   } catch (error) {
     // Send a 500 response with the error message
     res.status(500).json({ error: error.message });
@@ -104,7 +104,7 @@ articlesRouter.delete("/:id", async (req, res) => {
       return res.status(404).json({ error: "Article not found" });
     }
     // Convert the snake_case keys to camelCase and send the response
-    res.json(keysToCamel(rows[0] as Article));
+    res.status(200).json(keysToCamel(rows[0] as Article));
   } catch (error) {
     // Send a 500 response with the error message
     res.status(500).json({ error: error.message });

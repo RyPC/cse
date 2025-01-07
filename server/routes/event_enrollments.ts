@@ -25,7 +25,7 @@ interface EventEnrollmentRequest {
 eventEnrollmentRouter.get("/", async (req, res) => {
   try {
     const events = await db.query("SELECT * FROM event_enrollments");
-    res.json(keysToCamel(events) as EventEnrollment[]);
+    res.status(200).json(keysToCamel(events) as EventEnrollment[]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -43,7 +43,7 @@ eventEnrollmentRouter.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "Event not found" });
     }
     // Convert the snake_case keys to camelCase and send the response
-    res.json(keysToCamel(events[0] as EventEnrollment));
+    res.status(200).json(keysToCamel(events[0] as EventEnrollment));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -86,7 +86,7 @@ eventEnrollmentRouter.put("/:id", async (req, res) => {
       return res.status(404).json({ error: "Event not found" });
     }
     // Convert the snake_case keys to camelCase and send the response
-    res.json(keysToCamel(events[0]) as EventEnrollment);
+    res.status(200).json(keysToCamel(events[0]) as EventEnrollment);
   } catch (error) {
     // Send a 500 response with the error message
     res.status(500).json({ error: error.message });
