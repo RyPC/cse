@@ -26,7 +26,7 @@ teachersRouter.get("/:id", async(req, res) => {
 });
 
 // Postman Screenshot: https://img001.prntscr.com/file/img001/KA0s8VN8RrGbU67hH6rznA.png
-teachersRouter.get("", async(req, res) => {
+teachersRouter.get("/", async(req, res) => {
     try {
         const teacher = await db.query(
             "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id"
