@@ -101,6 +101,8 @@ studentsRouter.delete("/:id", async (req, res) => {
       [id]
     );
 
+
+
     if (deletedStudent.length === 0) {
       return res.status(404).json({ error: "Student not found" });
     }
