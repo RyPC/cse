@@ -31,7 +31,7 @@ classesRouter.get("/", async (req, res) => {
 classesRouter.post("/", async (req, res) => {
   try {
     // Destructure req.body
-    const {title, description, location, capacity, level, costume} = req.body;
+    const { title, description, location, capacity, level, costume } = req.body;
 
     const data = await db.query(`
         INSERT INTO classes (title, description, location, capacity, level, costume)
@@ -48,18 +48,26 @@ classesRouter.post("/", async (req, res) => {
 classesRouter.put("/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const {title, description, location, capacity, level, costume} = req.body;
-        
-        const data = await db.query(`
-            UPDATE classes SET title = $1, description = $2, location = $3, capacity = $4, level = $5, costume = $6
-            WHERE id = $7 RETURNING *;`, 
-            [title, description, location, capacity, level, costume, id]
+        const { title, description, location, capacity, level, costume } = req.body;
+
+        const data = await db.query(
+            `UPDATE classes SET
+                ${ title ? 'title = $(title), ' : ''}
+                ${ description ? 'description = $(description), ' : ''}
+                ${ location ? 'location = $(location), ' : ''}
+                ${ capacity ? 'capacity = $(capacity), ' : ''}
+                ${ level ? 'level = $(level), ' : '' }
+                ${ costume ? 'costume = $(costume), ' : '' }
+                id = '${id}'
+            WHERE id = '${id}'
+            RETURNING *;`,
+            {title, description, location, capacity, level, costume, id}
         );
     
         res.status(200).json(keysToCamel(data));
     } catch (err) {
       res.status(500).send(err.message);
     }
-  });
+});
 
 export { classesRouter };
