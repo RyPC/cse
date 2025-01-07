@@ -66,8 +66,7 @@ teachersRouter.get("/classes/:id", async(req, res) => {
 // Postman Screenshot: https://img001.prntscr.com/file/img001/aaW5w8onRLmmqpuvSwdTWQ.png
 teachersRouter.post("", async(req, res) => {
     try {
-        const { firstName, lastName, role, userRole, email, experience } = req.body;
-        const firebaseUid = Math.random().toString(36).slice(2, 7) // TODO: Need to obtain the actual firebaseUid
+        const { firstName, lastName, role, userRole, email, experience, firebaseUid } = req.body;
 
         await db.query(
             "INSERT INTO Users (first_name, last_name, role, user_role, email, firebase_uid) VALUES ($1, $2, $3, $4, $5, $6)",
