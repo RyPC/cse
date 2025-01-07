@@ -56,8 +56,9 @@ studentsRouter.post("/", async (req, res) => {
 
     const newStudent = await db.query(
       `INSERT INTO students (id, level)
-       VALUES ($1, $2)
-       RETURNING id, level;`,
+      OVERRIDING SYSTEM VALUE
+      VALUES ($1, $2)
+      RETURNING id, level;`,
       [userId, level]
     );
 
@@ -100,8 +101,6 @@ studentsRouter.delete("/:id", async (req, res) => {
        RETURNING id;`,
       [id]
     );
-
-
 
     if (deletedStudent.length === 0) {
       return res.status(404).json({ error: "Student not found" });
