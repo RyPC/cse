@@ -6,3 +6,4 @@ CREATE TABLE Student (
     level LEVEL NOT NULL,
     CONSTRAINT fk_user_student FOREIGN KEY (id) REFERENCES User (id) ON DELETE CASCADE
 );
+
