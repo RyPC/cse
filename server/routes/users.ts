@@ -11,6 +11,7 @@ export const usersRouter = Router();
 usersRouter.get("/", async (req, res) => {
   try {
     const users = await db.query(`SELECT * FROM users ORDER BY id ASC`);
+    
     res.status(200).json(keysToCamel(users));
   } catch (err) {
     res.status(400).send(err.message);
