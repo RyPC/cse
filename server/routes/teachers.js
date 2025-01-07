@@ -102,16 +102,39 @@ teachersRouter.put("/:id", async(req, res) => {
         const { experience, isActivated } = req.body;
         const teacherId = req.params.id
 
-        await db.query(
-            "UPDATE Teachers SET experience = $1, is_activated = $2 WHERE id = $3",
+        let query = "UPDATE Teachers SET"
+        let params = []
+
+        if (experience != undefined) {
+            query += " experience = $1,"
+            params.push(experience)
+        } else {
+            params.push("")
+        }
+
+        if (isActivated != undefined) {
+            query += " is_activated = $2"
+            params.push(isActivated)
+        } else {
+            params.push("")
+        }
+
+        if (query.charAt(query.length-1) == ",") {
+            query = query.slice(0, query.length-1)
+        }
+
+        params.push(parseInt(teacherId))
+        query += " WHERE id = $3 RETURNING *"
+
+        console.log(query)
+        console.log(params)
+
+        const updatedTeacher = await db.query(
+            query,
             [experience, isActivated, teacherId]
         )
         
-        res.status(200).json({
-            "id": teacherId,
-            "experience": experience,
-            "isActivated": isActivated
-        })
+        res.status(200).json(keysToCamel(updatedTeacher)[0])
     } catch (err) {
         console.log(err)
         res.status(500).json({
