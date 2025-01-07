@@ -1,5 +1,3 @@
-
-
 import express from "express";
 
 import { keysToCamel } from "../common/utils";
@@ -16,8 +14,8 @@ interface EventEnrollment {
 }
 
 interface EventEnrollmentRequest {
-  student_id: number;
-  event_id: number;
+  student_id?: number;
+  event_id?: number;
   attendance?: boolean;
 }
 
@@ -31,13 +29,13 @@ eventEnrollmentRouter.get("/", async (req, res) => {
   }
 });
 
-
 // GET /:id
 eventEnrollmentRouter.get("/:id", async (req, res) => {
   try {
-    const events = await db.query("SELECT * FROM event_enrollments WHERE id = $1", [
-      req.params.id,
-    ]);
+    const events = await db.query(
+      "SELECT * FROM event_enrollments WHERE id = $1",
+      [req.params.id]
+    );
     // If no rows are returned, send a 404 response
     if (events.length === 0) {
       return res.status(404).json({ error: "Event not found" });
@@ -54,6 +52,11 @@ eventEnrollmentRouter.post("/", async (req, res) => {
   try {
     // Destructure the request body
     const { student_id, event_id } = req.body as EventEnrollmentRequest;
+    // mathing sql schema
+    if (!student_id || !event_id) {
+      return res.status(400).json({ error: "Missing required parameters" });
+    }
+
     // Insert the new article into the database
     // Returning * will return the newly inserted row in the response
 
@@ -69,17 +72,46 @@ eventEnrollmentRouter.post("/", async (req, res) => {
   }
 });
 
-
 // PUT /:id
 eventEnrollmentRouter.put("/:id", async (req, res) => {
   try {
     // Destructure the request body
-    const { student_id, event_id, attendance } = req.body as EventEnrollmentRequest;
+    const { id } = req.params;
+    const { student_id, event_id, attendance } =
+      req.body as EventEnrollmentRequest;
+
+    const to_update = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (student_id) {
+      to_update.push(`student_id = $${paramCount}`);
+      values.push(student_id);
+      paramCount++;
+    }
+    if (event_id) {
+      to_update.push(`event_id = $${paramCount}`);
+      values.push(event_id);
+      paramCount++;
+    }
+    if (attendance) {
+      to_update.push(`attendance = $${paramCount}`);
+      values.push(attendance);
+      paramCount++;
+    }
+
+    values.push(id);
+
+    const query = `
+      UPDATE event_enrollments
+      SET ${to_update.join(", ")}
+      WHERE id = $${paramCount}
+      RETURNING *
+    `;
+
     // Update the article with the matching id
-    const events = await db.query(
-      "UPDATE event_enrollments SET student_id = $1, event_id = $2, attendance = $3 WHERE id = $4 RETURNING *",
-      [student_id, event_id, attendance, req.params.id]
-    );
+    const events = await db.query(query, values);
+
     // If no rows are returned, send a 404 response
     if (events.length === 0) {
       // Could not find the event-enrollment with the given id
@@ -92,6 +124,5 @@ eventEnrollmentRouter.put("/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 export default eventEnrollmentRouter;
