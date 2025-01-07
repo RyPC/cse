@@ -36,7 +36,7 @@ classEnrollmentsRouter.post("/", async (req, res) => {
       [studentId, classId, attendance]
     );
 
-    res.status(200).send({
+    res.status(201).send({
       id: result[0].id,
       student_id: studentId,
       class_id: classId,

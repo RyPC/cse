@@ -31,7 +31,7 @@ classesTaughtRouter.post("/", async (req, res) => {
 
     await db.query(query, params);
 
-    res.status(200).send({
+    res.status(201).send({
       teacher_id: teacherId,
       class_id: classId,
     });
