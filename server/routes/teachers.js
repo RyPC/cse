@@ -126,12 +126,9 @@ teachersRouter.put("/:id", async(req, res) => {
         params.push(parseInt(teacherId))
         query += " WHERE id = $3 RETURNING *"
 
-        console.log(query)
-        console.log(params)
-
         const updatedTeacher = await db.query(
             query,
-            [experience, isActivated, teacherId]
+            params
         )
         
         res.status(200).json(keysToCamel(updatedTeacher)[0])
