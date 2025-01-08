@@ -80,12 +80,14 @@ teachersRouter.post("", async(req, res) => {
         
         const teacherId = keysToCamel(user)[0].id;
 
-        await db.query(
-            "INSERT INTO Teachers (id, experience, is_activated) OVERRIDING SYSTEM VALUE VALUES ($1, $2, false)",
+        const teacher = await db.query(
+            `WITH new_teacher as (
+                INSERT INTO Teachers (id, experience, is_activated) OVERRIDING SYSTEM VALUE VALUES ($1, $2, false) RETURNING *
+            ) SELECT * FROM new_teacher INNER JOIN Users ON Users.id = new_teacher.id`,
             [teacherId, experience]
         )
         
-        res.redirect(`/teachers/${teacherId}`)
+        res.status(201).json(keysToCamel(teacher)[0])
 
     } catch (err) {
         console.log(err)
