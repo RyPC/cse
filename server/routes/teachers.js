@@ -149,12 +149,9 @@ teachersRouter.delete("/:id", async(req, res) => {
         const teacherId = req.params.id
 
         const teacher = await db.query(
-            "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id WHERE Teachers.id = $1",
-            [teacherId]
-        )
-
-        await db.query(
-            "DELETE FROM Teachers WHERE id = $1",
+            `WITH deleted_teacher AS (
+                DELETE FROM Teachers WHERE id = $1 RETURNING *
+            ) SELECT * FROM deleted_teacher INNER JOIN Users ON Users.id = deleted_teacher.id`,
             [teacherId]
         )
 
