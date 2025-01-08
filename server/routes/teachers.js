@@ -64,7 +64,7 @@ teachersRouter.get("/classes/:id", async(req, res) => {
 })
 
 // Postman Screenshot: https://img001.prntscr.com/file/img001/aaW5w8onRLmmqpuvSwdTWQ.png
-teachersRouter.post("", async(req, res) => {
+teachersRouter.post("/", async(req, res) => {
     try {
         const { firstName, lastName, role, userRole, email, experience, firebaseUid } = req.body;
 
