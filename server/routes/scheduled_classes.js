@@ -49,10 +49,15 @@ scheduledClassesRouter.put("/", async (req, res) => {
     try {
         const { class_id, date, start_time, end_time } = req.body;
         
-        const data = await db.query(`
-            UPDATE scheduled_classes SET start_time = $3, end_time = $4
-            WHERE class_id = $1 and date = $2 RETURNING *;`, 
-            [class_id, date, start_time, end_time]
+        const data = await db.query(
+            `UPDATE scheduled_classes SET
+                ${ start_time ? 'start_time = $(start_time), ' : ''}
+                ${ end_time ? 'end_time = $(end_time), ' : ''}
+                date = '${date}',
+                class_id = '${class_id}'
+            WHERE class_id = '${class_id}' and date = '${date}'
+            RETURNING *;`,
+            {class_id, date, start_time, end_time}
         );
     
         res.status(200).json(keysToCamel(data));
