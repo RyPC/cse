@@ -49,6 +49,9 @@ scheduledClassesRouter.put("/", async (req, res) => {
     try {
         const { class_id, date, start_time, end_time } = req.body;
         
+        if (!class_id || !date)
+            res.status(500).send("Invalid PUT request, please enter `class_id` and `date` parameters")
+
         const data = await db.query(
             `UPDATE scheduled_classes SET
                 ${ start_time ? 'start_time = $(start_time), ' : ''}
