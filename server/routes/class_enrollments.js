@@ -1,5 +1,4 @@
 import express from "express";
-import { format } from "mysql";
 
 import { keysToCamel } from "../common/utils";
 import { db } from "../db/db-pgp"; // TODO: replace this db with
@@ -11,9 +10,10 @@ classEnrollmentsRouter.get("/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const classById = await db.query(
-      `SELECT * FROM class_enrollments WHERE id = ${id};`
+      "SELECT * FROM class_enrollments WHERE id = $1;",
+      [id]
     );
-    res.status(200).json(classById);
+    res.status(200).json(keysToCamel(classById));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -22,7 +22,7 @@ classEnrollmentsRouter.get("/:id", async (req, res) => {
 classEnrollmentsRouter.get("/", async (req, res) => {
   try {
     const classById = await db.query(`SELECT * FROM class_enrollments;`);
-    res.status(200).send(classById);
+    res.status(200).json(keysToCamel(classById));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -36,10 +36,10 @@ classEnrollmentsRouter.post("/", async (req, res) => {
       [studentId, classId, attendance]
     );
 
-    res.status(201).send({
+    res.status(201).json({
       id: result[0].id,
-      student_id: studentId,
-      class_id: classId,
+      studentId: studentId,
+      classId: classId,
       attendance: attendance,
     });
   } catch (err) {

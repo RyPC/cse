@@ -31,9 +31,9 @@ classesTaughtRouter.post("/", async (req, res) => {
 
     await db.query(query, params);
 
-    res.status(201).send({
-      teacher_id: teacherId,
-      class_id: classId,
+    res.status(201).json({
+      teacherId: teacherId,
+      classId: classId,
     });
   } catch (err) {
     res.status(500).send(err.message);
