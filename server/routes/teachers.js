@@ -69,7 +69,7 @@ teachersRouter.post("/", async(req, res) => {
         const { firstName, lastName, email, experience, firebaseUid } = req.body;
 
         await db.query(
-            "INSERT INTO Users (first_name, last_name, user_role, email, firebase_uid) VALUES ($1, $2, $3, $4, $5, $6)",
+            "INSERT INTO Users (first_name, last_name, user_role, email, firebase_uid) VALUES ($1, $2, $3, $4, $5)",
             [firstName, lastName, "teacher", email, firebaseUid]
         )
 
