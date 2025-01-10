@@ -43,12 +43,12 @@ studentsRouter.get("/", async (req, res) => {
 
 studentsRouter.post("/", async (req, res) => {
   try {
-    const { first_name, last_name, role, user_role, email, level, firebase_uid } = req.body;
+    const { first_name, last_name, email, level, firebase_uid } = req.body;
 
     const newUser = await db.query(
-      `INSERT INTO users (first_name, last_name, role, user_role, email, firebase_uid)
+      `INSERT INTO users (first_name, last_name, user_role, email, firebase_uid)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, first_name, last_name, role, user_role, email, firebase_uid;`,
-      [first_name, last_name, role, user_role, email, firebase_uid]
+      [first_name, last_name, "student", email, firebase_uid]
     );
 
     const userId =newUser[0].id;

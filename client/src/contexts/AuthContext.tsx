@@ -19,7 +19,8 @@ import { useBackendContext } from "./hooks/useBackendContext";
 
 interface AuthContextProps {
   currentUser: User | null;
-  signup: ({ email, password }: EmailPassword) => Promise<UserCredential>;
+  studentSignup: ({ email, password }: EmailPassword) => Promise<UserCredential>;
+  teacherSignup: ({email, password}: EmailPassword) => Promise<UserCredential>;
   login: ({ email, password }: EmailPassword) => Promise<UserCredential>;
   logout: () => Promise<void>;
   resetPassword: ({ email }: Pick<EmailPassword, "email">) => Promise<void>;
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const signup = async ({ email, password }: EmailPassword) => {
+  const studentSignup = async ({ email, password }: EmailPassword) => {
     if (currentUser) {
       signOut(auth);
     }
@@ -54,7 +55,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password
     );
 
-    await backend.post("/users/create", {
+    await backend.post("/students", {
+      email: email,
+      firebaseUid: userCredential.user.uid,
+    });
+
+    return userCredential;
+  };
+
+  const teacherSignup = async ({ email, password }: EmailPassword) => {
+    if (currentUser) {
+      signOut(auth);
+    }
+
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    await backend.post("/teachers", {
       email: email,
       firebaseUid: userCredential.user.uid,
     });
@@ -129,7 +149,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         currentUser,
-        signup,
+        studentSignup,
+        teacherSignup,
         login,
         logout,
         resetPassword,

@@ -66,18 +66,18 @@ teachersRouter.get("/classes/:id", async(req, res) => {
 // Postman Screenshot: https://img001.prntscr.com/file/img001/aaW5w8onRLmmqpuvSwdTWQ.png
 teachersRouter.post("/", async(req, res) => {
     try {
-        const { firstName, lastName, role, userRole, email, experience, firebaseUid } = req.body;
+        const { firstName, lastName, email, experience, firebaseUid } = req.body;
 
         await db.query(
-            "INSERT INTO Users (first_name, last_name, role, user_role, email, firebase_uid) VALUES ($1, $2, $3, $4, $5, $6)",
-            [firstName, lastName, role, userRole, email, firebaseUid]
+            "INSERT INTO Users (first_name, last_name, user_role, email, firebase_uid) VALUES ($1, $2, $3, $4, $5, $6)",
+            [firstName, lastName, "teacher", email, firebaseUid]
         )
 
         const user = await db.query(
             "SELECT * FROM Users WHERE email = $1",
             [email]
         )
-        
+
         const teacherId = keysToCamel(user)[0].id;
 
         const teacher = await db.query(
@@ -86,7 +86,7 @@ teachersRouter.post("/", async(req, res) => {
             ) SELECT * FROM new_teacher INNER JOIN Users ON Users.id = new_teacher.id`,
             [teacherId, experience]
         )
-        
+
         res.status(201).json(keysToCamel(teacher)[0])
 
     } catch (err) {
@@ -112,7 +112,7 @@ teachersRouter.put("/:id", async(req, res) => {
             `,
             [experience, isActivated, id]
         );
-        
+
         res.status(200).json(keysToCamel(updatedTeacher)[0])
     } catch (err) {
         console.log(err)

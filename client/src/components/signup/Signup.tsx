@@ -34,7 +34,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export const Signup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { signup, handleRedirectResult } = useAuthContext();
+  const { studentSignup, handleRedirectResult } = useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -48,7 +48,7 @@ export const Signup = () => {
 
   const handleSignup = async (data: SignupFormValues) => {
     try {
-      const user = await signup({
+      const user = await studentSignup({
         email: data.email,
         password: data.password,
       });
