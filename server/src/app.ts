@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import express from "express";
 import schedule from "node-schedule"; // TODO: Keep only if scheduling cronjobs
 
-import { classVideosRouter } from "../routes/class_videos"; 
+import { classVideosRouter } from "../routes/class_videos";
 import { classEnrollmentsRouter } from "../routes/class_enrollments";
 import { usersRouter } from "../routes/users";
 import { classesTaughtRouter } from "../routes/classes_taught";
@@ -12,6 +12,7 @@ import articlesRouter from "../routes/articles";
 import eventEnrollmentRouter from "../routes/event_enrollments";
 import { teachersRouter } from "../routes/teachers"
 import { verifyToken } from "./middleware";
+import { eventsRouter } from "../routes/events";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use("/classes-videos", classVideosRouter);
 app.use("/users", usersRouter);
+app.use("/events", eventsRouter);
 app.use("/classes-taught", classesTaughtRouter);
 app.use("/class-enrollments", classEnrollmentsRouter);
 app.use("/teachers", teachersRouter)
