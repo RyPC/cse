@@ -6,8 +6,15 @@ import schedule from "node-schedule"; // TODO: Keep only if scheduling cronjobs
 
 import { classesRouter } from "../routes/classes";
 import { scheduledClassesRouter } from "../routes/scheduled_classes";
+import { classVideosRouter } from "../routes/class_videos";
+import { classEnrollmentsRouter } from "../routes/class_enrollments";
 import { usersRouter } from "../routes/users";
+import { classesTaughtRouter } from "../routes/classes_taught";
+import articlesRouter from "../routes/articles";
+import eventEnrollmentRouter from "../routes/event_enrollments";
+import { teachersRouter } from "../routes/teachers"
 import { verifyToken } from "./middleware";
+import { eventsRouter } from "../routes/events";
 
 dotenv.config();
 
@@ -39,7 +46,15 @@ if (process.env.NODE_ENV === "production") {
 
 app.use("/classes", classesRouter);
 app.use("/scheduled-classes", scheduledClassesRouter);
+app.use("/classes-videos", classVideosRouter);
 app.use("/users", usersRouter);
+app.use("/events", eventsRouter);
+app.use("/classes-taught", classesTaughtRouter);
+app.use("/class-enrollments", classEnrollmentsRouter);
+app.use("/teachers", teachersRouter)
+// connecting made router with the app
+app.use("/articles", articlesRouter);
+app.use("/event-enrollments", eventEnrollmentRouter);
 
 app.listen(SERVER_PORT, () => {
   console.info(`Server listening on ${SERVER_PORT}`);
