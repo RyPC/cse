@@ -8,6 +8,7 @@ import articlesRouter from "../routes/articles";
 import eventEnrollmentRouter from "../routes/event_enrollments";
 // import { sampleRouter } from "../routes/sample"; // TODO: delete sample router
 import { usersRouter } from "../routes/users";
+import { teachersRouter } from "../routes/teachers"
 import { verifyToken } from "./middleware";
 
 dotenv.config();
@@ -40,6 +41,7 @@ if (process.env.NODE_ENV === "production") {
 
 // app.use("/", sampleRouter); // TODO: delete sample endpoint
 app.use("/users", usersRouter);
+app.use("/teachers", teachersRouter)
 // connecting made router with the app
 app.use("/articles", articlesRouter);
 app.use("/event-enrollments", eventEnrollmentRouter);
