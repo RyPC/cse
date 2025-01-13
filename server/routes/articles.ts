@@ -145,4 +145,4 @@ articlesRouter.delete("/:id", async (req, res) => {
 });
 
 // Export the router made to handle these new routes
-export default articlesRouter;
+export { articlesRouter };

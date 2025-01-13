@@ -7,7 +7,6 @@ classesRouter.use(express.json());
 
 classesRouter.get("/:id", async (req, res) => {
   try {
-    // Query database
     const { id } = req.params;
     const data = await db.query(`SELECT * FROM classes WHERE id = $1;`, [id]);
 
@@ -19,7 +18,6 @@ classesRouter.get("/:id", async (req, res) => {
 
 classesRouter.get("/", async (req, res) => {
     try {
-      // Query database
       const data = await db.query(`SELECT * FROM classes;`);
   
       res.status(200).json(keysToCamel(data));
@@ -30,7 +28,6 @@ classesRouter.get("/", async (req, res) => {
 
 classesRouter.post("/", async (req, res) => {
   try {
-    // Destructure req.body
     const { title, description, location, capacity, level, costume } = req.body;
 
     const data = await db.query(`
