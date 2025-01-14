@@ -91,7 +91,19 @@ reviewsRouter.put("/", async (req, res) => {
 });
 
 reviewsRouter.delete("/", async (req, res) => {
-  //TODO
+  try {
+    const { student_id, class_id } = req.body;
+    const data = await db.query(`
+      DELETE FROM reviews
+      WHERE student_id=$1 OR class_id=$2
+      RETURNING *;
+      `, [student_id, class_id]
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch(err) {
+    res.status(500).send(err.message);
+  }
 });
 
 export { reviewsRouter };
