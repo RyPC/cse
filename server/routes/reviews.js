@@ -48,7 +48,23 @@ reviewsRouter.get("/student/:id", async (req, res) => {
 });
 
 reviewsRouter.post("/", async (req, res) => {
-  // TODO
+  try {
+
+    const {class_id, student_id, rating, review} = req.body;
+
+    const data = await db.query(
+      `
+      INSERT INTO reviews(class_id, student_id, rating, review)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *;
+      `,[class_id, student_id, rating, review]
+    );
+
+    res.status(200).json(keysToCamel(data));
+
+  } catch(err) {
+    res.status(500).send(err.message);
+  }
 });
 
 reviewsRouter.put("/", async (req, res) => {
