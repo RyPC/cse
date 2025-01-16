@@ -16,6 +16,7 @@ import { Signup } from "./components/signup/Signup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
+import {Resources} from "./components/resources/Resources";
 
 const App = () => {
   return (
@@ -46,6 +47,11 @@ const App = () => {
                     />
                   }
                 />
+                <Route
+                  path="/resources"
+                  element={<Resources/>}
+                />
+
                 <Route
                   path="/playground"
                   element={<ProtectedRoute element={<Playground />} />}
