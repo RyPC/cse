@@ -56,6 +56,7 @@ app.use("/events", eventsRouter);
 app.use("/classes-taught", classesTaughtRouter);
 app.use("/class-enrollments", classEnrollmentsRouter);
 app.use("/teachers", teachersRouter)
+app.use("/reviews", reviewsRouter);
 // connecting made router with the app
 app.use("/articles", articlesRouter);
 app.use("/event-enrollments", eventEnrollmentRouter);
