@@ -4,7 +4,7 @@ import { Button, Input, Stack } from "@chakra-ui/react";
 import axios from "axios";
 import { z } from "zod";
 import { EmailTemplate } from "../signup/EmailTemplate";
-import { render } from "@react-email/components";
+import { renderEmail } from "@react-email/components";
 // export const Playground = () => {
 //   return (
 //     <Box>
@@ -53,7 +53,7 @@ export const Playground = () => {
         {
           to: import.meta.env.VITE_ADMIN_EMAIL,
           // Rendering template and sending it over: https://react.email/docs/integrations/nodemailer#send-email-using-nodemailer
-          html: await render(EmailTemplate(formData)),
+          html: await renderEmail(EmailTemplate(formData)),
         },
       );
       console.log(response);
