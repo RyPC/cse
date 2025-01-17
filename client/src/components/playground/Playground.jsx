@@ -3,19 +3,20 @@ import { useState } from "react";
 import { Button, Input, Stack } from "@chakra-ui/react";
 import axios from "axios";
 import { z } from "zod";
+import { EmailTemplate } from "../signup/EmailTemplate";
+import { render } from "@react-email/components";
+// export const Playground = () => {
+//   return (
+//     <Box>
+//       <Text>
+//         This is page will be used to test any modal or component that does not
+//         have a specific place for it yet!
+//       </Text>
+//     </Box>
+//   );
+// };
 
 export const Playground = () => {
-  return (
-    <Box>
-      <Text>
-        This is page will be used to test any modal or component that does not
-        have a specific place for it yet!
-      </Text>
-    </Box>
-  );
-};
-
-export const Playground_2 = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -31,6 +32,7 @@ export const Playground_2 = () => {
     });
   };
 
+  // Validation of data before sending it to the server
   const handleSubmit = async () => {
     const schema = z.object({
       firstName: z.string().min(1, "First name is required"),
@@ -45,9 +47,14 @@ export const Playground_2 = () => {
       return;
     }
     try {
+      // post request to the server
       const response = await axios.post(
-        "http://localhost:5000/api/users",
-        formData,
+        "http://localhost:3001/nodemailer/send",
+        {
+          to: import.meta.env.VITE_ADMIN_EMAIL,
+          // Rendering template and sending it over: https://react.email/docs/integrations/nodemailer#send-email-using-nodemailer
+          html: await render(EmailTemplate(formData)),
+        },
       );
       console.log(response);
     } catch (error) {

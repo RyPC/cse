@@ -1,6 +1,6 @@
 import { Button, Html } from "@react-email/components";
 
-function EmailTemplate({
+export function EmailTemplate({
   firstName,
   lastName,
   email,
