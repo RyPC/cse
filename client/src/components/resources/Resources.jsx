@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { VideoCard } from "./VideoCard";
 import { NewsCard } from "./NewsCard";
-import axios from 'axios';
 import { Button, Flex, Text, Box } from "@chakra-ui/react";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 export const Resources = () => {
+
+  const { backend } = useBackendContext()
   const [videos, setVideos] = useState([]);
   const [news, setNews] = useState([]);
 
@@ -13,14 +15,14 @@ export const Resources = () => {
     console.log(videos);
   };
 
-  const handleNewsButton = () => {
+  const handleNewsButton = () => {``
     console.log('News button has been pressed!');
     console.log(news);
   };
 
   const fetchVideos = async () => {
     try {
-      const videoResponse = await axios.get('http://localhost:3001/classes-videos');
+      const videoResponse = await backend.get('/classes-videos');
       setVideos(videoResponse.data);
     } catch (error) {
       console.error('Error fetching videos:', error);
@@ -29,7 +31,7 @@ export const Resources = () => {
 
   const fetchNews = async () => {
     try {
-      const newsResponse = await axios.get('http://localhost:3001/articles');
+      const newsResponse = await backend.get('/articles');
       setNews(newsResponse.data);
     } catch (error) {
       console.error('Error fetching news:', error);
