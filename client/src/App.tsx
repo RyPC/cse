@@ -11,6 +11,7 @@ import { CatchAll } from "./components/CatchAll";
 import { Dashboard } from "./components/dashboard/Dashboard";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
+import { Bookings } from "./components/bookings/Bookings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Signup } from "./components/signup/Signup";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -36,6 +37,10 @@ const App = () => {
                 <Route
                   path="/dashboard"
                   element={<ProtectedRoute element={<Dashboard />} />}
+                />
+                <Route
+                  path="/bookings"
+                  element={<ProtectedRoute element={< Bookings/>} />}
                 />
                 <Route
                   path="/admin"
