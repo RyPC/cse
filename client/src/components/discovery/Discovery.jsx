@@ -55,8 +55,8 @@ export const Discovery = () => {
             </Flex>
 
             <Box my="14px">
-                <Flex align="center" justify="center" gap={5} wrap="wrap">
-                    {activeTab === "classes" && classes.map((classItem, index) => (
+                <Flex display={activeTab === "classes" ? "flex" : "none"} align="center" justify="center" gap={5} wrap="wrap">
+                    {classes.map((classItem, index) => (
                         <ClassCard 
                             key={index}
                             title={classItem.title}
@@ -67,8 +67,10 @@ export const Discovery = () => {
                             costume={classItem.costume}
                         />
                     ))}
+                </Flex>
 
-                    {activeTab === "events" && events.map((eventItem, index) => (
+                <Flex display={activeTab === "events" ? "flex" : "none"} align="center" justify="center" gap={5} wrap="wrap">
+                    {events.map((eventItem, index) => (
                         // Your event card component and its props!
                         <></> // here to avoid errors
                     ))}
