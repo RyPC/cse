@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { ClassCard } from "../shared/ClassCard";
+import { EventCard } from "../shared/EventCard";
 
 export const Discovery = () => {
     // Active Tab Logic
-    const [activeTab, setActiveTab] = useState(); // Default to showing classes
+    const [activeTab, setActiveTab] = useState("both"); // Default to showing both
 
     const toggleClasses = () => {
         setActiveTab("classes");
@@ -55,7 +56,7 @@ export const Discovery = () => {
             </Flex>
 
             <Box my="14px">
-                <Flex display={activeTab === "classes" ? "flex" : "none"} align="center" justify="center" gap={5} wrap="wrap">
+                <Flex display={activeTab === "events" ? "none" : "flex"} align="center" justify="center" gap={5} wrap="wrap">
                     {classes.map((classItem, index) => (
                         <ClassCard 
                             key={index}
@@ -69,10 +70,21 @@ export const Discovery = () => {
                     ))}
                 </Flex>
 
-                <Flex display={activeTab === "events" ? "flex" : "none"} align="center" justify="center" gap={5} wrap="wrap">
+                <Flex display={activeTab === "classes" ? "none" : "flex"} align="center" justify="center" gap={5} mt={5} wrap="wrap">
                     {events.map((eventItem, index) => (
-                        // Your event card component and its props!
-                        <></> // here to avoid errors
+                        <EventCard
+                            key={index}
+                            title={eventItem.title}
+                            location={eventItem.location}
+                            description={eventItem.description}
+                            level={eventItem.level}
+                            date={eventItem.date}
+                            startTime={eventItem.startTime}
+                            endTime={eventItem.endTime}
+                            callTime={eventItem.callTime}
+                            classId={eventItem.classId}
+                            costume={eventItem.costume}
+                        />
                     ))}
                 </Flex>
             </Box>

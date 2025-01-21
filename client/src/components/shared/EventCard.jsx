@@ -1,9 +1,28 @@
-import { VStack, Text } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, CardFooter, Heading, VStack, Text } from "@chakra-ui/react";
 
-export const EventCard = () => {
+export const EventCard = ({title, location, description, level, date, startTime, endTime, callTime, classId, costume}) => {
   return (
-    <VStack>
-      <Text>Display event stuff...card here or card in discovery??</Text>
-    </VStack>
+    <Card w={{base: "80%", md: "20em"}}>
+      <CardHeader>
+        <Heading size="lg">{title}</Heading>
+      </CardHeader>
+
+      <CardBody>
+        <VStack>
+          <Text>{description}</Text>
+          <Text>{date} at {location}</Text>
+          <Text>Call Time: {callTime}</Text>
+          <Text>{startTime} to {endTime}</Text>
+          <Text>Level: {level}</Text>
+          <Text>Costume: {costume}</Text>
+        </VStack>
+      </CardBody>
+
+      <CardFooter justifyContent="right">
+        <Text>Required Class ID: {classId}</Text>
+      </CardFooter>
+    </Card>
   );
 };
+
+
