@@ -9,6 +9,7 @@ import {
   FormHelperText,
   Heading,
   Input,
+  Select,
   Stack,
   useToast,
   VStack,
@@ -25,8 +26,11 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
 
 const signupSchema = z.object({
+  firstName: z.string().min(1, "Please include your first name."),
+  lastName: z.string().min(1, "Please include your last name."),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+  level: z.string()
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -49,8 +53,11 @@ export const Signup = () => {
   const handleSignup = async (data: SignupFormValues) => {
     try {
       const user = await studentSignup({
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         password: data.password,
+        level: data.level,
       });
 
       if (user) {
@@ -88,6 +95,33 @@ export const Signup = () => {
         style={{ width: "100%" }}
       >
         <Stack spacing={2}>
+        <FormControl isInvalid={!!errors.firstName}
+          >
+            <Center>
+                <Input
+                  placeholder= "First Name"
+                  type="text"
+                  size={"lg"}
+                  {...register("firstName")}
+                  name="firstName"
+                  isRequired
+                  autoComplete="firstname"
+                />
+            </Center>
+          </FormControl>
+          <FormControl isInvalid={!!errors.lastName}>
+            <Center>
+              <Input
+                placeholder= "Last Name"
+                type="text"
+                size={"lg"}
+                {...register("lastName")}
+                name="lastName"
+                isRequired
+                autoComplete="lastname"
+              />
+            </Center>
+          </FormControl>
           <FormControl
             isInvalid={!!errors.email}
             w={"100%"}
@@ -122,12 +156,25 @@ export const Signup = () => {
             <FormErrorMessage>
               {errors.password?.message?.toString()}
             </FormErrorMessage>
+          
+          </FormControl><FormControl>
+          <Center>
+              <Select
+                placeholder="Select a level..."
+                {...register("level")}>
+              <option value='beginner'>Beginner </option>
+              <option value='intermediate'>Intermediate</option>
+              <option value='advanced'>Advanced</option>
+              </Select>
+            </Center>
+            <Center>
             <ChakraLink
-              as={Link}
-              to="/login"
-            >
-              <FormHelperText>Click here to login</FormHelperText>
-            </ChakraLink>
+                as={Link}
+                to="/login"
+              >
+                <FormHelperText>Click here to login</FormHelperText>
+              </ChakraLink>
+          </Center>
           </FormControl>
 
           <Button
