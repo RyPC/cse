@@ -35,9 +35,7 @@ const ReviewModal = () => {
                     rating: rating,
                     review: review
                 }
-            );
-            // setData(response.data);
-            
+            );            
         } catch(err) {
             alert(err);
         }
@@ -87,8 +85,6 @@ const ReviewModal = () => {
                 </form>
             </ModalContent>
         </Modal>
-
-        {!data ? "Loading data" : data.map((item) => {return <h1>Review: {item.review}</h1>})}
         </>
     )
 
