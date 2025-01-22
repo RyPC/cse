@@ -14,7 +14,7 @@ const ReviewModal = () => {
     const {isOpen, onOpen, onClose} = useDisclosure();
     const [rating, setRating] = useState("");
     const [review, setReview] = useState("");
-    const [data, setData] = useState("Loading data");
+    const [data, setData] = useState();
     const [formSubmitted, setFormSubmitted] = useState(0);
 
     const handleRatingChange = (event) => {
@@ -25,30 +25,24 @@ const ReviewModal = () => {
         setReview(event.target.value);
     };
 
+    const handleFormSubmission = async (event) => {
+        // event.preventDefault();
+        try {
+            const response = await backend.post('/reviews', 
+                {
+                    class_id: 72,
+                    student_id: 153,
+                    rating: rating,
+                    review: review
+                }
+            );
+            // setData(response.data);
+            
+        } catch(err) {
+            alert(err);
+        }
+    };
 
-    // {
-    //     class_id: 44,
-    //     student_id: 153,
-    //     rating: rating,
-    //     review: review
-    // }
-
-    useEffect(() => {
-        const handleFormSubmission = async () => {
-            try {
-                const postRoute = 'http://localhost:3001/reviews';
-                // want to implement this
-                // setIsLoading(true);
-                const response = await backend.get(postRoute);
-                setData(response);
-                
-            } catch(err) {
-                alert(err);
-            }
-        };
-
-        handleFormSubmission();
-    },[formSubmitted, backend])
 
 
     return(        
@@ -60,18 +54,18 @@ const ReviewModal = () => {
             <ModalOverlay />
             <ModalContent>
                 <ModalHeader>Leave a review</ModalHeader>
-                <form onSubmit={() => {setFormSubmitted(formSubmitted + 1)}}>
+                <form onSubmit={handleFormSubmission}>
                     <ModalBody>
 
                             <FormControl isRequired isInvalid={false}>
                                 <FormLabel>Rating</FormLabel>
                                 <RadioGroup onChange={handleRatingChange}>
                                     <HStack spacing='20px'>
-                                        <Radio value="one star">One star</Radio>
-                                        <Radio value="two stars">Two stars</Radio>
-                                        <Radio value="three stars">Three stars</Radio>
-                                        <Radio value="four stars">Four stars</Radio>
-                                        <Radio value="five stars">Five stars</Radio>
+                                        <Radio value="1">One star</Radio>
+                                        <Radio value="2">Two stars</Radio>
+                                        <Radio value="3">Three stars</Radio>
+                                        <Radio value="4">Four stars</Radio>
+                                        <Radio value="5">Five stars</Radio>
                                     </HStack>
                                 </RadioGroup>
                                 <FormHelperText>Rate this class on a scale from 1 to 5 stars</FormHelperText>
@@ -94,7 +88,7 @@ const ReviewModal = () => {
             </ModalContent>
         </Modal>
 
-        <h1>{!data ? "Loading data" : data.rating}</h1>
+        {!data ? "Loading data" : data.map((item) => {return <h1>Review: {item.review}</h1>})}
         </>
     )
 
