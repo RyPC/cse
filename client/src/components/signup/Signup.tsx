@@ -30,7 +30,7 @@ const signupSchema = z.object({
   lastName: z.string().min(1, "Please include your last name."),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
-  level: z.string()
+  level: z.string(),
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -95,24 +95,23 @@ export const Signup = () => {
         style={{ width: "100%" }}
       >
         <Stack spacing={2}>
-        <FormControl isInvalid={!!errors.firstName}
-          >
+          <FormControl isInvalid={!!errors.firstName}>
             <Center>
-                <Input
-                  placeholder= "First Name"
-                  type="text"
-                  size={"lg"}
-                  {...register("firstName")}
-                  name="firstName"
-                  isRequired
-                  autoComplete="firstname"
-                />
+              <Input
+                placeholder="First Name"
+                type="text"
+                size={"lg"}
+                {...register("firstName")}
+                name="firstName"
+                isRequired
+                autoComplete="firstname"
+              />
             </Center>
           </FormControl>
           <FormControl isInvalid={!!errors.lastName}>
             <Center>
               <Input
-                placeholder= "Last Name"
+                placeholder="Last Name"
                 type="text"
                 size={"lg"}
                 {...register("lastName")}
@@ -156,25 +155,27 @@ export const Signup = () => {
             <FormErrorMessage>
               {errors.password?.message?.toString()}
             </FormErrorMessage>
-          
-          </FormControl><FormControl>
-          <Center>
+          </FormControl>
+          <FormControl>
+            <Center>
               <Select
                 placeholder="Select a level..."
-                {...register("level")}>
-              <option value='beginner'>Beginner </option>
-              <option value='intermediate'>Intermediate</option>
-              <option value='advanced'>Advanced</option>
+                required
+                {...register("level")}
+              >
+                <option value="beginner">Beginner </option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
               </Select>
             </Center>
             <Center>
-            <ChakraLink
+              <ChakraLink
                 as={Link}
                 to="/login"
               >
                 <FormHelperText>Click here to login</FormHelperText>
               </ChakraLink>
-          </Center>
+            </Center>
           </FormControl>
 
           <Button
