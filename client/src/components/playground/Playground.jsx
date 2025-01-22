@@ -1,9 +1,12 @@
 import { Box, Text } from "@chakra-ui/react";
+import ReviewModal from "../reviewModals/reviewModal";
 
 export const Playground = () => {
   return (
-    <Box>
-      <Text>This is page will be used to test any modal or component that does not have a specific place for it yet!</Text>
-    </Box>
+    // <Box>
+    //   <Text>This is page will be used to test any modal or component that does not have a specific place for it yet!</Text>
+    //   <ReviewModal></ReviewModal>
+    // </Box>
+    <ReviewModal />
   );
 };
