@@ -5,7 +5,7 @@ import axios from "axios";
 import { z } from "zod";
 import { EmailTemplate } from "../signup/EmailTemplate";
 import { render } from "@react-email/components";
-import { renderToPipeableStream } from 'react-dom/server';
+import { renderToPipeableStream } from "react-dom/server";
 // export const Playground = () => {
 //   return (
 //     <Box>
@@ -50,7 +50,7 @@ export const Playground = () => {
     try {
       // post request to the server
       const response = await axios.post(
-        import.meta.env.VITE_BACKEND_HOSTNAME,
+        import.meta.env.VITE_BACKEND_HOSTNAME + "/nodemailer/send",
         {
           to: import.meta.env.VITE_ADMIN_EMAIL,
           // Rendering template and sending it over: https://react.email/docs/integrations/nodemailer#send-email-using-nodemailer
