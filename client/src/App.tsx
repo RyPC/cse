@@ -13,6 +13,7 @@ import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Signup } from "./components/signup/Signup";
+import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
@@ -32,6 +33,10 @@ const App = () => {
                 <Route
                   path="/signup"
                   element={<Signup />}
+                />
+                <Route
+                  path="/teacher-signup"
+                  element={<TeacherSignup />}
                 />
                 <Route
                   path="/dashboard"

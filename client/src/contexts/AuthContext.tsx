@@ -19,8 +19,20 @@ import { useBackendContext } from "./hooks/useBackendContext";
 
 interface AuthContextProps {
   currentUser: User | null;
-  studentSignup: ({ firstName, lastName, level, email, password }: SignUp) => Promise<UserCredential>;
-  teacherSignup: ({email, password}: EmailPassword) => Promise<UserCredential>;
+  teacherSignup: ({
+    firstName,
+    lastName,
+    experience,
+    email,
+    password,
+  }: TeacherSignup) => Promise<UserCredential>;
+  studentSignup: ({
+    firstName,
+    lastName,
+    level,
+    email,
+    password,
+  }: SignUp) => Promise<UserCredential>;
   login: ({ email, password }: EmailPassword) => Promise<UserCredential>;
   logout: () => Promise<void>;
   resetPassword: ({ email }: Pick<EmailPassword, "email">) => Promise<void>;
@@ -46,13 +58,27 @@ interface EmailPassword {
   password: string;
 }
 
+interface TeacherSignup {
+  firstName: string;
+  lastName: string;
+  experience: string;
+  email: string;
+  password: string;
+}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { backend } = useBackendContext();
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const studentSignup = async ({ firstName, lastName, email, password, level }: SignUp) => {
+  const studentSignup = async ({
+    firstName,
+    lastName,
+    email,
+    password,
+    level,
+  }: SignUp) => {
     if (currentUser) {
       signOut(auth);
     }
@@ -68,15 +94,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       firstName: firstName,
       lastName: lastName,
       email: email,
-      role: 'user',
-      userRole: 'student',
+      role: "user",
+      userRole: "student",
       level: level,
     });
 
     return userCredential;
   };
 
-  const teacherSignup = async ({ email, password }: EmailPassword) => {
+  const teacherSignup = async ({
+    firstName,
+    lastName,
+    experience,
+    email,
+    password,
+  }: TeacherSignup) => {
     if (currentUser) {
       signOut(auth);
     }
@@ -88,6 +120,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
 
     await backend.post("/teachers", {
+      firstName: firstName,
+      lastName: lastName,
+      experience: experience,
       email: email,
       firebaseUid: userCredential.user.uid,
     });
