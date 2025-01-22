@@ -50,7 +50,7 @@ export const Playground = () => {
     try {
       // post request to the server
       const response = await axios.post(
-        "http://localhost:3001/nodemailer/send",
+        import.meta.env.VITE_BACKEND_HOSTNAME,
         {
           to: import.meta.env.VITE_ADMIN_EMAIL,
           // Rendering template and sending it over: https://react.email/docs/integrations/nodemailer#send-email-using-nodemailer
