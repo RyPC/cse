@@ -1,84 +1,12 @@
 import { useState } from "react";
 
-import { Button, Box, useDisclosure, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Heading, VStack } from "@chakra-ui/react";
+import { ConfirmationModal } from "./ConfirmationModal";
+import { ViewModal } from "./ViewModal";
+import { CancelModal } from "./CancelModal";
+
+import { Button, Box, useDisclosure, Heading, VStack } from "@chakra-ui/react";
 
 export const Bookings = () => {
-  const ViewModal = () => {
-    const onCancel = () => {
-      setCurrentModal("cancel");
-    };
-    return (
-      <Modal isOpen={isOpen} onClose={onCloseModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Title</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam lacinia cursus tortor et tempor. Mauris vulputate mattis feugiat. Fusce dignissim quis diam sit amet euismod. Vestibulum pulvinar interdum nisl. Aenean vel porta sem, id efficitur justo. Vestibulum vitae eros volutpat, tincidunt est interdum, hendrerit sem. Vestibulum porttitor orci a leo vulputate, vitae suscipit lacus tristique.
-          </ModalBody>
-  
-          <ModalFooter>
-            <Button colorScheme='red' mr={3} onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button colorScheme='blue' mr={3} onClick={onCloseModal}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    );
-  };
-  const CancelModal = () => {
-    const onGoBack = () => {
-      setCurrentModal("view");
-    };
-    const onConfirm = () => {
-      setCurrentModal("confirmation");
-    };
-    return (
-      <Modal isOpen={isOpen} onClose={onCloseModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Title</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-          Are you sure?
-          </ModalBody>
-  
-          <ModalFooter>
-            <Button colorScheme='red' mr={3} onClick={onConfirm}>
-              Confirm
-            </Button>
-            <Button colorScheme='blue' mr={3} onClick={onGoBack}>
-              Go back
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-  
-    );
-  };
-  const ConfirmationModal = () => {
-    return (
-      <Modal isOpen={isOpen} onClose={onCloseModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Changes made to class ____...</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam lacinia cursus tortor et tempor. Mauris vulputate mattis feugiat. Fusce dignissim quis diam sit amet euismod. Vestibulum pulvinar interdum nisl. Aenean vel porta sem, id efficitur justo. Vestibulum vitae eros volutpat, tincidunt est interdum, hendrerit sem. Vestibulum porttitor orci a leo vulputate, vitae suscipit lacus tristique.
-          </ModalBody>
-  
-          <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={onCloseModal}>
-              Go Home
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    );
-  };
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [currentModal, setCurrentModal] = useState("view");
 
@@ -121,10 +49,10 @@ export const Bookings = () => {
       </VStack>
       {
         currentModal === "view" ?
-          <ViewModal /> :
+          <ViewModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} /> :
         (currentModal === "confirmation" ?
-          <ConfirmationModal /> :
-          <CancelModal />
+          <ConfirmationModal isOpen={isOpen} onClose={onCloseModal} /> :
+          <CancelModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} />
         )
       }
     </Box>
