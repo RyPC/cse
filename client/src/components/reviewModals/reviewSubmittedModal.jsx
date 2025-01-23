@@ -4,10 +4,12 @@ import { useDisclosure } from '@chakra-ui/react';
 
 const ReviewSubmittedModal = () => {
 
-    const {isOpen, onClose} = useDisclosure({defaultIsOpen: true});
+    const {isOpen, onOpen, onClose} = useDisclosure();
 
     return(
         <>
+            <Button onClick={onOpen}>Open Review Submitted Modal</Button>
+
             <Modal isOpen={isOpen}>
                 <ModalOverlay>
                     <ModalContent>

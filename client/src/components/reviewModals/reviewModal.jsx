@@ -30,7 +30,7 @@ const ReviewModal = () => {
         try {
             const response = await backend.post('/reviews', 
                 {
-                    class_id: 72,
+                    class_id: 73,
                     student_id: 153,
                     rating: rating,
                     review: review
@@ -40,8 +40,6 @@ const ReviewModal = () => {
             alert(err);
         }
     };
-
-
 
     return(        
         <>
