@@ -11,6 +11,7 @@ import { CatchAll } from "./components/CatchAll";
 import { Dashboard } from "./components/dashboard/Dashboard";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
+import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Signup } from "./components/signup/Signup";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -45,6 +46,10 @@ const App = () => {
                       allowedRoles={["admin"]}
                     />
                   }
+                />
+                <Route
+                  path="/profile"
+                  element={<ProtectedRoute element={<Profile />} />}
                 />
                 <Route
                   path="/playground"
