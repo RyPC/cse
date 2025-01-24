@@ -9,15 +9,16 @@ import {
 import { Admin } from "./components/admin/Admin";
 import { CatchAll } from "./components/CatchAll";
 import { Dashboard } from "./components/dashboard/Dashboard";
+import { Discovery } from "./components/discovery/Discovery";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
 import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Resources } from "./components/resources/Resources";
 import { Signup } from "./components/signup/Signup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
-import { Discovery } from "./components/discovery/Discovery";
 
 const App = () => {
   return (
@@ -47,6 +48,10 @@ const App = () => {
                       allowedRoles={["admin"]}
                     />
                   }
+                />
+                <Route
+                  path="/resources"
+                  element={<ProtectedRoute element={<Resources />} />}
                 />
                 <Route
                   path="/profile"
