@@ -9,9 +9,12 @@ import {
 import { Admin } from "./components/admin/Admin";
 import { CatchAll } from "./components/CatchAll";
 import { Dashboard } from "./components/dashboard/Dashboard";
+import { Discovery } from "./components/discovery/Discovery";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
+import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Resources } from "./components/resources/Resources";
 import { Signup } from "./components/signup/Signup";
 import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -52,10 +55,21 @@ const App = () => {
                   }
                 />
                 <Route
+                  path="/resources"
+                  element={<ProtectedRoute element={<Resources />} />}
+                />
+                <Route
+                  path="/profile"
+                  element={<ProtectedRoute element={<Profile />} />}
+                />
+                <Route
                   path="/playground"
                   element={<ProtectedRoute element={<Playground />} />}
                 />
-
+                <Route
+                  path="/discovery"
+                  element={<ProtectedRoute element={<Discovery />} />}
+                />
                 <Route
                   path="/"
                   element={

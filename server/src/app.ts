@@ -16,6 +16,7 @@ import eventEnrollmentRouter from "../routes/event_enrollments";
 import { teachersRouter } from "../routes/teachers"
 import { verifyToken } from "./middleware";
 import { eventsRouter } from "../routes/events";
+import emailRouter from "../routes/nodeMailer";
 
 dotenv.config();
 
@@ -57,7 +58,7 @@ app.use("/teachers", teachersRouter)
 // connecting made router with the app
 app.use("/articles", articlesRouter);
 app.use("/event-enrollments", eventEnrollmentRouter);
-
+app.use("/nodemailer", emailRouter);
 app.listen(SERVER_PORT, () => {
   console.info(`Server listening on ${SERVER_PORT}`);
 });
