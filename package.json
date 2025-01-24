@@ -11,7 +11,8 @@
     "start": "yarn tsx concurrently.ts",
     "prepare": "husky install",
     "lint": "eslint",
-    "format": "npx prettier --write ."
+    "format": "npx prettier --write .",
+    "postinstall": "cd client && patch-package"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": "yarn run eslint"
@@ -39,5 +40,8 @@
   "packageManager": "yarn@1.22.22",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "npo-template-merged": "file:"
   }
 }
