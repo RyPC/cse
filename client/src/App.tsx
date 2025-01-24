@@ -49,7 +49,7 @@ const App = () => {
                 />
                 <Route
                   path="/resources"
-                  element={<Resources/>}
+                  element={<ProtectedRoute element={<Resources />} />}
                 />
 
                 <Route
