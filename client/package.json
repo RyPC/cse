@@ -22,6 +22,7 @@
     "axios": "^1.7.4",
     "firebase": "10.12.5",
     "framer-motion": "^11.3.27",
+    "npo-client-template": "file:",
     "patch-package": "^8.0.0",
     "postinstall-postinstall": "^2.1.0",
     "react": "^18.3.1",
