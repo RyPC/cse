@@ -26,19 +26,19 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
 
 const signupSchema = z.object({
-  firstName: z.string().min(1, "Please include your first name."),
-  lastName: z.string().min(1, "Please include your last name."),
+  firstName: z.string().min(1, "Field Cannot Be Empty"),
+  lastName: z.string().min(1, "Field Cannot Be Empty"),
+  experience: z.string().min(1, "Must Select an Experience Value"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
-  level: z.string(),
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
-export const Signup = () => {
+export const TeacherSignup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { studentSignup, handleRedirectResult } = useAuthContext();
+  const { teacherSignup, handleRedirectResult } = useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -52,12 +52,12 @@ export const Signup = () => {
 
   const handleSignup = async (data: SignupFormValues) => {
     try {
-      const user = await studentSignup({
+      const user = await teacherSignup({
         firstName: data.firstName,
         lastName: data.lastName,
+        experience: data.experience,
         email: data.email,
         password: data.password,
-        level: data.level,
       });
 
       if (user) {
@@ -88,39 +88,69 @@ export const Signup = () => {
       spacing={8}
       sx={{ width: 300, marginX: "auto" }}
     >
-      <Heading>Signup</Heading>
+      <Heading>Teacher Signup</Heading>
 
       <form
         onSubmit={handleSubmit(handleSignup)}
         style={{ width: "100%" }}
       >
         <Stack spacing={2}>
-          <FormControl isInvalid={!!errors.firstName}>
+          <FormControl
+            w="100%"
+            isInvalid={!!errors.firstName}
+          >
             <Center>
               <Input
                 placeholder="First Name"
-                type="text"
-                size={"lg"}
+                size="lg"
                 {...register("firstName")}
                 name="firstName"
                 isRequired
-                autoComplete="firstname"
+                autoComplete="firstName"
               />
             </Center>
+            <FormErrorMessage>
+              {errors.firstName?.message?.toString()}
+            </FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={!!errors.lastName}>
+
+          <FormControl
+            w="100%"
+            isInvalid={!!errors.lastName}
+          >
             <Center>
               <Input
                 placeholder="Last Name"
-                type="text"
-                size={"lg"}
+                size="lg"
                 {...register("lastName")}
                 name="lastName"
                 isRequired
-                autoComplete="lastname"
               />
             </Center>
+            <FormErrorMessage>
+              {errors.lastName?.message?.toString()}
+            </FormErrorMessage>
           </FormControl>
+
+          <FormControl
+            w="100%"
+            isInvalid={!!errors.experience}
+          >
+            <Center>
+              <Select
+                placeholder="Select Experience Level"
+                {...register("experience")}
+              >
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </Select>
+            </Center>
+            <FormErrorMessage>
+              {errors.experience?.message?.toString()}
+            </FormErrorMessage>
+          </FormControl>
+
           <FormControl
             isInvalid={!!errors.email}
             w={"100%"}
@@ -140,6 +170,7 @@ export const Signup = () => {
               {errors.email?.message?.toString()}
             </FormErrorMessage>
           </FormControl>
+
           <FormControl isInvalid={!!errors.password}>
             <Center>
               <Input
@@ -155,27 +186,13 @@ export const Signup = () => {
             <FormErrorMessage>
               {errors.password?.message?.toString()}
             </FormErrorMessage>
-          </FormControl>
-          <FormControl>
-            <Center>
-              <Select
-                placeholder="Select a level..."
-                required
-                {...register("level")}
-              >
-                <option value="beginner">Beginner </option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </Select>
-            </Center>
-            <Center>
-              <ChakraLink
-                as={Link}
-                to="/login"
-              >
-                <FormHelperText>Click here to login</FormHelperText>
-              </ChakraLink>
-            </Center>
+
+            <ChakraLink
+              as={Link}
+              to="/login"
+            >
+              <FormHelperText>Click here to login</FormHelperText>
+            </ChakraLink>
           </FormControl>
 
           <Button
@@ -186,6 +203,7 @@ export const Signup = () => {
           >
             Signup
           </Button>
+          {/* Removed SelectRoot component as it was causing an error */}
         </Stack>
       </form>
 

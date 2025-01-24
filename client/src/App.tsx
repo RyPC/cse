@@ -16,6 +16,7 @@ import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Resources } from "./components/resources/Resources";
 import { Signup } from "./components/signup/Signup";
+import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
@@ -35,6 +36,10 @@ const App = () => {
                 <Route
                   path="/signup"
                   element={<Signup />}
+                />
+                <Route
+                  path="/teacher-signup"
+                  element={<TeacherSignup />}
                 />
                 <Route
                   path="/dashboard"
