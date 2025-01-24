@@ -2,7 +2,7 @@ import { Card, CardHeader, CardBody, CardFooter, Text } from "@chakra-ui/react";
 
 export const VideoCard = ({ id, title, description, S3Url, classId, mediaUrl }) => {
   return (
-    <Card width="320px">
+    <Card w={{base: "80%", md: "20em"}}>
       <CardHeader>{title}</CardHeader>
       <CardBody>
         <Text>ID: {id}</Text>
