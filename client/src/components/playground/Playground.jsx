@@ -1,15 +1,9 @@
 import { useEffect, useState } from "react";
-import { Box, Flex } from "@chakra-ui/react";
-
+import { Box, Flex, Button, Image, Center } from "@chakra-ui/react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { ClassCard } from "../shared/ClassCard";
-
-
-import { Image, Center } from "@chakra-ui/react"
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
-import { Flex } from "@chakra-ui/react"
-import { Button } from "@chakra-ui/react";
 
 export const Playground = () => {
 
