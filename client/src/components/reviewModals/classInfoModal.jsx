@@ -7,26 +7,26 @@ const ClassInfoModal = (props) => {
   const { title, description, location, capacity, level, costume } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // const renderDifficultyMeter = (level) => {
-  //   const levels = {
-  //     beginner: 1,
-  //     intermediate: 2,
-  //     advanced: 3,
-  //   };
-  //   const numPebbles = levels[level] || 0;
-  //   return (
-  //     <Stack direction="row" spacing={2}>
-  //       {[...Array(3)].map((_, index) => (
-  //         <Icon
-  //           key={index}
-  //           as={TbCapsuleHorizontal}
-  //           color={index < numPebbles ? 'green.500' : 'gray.300'}
-  //           boxSize={6}
-  //         />
-  //       ))}
-  //     </Stack>
-  //   );
-  // };
+  const renderDifficultyMeter = (level) => {
+    const levels = {
+      beginner: 1,
+      intermediate: 2,
+      advanced: 3,
+    };
+    const numPebbles = levels[level] || 0;
+    return (
+      <Stack direction="row" spacing={2}>
+        {[...Array(3)].map((_, index) => (
+          <Icon
+            key={index}
+            as={TbCapsuleHorizontal}
+            color={index < numPebbles ? ['green.500', 'yellow.500', 'red.500'][numPebbles-1] : 'gray.300'}
+            boxSize={6}
+          />
+        ))}
+      </Stack>
+    );
+  };
 
   return (
     <>
@@ -46,12 +46,12 @@ const ClassInfoModal = (props) => {
                 {description}
               </Text>
 
-              {/* <Box mb={4}> */}
-              {/*   <Text fontSize="sm" color="gray.500" mb={2}> */}
-              {/*     <strong>Difficulty:</strong> */}
-              {/*   </Text> */}
-              {/*   {renderDifficultyMeter(level)} */}
-              {/* </Box> */}
+              <Box mb={4}>
+                <Text fontSize="sm" color="gray.500" mb={2}>
+                  <strong>Difficulty:</strong>
+                </Text>
+                {renderDifficultyMeter(level)}
+              </Box>
 
               <Stack direction="column" spacing={3}>
                 <Text fontSize="sm" color="gray.500">

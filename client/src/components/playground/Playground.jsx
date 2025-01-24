@@ -19,7 +19,7 @@ export const Playground = () => {
         description="A beginner-friendly yoga class that focuses on flexibility and relaxation techniques."
         location="Downtown Studio, Room 301"
         capacity={20}
-        level="intermediate"
+        level="beginner"
         costume="Comfortable clothes, no shoes"
       />
     </>
