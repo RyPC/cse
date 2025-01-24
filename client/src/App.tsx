@@ -12,6 +12,7 @@ import { Dashboard } from "./components/dashboard/Dashboard";
 import { Discovery } from "./components/discovery/Discovery";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
+import { Bookings } from "./components/bookings/Bookings";
 import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Resources } from "./components/resources/Resources";
@@ -44,6 +45,10 @@ const App = () => {
                 <Route
                   path="/dashboard"
                   element={<ProtectedRoute element={<Dashboard />} />}
+                />
+                <Route
+                  path="/bookings"
+                  element={<ProtectedRoute element={< Bookings/>} />}
                 />
                 <Route
                   path="/admin"
