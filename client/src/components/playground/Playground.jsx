@@ -9,6 +9,10 @@ import { z } from "zod";
 import { EmailTemplate } from "../signup/EmailTemplate";
 import { render } from "@react-email/components";
 import { renderToPipeableStream } from "react-dom/server";
+import ReviewModal from "../reviewModals/reviewModal";
+import ReviewSubmittedModal from "../reviewModals/reviewSubmittedModal";
+import ReviewFailureModal from "../reviewModals/reviewFailureModal";
+import ClassInfoModal from "../reviewModals/classInfoModal";
 
 
 export const Playground = () => {
@@ -62,6 +66,20 @@ export const Playground = () => {
         </Box>
     );
 
+
+  //   <>
+  //   <ReviewModal />
+  //   <ReviewSubmittedModal />
+  //   <ReviewFailureModal />
+  //   <ClassInfoModal
+  //     title="Yoga for Beginners"
+  //     description="A beginner-friendly yoga class that focuses on flexibility and relaxation techniques."
+  //     location="Downtown Studio, Room 301"
+  //     capacity={20}
+  //     level="beginner"
+  //     costume="Comfortable clothes, no shoes"
+  //   />
+  // </>
       // const [formData, setFormData] = useState({
   //   firstName: "",
   //   lastName: "",

@@ -21,6 +21,7 @@ import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
+import { Reviews } from "./components/reviews/Reviews"
 
 const App = () => {
   return (
@@ -71,6 +72,12 @@ const App = () => {
                   path="/playground"
                   element={<ProtectedRoute element={<Playground />} />}
                 />
+
+                <Route
+                  path="/reviews"
+                  element={<ProtectedRoute element={<Reviews/>} />}
+                />
+
                 <Route
                   path="/discovery"
                   element={<ProtectedRoute element={<Discovery />} />}

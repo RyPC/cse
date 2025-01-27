@@ -7,7 +7,6 @@ scheduledClassesRouter.use(express.json());
 
 scheduledClassesRouter.get("/:id", async (req, res) => {
   try {
-    // Query database
     const { id } = req.params;
     const data = await db.query(`SELECT * FROM scheduled_classes WHERE class_id = $1;`, [id]);
 
@@ -19,7 +18,6 @@ scheduledClassesRouter.get("/:id", async (req, res) => {
 
 scheduledClassesRouter.get("/", async (req, res) => {
     try {
-      // Query database
       const data = await db.query(`SELECT * FROM scheduled_classes;`);
   
       res.status(200).json(keysToCamel(data));
@@ -30,7 +28,6 @@ scheduledClassesRouter.get("/", async (req, res) => {
 
 scheduledClassesRouter.post("/", async (req, res) => {
   try {
-    // Destructure req.body
     const { class_id, date, start_time, end_time } = req.body;
 
     const data = await db.query(`
@@ -50,7 +47,7 @@ scheduledClassesRouter.put("/", async (req, res) => {
         const { class_id, date, start_time, end_time } = req.body;
         
         if (!class_id || !date)
-            res.status(500).send("Invalid PUT request, please enter `class_id` and `date` parameters")
+            res.status(500).send("Invalid PUT request, please enter required `class_id` and `date` parameters")
 
         const data = await db.query(
             `UPDATE scheduled_classes SET

@@ -125,4 +125,4 @@ eventEnrollmentRouter.put("/:id", async (req, res) => {
   }
 });
 
-export default eventEnrollmentRouter;
+export { eventEnrollmentRouter };

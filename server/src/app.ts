@@ -4,19 +4,21 @@ import dotenv from "dotenv";
 import express from "express";
 import schedule from "node-schedule"; // TODO: Keep only if scheduling cronjobs
 
+import { articlesRouter } from "../routes/articles";
 import { classesRouter } from "../routes/classes";
 import { scheduledClassesRouter } from "../routes/scheduled_classes";
 import { classVideosRouter } from "../routes/class_videos";
 import { classEnrollmentsRouter } from "../routes/class_enrollments";
 import { usersRouter } from "../routes/users";
-import {studentsRouter} from "../routes/students";
+import { studentsRouter } from "../routes/students";
 import { classesTaughtRouter } from "../routes/classes_taught";
-import articlesRouter from "../routes/articles";
-import eventEnrollmentRouter from "../routes/event_enrollments";
+import { eventEnrollmentRouter } from "../routes/event_enrollments";
+import { reviewsRouter } from "../routes/reviews"
 import { teachersRouter } from "../routes/teachers"
-import { verifyToken } from "./middleware";
 import { eventsRouter } from "../routes/events";
 import emailRouter from "../routes/nodeMailer";
+
+import { verifyToken } from "./middleware";
 
 dotenv.config();
 
@@ -55,6 +57,7 @@ app.use("/events", eventsRouter);
 app.use("/classes-taught", classesTaughtRouter);
 app.use("/class-enrollments", classEnrollmentsRouter);
 app.use("/teachers", teachersRouter)
+app.use("/reviews", reviewsRouter);
 // connecting made router with the app
 app.use("/articles", articlesRouter);
 app.use("/event-enrollments", eventEnrollmentRouter);
