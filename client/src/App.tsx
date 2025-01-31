@@ -9,6 +9,7 @@ import {
 import { Admin } from "./components/admin/Admin";
 import { CatchAll } from "./components/CatchAll";
 import { Dashboard } from "./components/dashboard/Dashboard";
+import { StudentDashboard } from "./components/dashboard/studentDashboard/StudentDashboard";
 import { Discovery } from "./components/discovery/Discovery";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
@@ -46,6 +47,10 @@ const App = () => {
                 <Route
                   path="/dashboard"
                   element={<ProtectedRoute element={<Dashboard />} />}
+                />
+                <Route
+                  path="/dashboard/students"
+                  element={<ProtectedRoute element={<StudentDashboard />} />}
                 />
                 <Route
                   path="/bookings"
