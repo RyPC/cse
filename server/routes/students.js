@@ -118,4 +118,28 @@ studentsRouter.delete("/:id", async (req, res) => {
   }
 });
 
+studentsRouter.get("/joined/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const students = await db.query(
+      `SELECT u.first_name, u.last_name, u.email, c.title, c.description, c.level, e.attendance
+       FROM users u
+        JOIN students s ON u.id = s.id
+        JOIN class_enrollments e ON s.id = e.student_id
+        JOIN classes c ON e.class_id = c.id
+       WHERE u.id = $1;`, [id]
+    ); 
+    // !! Might return nothing, if a student is not enrolled in any classes !!
+    //  Possibly add a second query just grabbing their username so u can display
+    //   something like "Joshua Sullivan is not enrolled in any classes" to make it more personalized rather than just "Student"
+    //  Not sure how resource extensive (if at all) a second sql query is - Josh
+
+    // Might also be cool to add what teacher is teaching the class too, not my decision though :D - Josh
+
+    res.status(200).json(keysToCamel(students));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 export { studentsRouter };

@@ -25,7 +25,6 @@ export const StudentDashboard = () => {
         <Stack mx="10%" my={5}>
             <Flex direction="row" justify="flex-end">
                 <Image 
-                    htmlHeight="40px"
                     src="../bell.png"
                 />
             </Flex>
@@ -51,7 +50,7 @@ export const StudentDashboard = () => {
                                 <Td>{stud.id}</Td>
                                 <Td>
                                     <Link
-                                        href={`/students/${stud.id}`}
+                                        href={`/dashboard/students/${stud.id}`}
                                     >   
                                         {stud.firstName} {stud.lastName}
                                     </Link>
