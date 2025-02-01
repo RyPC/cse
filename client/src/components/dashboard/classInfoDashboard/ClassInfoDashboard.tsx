@@ -12,17 +12,20 @@ import {
 import { useParams } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
-import { Class } from "../../../types/class";
+import { DetailedClass } from "../../../types/scheduled_class";
 
 function ClassInfoDashboard() {
   const { classId } = useParams();
   const { backend } = useBackendContext();
-  const [currentClass, setcurrentClass] = React.useState<Class | undefined>();
+  const [currentClass, setcurrentClass] = React.useState<
+    DetailedClass | undefined
+  >();
 
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const classesResponse = await backend.get(`/classes/${classId}`);
+        const classesResponse = await backend.get(`/classes/joined/${classId}`);
+        classesResponse.data[0].date = new Date(classesResponse.data[0].date);
         setcurrentClass(classesResponse.data[0]);
         console.log(classesResponse.data[0]);
       } catch (error) {
@@ -32,6 +35,9 @@ function ClassInfoDashboard() {
 
     fetchData();
   }, [backend, classId]);
+
+  const hardcodedCoreqs = ["Ballet I", "Contemporary I"]; // Hardcoded coreqs for now
+
   return (
     <Box p={4}>
       <Heading
@@ -46,9 +52,9 @@ function ClassInfoDashboard() {
         align="stretch"
       >
         <FormControl>
-          <FormLabel>Class Title</FormLabel>
+          <FormLabel>Location</FormLabel>
           <Input
-            value={currentClass?.title || ""}
+            value={currentClass?.location || ""}
             isDisabled
             bg="gray.900"
           />
@@ -62,22 +68,6 @@ function ClassInfoDashboard() {
           />
         </FormControl>
         <FormControl>
-          <FormLabel>Level</FormLabel>
-          <Input
-            value={currentClass?.level || ""}
-            isDisabled
-            bg="gray.900"
-          />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Location</FormLabel>
-          <Input
-            value={currentClass?.location || ""}
-            isDisabled
-            bg="gray.900"
-          />
-        </FormControl>
-        <FormControl>
           <FormLabel>Capacity</FormLabel>
           <Input
             value={currentClass?.capacity || ""}
@@ -86,9 +76,41 @@ function ClassInfoDashboard() {
           />
         </FormControl>
         <FormControl>
-          <FormLabel>Costume</FormLabel>
+          <FormLabel>Level</FormLabel>
           <Input
-            value={currentClass?.costume || ""}
+            value={currentClass?.level || ""}
+            isDisabled
+            bg="gray.900"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Date</FormLabel>
+          <Input
+            value={currentClass?.date.toLocaleDateString() || ""}
+            isDisabled
+            bg="gray.900"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Start Time</FormLabel>
+          <Input
+            value={currentClass?.startTime || ""}
+            isDisabled
+            bg="gray.900"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>End Time</FormLabel>
+          <Input
+            value={currentClass?.endTime || ""}
+            isDisabled
+            bg="gray.900"
+          />
+        </FormControl>
+        <FormControl>
+          <FormLabel>Corequisites</FormLabel>
+          <Input
+            value={hardcodedCoreqs.join(", ")}
             isDisabled
             bg="gray.900"
           />
