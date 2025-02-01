@@ -26,6 +26,7 @@ import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
+import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
 
 const App = () => {
   return (
@@ -59,6 +60,10 @@ const App = () => {
                   <Route
                     index
                     element={<DashboardHome />}
+                  />
+                  <Route
+                    path="settings"
+                    element={<SettingsDashboard />}
                   />
                   <Route
                     path="classes"
