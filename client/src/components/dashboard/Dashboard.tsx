@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import {
   Button,
   Link as ChakraLink,
+  Flex,
   Heading,
+  Icon,
   Table,
   TableCaption,
   TableContainer,
@@ -23,19 +25,59 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
 import { User } from "../../types/user";
 import { RoleSelect } from "./RoleSelect";
+import { Class } from "../../types/class";
 
+interface StatCardProps {
+  icon: string;
+  iconColor: string;
+  label: string;
+  value: string | number;
+}
+export const StatCard = ({ icon, iconColor, label, value }: StatCardProps) => {
+  return (
+    <Flex
+      bg="gray.100"
+      p={4}
+      borderRadius="md"
+      shadow="md"
+      direction="row"
+      align="center"
+      w="30%"
+    >
+      <Icon
+        as="circle"
+        boxSize="50px"
+        color={iconColor}
+        mr={4}
+      />
+      <Flex direction="column">
+        <Text color="black">{label}</Text>
+        <Text
+          fontSize="3xl"
+          fontWeight="bold"
+          color="black"
+        >
+          {value}
+        </Text>
+      </Flex>
+    </Flex>
+  );
+};
 export const Dashboard = () => {
   const { logout, currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
 
   const [users, setUsers] = useState<User[] | undefined>();
-
+  const [activeClasses, setActiveClasses] = useState<Class[] | undefined>();
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await backend.get("/users");
         setUsers(response.data);
+        const activeClasses = await backend.get("/classes");
+        setActiveClasses(activeClasses.data);
+        console.log("activeClasses", activeClasses.data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -50,7 +92,31 @@ export const Dashboard = () => {
       sx={{ maxWidth: "100%", marginX: "auto" }}
     >
       <Heading>Dashboard</Heading>
-
+      <Flex
+        justifyContent="space-between"
+        alignItems="center"
+        w="80%"
+        direction={["row"]}
+      >
+        <StatCard
+          icon="email"
+          iconColor="blue.500"
+          label="Total Students"
+          value={users?.length || 0}
+        />
+        <StatCard
+          icon="email"
+          iconColor="blue.500"
+          label="Attendance Rate"
+          value={"5%"}
+        />
+        <StatCard
+          icon="email"
+          iconColor="blue.500"
+          label="Active Classes"
+          value={activeClasses?.length || 0}
+        />
+      </Flex>
       <VStack>
         <Text>
           Signed in as {currentUser?.email} (
