@@ -9,7 +9,11 @@ import {
 import { Admin } from "./components/admin/Admin";
 import { Bookings } from "./components/bookings/Bookings";
 import { CatchAll } from "./components/CatchAll";
-import { Dashboard } from "./components/dashboard/Dashboard";
+import ClassDashboard, {
+  OverallClassDashboard,
+} from "./components/dashboard/classDashboard/ClassDashboard";
+import ClassInfoDashboard from "./components/dashboard/classInfoDashboard/ClassInfoDashboard";
+import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
 import { Discovery } from "./components/discovery/Discovery";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
@@ -51,7 +55,25 @@ const App = () => {
                       allowedRoles={"admin"}
                     />
                   }
-                />
+                >
+                  <Route
+                    index
+                    element={<DashboardHome />}
+                  />
+                  <Route
+                    path="classes"
+                    element={<ClassDashboard />}
+                  >
+                    <Route
+                      index
+                      element={<OverallClassDashboard />}
+                    />
+                    <Route
+                      path=":classId"
+                      element={<ClassInfoDashboard />}
+                    />
+                  </Route>
+                </Route>
                 <Route
                   path="/bookings"
                   element={<ProtectedRoute element={<Bookings />} />}

@@ -1,21 +1,8 @@
 import { useEffect, useState } from "react";
 
-import {
-  Box,
-  Flex,
-  Heading,
-  Icon,
-  Table,
-  TableCaption,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Flex, Heading, Icon, Text, VStack } from "@chakra-ui/react";
+
+import { Outlet, useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -63,13 +50,27 @@ export const StatCard = ({ icon, iconColor, label, value }: StatCardProps) => {
 };
 
 export const Dashboard = () => {
+  return (
+    <Flex>
+      <Sidebar />
+      <Box
+        ml="200px"
+        p={5}
+        w="100%"
+      >
+        <Outlet />
+      </Box>
+    </Flex>
+  );
+};
+
+export const DashboardHome = () => {
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
 
   const [users, setUsers] = useState<User[] | undefined>();
   const [classes, setClasses] = useState<Class[] | undefined>();
-  const [selectedPeriod, setSelectedPeriod] = useState("day");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,131 +87,159 @@ export const Dashboard = () => {
 
     fetchData();
   }, [backend]);
+  const [selectedPeriod, setSelectedPeriod] = useState("day");
 
   return (
-    <VStack
-      spacing={8}
-      sx={{ maxWidth: "100%", marginX: "auto", padding: 4 }}
-    >
-      <Heading>Dashboard</Heading>
-
-      {/* Stat Cards */}
-      <Flex
-        justifyContent="space-between"
-        alignItems="center"
-        w="100%"
-        direction={["column", "row"]} // Column for mobile, row for larger screens
-        gap={4}
+    <Box w="100%">
+      <VStack
+        spacing={8}
+        sx={{ maxWidth: "100%", marginX: "auto", padding: 4 }}
       >
-        <StatCard
-          icon="email"
-          iconColor="blue.500"
-          label="Total Students"
-          value={users?.length || 0}
-        />
-        <StatCard
-          icon="email"
-          iconColor="green.500"
-          label="Attendance Rate"
-          value={"15%"}
-        />
-        <StatCard
-          icon="email"
-          iconColor="purple.500"
-          label="Total Classes"
-          value={classes?.length || 0}
-        />
-      </Flex>
+        <Heading alignSelf="flex-start">Dashboard</Heading>
 
-      {/* Graph Placeholder */}
-      <Box
-        bg="gray.100"
-        w="100%"
-        h="200px"
-        borderRadius="md"
-        display="flex"
-        position={"relative"}
-        alignItems="center"
-        justifyContent="center"
-      >
-        <Text color="gray.500">Graph Placeholder</Text>
-        <Box
-          position="absolute"
-          top="4"
-          right="4"
+        {/* Stat Cards */}
+        <Flex
+          justifyContent="space-between"
+          alignItems="center"
+          w="100%"
+          direction={["column", "row"]} // Column for mobile, row for larger screens
+          gap={4}
         >
-          <Flex
-            bg="white"
-            borderRadius="full"
-            border="1px"
-            borderColor="gray.200"
-            p={1}
-            shadow="sm"
+          <StatCard
+            icon="email"
+            iconColor="blue.500"
+            label="Total Students"
+            value={users?.length || 0}
+          />
+          <StatCard
+            icon="email"
+            iconColor="green.500"
+            label="Attendance Rate"
+            value={"15%"}
+          />
+          <StatCard
+            icon="email"
+            iconColor="purple.500"
+            label="Total Classes"
+            value={classes?.length || 0}
+          />
+        </Flex>
+
+        {/* Graph Placeholder */}
+        <Box
+          bg="gray.100"
+          w="100%"
+          h="200px"
+          borderRadius="md"
+          display="flex"
+          position={"relative"}
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Text color="gray.500">Graph Placeholder</Text>
+          <Box
+            position="absolute"
+            top="4"
+            right="4"
           >
-            {["day", "week", "month"].map((period) => (
-              <Box
-                key={period}
-                px={3}
-                py={1}
-                cursor="pointer"
-                borderRadius="full"
-                bg={selectedPeriod === period ? "blue.500" : "transparent"}
-                color={selectedPeriod === period ? "white" : "gray.600"}
-                onClick={() => setSelectedPeriod(period)}
-                _hover={{
-                  bg: selectedPeriod === period ? "blue.600" : "gray.100",
-                }}
-              >
-                {period.charAt(0).toUpperCase() + period.slice(1)}
-              </Box>
-            ))}
-          </Flex>
+            <Flex
+              bg="white"
+              borderRadius="full"
+              border="1px"
+              borderColor="gray.200"
+              p={1}
+              shadow="sm"
+            >
+              {["day", "week", "month"].map((period) => (
+                <Box
+                  key={period}
+                  px={3}
+                  py={1}
+                  cursor="pointer"
+                  borderRadius="full"
+                  bg={selectedPeriod === period ? "blue.500" : "transparent"}
+                  color={selectedPeriod === period ? "white" : "gray.600"}
+                  onClick={() => setSelectedPeriod(period)}
+                  _hover={{
+                    bg: selectedPeriod === period ? "blue.600" : "gray.100",
+                  }}
+                >
+                  {period.charAt(0).toUpperCase() + period.slice(1)}
+                </Box>
+              ))}
+            </Flex>
+          </Box>
         </Box>
-      </Box>
 
-      {/* Classes Table */}
-      <TableContainer
-        w="100%"
-        sx={{
-          overflowX: "auto",
-        }}
-      >
-        <Table variant="simple">
-          <TableCaption>All Classes</TableCaption>
-          <Thead>
-            <Tr>
-              <Th>Class Title</Th>
-              <Th>Description</Th>
-              <Th>Location</Th>
-              <Th>Capacity</Th>
-              <Th>Costume</Th>
-              <Th>Level</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {classes
-              ? classes.map((cls) => (
-                  <Tr key={cls.id}>
-                    <Td>{cls.title}</Td>
-                    <Td>{cls.description}</Td>
-                    <Td>{cls.location}</Td>
-                    <Td>{cls.capacity}</Td>
-                    <Td>{cls.costume}</Td>
-                    <Td>{cls.level}</Td>
-                  </Tr>
-                ))
-              : null}
-          </Tbody>
-        </Table>
-      </TableContainer>
-
-      {/* Signed-in User Info */}
-      <VStack>
-        <Text>
-          Signed in as {currentUser?.email} (
-          {role === "admin" ? "Admin" : "User"})
-        </Text>
+        {/* Signed-in User Info */}
+        <VStack>
+          <Text>
+            Signed in as {currentUser?.email} (
+            {role === "admin" ? "Admin" : "User"})
+          </Text>
+        </VStack>
       </VStack>
-    </VStack>
+    </Box>
+  );
+};
+
+export const Sidebar = () => {
+  const navigate = useNavigate();
+  return (
+    <Box
+      as="nav"
+      pos="fixed"
+      left={0}
+      h="100vh"
+      bg="gray.800"
+      w="200px"
+      p={5}
+    >
+      <VStack
+        spacing={4}
+        align="stretch"
+      >
+        <Box
+          as="button"
+          p={3}
+          borderRadius="md"
+          _hover={{ bg: "gray.700" }}
+          color="white"
+          onClick={() => navigate("/dashboard")}
+        >
+          Dashboard
+        </Box>
+        <Box
+          as="button"
+          p={3}
+          borderRadius="md"
+          _hover={{ bg: "gray.700" }}
+          color="white"
+          onClick={() => navigate("/dashboard/classes")}
+        >
+          Classes
+        </Box>
+        <Box
+          as="button"
+          p={3}
+          borderRadius="md"
+          _hover={{ bg: "gray.700" }}
+          color="white"
+          onClick={() => navigate("/teachers")}
+        >
+          Teachers
+        </Box>
+        <Box
+          as="button"
+          p={3}
+          borderRadius="md"
+          _hover={{ bg: "gray.700" }}
+          color="white"
+          onClick={() => navigate("/settings")}
+        >
+          Settings
+        </Box>
+      </VStack>
+    </Box>
   );
 };
