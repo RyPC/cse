@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
-  Button,
-  Link as ChakraLink,
+  Box,
   Flex,
   Heading,
   Icon,
@@ -18,14 +17,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { Link } from "react-router-dom";
-
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
-import { User } from "../../types/user";
-import { RoleSelect } from "./RoleSelect";
 import { Class } from "../../types/class";
+import { User } from "../../types/user";
 
 interface StatCardProps {
   icon: string;
@@ -33,6 +29,7 @@ interface StatCardProps {
   label: string;
   value: string | number;
 }
+
 export const StatCard = ({ icon, iconColor, label, value }: StatCardProps) => {
   return (
     <Flex
@@ -42,7 +39,8 @@ export const StatCard = ({ icon, iconColor, label, value }: StatCardProps) => {
       shadow="md"
       direction="row"
       align="center"
-      w="30%"
+      w={["100%", "30%"]} // Responsive width
+      mb={[4, 0]} // Margin bottom for mobile
     >
       <Icon
         as="circle"
@@ -63,23 +61,26 @@ export const StatCard = ({ icon, iconColor, label, value }: StatCardProps) => {
     </Flex>
   );
 };
+
 export const Dashboard = () => {
-  const { logout, currentUser } = useAuthContext();
+  const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
 
   const [users, setUsers] = useState<User[] | undefined>();
-  const [activeClasses, setActiveClasses] = useState<Class[] | undefined>();
+  const [classes, setClasses] = useState<Class[] | undefined>();
+  const [selectedPeriod, setSelectedPeriod] = useState("day");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await backend.get("/users");
-        setUsers(response.data);
-        const activeClasses = await backend.get("/classes");
-        setActiveClasses(activeClasses.data);
-        console.log("activeClasses", activeClasses.data);
+        const usersResponse = await backend.get("/users");
+        setUsers(usersResponse.data);
+
+        const classesResponse = await backend.get("/classes");
+        setClasses(classesResponse.data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -89,14 +90,17 @@ export const Dashboard = () => {
   return (
     <VStack
       spacing={8}
-      sx={{ maxWidth: "100%", marginX: "auto" }}
+      sx={{ maxWidth: "100%", marginX: "auto", padding: 4 }}
     >
       <Heading>Dashboard</Heading>
+
+      {/* Stat Cards */}
       <Flex
         justifyContent="space-between"
         alignItems="center"
-        w="80%"
-        direction={["row"]}
+        w="100%"
+        direction={["column", "row"]} // Column for mobile, row for larger screens
+        gap={4}
       >
         <StatCard
           icon="email"
@@ -106,68 +110,107 @@ export const Dashboard = () => {
         />
         <StatCard
           icon="email"
-          iconColor="blue.500"
+          iconColor="green.500"
           label="Attendance Rate"
-          value={"5%"}
+          value={"15%"}
         />
         <StatCard
           icon="email"
-          iconColor="blue.500"
-          label="Active Classes"
-          value={activeClasses?.length || 0}
+          iconColor="purple.500"
+          label="Total Classes"
+          value={classes?.length || 0}
         />
       </Flex>
-      <VStack>
-        <Text>
-          Signed in as {currentUser?.email} (
-          {role === "admin" ? "Admin" : "User"})
-        </Text>
 
-        {role === "admin" ? (
-          <ChakraLink
-            as={Link}
-            to={"/admin"}
+      {/* Graph Placeholder */}
+      <Box
+        bg="gray.100"
+        w="100%"
+        h="200px"
+        borderRadius="md"
+        display="flex"
+        position={"relative"}
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Text color="gray.500">Graph Placeholder</Text>
+        <Box
+          position="absolute"
+          top="4"
+          right="4"
+        >
+          <Flex
+            bg="white"
+            borderRadius="full"
+            border="1px"
+            borderColor="gray.200"
+            p={1}
+            shadow="sm"
           >
-            Go to Admin Page
-          </ChakraLink>
-        ) : null}
-        <Button onClick={logout}>Sign out</Button>
-      </VStack>
+            {["day", "week", "month"].map((period) => (
+              <Box
+                key={period}
+                px={3}
+                py={1}
+                cursor="pointer"
+                borderRadius="full"
+                bg={selectedPeriod === period ? "blue.500" : "transparent"}
+                color={selectedPeriod === period ? "white" : "gray.600"}
+                onClick={() => setSelectedPeriod(period)}
+                _hover={{
+                  bg: selectedPeriod === period ? "blue.600" : "gray.100",
+                }}
+              >
+                {period.charAt(0).toUpperCase() + period.slice(1)}
+              </Box>
+            ))}
+          </Flex>
+        </Box>
+      </Box>
 
+      {/* Classes Table */}
       <TableContainer
+        w="100%"
         sx={{
           overflowX: "auto",
         }}
       >
         <Table variant="simple">
-          <TableCaption>Users</TableCaption>
+          <TableCaption>All Classes</TableCaption>
           <Thead>
             <Tr>
-              <Th>Id</Th>
-              <Th>Email</Th>
-              <Th>FirebaseUid</Th>
-              <Th>Role</Th>
+              <Th>Class Title</Th>
+              <Th>Description</Th>
+              <Th>Location</Th>
+              <Th>Capacity</Th>
+              <Th>Costume</Th>
+              <Th>Level</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {users
-              ? users.map((user, i) => (
-                  <Tr key={i}>
-                    <Td>{user.id}</Td>
-                    <Td>{user.email}</Td>
-                    <Td>{user.firebaseUid}</Td>
-                    <Td>
-                      <RoleSelect
-                        user={user}
-                        disabled={role !== "admin"}
-                      />
-                    </Td>
+            {classes
+              ? classes.map((cls) => (
+                  <Tr key={cls.id}>
+                    <Td>{cls.title}</Td>
+                    <Td>{cls.description}</Td>
+                    <Td>{cls.location}</Td>
+                    <Td>{cls.capacity}</Td>
+                    <Td>{cls.costume}</Td>
+                    <Td>{cls.level}</Td>
                   </Tr>
                 ))
               : null}
           </Tbody>
         </Table>
       </TableContainer>
+
+      {/* Signed-in User Info */}
+      <VStack>
+        <Text>
+          Signed in as {currentUser?.email} (
+          {role === "admin" ? "Admin" : "User"})
+        </Text>
+      </VStack>
     </VStack>
   );
 };
