@@ -6,6 +6,12 @@ import {
   FormLabel,
   Heading,
   Input,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
   VStack,
 } from "@chakra-ui/react";
 
@@ -116,7 +122,46 @@ function ClassInfoDashboard() {
           />
         </FormControl>
       </VStack>
+      <AttendanceLogTable />
     </Box>
   );
 }
 export default ClassInfoDashboard;
+
+const AttendanceLogTable = () => {
+  const sampleData = [
+    { name: "John Doe", attended: "Yes", date: new Date("2025-01-15") },
+    { name: "Jane Smith", attended: "Yes", date: new Date("2025-01-15") },
+    { name: "Mike Johnson", attended: "Yes", date: new Date("2025-01-15") },
+  ];
+
+  return (
+    <Box p={4}>
+      <Heading
+        as="h2"
+        size="xl"
+        mb={4}
+      >
+        Attendance Log
+      </Heading>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>Name</Th>
+            <Th>Attended</Th>
+            <Th>Date</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {sampleData.map((record, index) => (
+            <Tr key={index}>
+              <Td>{record.name}</Td>
+              <Td>{record.attended}</Td>
+              <Td>{record.date.toLocaleDateString()}</Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    </Box>
+  );
+};
