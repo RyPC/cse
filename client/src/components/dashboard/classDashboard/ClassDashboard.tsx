@@ -38,6 +38,8 @@ export function OverallClassDashboard() {
       try {
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
+
+        
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -53,16 +55,17 @@ export function OverallClassDashboard() {
           overflowX: "auto",
         }}
       >
-        <Table variant="simple">
+        <Table variant="simple" colorScheme="black" >
           <TableCaption>All Classes</TableCaption>
-          <Thead>
-            <Tr>
+          <Thead >
+            <Tr >
               <Th>Class Title</Th>
               <Th>Description</Th>
+              <Th>Level</Th>
+
               <Th>Location</Th>
               <Th>Capacity</Th>
               <Th>Costume</Th>
-              <Th>Level</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -75,10 +78,12 @@ export function OverallClassDashboard() {
                   >
                     <Td fontWeight="bold">{cls.title}</Td>
                     <Td>{cls.description}</Td>
+                    <Td>{cls.level}</Td>
+
                     <Td>{cls.location}</Td>
                     <Td>{cls.capacity}</Td>
                     <Td>{cls.costume}</Td>
-                    <Td>{cls.level}</Td>
+                    {/* <Td>{cls.teacher}</Td> */}
                   </Tr>
                 ))
               : null}
