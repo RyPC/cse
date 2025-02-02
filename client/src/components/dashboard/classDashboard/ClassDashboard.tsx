@@ -55,14 +55,17 @@ export function OverallClassDashboard() {
           overflowX: "auto",
         }}
       >
-        <Table variant="simple" colorScheme="black" >
+        <Table variant="simple" colorScheme="black" size="lg"
+        sx = {{
+          
+    
+        }}>
           <TableCaption>All Classes</TableCaption>
           <Thead >
             <Tr >
-              <Th>Class Title</Th>
+              <Th fontWeight={"bold"} color={"black"}>Class Title</Th>
               <Th>Description</Th>
               <Th>Level</Th>
-
               <Th>Location</Th>
               <Th>Capacity</Th>
               <Th>Costume</Th>
