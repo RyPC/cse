@@ -67,4 +67,30 @@ classesRouter.put("/:id", async (req, res) => {
     }
 });
 
+classesRouter.post("/published", async (req, res) => {
+  try {
+
+    const data = await db.query(`
+        SELECT * FROM classes WHERE is_draft = False`, 
+    );
+    
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.post("/drafts", async (req, res) => {
+  try {
+
+    const data = await db.query(`
+        SELECT * FROM classes WHERE is_draft = True`, 
+    );
+    
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 export { classesRouter };

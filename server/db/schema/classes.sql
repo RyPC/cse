@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.classes
     capacity INT NOT NULL,
     level LEVEL NOT NULL, 
     costume TEXT NOT NULL,
+    is_draft BOOL NOT NULL,
     CONSTRAINT class_pkey PRIMARY KEY (id),
 )
 
