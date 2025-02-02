@@ -73,7 +73,10 @@ export function OverallClassDashboard() {
                     onClick={() => navigate(`/dashboard/classes/${cls.id}`)}
                     _hover={{ bg: "gray.500", cursor: "pointer" }}
                   >
+                    <Td fontWeight="bold">{cls.title}</Td>
+
                     <Td>{cls.title}</Td>
+
                     <Td>{cls.description}</Td>
                     <Td>{cls.location}</Td>
                     <Td>{cls.capacity}</Td>
