@@ -80,37 +80,15 @@ eventEnrollmentRouter.put("/:id", async (req, res) => {
     const { student_id, event_id, attendance } =
       req.body as EventEnrollmentRequest;
 
-    const to_update = [];
-    const values = [];
-    let paramCount = 1;
-
-    if (student_id) {
-      to_update.push(`student_id = $${paramCount}`);
-      values.push(student_id);
-      paramCount++;
-    }
-    if (event_id) {
-      to_update.push(`event_id = $${paramCount}`);
-      values.push(event_id);
-      paramCount++;
-    }
-    if (attendance) {
-      to_update.push(`attendance = $${paramCount}`);
-      values.push(attendance);
-      paramCount++;
-    }
-
-    values.push(id);
-
     const query = `
-      UPDATE event_enrollments
-      SET ${to_update.join(", ")}
-      WHERE id = $${paramCount}
-      RETURNING *
-    `;
+      UPDATE event_enrollments SET 
+      student_id = COALESCE($1, student_id),
+      event_id = COALESCE($2, event_id),
+      attendance = COALESCE($3, attendance)
+      WHERE id = $4 RETURNING *;`;
 
     // Update the article with the matching id
-    const events = await db.query(query, values);
+    const events = await db.query(query, [student_id, event_id, attendance, id]);
 
     // If no rows are returned, send a 404 response
     if (events.length === 0) {
