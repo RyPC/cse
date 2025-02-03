@@ -17,6 +17,11 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from '@chakra-ui/react'
 
 import { useState } from 'react';
@@ -113,13 +118,17 @@ export const Playground = () => {
         <Stack direction="horizontal">
           <FormControl>
             <FormLabel>Capacity</FormLabel>
-            <Input 
-              type='number' 
-              min="0" 
-              required 
-              value={capacity}
-              onChange={(e) => setCapacity(e.target.value)}
+            <NumberInput defaultValue={15} min={10} max={20}>
+              <NumberInputField 
+               required 
+               value={capacity}
+               onChange={(e) => setCapacity(e.target.value)}
               />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
           </FormControl>
 
           <FormControl>
