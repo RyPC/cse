@@ -27,7 +27,7 @@ import axios from 'axios';
 
 export const Playground = () => {
 
-  sendAjax = e => {
+  const sendAjax = e => {
 
     axios.post('http://localhost:3001/classes/', {
       location: location,
@@ -45,6 +45,8 @@ export const Playground = () => {
     .catch(function (error) {
       console.log(error);
     });
+
+    setIsSubmitted(true);
   
   }
 
@@ -57,9 +59,12 @@ export const Playground = () => {
   const [performances, setPerformances] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   return (
+    
     <Container>
+    {!isSubmitted ? (
       <form onSubmit={sendAjax}>
 
       <FormControl>
@@ -169,7 +174,12 @@ export const Playground = () => {
         </Stack>
       </form>
 
+    ) : (
+      <div>Form submitted</div>
+    )}
+    
     </Container>
+
   )
 
 }
