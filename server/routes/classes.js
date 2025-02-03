@@ -28,8 +28,11 @@ classesRouter.get("/", async (req, res) => {
 
 classesRouter.post("/", async (req, res) => {
   try {
+  
     const { title, description, location, capacity, level, costume } = req.body;
 
+    console.log(req.body)
+  
     const data = await db.query(`
         INSERT INTO classes (title, description, location, capacity, level, costume)
         VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`, 
