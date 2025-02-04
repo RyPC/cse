@@ -110,7 +110,7 @@ teachersRouter.put("/:id", async(req, res) => {
               is_activated = COALESCE($2, is_activated)
               WHERE id = $3 RETURNING *;
             `,
-            [experience, isActivated, id]
+            [experience, isActivated, teacherId]
         );
 
         res.status(200).json(keysToCamel(updatedTeacher)[0])
