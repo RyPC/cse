@@ -29,6 +29,7 @@ classesRouter.get("/", async (req, res) => {
 
 classesRouter.post("/", async (req, res) => {
   try {
+    console.log(req.body)
     const { title, description, location, capacity, level, costume } = req.body;
     const data = await db.query(
       `
@@ -97,7 +98,7 @@ classesRouter.get("/drafts", async (req, res) => {
 classesRouter.get("/search/:name", async (req, res) => {
   try {
     const { name } = req.params;
-    const data = await db.query(`SELECT * FROM classes WHERE title ILIKE $1;`, [
+    const data = await db.query(`SELECT * FROM classes WHERE title LIKE $1;`, [
       `%${name}%`,
     ]);
 

@@ -13,7 +13,12 @@ import {
   Text,
   Textarea,
   useDisclosure,
+  Center,
+  Heading,
+  VStack
 } from "@chakra-ui/react";
+
+import { IoIosCheckmarkCircle } from "react-icons/io";
 
 import axios from "axios";
 
@@ -44,7 +49,7 @@ export const CreateClassForm = () => {
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [capacity, setCapacity] = useState("");
-  const [level, setLevel] = useState("Beginner");
+  const [level, setLevel] = useState("beginner");
   const [performances, setPerformances] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -147,7 +152,14 @@ export const CreateClassForm = () => {
           </Stack>
         </form>
       ) : (
-        <div>Form submitted</div>
+          <VStack>
+            <IoIosCheckmarkCircle size={100} />
+          
+            <Heading as='h3' size='xl'>Class Submitted!</Heading> <br/>
+              <Button colorScheme="blue">
+                  Return to Classes Page
+              </Button>
+          </VStack>
       )}
 
       <SaveClassAsDraftModal
