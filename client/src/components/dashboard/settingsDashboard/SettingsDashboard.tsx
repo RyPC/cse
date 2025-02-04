@@ -13,7 +13,6 @@ import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 
 const SettingsDashboard: React.FC = () => {
   const { currentUser } = useAuthContext();
-    console.log(currentUser);
   return (
     <Container maxW="container.sm">
       <Box mt={4}>
