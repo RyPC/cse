@@ -13,7 +13,7 @@ import ReviewModal from "../reviewModals/reviewModal";
 import ReviewSubmittedModal from "../reviewModals/reviewSubmittedModal";
 import ReviewFailureModal from "../reviewModals/reviewFailureModal";
 import ClassInfoModal from "../reviewModals/classInfoModal";
-
+import { TeacherNotification } from "../dashboard/TeacherNotification";
 
 export const Playground = () => {
     const { backend } = useBackendContext();
@@ -45,6 +45,11 @@ export const Playground = () => {
 
     return (
         <Box>
+            <TeacherNotification
+                id="25"
+                firstName="Alyssia"
+                lastName="Tan"
+            />
             <Flex align="center" justify="center" gap={5} wrap="wrap">
                 {classes.map((classItem, index) => (
                     <ClassCard
