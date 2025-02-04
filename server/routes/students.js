@@ -75,8 +75,8 @@ studentsRouter.put("/:id", async (req, res) => {
 
     const updatedStudent = await db.query(
       `UPDATE students
-       SET level = $1
-       WHERE id = $2
+       SET level = COALESCE($1, level)
+       WHERE id = COALESCE($2, id) 
        RETURNING id, level;`,
       [level, id]
     );
