@@ -70,7 +70,7 @@ reviewsRouter.post("/", async (req, res) => {
 reviewsRouter.put("/", async (req, res) => {
   try {
     const { class_id, student_id, rating, review } = req.body;
-    if (!class_id || !student)
+    if (!class_id || !student_id)
         res.status(500).send("Invalid PUT request, please enter required `student_id` and `class_id` parameters");
 
     const query = `UPDATE reviews SET
@@ -78,7 +78,7 @@ reviewsRouter.put("/", async (req, res) => {
     review = COALESCE($2, review)
     WHERE class_id = $3 AND student_id = $4 RETURNING *;`;
 
-    const data = await db.query(query, [class_id, student_id, rating, review]);
+    const data = await db.query(query, [rating, review, class_id, student_id]);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
