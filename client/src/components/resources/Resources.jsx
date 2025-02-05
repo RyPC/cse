@@ -15,7 +15,7 @@ export const Resources = () => {
     console.log(videos);
   };
 
-  const handleNewsButton = () => {``
+  const handleNewsButton = () => {
     console.log('News button has been pressed!');
     console.log(news);
   };
