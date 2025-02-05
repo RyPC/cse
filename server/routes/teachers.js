@@ -63,6 +63,29 @@ teachersRouter.get("/classes/:id", async(req, res) => {
     }
 })
 
+teachersRouter.get("/join/:id", async(req, res) => {
+    try {
+        const teacherId = req.params.id;
+        const data = await db.query(
+            `
+            SELECT * FROM teachers t 
+            INNER JOIN classes_taught ct 
+            ON t.id = ct.teacher_id 
+            INNER JOIN users u
+            ON ct.teacher_id = u.id 
+            INNER JOIN classes c
+			ON ct.class_id = c.id
+            WHERE t.id = $1
+            `,[teacherId]
+        );
+
+        res.status(200).json(keysToCamel(data));
+    } catch(err) {
+        res.status(500).send(err.message);
+    }
+});
+
+
 // Postman Screenshot: https://img001.prntscr.com/file/img001/aaW5w8onRLmmqpuvSwdTWQ.png
 teachersRouter.post("/", async(req, res) => {
     try {

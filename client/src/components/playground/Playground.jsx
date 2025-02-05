@@ -13,6 +13,7 @@ import ReviewModal from "../reviewModals/reviewModal";
 import ReviewSubmittedModal from "../reviewModals/reviewSubmittedModal";
 import ReviewFailureModal from "../reviewModals/reviewFailureModal";
 import ClassInfoModal from "../reviewModals/classInfoModal";
+import TeacherInfoDashboard from "../dashboard/teacherInfoDashboard/TeacherInfoDashboard";
 
 
 export const Playground = () => {
@@ -44,26 +45,27 @@ export const Playground = () => {
     }, [backend]);
 
     return (
-        <Box>
-            <Flex align="center" justify="center" gap={5} wrap="wrap">
-                {classes.map((classItem, index) => (
-                    <ClassCard
-                        key={index}
-                        title={classItem.title}
-                        description={classItem.description}
-                        location={classItem.location}
-                        capacity={classItem.capacity}
-                        level={classItem.level}
-                        costume={classItem.costume}
-                    />
-                ))}
+        // <Box>
+        //     <Flex align="center" justify="center" gap={5} wrap="wrap">
+        //         {classes.map((classItem, index) => (
+        //             <ClassCard
+        //                 key={index}
+        //                 title={classItem.title}
+        //                 description={classItem.description}
+        //                 location={classItem.location}
+        //                 capacity={classItem.capacity}
+        //                 level={classItem.level}
+        //                 costume={classItem.costume}
+        //             />
+        //         ))}
 
-                {events.map((eventItem, index) => (
-                    // Your event card component and its props!
-                    <></> // here to avoid errors
-                ))}
-            </Flex>
-        </Box>
+        //         {events.map((eventItem, index) => (
+        //             // Your event card component and its props!
+        //             <></> // here to avoid errors
+        //         ))}
+        //     </Flex>
+        // </Box>
+        <TeacherInfoDashboard/>
     );
 
 
