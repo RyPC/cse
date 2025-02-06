@@ -7,21 +7,22 @@ import {
 } from "react-router-dom";
 
 import { Admin } from "./components/admin/Admin";
+import { Bookings } from "./components/bookings/Bookings";
 import { CatchAll } from "./components/CatchAll";
 import { Dashboard } from "./components/dashboard/Dashboard";
 import { Discovery } from "./components/discovery/Discovery";
+import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
-import { Bookings } from "./components/bookings/Bookings";
 import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Resources } from "./components/resources/Resources";
+import { Reviews } from "./components/reviews/Reviews";
 import { Signup } from "./components/signup/Signup";
 import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
-import { Reviews } from "./components/reviews/Reviews"
 
 const App = () => {
   return (
@@ -34,6 +35,10 @@ const App = () => {
                 <Route
                   path="/login"
                   element={<Login />}
+                />
+                <Route
+                  path="/create-event"
+                  element={<CreateEvent />}
                 />
                 <Route
                   path="/signup"
@@ -49,7 +54,7 @@ const App = () => {
                 />
                 <Route
                   path="/bookings"
-                  element={<ProtectedRoute element={< Bookings/>} />}
+                  element={<ProtectedRoute element={<Bookings />} />}
                 />
                 <Route
                   path="/admin"
@@ -75,7 +80,7 @@ const App = () => {
 
                 <Route
                   path="/reviews"
-                  element={<ProtectedRoute element={<Reviews/>} />}
+                  element={<ProtectedRoute element={<Reviews />} />}
                 />
 
                 <Route
