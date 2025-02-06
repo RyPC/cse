@@ -22,6 +22,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
 import { Reviews } from "./components/reviews/Reviews"
+import TeacherInfoDashboard from './components/dashboard/teacherInfoDashboard/TeacherInfoDashboard';
 
 const App = () => {
   return (
@@ -82,6 +83,14 @@ const App = () => {
                   path="/discovery"
                   element={<ProtectedRoute element={<Discovery />} />}
                 />
+
+                <Route
+                  path="/teacherInfoDashboard/:id"
+                  element={<ProtectedRoute element={<TeacherInfoDashboard/>} />}
+                >
+
+                </Route>
+
                 <Route
                   path="/"
                   element={
