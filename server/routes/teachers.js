@@ -5,6 +5,52 @@ import { db } from "../db/db-pgp"; // TODO: replace this db with
 export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
+teachersRouter.get("/classes/", async(req, res) => {
+    try {
+        const teacherClasses = await db.query(
+            `
+            SELECT * FROM teachers t
+            LEFT JOIN classes_taught ct ON t.id = ct.teacher_id 
+            LEFT JOIN classes c ON c.id = ct.class_id
+            LEFT JOIN users u ON u.id = t.id
+            `
+        )
+
+        res.status(200).json(keysToCamel(teacherClasses));
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+})
+
+teachersRouter.get("/classes/:id", async(req, res) => {
+    try {
+        const teacherId = req.params.id
+
+        const teacherClasses = await db.query(
+            `
+            SELECT * FROM teachers t
+            LEFT JOIN classes_taught ct ON t.id = ct.teacher_id 
+            LEFT JOIN classes c ON c.id = ct.class_id
+            LEFT JOIN users u ON u.id = t.id
+            WHERE t.id = $1
+            `,
+            [teacherId]
+        )
+
+        res.status(200).json(keysToCamel(teacherClasses));
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+})
+
 // Postman Screenshot: https://img001.prntscr.com/file/img001/r7f400d1Q_K4fpLr42zpxg.png
 teachersRouter.get("/:id", async(req, res) => {
     try {
@@ -42,26 +88,26 @@ teachersRouter.get("/", async(req, res) => {
     }
 });
 
-// Postman Screenshot: https://img001.prntscr.com/file/img001/KS97e25SRRSSCmbls-aKIg.png
-teachersRouter.get("/classes/:id", async(req, res) => {
-    try {
-        const teacherId = req.params.id
+// // Postman Screenshot: https://img001.prntscr.com/file/img001/KS97e25SRRSSCmbls-aKIg.png
+// teachersRouter.get("/classes/:id", async(req, res) => {
+//     try {
+//         const teacherId = req.params.id
 
-        const classes = await db.query(
-            "SELECT classes.id, classes.title FROM classes INNER JOIN classes_taught ON classes_taught.class_id = classes.id WHERE classes_taught.teacher_id = $1",
-            [teacherId]
-        )
+//         const classes = await db.query(
+//             "SELECT classes.id, classes.title FROM classes INNER JOIN classes_taught ON classes_taught.class_id = classes.id WHERE classes_taught.teacher_id = $1",
+//             [teacherId]
+//         )
 
-        res.status(200).json(keysToCamel(classes))
+//         res.status(200).json(keysToCamel(classes))
 
-    } catch(err) {
-        console.log(err)
-        res.status(500).json({
-            status: "Failed",
-            msg: err.message,
-        });
-    }
-})
+//     } catch(err) {
+//         console.log(err)
+//         res.status(500).json({
+//             status: "Failed",
+//             msg: err.message,
+//         });
+//     }
+// })
 
 // Postman Screenshot: https://img001.prntscr.com/file/img001/aaW5w8onRLmmqpuvSwdTWQ.png
 teachersRouter.post("/", async(req, res) => {
@@ -145,3 +191,4 @@ teachersRouter.delete("/:id", async(req, res) => {
         });
     }
 })
+

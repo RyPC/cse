@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { NavigationSidebar } from "../NavigationSidebar"
+import { StatusCard } from "../../resources/StatusCard"
 
 import {
-  Badge,
   Button,
   Link as ChakraLink,
   Heading,
@@ -15,6 +16,7 @@ import {
   Thead,
   Tr,
   VStack,
+  HStack,
 } from "@chakra-ui/react";
 
 import { Link } from "react-router-dom";
@@ -29,116 +31,102 @@ export const TeacherDashboard = () => {
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
 
-  const [teachers, setTeachers] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [classesTaught, setClassesTaught] = useState({});
+  const [teacherClasses, setTeacherClasses] = useState(new Map());
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await backend.get("/teachers");
-        setTeachers(response.data);
+     try {
+          const response = await backend.get("/teachers/classes/")
+          setTeacherClasses(
+            response.data.reduce((acc, item) => {
+              const { teacherId, firstName, lastName, email, isActivated, classId, title } = item;
+              const key = JSON.stringify({ id: teacherId, firstName, lastName, email, isActivated }); // teacher + user
+              const value = { id: classId, title }; // class
+              if (!acc.has(key)) acc.set(key, [value]);
+              else acc.get(key).push(value);
+              return acc;
+            }, new Map())
+          )
       } catch (error) {
-        console.error("Error fetching teachers:", error);
+        console.error("Error fetching teachers and classes:", error);
       }
-      try {
-        const response = await backend.get("/classes");
-        setClasses(response.data);
-      } catch (error) {
-        console.error("Error fetching classes:", error);
-      }
-      try {
-        const response = await backend.get("/classes-taught");
-        setClassesTaught(
-          response.data.reduce((acc, item) => {
-            if (!acc[item.teacherId]) acc[item.teacherId] = [item.classId];
-            else acc[item.teacherId].push(item.classId);
-            return acc;
-          }, {})
-        );
-      } catch (error) {
-        console.error("Error fetching classes taught:", error);
-      }
-
     };
 
     fetchData();
   }, [backend]);
 
-  useEffect(() => {
-    // console.log(teachers)
-    // console.log(classes)
-    // console.log(classesTaught)
-  }, [teachers, classes, classesTaught])
-
   return (
-    <VStack
-      spacing={8}
-      sx={{ maxWidth: "100%", marginX: "auto" }}
-    >
-      <Heading>Teachers</Heading>
+    <HStack alignItems={"flex-start"}>
+        <NavigationSidebar />
+        <VStack
+          spacing={8}
+          sx={{ maxWidth: "100%", marginX: "auto" }}
+        >
+          <Heading>Teachers</Heading>
 
-      <VStack>
-        <Text>
-          Signed in as {currentUser?.email} (
-          {role === "admin" ? "Admin" : "Teacher"})
-        </Text>
+          <VStack>
+            <Text>
+              Signed in as {currentUser?.email} (
+              {role === "admin" ? "Admin" : "Teacher"})
+            </Text>
 
-        {role === "admin" ? (
-          <ChakraLink
-            as={Link}
-            to={"/admin"}
+            {role === "admin" ? (
+              <ChakraLink
+                as={Link}
+                to={"/admin"}
+              >
+                Go to Admin Page
+              </ChakraLink>
+            ) : null}
+            <Button onClick={logout}>Sign out</Button>
+          </VStack>
+
+          <TableContainer
+            sx={{
+              overflowX: "auto",
+            }}
           >
-            Go to Admin Page
-          </ChakraLink>
-        ) : null}
-        <Button onClick={logout}>Sign out</Button>
-      </VStack>
-
-      <TableContainer
-        sx={{
-          overflowX: "auto",
-        }}
-      >
-        <Table variant="simple">
-          <TableCaption>Teachers</TableCaption>
-          <Thead>
-            <Tr>
-              <Th>Name</Th>
-              <Th>Email</Th>
-              <Th>Classes</Th>
-              <Th>Status</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {teachers
-              ? teachers.map((teacher, i) => (
-                  <Tr key={i} onClick={() => { window.location.href='/dashboard/teachers/'+teacher.id }}>
-                    <Td>{teacher.firstName} {teacher.lastName}</Td>
-                    <Td>{teacher.email}</Td>
-                    <Td>
-                        <VStack>
-                        {classesTaught[teacher.id] && 
-                            classesTaught[teacher.id].map((class_id, j) => (
-                                <Text key={j}>{
-                                    classes.find(cls => class_id === cls.id)?.title
-                                }</Text>
-                            )) 
-                         }
-                        </VStack>
-                    </Td>
-                    <Td>
-                      <Badge colorScheme={teacher.isActivated ? 'green' : 'yellow'}>
-                          {teacher.isActivated ? 'verified' : 'unverified'}
-                      </Badge>
-                    </Td>
-                  </Tr>
-                ))
-              : null}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </VStack>
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>Email</Th>
+                  <Th>Classes</Th>
+                  <Th>Status</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {teacherClasses
+                  ? [...teacherClasses].map(([teacherString, classes], i) => {
+                    const teacher = JSON.parse(teacherString)
+                    return (
+                      <Tr key={i} onClick={() => { window.location.href='/dashboard/teachers/'+teacher.teacherId }}>
+                        <Td>{teacher.firstName} {teacher.lastName}</Td>
+                        <Td>{teacher.email}</Td>
+                        <Td>
+                            <VStack>
+                            {
+                                classes.map((cls, j) => (
+                                    <Text key={j}>{
+                                        cls.title
+                                    }</Text>
+                                ))
+                            }
+                            </VStack>
+                        </Td>
+                        <Td>
+                            <StatusCard status={teacher.isActivated} />
+                        </Td>
+                      </Tr>
+                    )
+                  })
+                  : null
+                }
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </VStack>
+    </HStack>
   );
 };
 

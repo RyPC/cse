@@ -5,6 +5,53 @@ import { db } from "../db/db-pgp"
 const classesRouter = express.Router();
 classesRouter.use(express.json());
 
+classesRouter.get("/students/", async(req, res) => {
+    try {
+        const classStudents = await db.query(
+            `
+            SELECT * FROM classes c
+            LEFT JOIN class_enrollments ce ON c.id = ce.class_id
+            LEFT JOIN students s ON s.id = ce.student_id 
+            LEFT JOIN users u ON u.id = s.id
+            `
+        )
+
+        res.status(200).json(keysToCamel(classClasses));
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+})
+
+classesRouter.get("/students/:id", async(req, res) => {
+    try {
+        const classId = req.params.id
+
+        const classStudents = await db.query(
+            `
+            SELECT * FROM classes c
+            LEFT JOIN class_enrollments ce ON c.id = ce.class_id
+            LEFT JOIN students s ON s.id = ce.student_id 
+            LEFT JOIN users u ON u.id = s.id
+            WHERE c.id = $1
+            `,
+            [classId]
+        )
+
+        res.status(200).json(keysToCamel(classClasses));
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+})
+
+export { classesRouter };
 classesRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -66,5 +113,3 @@ classesRouter.put("/:id", async (req, res) => {
       res.status(500).send(err.message);
     }
 });
-
-export { classesRouter };
