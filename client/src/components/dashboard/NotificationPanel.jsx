@@ -1,4 +1,4 @@
-import { Heading, VStack, HStack, Text, Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton } from "@chakra-ui/react";
+import { VStack, HStack, Text, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
 import { TeacherNotification } from "./TeacherNotification";

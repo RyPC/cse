@@ -1,4 +1,4 @@
-import { Image, Link, Table, TableContainer, Tbody, Td, Th, Thead, Stack, Flex, Box, Tr, Heading, Icon, useDisclosure } from "@chakra-ui/react";
+import { Image, Link, Table, TableContainer, Tbody, Td, Th, Thead, Stack, Flex, Tr, Heading, useDisclosure } from "@chakra-ui/react";
 import { useEffect, useState, useRef } from "react";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
@@ -34,7 +34,7 @@ export const StudentDashboard = () => {
                 />
             </Flex>
             <NotificationPanel isOpen={isOpen} onClose={onClose} />
-            
+
             <Heading my={5}>Students</Heading>
             <TableContainer 
                 sx={{
