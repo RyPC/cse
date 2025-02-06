@@ -1,11 +1,14 @@
-import { Image, Link, Table, TableContainer, Tbody, Td, Th, Thead, Stack, Flex, Box, Tr, Heading} from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Image, Link, Table, TableContainer, Tbody, Td, Th, Thead, Stack, Flex, Box, Tr, Heading, Icon, useDisclosure } from "@chakra-ui/react";
+import { useEffect, useState, useRef } from "react";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
+import { NotificationPanel } from "../NotificationPanel"; 
 
 export const StudentDashboard = () => {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { notifRef } = useRef();
     const { backend } = useBackendContext();
-    const [students, setStudents] = useState([]);
+    const [ students, setStudents ] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,9 +28,13 @@ export const StudentDashboard = () => {
         <Stack mx="10%" my={5}>
             <Flex direction="row" justify="flex-end">
                 <Image 
+                    onClick={onOpen}
+                    ref={notifRef}
                     src="../bell.png"
                 />
             </Flex>
+            <NotificationPanel isOpen={isOpen} onClose={onClose} />
+            
             <Heading my={5}>Students</Heading>
             <TableContainer 
                 sx={{

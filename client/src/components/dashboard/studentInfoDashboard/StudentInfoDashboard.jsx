@@ -1,10 +1,13 @@
-import { Image, Table, TableContainer, Tbody, Td, Th, Thead, Stack, Flex, Box, Tr, Heading} from "@chakra-ui/react";
+import { Image, Table, TableContainer, Tbody, Td, Th, Thead, Stack, Flex, Box, Tr, Heading, useDisclosure} from "@chakra-ui/react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
+import { NotificationPanel } from "../NotificationPanel";
 
 export const StudentInfoDashboard = () => {
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const { notifRef } = useRef();
     const { backend } = useBackendContext();
     
     const { id } = useParams(); // must have the same name as url parameter
@@ -29,8 +32,12 @@ export const StudentInfoDashboard = () => {
             <Flex direction="row" justify="flex-end">
                 <Image 
                     src="../../../../bell.png"
-                />
+                    onClick={onOpen}
+                    ref={notifRef}
+                />                
             </Flex>
+            <NotificationPanel isOpen={isOpen} onClose={onClose} />
+
             {students.length !== 0 ? 
                 <Box my={5}>
                     <Heading >{students[0].firstName} {students[0].lastName}</Heading> 
