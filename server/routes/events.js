@@ -26,6 +26,17 @@ eventsRouter.get("/", async (req, res) => {
     }
   });
 
+eventsRouter.get('/search/:name', async (req,res) => {
+    try {
+        const { name } = req.params
+        const search = `%${name}%`
+        const allEvents = await db.query("SELECT * FROM events WHERE title ILIKE $1;", [search]);
+      res.status(200).json(keysToCamel(allEvents))
+    } catch (err){
+      res.status(500).send(err.message)
+    }
+})
+
 eventsRouter.post("/", async (req, res) => {
   try {
     const {location, title, description, level, date, start_time, end_time, call_time, class_id, costume} = req.body;
@@ -77,5 +88,6 @@ eventsRouter.delete('/:id', async (req, res) => {
       res.status(500).send(err.message);
     }
   });
+
 
 export { eventsRouter };

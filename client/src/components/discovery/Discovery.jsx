@@ -8,6 +8,7 @@ import { EventCard } from "../shared/EventCard";
 export const Discovery = () => {
     // Active Tab Logic
     const [activeTab, setActiveTab] = useState("both"); // Default to showing both
+    const [eventSearch, setEventSearch] = useState("");
 
     const toggleClasses = () => {
         setActiveTab("classes");
@@ -44,12 +45,43 @@ export const Discovery = () => {
     
         fetchData();
     }, [backend]);
+
+    const searchEvents = async () => {
+        if (eventSearch) {
+            try {
+                const response = await backend.get(`/events/search/${eventSearch}`);
+                console.log("Search results:", response.data);
+                setEvents(response.data);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        } else {
+            try {
+                const response = await backend.get("/events");
+                setEvents(response.data);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        }
+    };
+
+    const handleKeyDown = async (e) => {
+        if (e.key === "Enter") {
+            await searchEvents();
+        }
+    };
+    
     
 
     return (
         <VStack mx="10%" my={5}>
             <Heading>Discovery</Heading>
-            <Input placeholder="Search bar"></Input>
+            <Input 
+                placeholder="Search bar"
+                value = {eventSearch}
+                onChange={(e) => setEventSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
+            ></Input>
             <Flex gap="5">
                 <Button onClick={toggleClasses}>Classes</Button>
                 <Button onClick={toggleEvents}>Events</Button>
