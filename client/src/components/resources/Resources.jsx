@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { VideoCard } from "./VideoCard";
 import { NewsCard } from "./NewsCard";
+import { UploadComponent } from "./UploadComponent";
 import { Button, Flex, Text, Box } from "@chakra-ui/react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 export const Resources = () => {
 
-  const { backend } = useBackendContext()
+  const { backend } = useBackendContext();
   const [videos, setVideos] = useState([]);
   const [news, setNews] = useState([]);
 
@@ -15,7 +16,7 @@ export const Resources = () => {
     console.log(videos);
   };
 
-  const handleNewsButton = () => {``
+  const handleNewsButton = () => {
     console.log('News button has been pressed!');
     console.log(news);
   };
@@ -80,6 +81,7 @@ export const Resources = () => {
           ))}
         </Flex>
       </Box>
+      <UploadComponent />
     </Flex>
   );
 };
