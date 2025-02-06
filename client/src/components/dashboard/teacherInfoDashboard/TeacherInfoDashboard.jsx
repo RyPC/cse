@@ -14,6 +14,9 @@ import {
     TableCaption,
     TableContainer,
   } from '@chakra-ui/react'
+import { Skeleton, SkeletonText, SkeletonCircle, Center } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons'
 
 const TeacherInfoDashboard = () => {
 
@@ -34,49 +37,56 @@ const TeacherInfoDashboard = () => {
 
     const { id } = useParams();
 
-    return(
+    return !data ? 
+        <Center>
+            {/* <SkeletonCircle size='10' /> */}
+            <SkeletonText mt="10" width={"70%"} noOfLines={Math.floor(window.innerHeight / 50)} spacing='4' skeletonHeight='3'/>
+        </Center>
+    : (
         <>
-        <Heading as='h1'>Teacher Name</Heading>
+        <Heading as='h1'>{data[0].firstName + data[0].lastName}</Heading>
         <div>
             <Text>Name</Text>
-            <Text>ExampleName</Text>
+            <Text>{data[0].firstName + data[0].lastName}</Text>
             <Text>Email</Text>
-            <Text>example@gmail.com</Text>
+            <Text>{data[0].email}</Text>
         </div>
-        <Heading as='h2' size="sm">Associated Classes</Heading>
-        
-        {!data ? <p>Loading data...</p> : 
-            <TableContainer>
-                <Table variant="simple">
-                    <TableCaption>All classes taught by TEACHER NAME</TableCaption>
-                    <Thead>
-                        <Tr>
-                            <Th>Teacher</Th>
-                            <Th>Level</Th>
-                            <Th>Students</Th>
-                            <Th>Status</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {
+        <Heading mt="20" as='h2' size="md">Associated Classes</Heading>
+         
+        <TableContainer mt="5">
+            <Table variant="simple">
+                <TableCaption>All classes taught by {data[0].firstName + data[0].lastName}</TableCaption>
+                <Thead>
+                    <Tr>
+                        <Th>Class</Th>
+                        <Th>Teacher</Th>
+                        <Th>Level</Th>
+                        <Th>Students</Th>
+                        <Th>Status</Th>
+                        <Th></Th>
+                    </Tr>
+                </Thead>
+                <Tbody>
+                    {
 
-                        data.map((cls) => {
-                            return(
-                                <Tr>
-                                    <Td>{cls.firstName} {cls.lastName}</Td>
-                                    <Td>{cls.level}</Td>
-                                    <Td>Test</Td>
-                                    {/* Add in Aditya's component */}
-                                    <Td>{cls.isActivated ? "verified" : "unverified"}</Td>
-                                </Tr>
-                            )  
-                        })
-                        
-                        }
-                    </Tbody>
-                </Table>
-            </TableContainer>
-        }
+                    data.map((cls) => {
+                        return(
+                            <Tr>
+                                <Td>{cls.title}</Td>
+                                <Td>{cls.firstName}{cls.lastName}</Td>
+                                <Td>{cls.level}</Td>
+                                <Td>Test</Td>
+                                {/* Add in Aditya's component */}
+                                <Td>{cls.isActivated ? "verified" : "unverified"}</Td>
+                                <Td><DeleteIcon/></Td>
+                            </Tr>
+                        )  
+                    })
+                    
+                    }
+                </Tbody>
+            </Table>
+        </TableContainer>
         </>
     )
 };
