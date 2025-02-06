@@ -7,8 +7,11 @@ teachersRouter.use(express.json());
 
 teachersRouter.get("/notactivated", async(req, res) => {
     try {
-        const teacher = await db.query(
-            "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id WHERE Teachers.is_activated = False"
+        const teacher = await db.query(`
+            SELECT * 
+            FROM Teachers 
+             INNER JOIN Users ON Users.id = Teachers.id 
+            WHERE Teachers.is_activated = False;`
         )
 
         res.status(200).json(keysToCamel(teacher));
