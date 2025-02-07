@@ -49,20 +49,17 @@ classesRouter.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { title, description, location, capacity, level, costume, isDraft } = req.body;
 
-    const data = await db.query(
-      `UPDATE classes SET
-                ${title ? "title = $(title), " : ""}
-                ${description ? "description = $(description), " : ""}
-                ${location ? "location = $(location), " : ""}
-                ${capacity ? "capacity = $(capacity), " : ""}
-                ${level ? "level = $(level), " : ""}
-                ${costume ? "costume = $(costume), " : ""}
-                ${isDraft ? "is_draft = $(isDraft), " : ""}
-                id = '${id}'
-            WHERE id = '${id}'
-            RETURNING *;`,
-      { title, description, location, capacity, level, costume, isDraft, id }
-    );
+    const query = `UPDATE CLASSES SET
+        title = COALESCE($1, title),
+        description = COALESCE($2, description),
+        location = COALESCE($3, location),
+        capacity = COALESCE($4, capacity),
+        level = COALESCE($5, level),
+        costume = COALESCE($6, costume),
+        is_draft = COALESCE($7, isDraft)
+        WHERE id = $8 RETURNING *;`;
+
+    const data = await db.query(query, [title, description, location, capacity, level, costume, isDraft, id]);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
@@ -107,6 +104,8 @@ classesRouter.get("/search/:name", async (req, res) => {
   } catch (err) {
     res.status(500).send(err.message);
   }
+
 });
 
 export { classesRouter };
+
