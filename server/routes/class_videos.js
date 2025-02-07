@@ -48,25 +48,20 @@ classVideosRouter.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { title, s3Url, description, mediaUrl, classId } = req.body;
 
+    const query = `UPDATE class_videos SET
+    title = COALESCE($1, title),
+    s3_url = COALESCE($2, s3_url),
+    description = COALESCE($3, description),
+    media_url = COALESCE($4, media_url),
+    class_id = COALESCE($5, class_id)
+    WHERE id = $6 RETURNING *;`;
+
     const { count } = (
       await db.query(`SELECT COUNT(*) FROM class_videos WHERE id = $1`, [id])
     )[0];
 
     if(parseInt(count) === 1) {
-      const updatedClassVideos = await db.query(
-        `UPDATE class_videos SET
-        ${title ? 'title = $(title), ' : ''}
-        ${s3Url ? 's3_url = $(s3Url), ' : ''}
-        ${description ? 'description = $(description), ' : ''}
-        ${mediaUrl ? 'media_url = $(mediaUrl), ' : ''}
-        ${classId ? 'class_id = $(classId), ' : ''}
-        id = '${id}'
-          WHERE id = '${id}'
-          RETURNING *;`,
-        {
-          title, s3Url, description, mediaUrl, classId
-        },
-      );
+      const updatedClassVideos = await db.query(query, [title, s3Url, description, mediaUrl, classId, id]);
       res.status(200).send(keysToCamel(updatedClassVideos)); 
     } else {
       res.status(400).send("Video with provided id not found");

@@ -47,19 +47,16 @@ classesRouter.put("/:id", async (req, res) => {
         const { id } = req.params;
         const { title, description, location, capacity, level, costume } = req.body;
 
-        const data = await db.query(
-            `UPDATE classes SET
-                ${ title ? 'title = $(title), ' : ''}
-                ${ description ? 'description = $(description), ' : ''}
-                ${ location ? 'location = $(location), ' : ''}
-                ${ capacity ? 'capacity = $(capacity), ' : ''}
-                ${ level ? 'level = $(level), ' : '' }
-                ${ costume ? 'costume = $(costume), ' : '' }
-                id = '${id}'
-            WHERE id = '${id}'
-            RETURNING *;`,
-            {title, description, location, capacity, level, costume, id}
-        );
+        const query = `UPDATE CLASSES SET
+        title = COALESCE($1, title),
+        description = COALESCE($2, description),
+        location = COALESCE($3, location),
+        capacity = COALESCE($4, capacity),
+        level = COALESCE($5, level),
+        costume = COALESCE($6, costume)
+        WHERE id = $7 RETURNING *;`;
+
+        const data = await db.query(query, [title, description, location, capacity, level, costume, id]);
     
         res.status(200).json(keysToCamel(data));
     } catch (err) {
