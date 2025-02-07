@@ -31,6 +31,7 @@ export const StudentInfoDashboard = () => {
         <Stack mx="10%" my={5}>
             <Flex direction="row" justify="flex-end">
                 <Image 
+                    cursor="pointer"
                     src="../../../../bell.png"
                     onClick={onOpen}
                     ref={notifRef}

@@ -28,6 +28,7 @@ export const StudentDashboard = () => {
         <Stack mx="10%" my={5}>
             <Flex direction="row" justify="flex-end">
                 <Image 
+                    cursor="pointer"
                     onClick={onOpen}
                     ref={notifRef}
                     src="../bell.png"
