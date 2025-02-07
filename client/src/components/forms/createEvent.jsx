@@ -11,8 +11,8 @@ import {
 } from "@chakra-ui/react";
 
 import axios from "axios";
-
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+
 
 export const CreateEvent = () => {
   const [formData, setFormData] = useState({
@@ -24,11 +24,11 @@ export const CreateEvent = () => {
     startTime: "",
     endTime: "",
     callTime: "",
-    classId: "",
     costume: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { backend } = useBackendContext();
 
   const validateForm = () => {
     const newErrors = {};
@@ -41,7 +41,6 @@ export const CreateEvent = () => {
     if (!formData.startTime) newErrors.startTime = "Start time is required";
     if (!formData.endTime) newErrors.endTime = "End time is required";
     if (!formData.callTime) newErrors.callTime = "Call time is required";
-    if (!formData.classId) newErrors.classId = "Class is required";
     if (!formData.costume)
       newErrors.costume = "Costume information is required";
 
@@ -62,14 +61,10 @@ export const CreateEvent = () => {
         start_time: formData.startTime,
         end_time: formData.endTime,
         call_time: formData.callTime,
-        class_id: parseInt(formData.classId),
       };
 
       // Using axios instead of fetch
-      const response = await axios.post(
-        `http://localhost:3001/events`,
-        eventData
-      );
+      const response = await backend.post("/events/", eventData);
 
       if (response.status === 201) {
         // Reset form or handle success
@@ -82,7 +77,6 @@ export const CreateEvent = () => {
           startTime: "",
           endTime: "",
           callTime: "",
-          classId: "",
           costume: "",
         });
       } else {
@@ -193,18 +187,6 @@ export const CreateEvent = () => {
           isInvalid={errors.callTime}
         />
         {errors.callTime && <Text color="red.500">{errors.callTime}</Text>}
-      </Box>
-
-      <Box>
-        <Text>Class</Text>
-        <Input
-          type="number"
-          name="classId"
-          value={formData.classId}
-          onChange={handleChange}
-          isInvalid={errors.classId}
-        />
-        {errors.classId && <Text color="red.500">{errors.classId}</Text>}
       </Box>
 
       <Box>

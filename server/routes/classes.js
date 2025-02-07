@@ -19,7 +19,7 @@ classesRouter.get("/:id", async (req, res) => {
 classesRouter.get("/", async (req, res) => {
     try {
       const data = await db.query(`SELECT * FROM classes;`);
-  
+
       res.status(200).json(keysToCamel(data));
     } catch (err) {
       res.status(500).send(err.message);
@@ -32,10 +32,10 @@ classesRouter.post("/", async (req, res) => {
 
     const data = await db.query(`
         INSERT INTO classes (title, description, location, capacity, level, costume)
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`, 
+        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
         [title, description, location, capacity, level, costume]
     );
-    
+
     res.status(200).json(keysToCamel(data));
   } catch (err) {
     res.status(500).send(err.message);
@@ -60,11 +60,22 @@ classesRouter.put("/:id", async (req, res) => {
             RETURNING *;`,
             {title, description, location, capacity, level, costume, id}
         );
-    
+
         res.status(200).json(keysToCamel(data));
     } catch (err) {
       res.status(500).send(err.message);
     }
 });
+
+classesRouter.get('/search/:name', async (req,res) => {
+    try {
+        const { name } = req.params
+        const search = `%${name}%`
+        const allClasses = await db.query("SELECT * FROM classes WHERE title ILIKE $1;", [search]);
+      res.status(200).json(keysToCamel(allClasses))
+    } catch (err){
+      res.status(500).send(err.message)
+    }
+})
 
 export { classesRouter };

@@ -39,10 +39,10 @@ eventsRouter.get('/search/:name', async (req,res) => {
 
 eventsRouter.post("/", async (req, res) => {
   try {
-    const {location, title, description, level, date, start_time, end_time, call_time, class_id, costume} = req.body;
+    const {location, title, description, level, date, start_time, end_time, call_time, costume} = req.body;
     const result = await db.query(
-        'INSERT INTO events (location, title, description, level, date, start_time, end_time, call_time, class_id, costume) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;',
-        [location, title, description, level, date, start_time, end_time, call_time, class_id, costume],
+        'INSERT INTO events (location, title, description, level, date, start_time, end_time, call_time, costume) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;',
+        [location, title, description, level, date, start_time, end_time, call_time, costume],
     );
 
     res.status(201).json(keysToCamel(result));
@@ -81,7 +81,7 @@ eventsRouter.put('/:id', async (req, res) => {
 eventsRouter.delete('/:id', async (req, res) => {
     try {
       const { id } = req.params;
-  
+
       const deletedEvent = await db.query(`DELETE FROM events WHERE id = $1 RETURNING *;`, [id]);
       res.status(200).send(keysToCamel(deletedEvent));
     } catch (err) {
