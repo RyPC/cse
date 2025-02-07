@@ -1,5 +1,5 @@
 
-CREATE TABLE performances (
+CREATE TABLE corequisites (
     class_id INTEGER NOT NULL,
     event_id INTEGER NOT NULL,
     PRIMARY KEY (class_id, event_id),
