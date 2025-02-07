@@ -62,7 +62,6 @@ function ClassInfoDashboard() {
           <Input
             value={currentClass?.location || ""}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
         <FormControl>
@@ -70,7 +69,6 @@ function ClassInfoDashboard() {
           <Input
             value={currentClass?.description || ""}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
         <FormControl>
@@ -78,7 +76,6 @@ function ClassInfoDashboard() {
           <Input
             value={currentClass?.capacity || ""}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
         <FormControl>
@@ -86,7 +83,6 @@ function ClassInfoDashboard() {
           <Input
             value={currentClass?.level || ""}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
         <FormControl>
@@ -94,7 +90,6 @@ function ClassInfoDashboard() {
           <Input
             value={currentClass?.date.toLocaleDateString() || ""}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
         <FormControl>
@@ -102,7 +97,6 @@ function ClassInfoDashboard() {
           <Input
             value={currentClass?.startTime || ""}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
         <FormControl>
@@ -110,7 +104,6 @@ function ClassInfoDashboard() {
           <Input
             value={currentClass?.endTime || ""}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
         <FormControl>
@@ -118,7 +111,6 @@ function ClassInfoDashboard() {
           <Input
             value={hardcodedCoreqs.join(", ")}
             isDisabled
-            bg="gray.900"
           />
         </FormControl>
       </VStack>

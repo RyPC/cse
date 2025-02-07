@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Box, Flex, Heading, Icon, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Icon, Text, VStack } from "@chakra-ui/react";
 
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -65,7 +65,7 @@ export const Dashboard = () => {
 };
 
 export const DashboardHome = () => {
-  const { currentUser } = useAuthContext();
+  const { logout, currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
 
@@ -177,6 +177,7 @@ export const DashboardHome = () => {
             Signed in as {currentUser?.email} (
             {role === "admin" ? "Admin" : "User"})
           </Text>
+          <Button onClick={logout}>sign out</Button>
         </VStack>
       </VStack>
     </Box>
