@@ -16,6 +16,7 @@ import { eventEnrollmentRouter } from "../routes/event_enrollments";
 import { reviewsRouter } from "../routes/reviews"
 import { teachersRouter } from "../routes/teachers"
 import { eventsRouter } from "../routes/events";
+import { s3Router } from "../routes/s3";
 import emailRouter from "../routes/nodeMailer";
 
 import { verifyToken } from "./middleware";
@@ -62,6 +63,7 @@ app.use("/reviews", reviewsRouter);
 app.use("/articles", articlesRouter);
 app.use("/event-enrollments", eventEnrollmentRouter);
 app.use("/nodemailer", emailRouter);
+app.use("/s3", s3Router);
 app.listen(SERVER_PORT, () => {
   console.info(`Server listening on ${SERVER_PORT}`);
 });

@@ -29,13 +29,14 @@ classesRouter.get("/", async (req, res) => {
 
 classesRouter.post("/", async (req, res) => {
   try {
-    const { title, description, location, capacity, level, costume } = req.body;
-
+    console.log(req.body);
+    const { title, description, location, capacity, level, costume, isDraft } =
+      req.body;
     const data = await db.query(
       `
-        INSERT INTO classes (title, description, location, capacity, level, costume)
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
-      [title, description, location, capacity, level, costume]
+        INSERT INTO classes (title, description, location, capacity, level, costume, is_draft)
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
+      [title, description, location, capacity, level, costume, isDraft]
     );
 
     res.status(200).json(keysToCamel(data));
@@ -47,21 +48,29 @@ classesRouter.post("/", async (req, res) => {
 classesRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, location, capacity, level, costume } = req.body;
+    const { title, description, location, capacity, level, costume, isDraft } =
+      req.body;
 
-    const data = await db.query(
-      `UPDATE classes SET
-                ${title ? "title = $(title), " : ""}
-                ${description ? "description = $(description), " : ""}
-                ${location ? "location = $(location), " : ""}
-                ${capacity ? "capacity = $(capacity), " : ""}
-                ${level ? "level = $(level), " : ""}
-                ${costume ? "costume = $(costume), " : ""}
-                id = '${id}'
-            WHERE id = '${id}'
-            RETURNING *;`,
-      { title, description, location, capacity, level, costume, id }
-    );
+    const query = `UPDATE CLASSES SET
+    title = COALESCE($1, title),
+    description = COALESCE($2, description),
+    location = COALESCE($3, location),
+    capacity = COALESCE($4, capacity),
+    level = COALESCE($5, level),
+    costume = COALESCE($6, costume),
+    is_draft = COALESCE($7, isDraft)
+    WHERE id = $8 RETURNING *;`;
+
+    const data = await db.query(query, [
+      title,
+      description,
+      location,
+      capacity,
+      level,
+      costume,
+      isDraft,
+      id,
+    ]);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
@@ -78,6 +87,45 @@ classesRouter.get("/joined/:id", async (req, res) => {
             WHERE classes.id = $1;`,
       [id]
     );
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.get("/published", async (req, res) => {
+  try {
+    const data = await db.query(
+      `SELECT * FROM classes WHERE is_draft = FALSE;`,
+      []
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.get("/drafts", async (req, res) => {
+  try {
+    const data = await db.query(
+      `SELECT * FROM classes WHERE is_draft = TRUE;`,
+      []
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.get("/search/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const data = await db.query(`SELECT * FROM classes WHERE title LIKE $1;`, [
+      `%${name}%`,
+    ]);
+
     res.status(200).json(keysToCamel(data));
   } catch (err) {
     res.status(500).send(err.message);
