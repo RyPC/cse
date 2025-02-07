@@ -1,94 +1,152 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
-import { VStack, Heading, Text } from '@chakra-ui/react';
-import { useBackendContext } from '../../../contexts/hooks/useBackendContext.ts';
-import { useState } from 'react';
+import { NavigationSidebar } from "../NavigationSidebar"
+import { LevelCard } from "../../resources/LevelCard"
+import { StatusCard } from "../../resources/StatusCard"
+
 import {
-    Table,
-    Thead,
-    Tbody,
-    Tfoot,
-    Tr,
-    Th,
-    Td,
-    TableCaption,
-    TableContainer,
-  } from '@chakra-ui/react'
-import { Skeleton, SkeletonText, SkeletonCircle, Center } from '@chakra-ui/react';
-import { Box } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons'
+  Button,
+  Link as ChakraLink,
+  Heading,
+  Table,
+  TableCaption,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  VStack,
+  HStack,
+} from "@chakra-ui/react";
 
-const TeacherInfoDashboard = () => {
+import { Link } from "react-router-dom";
 
-    const [data, setData] = useState();
+import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
+import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
+import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
+import { RoleSelect } from "../RoleSelect";
 
-    const { backend } = useBackendContext();
+export const TeacherInfoDashboard = () => {
+  const { teacherId } = useParams()
+  const { logout, currentUser } = useAuthContext();
+  const { backend } = useBackendContext();
+  const { role } = useRoleContext();
 
-    useEffect(() => {
-        const getTeacher = async () => {
-            const data = await backend.get(`/teachers/join/${id}`);
-            setData(data.data);
-            console.log(data.data);
-        }
+  const [classStudents, setClassStudents] = useState(new Map());
+  const [teacher, setTeacher] = useState(null);
 
-        getTeacher();
+  useEffect(() => {
+    const fetchData = async () => {
+     try {
+         const response = await backend.get("/teachers/" + teacherId)
+         setTeacher(response.data)
+     } catch (error) {
+         console.error("Error fetching teacher data:", error);
+     }
+     try {
+          const response = await backend.get("/classes/students/teacher/" + teacherId)
+          setClassStudents(
+            response.data.reduce((acc, item) => {
+              const { classId, studentId, title, classLevel, capacity, isDraft, firstName, lastName} = item;
+              const key = JSON.stringify({ id: classId, title, level: classLevel, capacity, isDraft }); // class
+              const value = { id: studentId, firstName, lastName }; // student + user
+              if (!acc.has(key)) 
+                  if (studentId)
+                      acc.set(key, [value]);
+                  else
+                      acc.set(key, []);
+              else acc.get(key).push(value);
+              return acc;
+            }, new Map())
+          )
+      } catch (error) {
+          console.error("Error fetching classes and students for teacher:", error);
+      }
+    };
 
-    }, []);
+    fetchData();
+  }, [backend]);
 
-    const { id } = useParams();
+  return (
+    <HStack alignItems={"flex-start"}>
+        <NavigationSidebar />
+        <VStack
+          spacing={8}
+            sx={{ maxWidth: "100%", marginX: "auto", marginTop: "30px" }}
+        >
+          <Heading>{teacher?.firstName} {teacher?.lastName}</Heading>
+          <Text>Email: {teacher?.email}</Text>
+          <Text>Verified: <StatusCard status={teacher?.isActivated} /></Text>
 
-    return !data ? 
-        <Center>
-            {/* <SkeletonCircle size='10' /> */}
-            <SkeletonText mt="10" width={"70%"} noOfLines={Math.floor(window.innerHeight / 50)} spacing='4' skeletonHeight='3'/>
-        </Center>
-    : (
-        <>
-        <Heading as='h1'>{data[0].firstName + data[0].lastName}</Heading>
-        <div>
-            <Text>Name</Text>
-            <Text>{data[0].firstName + data[0].lastName}</Text>
-            <Text>Email</Text>
-            <Text>{data[0].email}</Text>
-        </div>
-        <Heading mt="20" as='h2' size="md">Associated Classes</Heading>
-         
-        <TableContainer mt="5">
+          <VStack>
+            <Text>
+              Signed in as {currentUser?.email} (
+              {role === "admin" ? "Admin" : "Teacher"})
+            </Text>
+
+            {role === "admin" ? (
+              <ChakraLink
+                as={Link}
+                to={"/admin"}
+              >
+                Go to Admin Page
+              </ChakraLink>
+            ) : null}
+            <Button onClick={logout}>Sign out</Button>
+          </VStack>
+
+          <TableContainer
+            sx={{
+              overflowX: "auto",
+            }}
+          >
             <Table variant="simple">
-                <TableCaption>All classes taught by {data[0].firstName + data[0].lastName}</TableCaption>
-                <Thead>
-                    <Tr>
-                        <Th>Class</Th>
-                        <Th>Teacher</Th>
-                        <Th>Level</Th>
-                        <Th>Students</Th>
-                        <Th>Status</Th>
-                        <Th></Th>
-                    </Tr>
-                </Thead>
-                <Tbody>
-                    {
-
-                    data.map((cls) => {
-                        return(
-                            <Tr>
-                                <Td>{cls.title}</Td>
-                                <Td>{cls.firstName}{cls.lastName}</Td>
-                                <Td>{cls.level}</Td>
-                                <Td>Test</Td>
-                                {/* Add in Aditya's component */}
-                                <Td>{cls.isActivated ? "verified" : "unverified"}</Td>
-                                <Td><DeleteIcon/></Td>
-                            </Tr>
-                        )  
-                    })
-                    
-                    }
-                </Tbody>
+              <Thead>
+                <Tr>
+                  <Th>Title</Th>
+                  <Th>Level</Th>
+                  <Th>Capacity</Th>
+                  <Th>Students</Th>
+                  <Th>Status</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {classStudents
+                  ? [...classStudents].map(([classString, students], i) => {
+                    const cls = JSON.parse(classString)
+                    return (
+                      <Tr key={i}>
+                        <Td>{cls.title}</Td>
+                        <Td>
+                            <LevelCard level={cls.level} />
+                        </Td>
+                        <Td>{cls.capacity}</Td>
+                        <Td>
+                            <VStack>
+                            {
+                                students.map((stu, j) => (
+                                    <Text key={j}>
+                                        {stu.firstName} {stu.lastName}
+                                    </Text>
+                                ))
+                            }
+                            </VStack>
+                        </Td>
+                        <Td>
+                            <StatusCard status={cls.isDraft} />
+                        </Td>
+                      </Tr>
+                    )
+                  })
+                  : null
+                }
+              </Tbody>
             </Table>
-        </TableContainer>
-        </>
-    )
+          </TableContainer>
+        </VStack>
+    </HStack>
+  );
 };
 
-export default TeacherInfoDashboard;

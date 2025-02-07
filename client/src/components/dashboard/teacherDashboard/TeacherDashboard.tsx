@@ -37,12 +37,18 @@ export const TeacherDashboard = () => {
     const fetchData = async () => {
      try {
           const response = await backend.get("/teachers/classes/")
+          console.log(response.data)
           setTeacherClasses(
             response.data.reduce((acc, item) => {
-              const { teacherId, firstName, lastName, email, isActivated, classId, title } = item;
+              const { teacherId, classId, firstName, lastName, email, isActivated, title } = item;
               const key = JSON.stringify({ id: teacherId, firstName, lastName, email, isActivated }); // teacher + user
+              console.log(key)
               const value = { id: classId, title }; // class
-              if (!acc.has(key)) acc.set(key, [value]);
+              if (!acc.has(key)) 
+                  if (classId)
+                      acc.set(key, [value]);
+                  else
+                      acc.set(key, []);
               else acc.get(key).push(value);
               return acc;
             }, new Map())
@@ -60,7 +66,7 @@ export const TeacherDashboard = () => {
         <NavigationSidebar />
         <VStack
           spacing={8}
-          sx={{ maxWidth: "100%", marginX: "auto" }}
+            sx={{ maxWidth: "100%", marginX: "auto", marginTop: "30px" }}
         >
           <Heading>Teachers</Heading>
 
@@ -100,7 +106,7 @@ export const TeacherDashboard = () => {
                   ? [...teacherClasses].map(([teacherString, classes], i) => {
                     const teacher = JSON.parse(teacherString)
                     return (
-                      <Tr key={i} onClick={() => { window.location.href='/dashboard/teachers/'+teacher.teacherId }}>
+                      <Tr key={i} onClick={() => { window.location.href='/dashboard/teachers/'+teacher.id }}>
                         <Td>{teacher.firstName} {teacher.lastName}</Td>
                         <Td>{teacher.email}</Td>
                         <Td>

@@ -22,7 +22,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
 import { Reviews } from "./components/reviews/Reviews"
-import TeacherInfoDashboard from './components/dashboard/teacherInfoDashboard/TeacherInfoDashboard';
+import { TeacherDashboard } from './components/dashboard/teacherDashboard/TeacherDashboard';
+import { TeacherInfoDashboard } from './components/dashboard/teacherInfoDashboard/TeacherInfoDashboard';
 
 const App = () => {
   return (
@@ -85,11 +86,15 @@ const App = () => {
                 />
 
                 <Route
-                  path="/teacherInfoDashboard/:id"
-                  element={<ProtectedRoute element={<TeacherInfoDashboard/>} />}
-                >
+                  path="/dashboard/teachers/"
+                  element={<ProtectedRoute element={<TeacherDashboard/>} />}
+                />
 
-                </Route>
+
+                <Route
+                  path="/dashboard/teachers/:teacherId"
+                  element={<ProtectedRoute element={<TeacherInfoDashboard/>} />}
+                />
 
                 <Route
                   path="/"

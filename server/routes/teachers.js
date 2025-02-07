@@ -9,10 +9,10 @@ teachersRouter.get("/classes/", async(req, res) => {
     try {
         const teacherClasses = await db.query(
             `
-            SELECT * FROM teachers t
+            SELECT t.id as teacher_id, c.id as class_id, t.*, u.*, c.* FROM teachers t
             LEFT JOIN classes_taught ct ON t.id = ct.teacher_id 
             LEFT JOIN classes c ON c.id = ct.class_id
-            LEFT JOIN users u ON u.id = t.id
+            INNER JOIN users u ON u.id = t.id
             `
         )
 
@@ -26,16 +26,17 @@ teachersRouter.get("/classes/", async(req, res) => {
     }
 })
 
+// UNUSED
 teachersRouter.get("/classes/:id", async(req, res) => {
     try {
         const teacherId = req.params.id
 
         const teacherClasses = await db.query(
             `
-            SELECT * FROM teachers t
+            SELECT t.id as teacher_id, c.id as class_id, t.*, u.*, c.* FROM teachers t
             LEFT JOIN classes_taught ct ON t.id = ct.teacher_id 
             LEFT JOIN classes c ON c.id = ct.class_id
-            LEFT JOIN users u ON u.id = t.id
+            INNER JOIN users u ON u.id = t.id
             WHERE t.id = $1
             `,
             [teacherId]
@@ -179,7 +180,7 @@ teachersRouter.put("/:id", async(req, res) => {
               is_activated = COALESCE($2, is_activated)
               WHERE id = $3 RETURNING *;
             `,
-            [experience, isActivated, id]
+            [experience, isActivated, teacherId]
         );
 
         res.status(200).json(keysToCamel(updatedTeacher)[0])
