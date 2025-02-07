@@ -2,9 +2,11 @@ import { useState } from "react";
 
 import {
   Button,
+  Center,
   Container,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   NumberInput,
   NumberInputField,
@@ -13,30 +15,39 @@ import {
   Text,
   Textarea,
   useDisclosure,
-  Center,
-  Heading,
-  VStack
+  VStack,
 } from "@chakra-ui/react";
 
 import { IoIosCheckmarkCircle } from "react-icons/io";
 
-import axios from "axios";
-
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 
 export const CreateClassForm = () => {
-  const sendAjax = (e) => {
+  const { backend } = useBackendContext();
+
+  const postClass = async (e) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:3001/classes/", {
-        location,
-        date,
-        description,
-        level,
-        capacity,
-        costume: performances,
-        isDraft: false,
-        title,
+    console.log({
+        location: location ? location : "in draft",
+        date: date ? date : new Date(),
+        description: description ? description : "in draft",
+        level: level ? level : "in draft",
+        capacity: capacity ? capacity : 0,
+        costume: performances ? performances : "in draft",
+        isDraft,
+        title: title ? title : "in draft",
+      })
+    await backend
+      .post("/classes", {
+        location: location ? location : "in draft",
+        date: date ? date : new Date(),
+        description: description ? description : "in draft",
+        level: level ? level : "in draft",
+        capacity: capacity ? capacity : 0,
+        costume: performances ? performances : "in draft",
+        isDraft,
+        title: title ? title : "in draft",
       })
       .then((response) => console.log(response))
       .catch((error) => console.log(error));
@@ -53,6 +64,7 @@ export const CreateClassForm = () => {
   const [performances, setPerformances] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isDraft, setIsDraft] = useState(false);
 
   return (
     <Container>
@@ -64,7 +76,7 @@ export const CreateClassForm = () => {
         New Class
       </Text>
       {!isSubmitted ? (
-        <form onSubmit={sendAjax}>
+        <form onSubmit={postClass}>
           <FormControl>
             <FormLabel>Class Title</FormLabel>
             <Input
@@ -142,7 +154,14 @@ export const CreateClassForm = () => {
             justifyContent="center"
             mt={4}
           >
-            <Button onClick={onOpen}>Save as Draft</Button>
+            <Button
+              onClick={() => {
+                onOpen();
+                setIsDraft(true);
+              }}
+            >
+              Save as Draft
+            </Button>
             <Button
               colorScheme="blue"
               type="submit"
@@ -152,19 +171,23 @@ export const CreateClassForm = () => {
           </Stack>
         </form>
       ) : (
-          <VStack>
-            <IoIosCheckmarkCircle size={100} />
-          
-            <Heading as='h3' size='xl'>Class Submitted!</Heading> <br/>
-              <Button colorScheme="blue">
-                  Return to Classes Page
-              </Button>
-          </VStack>
+        <VStack>
+          <IoIosCheckmarkCircle size={100} />
+          <Heading
+            as="h3"
+            size="xl"
+          >
+            Class Submitted!
+          </Heading>{" "}
+          <br />
+          <Button colorScheme="blue">Return to Classes Page</Button>
+        </VStack>
       )}
 
       <SaveClassAsDraftModal
         isOpen={isOpen}
         onClose={onClose}
+        postClass={postClass}
       />
     </Container>
   );

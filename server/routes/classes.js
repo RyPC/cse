@@ -30,12 +30,12 @@ classesRouter.get("/", async (req, res) => {
 classesRouter.post("/", async (req, res) => {
   try {
     console.log(req.body)
-    const { title, description, location, capacity, level, costume } = req.body;
+    const { title, description, location, capacity, level, costume, isDraft } = req.body;
     const data = await db.query(
       `
-        INSERT INTO classes (title, description, location, capacity, level, costume)
-        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;`,
-      [title, description, location, capacity, level, costume]
+        INSERT INTO classes (title, description, location, capacity, level, costume, is_draft)
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
+      [title, description, location, capacity, level, costume, isDraft]
     );
 
     res.status(200).json(keysToCamel(data));
@@ -47,7 +47,7 @@ classesRouter.post("/", async (req, res) => {
 classesRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, location, capacity, level, costume } = req.body;
+    const { title, description, location, capacity, level, costume, isDraft } = req.body;
 
     const data = await db.query(
       `UPDATE classes SET
@@ -57,10 +57,11 @@ classesRouter.put("/:id", async (req, res) => {
                 ${capacity ? "capacity = $(capacity), " : ""}
                 ${level ? "level = $(level), " : ""}
                 ${costume ? "costume = $(costume), " : ""}
+                ${isDraft ? "is_draft = $(isDraft), " : ""}
                 id = '${id}'
             WHERE id = '${id}'
             RETURNING *;`,
-      { title, description, location, capacity, level, costume, id }
+      { title, description, location, capacity, level, costume, isDraft, id }
     );
 
     res.status(200).json(keysToCamel(data));
