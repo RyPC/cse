@@ -9,6 +9,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
   User,
   UserCredential,
 } from "firebase/auth";
@@ -41,6 +42,7 @@ interface AuthContextProps {
     navigate: NavigateFunction,
     toast: CreateToastFnReturn
   ) => Promise<void>;
+  updateDisplayName: (fullName: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);
@@ -184,6 +186,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateDisplayName = async (fullName: string) => {
+    if (currentUser) {
+      try {
+        await updateProfile(currentUser, { displayName: fullName });
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.error("No user is signed in.");
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
@@ -203,6 +217,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout,
         resetPassword,
         handleRedirectResult,
+        updateDisplayName,
       }}
     >
       {loading ? <Spinner /> : children}

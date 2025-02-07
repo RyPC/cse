@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { VideoCard } from "./VideoCard";
 import { NewsCard } from "./NewsCard";
+import { UploadComponent } from "./UploadComponent";
 import { Button, Flex, Text, Box } from "@chakra-ui/react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { Navbar } from "../navbar/Navbar";
 
 export const Resources = () => {
 
-  const { backend } = useBackendContext()
+  const { backend } = useBackendContext();
   const [videos, setVideos] = useState([]);
   const [news, setNews] = useState([]);
 
@@ -44,6 +46,7 @@ export const Resources = () => {
   }, []);
 
   return (
+    <Box>
     <Flex direction="column" p={4} gap={4}>
       <Text textStyle="xl" mb={4}>Resources</Text>
       <Flex gap={4}>
@@ -80,6 +83,9 @@ export const Resources = () => {
           ))}
         </Flex>
       </Box>
+      <UploadComponent />
     </Flex>
+    <Navbar></Navbar>
+    </Box>
   );
 };

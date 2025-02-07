@@ -1,7 +1,7 @@
 import ReviewModal from '../reviewModals/reviewModal.jsx';
 import ReviewSubmittedModal from '../reviewModals/reviewSubmittedModal.jsx';
 import ReviewFailureModal from '../reviewModals/reviewSubmittedModal.jsx';
-import ClassInfoModal from '../reviewModals/ClassInfoModal.jsx';
+import ClassInfoModal from '../reviewModals/classInfoModal.jsx';
 
 export const Reviews = () => {
     return(

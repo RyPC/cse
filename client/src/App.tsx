@@ -9,7 +9,11 @@ import {
 import { Admin } from "./components/admin/Admin";
 import { Bookings } from "./components/bookings/Bookings";
 import { CatchAll } from "./components/CatchAll";
-import { Dashboard } from "./components/dashboard/Dashboard";
+import ClassDashboard, {
+  OverallClassDashboard,
+} from "./components/dashboard/classDashboard/ClassDashboard";
+import ClassInfoDashboard from "./components/dashboard/classInfoDashboard/ClassInfoDashboard";
+import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
 import { Discovery } from "./components/discovery/Discovery";
 import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
@@ -23,6 +27,7 @@ import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
+import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
 
 const App = () => {
   return (
@@ -50,8 +55,35 @@ const App = () => {
                 />
                 <Route
                   path="/dashboard"
-                  element={<ProtectedRoute element={<Dashboard />} />}
-                />
+                  element={
+                    <ProtectedRoute
+                      element={<Dashboard />}
+                      allowedRoles={"admin"}
+                    />
+                  }
+                >
+                  <Route
+                    index
+                    element={<DashboardHome />}
+                  />
+                  <Route
+                    path="settings"
+                    element={<SettingsDashboard />}
+                  />
+                  <Route
+                    path="classes"
+                    element={<ClassDashboard />}
+                  >
+                    <Route
+                      index
+                      element={<OverallClassDashboard />}
+                    />
+                    <Route
+                      path=":classId"
+                      element={<ClassInfoDashboard />}
+                    />
+                  </Route>
+                </Route>
                 <Route
                   path="/bookings"
                   element={<ProtectedRoute element={<Bookings />} />}
