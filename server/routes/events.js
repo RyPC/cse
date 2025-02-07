@@ -44,23 +44,22 @@ eventsRouter.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const {location, title, description, level, date, start_time, end_time, call_time, class_id, costume} = req.body;
-        const updatedEvent = await db.query(
-          `UPDATE events SET
-           ${location ? 'location = $1, ' : ''}
-           ${title ? 'title = $2, ' : ''}
-           ${description ? 'description = $3, ' : ''}
-           ${level ? 'level = $4, ' : ''}
-           ${date ? 'date = $5, ' : ''}
-           ${start_time ? 'start_time = $6, ' : ''}
-           ${end_time ? 'end_time = $7, ' : ''}
-           ${call_time ? 'call_time = $8, ' : ''}
-           ${class_id ? 'class_id = $9, ' : ''}
-           ${costume ? 'costume = $10, ' : ''}
-            id = '${id}'
-            WHERE id = '${id}'
-            RETURNING *;`,
-            [location, title, description, level, date, start_time, end_time, call_time, class_id, costume, id],
-              );
+
+        const query = `UPDATE events SET
+        location = COALESCE($1, location),
+        title = COALESCE($2, title),
+        description = COALESCE($3, description),
+        level = COALESCE($4, level),
+        date = COALESCE($5, date),
+        start_time = COALESCE($6, start_time),
+        end_time = COALESCE($7, end_time),
+        call_time = COALESCE($8, call_time),
+        class_id = COALESCE($9, class_id),
+        costume = COALESCE($10, costume)
+        WHERE id = $11 RETURNING *;`;
+
+        const updatedEvent = await db.query(query, [location, title, description, level, date, start_time, end_time, call_time, class_id, costume, id]);
+        
         return res.status(200).send(keysToCamel(updatedEvent));
       } catch (err) {
         return res.status(500).send(err.message);

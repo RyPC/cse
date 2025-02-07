@@ -78,37 +78,15 @@ articlesRouter.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { s3_url, description, media_url } = req.body as ArticleRequest;
 
-    const to_update = []; // Parameters that needed to be updated
-    const values = []; // Values that need to be assosciated with the specific parameter
-    let paramCount = 1; // the id of the value matching the parameter
-
-    if (s3_url) {
-      to_update.push(`s3_url = $${paramCount}`);
-      values.push(s3_url);
-      paramCount++;
-    }
-    if (description) {
-      to_update.push(`description = $${paramCount}`);
-      values.push(description);
-      paramCount++;
-    }
-    if (media_url) {
-      to_update.push(`media_url = $${paramCount}`);
-      values.push(media_url);
-      paramCount++;
-    }
-
-    values.push(id);
-
-    const query = `
-      UPDATE articles
-      SET ${to_update.join(", ")}
-      WHERE id = $${paramCount}
-      RETURNING *
-    `;
+    const query = `UPDATE articles SET 
+    s3_url = COALESCE($1, s3_url),
+    description = COALESCE($2, description),
+    media_url = COALESCE($3, media_url)
+    WHERE id = $4
+    RETURNING *;`;
 
     // Update the article with the matching id
-    const rows = await db.query(query, values);
+    const rows = await db.query(query, [s3_url, description, media_url, id]);
 
     // If no rows are returned, send a 404 response
     if (rows.length === 0) {

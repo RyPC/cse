@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS public.users
     first_name character varying(128) NOT NULL,
     last_name character varying(128) NOT NULL,
     user_role USER_ROLE NOT NULL,
+    hidden boolean NOT NULL,
     CONSTRAINT user_pkey PRIMARY KEY (id),
     CONSTRAINT email UNIQUE (email),
     CONSTRAINT firebase_uid UNIQUE (firebase_uid),
