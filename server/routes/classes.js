@@ -132,4 +132,15 @@ classesRouter.get("/search/:name", async (req, res) => {
   }
 });
 
+classesRouter.get('/search/:name', async (req,res) => {
+    try {
+        const { name } = req.params
+        const search = `%${name}%`
+        const allClasses = await db.query("SELECT * FROM classes WHERE title ILIKE $1;", [search]);
+      res.status(200).json(keysToCamel(allClasses))
+    } catch (err){
+      res.status(500).send(err.message)
+    }
+})
+
 export { classesRouter };

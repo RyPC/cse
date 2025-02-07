@@ -15,6 +15,7 @@ import ClassDashboard, {
 import ClassInfoDashboard from "./components/dashboard/classInfoDashboard/ClassInfoDashboard";
 import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
 import { Discovery } from "./components/discovery/Discovery";
+import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
 import { Profile } from "./components/profile/Profile";
@@ -39,6 +40,10 @@ const App = () => {
                 <Route
                   path="/login"
                   element={<Login />}
+                />
+                <Route
+                  path="/create-event"
+                  element={<CreateEvent />}
                 />
                 <Route
                   path="/signup"
