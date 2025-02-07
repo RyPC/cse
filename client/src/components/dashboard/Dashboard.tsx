@@ -17,7 +17,7 @@ interface StatCardProps {
   value: string | number;
 }
 
-export const StatCard = ({ icon, iconColor, label, value }: StatCardProps) => {
+export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
     <Flex
       bg="gray.100"
