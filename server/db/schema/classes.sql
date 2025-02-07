@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS classes
     capacity INT NOT NULL,
     level LEVEL NOT NULL, 
     costume TEXT NOT NULL,
-    drafts BOOLEAN NOT NULL,
+    is_draft BOOLEAN NOT NULL,
     CONSTRAINT class_pkey PRIMARY KEY (id)
 )
 
