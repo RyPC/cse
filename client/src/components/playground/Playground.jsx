@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Navbar } from "../navbar/navbar";
+// import { useEffect, useState } from "react";
+import { Navbar } from "../navbar/Navbar";
 
 
 export const Playground = () => {

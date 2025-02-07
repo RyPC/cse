@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
+import { Navbar } from "../navbar/Navbar";
 
 export const Discovery = () => {
     // Active Tab Logic
@@ -47,6 +48,7 @@ export const Discovery = () => {
     
 
     return (
+        <Box>
         <VStack mx="10%" my={5}>
             <Heading>Discovery</Heading>
             <Input placeholder="Search bar"></Input>
@@ -89,5 +91,7 @@ export const Discovery = () => {
                 </Flex>
             </Box>
         </VStack>
+        <Navbar></Navbar>
+        </Box>
     );
 };
