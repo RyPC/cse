@@ -7,23 +7,31 @@ import {
 } from "react-router-dom";
 
 import { Admin } from "./components/admin/Admin";
+import { Bookings } from "./components/bookings/Bookings";
 import { CatchAll } from "./components/CatchAll";
-import { Dashboard } from "./components/dashboard/Dashboard";
+import ClassDashboard, {
+  OverallClassDashboard,
+} from "./components/dashboard/classDashboard/ClassDashboard";
+import ClassInfoDashboard from "./components/dashboard/classInfoDashboard/ClassInfoDashboard";
+import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
+import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
+import { StudentDashboard } from "./components/dashboard/studentDashboard/StudentDashboard";
+import { StudentInfoDashboard } from "./components/dashboard/studentInfoDashboard/StudentInfoDashboard";
+import { TeacherDashboard } from "./components/dashboard/teacherDashboard/TeacherDashboard";
+import { TeacherInfoDashboard } from "./components/dashboard/teacherInfoDashboard/TeacherInfoDashboard";
 import { Discovery } from "./components/discovery/Discovery";
+import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
-import { Bookings } from "./components/bookings/Bookings";
 import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Resources } from "./components/resources/Resources";
+import { Reviews } from "./components/reviews/Reviews";
 import { Signup } from "./components/signup/Signup";
 import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
-import { Reviews } from "./components/reviews/Reviews"
-import { TeacherDashboard } from './components/dashboard/teacherDashboard/TeacherDashboard';
-import { TeacherInfoDashboard } from './components/dashboard/teacherInfoDashboard/TeacherInfoDashboard';
 
 const App = () => {
   return (
@@ -38,6 +46,10 @@ const App = () => {
                   element={<Login />}
                 />
                 <Route
+                  path="/create-event"
+                  element={<CreateEvent />}
+                />
+                <Route
                   path="/signup"
                   element={<Signup />}
                 />
@@ -47,11 +59,58 @@ const App = () => {
                 />
                 <Route
                   path="/dashboard"
-                  element={<ProtectedRoute element={<Dashboard />} />}
-                />
+                  element={
+                    <ProtectedRoute
+                      element={<Dashboard />}
+                      allowedRoles={"admin"}
+                    />
+                  }
+                >
+                  <Route
+                    index
+                    element={<DashboardHome />}
+                  />
+                  <Route
+                    path="settings"
+                    element={<SettingsDashboard />}
+                  />
+                  <Route
+                    path="classes"
+                    element={<ClassDashboard />}
+                  >
+                    <Route
+                      index
+                      element={<OverallClassDashboard />}
+                    />
+                    <Route
+                      path=":classId"
+                      element={<ClassInfoDashboard />}
+                    />
+                  </Route>
+                  <Route
+                    path="/dashboard/students"
+                    element={<ProtectedRoute element={<StudentDashboard />} />}
+                  />
+                  <Route
+                    path="/dashboard/students/:id"
+                    element={
+                      <ProtectedRoute element={<StudentInfoDashboard />} />
+                    }
+                  />
+                  <Route
+                    path="/dashboard/teachers/"
+                    element={<ProtectedRoute element={<TeacherDashboard />} />}
+                  />
+                  <Route
+                    path="/dashboard/teachers/:teacherId"
+                    element={
+                      <ProtectedRoute element={<TeacherInfoDashboard />} />
+                    }
+                  />
+                </Route>
                 <Route
                   path="/bookings"
-                  element={<ProtectedRoute element={< Bookings/>} />}
+                  element={<ProtectedRoute element={<Bookings />} />}
                 />
                 <Route
                   path="/admin"
@@ -77,23 +136,12 @@ const App = () => {
 
                 <Route
                   path="/reviews"
-                  element={<ProtectedRoute element={<Reviews/>} />}
+                  element={<ProtectedRoute element={<Reviews />} />}
                 />
 
                 <Route
                   path="/discovery"
                   element={<ProtectedRoute element={<Discovery />} />}
-                />
-
-                <Route
-                  path="/dashboard/teachers/"
-                  element={<ProtectedRoute element={<TeacherDashboard/>} />}
-                />
-
-
-                <Route
-                  path="/dashboard/teachers/:teacherId"
-                  element={<ProtectedRoute element={<TeacherInfoDashboard/>} />}
                 />
 
                 <Route

@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS classes_taught (
     
     CONSTRAINT fk_teacher
         FOREIGN KEY(teacher_id)
-        REFERENCES teacher(id)
+        REFERENCES teachers(id)
         ON DELETE CASCADE
 )
