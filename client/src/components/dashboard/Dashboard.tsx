@@ -252,7 +252,7 @@ export const Sidebar = () => {
           borderRadius="md"
           _hover={{ bg: "gray.700" }}
           color="white"
-          onClick={() => navigate("/teachers")}
+          onClick={() => navigate("/dashboard/teachers")}
         >
           Teachers
         </Box>

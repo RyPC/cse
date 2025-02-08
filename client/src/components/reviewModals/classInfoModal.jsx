@@ -3,6 +3,8 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody,
 import { useDisclosure } from '@chakra-ui/react';
 import { TbCapsuleHorizontal } from "react-icons/tb";
 
+import { LevelCard } from "../resources/LevelCard";
+
 const ClassInfoModal = (props) => {
   const { title, description, location, capacity, level, costume } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -64,13 +66,7 @@ const ClassInfoModal = (props) => {
 
                 <Text fontSize="sm" color="gray.500">
                   <strong>Level:</strong>{' '}
-                  <Badge colorScheme={
-                      level === 'beginner' ? 'green' :
-                      level === 'intermediate' ? 'yellow' :
-                      'red'}
-                  >
-                    {level}
-                  </Badge>
+                  <LevelCard level={level} />
                 </Text>
 
                 <Text fontSize="sm" color="gray.500">

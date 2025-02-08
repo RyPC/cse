@@ -17,6 +17,8 @@ import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
 import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
 import { StudentDashboard } from "./components/dashboard/studentDashboard/StudentDashboard";
 import { StudentInfoDashboard } from "./components/dashboard/studentInfoDashboard/StudentInfoDashboard";
+import { TeacherDashboard } from "./components/dashboard/teacherDashboard/TeacherDashboard";
+import { TeacherInfoDashboard } from "./components/dashboard/teacherInfoDashboard/TeacherInfoDashboard";
 import { Discovery } from "./components/discovery/Discovery";
 import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
@@ -95,6 +97,16 @@ const App = () => {
                       <ProtectedRoute element={<StudentInfoDashboard />} />
                     }
                   />
+                  <Route
+                    path="/dashboard/teachers/"
+                    element={<ProtectedRoute element={<TeacherDashboard />} />}
+                  />
+                  <Route
+                    path="/dashboard/teachers/:teacherId"
+                    element={
+                      <ProtectedRoute element={<TeacherInfoDashboard />} />
+                    }
+                  />
                 </Route>
                 <Route
                   path="/bookings"
@@ -131,6 +143,7 @@ const App = () => {
                   path="/discovery"
                   element={<ProtectedRoute element={<Discovery />} />}
                 />
+
                 <Route
                   path="/"
                   element={
