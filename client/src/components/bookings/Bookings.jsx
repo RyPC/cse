@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { ViewModal } from "./ViewModal";
 import { CancelModal } from "./CancelModal";
+import { Navbar } from "../navbar/Navbar";
 
 import { Button, Box, useDisclosure, Heading, VStack } from "@chakra-ui/react";
 
@@ -55,6 +56,8 @@ export const Bookings = () => {
           <CancelModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} />
         )
       }
+      <Navbar></Navbar>
     </Box>
+
   );
 };

@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
+import { Navbar } from "../navbar/Navbar";
 
 export const Discovery = () => {
     // Active Tab Logic
     const [activeTab, setActiveTab] = useState("both"); // Default to showing both
+    const [searchInput, setSearchInput] = useState("");
 
     const toggleClasses = () => {
         setActiveTab("classes");
@@ -32,7 +34,7 @@ export const Discovery = () => {
             } catch (error) {
                 console.error("Error fetching classes:", error);
             }
-            
+
             // Fetch and Store Events Information
             try {
                 const response = await backend.get("/events");
@@ -41,15 +43,67 @@ export const Discovery = () => {
                 console.error("Error fetching events:", error);
             }
         };
-    
+
         fetchData();
     }, [backend]);
-    
+
+    const searchEvents = async () => {
+        if (searchInput) {
+            try {
+                const response = await backend.get(`/events/search/${searchInput}`);
+                console.log("Search results:", response.data);
+                setEvents(response.data);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        } else {
+            try {
+                const response = await backend.get("/events");
+                setEvents(response.data);
+            } catch (error) {
+                console.error("Error fetching events:", error);
+            }
+        }
+    };
+
+    const searchClasses = async () => {
+        if (searchInput) {
+            try {
+                const response = await backend.get(`/classes/search/${searchInput}`);
+                console.log("Search results:", response.data);
+                setClasses(response.data);
+            } catch (error) {
+                console.error("Error fetching classes:", error);
+            }
+        } else {
+            try {
+              console.log("here")
+                const response = await backend.get("/classes");
+                setClasses(response.data);
+            } catch (error) {
+                console.error("Error fetching classes:", error);
+            }
+        }
+    };
+
+    const handleKeyDown = async (e) => {
+        if (e.key === "Enter") {
+            activeTab === "classes" ? await searchClasses() : await searchEvents();
+        }
+    };
+
+
 
     return (
+        <Box>
         <VStack mx="10%" my={5}>
             <Heading>Discovery</Heading>
-            <Input placeholder="Search bar"></Input>
+            <Input
+                placeholder="Search bar"
+                value = {searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+            ></Input>
             <Flex gap="5">
                 <Button onClick={toggleClasses}>Classes</Button>
                 <Button onClick={toggleEvents}>Events</Button>
@@ -58,7 +112,7 @@ export const Discovery = () => {
             <Box my="14px">
                 <Flex display={activeTab === "events" ? "none" : "flex"} align="center" justify="center" gap={5} wrap="wrap">
                     {classes.map((classItem, index) => (
-                        <ClassCard 
+                        <ClassCard
                             key={index}
                             title={classItem.title}
                             description={classItem.description}
@@ -89,5 +143,7 @@ export const Discovery = () => {
                 </Flex>
             </Box>
         </VStack>
+        <Navbar></Navbar>
+        </Box>
     );
 };

@@ -1,209 +1,64 @@
-import { useEffect, useState } from "react";
-import { Box, Flex, Button, Image, Center, Input, Stack, Text } from "@chakra-ui/react";
-import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { ClassCard } from "../shared/ClassCard";
-import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-import { useRoleContext } from "../../contexts/hooks/useRoleContext";
+import { useState } from "react";
+
+import {
+  Button,
+  Container,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  NumberInput,
+  NumberInputField,
+  Select,
+  Stack,
+  Textarea,
+  useDisclosure,
+} from "@chakra-ui/react";
+
 import axios from "axios";
-import { z } from "zod";
-import { EmailTemplate } from "../signup/EmailTemplate";
-import { render } from "@react-email/components";
-import { renderToPipeableStream } from "react-dom/server";
-import ReviewModal from "../reviewModals/reviewModal";
-import ReviewSubmittedModal from "../reviewModals/reviewSubmittedModal";
-import ReviewFailureModal from "../reviewModals/reviewFailureModal";
-import ClassInfoModal from "../reviewModals/classInfoModal";
-import { TeacherNotification } from "../dashboard/TeacherNotification";
+
+import CreateClassForm from "../forms/createClasses";
 
 export const Playground = () => {
-    const { backend } = useBackendContext();
+  const sendAjax = (e) => {
+    axios
+      .post("http://localhost:3001/classes/", {
+        location: location,
+        date: date,
+        description: description,
+        level: level,
+        capacity: capacity,
+        costume: performances, // Need to confirm the equivalence between the two fields here
+        isDraft: false,
+        title: title,
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
-    const [classes, setClasses] = useState([]);
-    const [events, setEvents] = useState([]);
+    setIsSubmitted(true);
+  };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            // Fetch and Store Classes Information
-            try {
-                const response = await backend.get("/classes");
-                setClasses(response.data);
-            } catch (error) {
-                console.error("Error fetching classes:", error);
-            }
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [capacity, setCapacity] = useState("");
+  const [level, setLevel] = useState("Beginner");
+  const [performances, setPerformances] = useState("");
 
-            // Fetch and Store Events Information
-            try {
-                const response = await backend.get("/events");
-                setEvents(response.data);
-            } catch (error) {
-                console.error("Error fetching events:", error);
-            }
-        };
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-        fetchData();
-    }, [backend]);
-
-    return (
-        <Box>
-            <TeacherNotification
-                id="25"
-                firstName="Alyssia"
-                lastName="Tan"
-            />
-            <Flex align="center" justify="center" gap={5} wrap="wrap">
-                {classes.map((classItem, index) => (
-                    <ClassCard
-                        key={index}
-                        title={classItem.title}
-                        description={classItem.description}
-                        location={classItem.location}
-                        capacity={classItem.capacity}
-                        level={classItem.level}
-                        costume={classItem.costume}
-                    />
-                ))}
-
-                {events.map((eventItem, index) => (
-                    // Your event card component and its props!
-                    <></> // here to avoid errors
-                ))}
-            </Flex>
-        </Box>
-    );
-
-
-  //   <>
-  //   <ReviewModal />
-  //   <ReviewSubmittedModal />
-  //   <ReviewFailureModal />
-  //   <ClassInfoModal
-  //     title="Yoga for Beginners"
-  //     description="A beginner-friendly yoga class that focuses on flexibility and relaxation techniques."
-  //     location="Downtown Studio, Room 301"
-  //     capacity={20}
-  //     level="beginner"
-  //     costume="Comfortable clothes, no shoes"
-  //   />
-  // </>
-      // const [formData, setFormData] = useState({
-  //   firstName: "",
-  //   lastName: "",
-  //   role: "",
-  //   email: "",
-  // });
-
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-  // };
-
-  // // Validation of data before sending it to the server
-  // const handleSubmit = async () => {
-  //   const schema = z.object({
-  //     firstName: z.string().min(1, "First name is required"),
-  //     lastName: z.string().min(1, "Last name is required"),
-  //     role: z.string().min(1, "Role is required"),
-  //     email: z.string().email("Invalid email address"),
-  //   });
-
-  //   const validation = schema.safeParse(formData);
-  //   if (!validation.success) {
-  //     alert(validation.error.errors.map((err) => err.message).join("\n"));
-  //     return;
-  //   }
-  //   try {
-  //     // post request to the server
-  //     const response = await axios.post(
-  //       import.meta.env.VITE_BACKEND_HOSTNAME + "/nodemailer/send",
-  //       {
-  //         to: import.meta.env.VITE_ADMIN_EMAIL,
-  //         // Rendering template and sending it over: https://react.email/docs/integrations/nodemailer#send-email-using-nodemailer
-  //         html: await render(EmailTemplate(formData)),
-  //       },
-  //     );
-  //     console.log(response);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // return (
-  //   <Box>
-  //     <Text>
-  //       This is page will be used to test any modal or component that does not
-  //       have a specific place for it yet!
-  //     </Text>
-  //     <Stack spacing={3} mt={4}>
-  //       <Input
-  //         placeholder="First Name"
-  //         name="firstName"
-  //         value={formData.firstName}
-  //         onChange={handleChange}
-  //       />
-  //       <Input
-  //         placeholder="Last Name"
-  //         name="lastName"
-  //         value={formData.lastName}
-  //         onChange={handleChange}
-  //       />
-  //       <Input
-  //         placeholder="Role"
-  //         name="role"
-  //         value={formData.role}
-  //         onChange={handleChange}
-  //       />
-  //       <Input
-  //         placeholder="Email"
-  //         name="email"
-  //         value={formData.email}
-  //         onChange={handleChange}
-  //       />
-  //       <Button onClick={handleSubmit}>Send</Button>
-  //     </Stack>
-  //   </Box>
-  // );
-
-
-  // const { logout, currentUser } = useAuthContext();
-  // const { role } = useRoleContext();
-
-  // console.log(currentUser)
-
-  // return (
-  //   <Box>
-  //     <Center>
-  //       <Image
-  //         src="https://bit.ly/naruto-sage"
-  //         boxSize="250px"
-  //         borderRadius="full"
-  //         fit="cover"
-  //         alt="Naruto Uzumaki"
-  //       />
-  //     </Center>
-
-  //     <Center>
-  //       <br />
-  //       <Text>
-  //         Signed in as {currentUser?.email} <br />
-  //       </Text>
-  //     </Center>
-
-  //     <Center>
-  //       Your role is: {role === "admin" ? "Admin" : "User"}
-  //     </Center>
-
-  //     <Center>
-  //       ID: {currentUser?.uid}
-  //     </Center>
-
-  //     <br /> <br />
-
-  //     <Center>
-  //       <Button>Donation PLS!</Button>
-  //     </Center>
-  //   </Box>
-  // );
+  return <CreateClassForm />;
 };
