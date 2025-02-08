@@ -5,6 +5,26 @@ import { db } from "../db/db-pgp"; // TODO: replace this db with
 export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
+teachersRouter.get("/notactivated", async(req, res) => {
+    try {
+        const teacher = await db.query(`
+            SELECT * 
+            FROM Teachers 
+             INNER JOIN Users ON Users.id = Teachers.id 
+            WHERE Teachers.is_activated = False;`
+        )
+
+        res.status(200).json(keysToCamel(teacher));
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({
+            status: "Failed",
+            msg: err.message,
+        });
+    }
+});
+
+
 // Postman Screenshot: https://img001.prntscr.com/file/img001/r7f400d1Q_K4fpLr42zpxg.png
 teachersRouter.get("/:id", async(req, res) => {
     try {

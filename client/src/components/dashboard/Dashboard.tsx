@@ -1,6 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { Box, Button, Flex, Heading, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Icon,
+  Image,
+  Text,
+  useDisclosure,
+  VStack,
+} from "@chakra-ui/react";
 
 import { Outlet, useNavigate } from "react-router-dom";
 
@@ -9,6 +19,7 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
 import { Class } from "../../types/class";
 import { User } from "../../types/user";
+import { NotificationPanel } from "./NotificationPanel";
 
 interface StatCardProps {
   icon: string;
@@ -71,6 +82,8 @@ export const DashboardHome = () => {
 
   const [users, setUsers] = useState<User[] | undefined>();
   const [classes, setClasses] = useState<Class[] | undefined>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const notifRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,7 +108,20 @@ export const DashboardHome = () => {
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto", padding: 4 }}
       >
-        <Heading alignSelf="flex-start">Dashboard</Heading>
+        <Flex w={"100%"} justify={"space-between"}>
+          <Heading alignSelf="flex-start">Dashboard</Heading>
+          <Image
+            alignSelf={"flex-end"}
+            cursor="pointer"
+            onClick={onOpen}
+            ref={notifRef}
+            src="../bell.png"
+          />
+          <NotificationPanel
+            isOpen={isOpen}
+            onClose={onClose}
+          />
+        </Flex>
 
         {/* Stat Cards */}
         <Flex
@@ -229,6 +255,16 @@ export const Sidebar = () => {
           onClick={() => navigate("/teachers")}
         >
           Teachers
+        </Box>
+        <Box
+          as="button"
+          p={3}
+          borderRadius="md"
+          _hover={{ bg: "gray.700" }}
+          color="white"
+          onClick={() => navigate("/dashboard/students")}
+        >
+          Students
         </Box>
         <Box
           as="button"
