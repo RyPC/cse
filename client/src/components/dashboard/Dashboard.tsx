@@ -262,6 +262,16 @@ export const Sidebar = () => {
           borderRadius="md"
           _hover={{ bg: "gray.700" }}
           color="white"
+          onClick={() => navigate("/dashboard/students")}
+        >
+          Students
+        </Box>
+        <Box
+          as="button"
+          p={3}
+          borderRadius="md"
+          _hover={{ bg: "gray.700" }}
+          color="white"
           onClick={() => navigate("/dashboard/settings")}
         >
           Settings

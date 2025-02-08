@@ -9,13 +9,14 @@ import {
 import { Admin } from "./components/admin/Admin";
 import { Bookings } from "./components/bookings/Bookings";
 import { CatchAll } from "./components/CatchAll";
-import { StudentDashboard } from "./components/dashboard/studentDashboard/StudentDashboard";
-import { StudentInfoDashboard } from "./components/dashboard/studentInfoDashboard/StudentInfoDashboard";
 import ClassDashboard, {
   OverallClassDashboard,
 } from "./components/dashboard/classDashboard/ClassDashboard";
 import ClassInfoDashboard from "./components/dashboard/classInfoDashboard/ClassInfoDashboard";
 import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
+import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
+import { StudentDashboard } from "./components/dashboard/studentDashboard/StudentDashboard";
+import { StudentInfoDashboard } from "./components/dashboard/studentInfoDashboard/StudentInfoDashboard";
 import { Discovery } from "./components/discovery/Discovery";
 import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
@@ -29,7 +30,6 @@ import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
-import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
 
 const App = () => {
   return (
@@ -85,15 +85,17 @@ const App = () => {
                       element={<ClassInfoDashboard />}
                     />
                   </Route>
+                  <Route
+                    path="/dashboard/students"
+                    element={<ProtectedRoute element={<StudentDashboard />} />}
+                  />
+                  <Route
+                    path="/dashboard/students/:id"
+                    element={
+                      <ProtectedRoute element={<StudentInfoDashboard />} />
+                    }
+                  />
                 </Route>
-                <Route
-                  path="/dashboard/students"
-                  element={<ProtectedRoute element={<StudentDashboard />} />}
-                />
-                <Route
-                  path="/dashboard/students/:id"
-                  element={<ProtectedRoute element={<StudentInfoDashboard />} />}
-                />
                 <Route
                   path="/bookings"
                   element={<ProtectedRoute element={<Bookings />} />}
