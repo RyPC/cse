@@ -10,8 +10,8 @@ const Request = () => {
 
 
     const message = pending 
-        ? 'Pending account\n verification. Once approved, check your\n email to log in'
-        : 'Request sent!\n Once approved, check\n your email to log in';
+        ? 'Pending account verification. Once approved, check your email to log in'
+        : 'Request sent! Once approved, check your email to log in';
 
 
         return (
