@@ -28,6 +28,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
 import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
+import Request from "./components/teacher-signup/requests/Request";
 
 const App = () => {
   return (
@@ -131,6 +132,14 @@ const App = () => {
                 <Route
                   path="*"
                   element={<ProtectedRoute element={<CatchAll />} />}
+                />
+                <Route 
+                  path = "/teacher-signup/request"
+                  element = {<ProtectedRoute element = {<Request />} />}
+                />
+                <Route 
+                  path = "/teacher-signup/pending"
+                  element = {<ProtectedRoute element = {<Request />} />}
                 />
               </Routes>
             </Router>

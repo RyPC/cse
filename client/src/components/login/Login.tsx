@@ -154,7 +154,7 @@ export const Login = () => {
             </FormErrorMessage>
             <ChakraLink
               as={Link}
-              to="/signup"
+              to="/teacher-signup/request"
             >
               <FormHelperText>Click here to sign up</FormHelperText>
             </ChakraLink>
