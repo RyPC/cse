@@ -18,10 +18,10 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal }) => {
 
             <ModalFooter borderTop="1px solid black" p={0}>
                 <Flex w="100%">
-                    <Button flex="1" background="white" borderRight="1px solid black" onClick={onGoBack} borderRadius="0" borderBottomLeftRadius={6} py={6}>
+                    <Button flex="1" bg="white" borderRight="1px solid black" onClick={onGoBack} borderRadius="0" borderBottomLeftRadius={6} py={6}>
                         Close
                     </Button>
-                    <Button flex="1" background="white" fontWeight="bold" onClick={onConfirm} borderRadius="0" borderBottomRightRadius={6} py={6}>
+                    <Button flex="1" bg="white" fontWeight="bold" onClick={onConfirm} borderRadius="0" borderBottomRightRadius={6} py={6}>
                         Confirm
                     </Button>
                 </Flex>
