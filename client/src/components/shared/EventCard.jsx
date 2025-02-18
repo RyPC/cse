@@ -25,6 +25,7 @@ export const EventCard = ({
   classId,
   costume,
   attendeeCount = 0, // Default to 0 if not provided
+  onClick
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
@@ -73,6 +74,7 @@ export const EventCard = ({
             color="black"
             _hover={{ bg: "gray.700" }}
             mt={2}
+            onClick={onClick}
           >
             View Details &gt;
           </Button>

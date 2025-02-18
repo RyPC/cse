@@ -27,6 +27,7 @@ export const Bookings = () => {
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const [currentModal, setCurrentModal] = useState("view");
+  const [selectedItem, setSelectedItem] = useState(); // a js object i can store info into?
   const [classes, setClasses] = useState([]);
   const [events, setEvents] = useState([]);
   const [attended, setAttended] = useState([]);
@@ -72,6 +73,11 @@ export const Bookings = () => {
     setCurrentModal("view");
     onClose();
   };
+
+  const updateModal = (item) => {
+    setSelectedItem(item);
+    onOpen();
+  }
 
   return (
     <Box>
@@ -134,7 +140,7 @@ export const Bookings = () => {
                       startTime={classEnrollment.startTime}
                       endTime={classEnrollment.endTime}
                       attendeeCount={classEnrollment.attendeeCount}
-                      onClick={onOpen}
+                      onClick={() => updateModal(classEnrollment)}
                     />
                   ))
                 ) : (
@@ -158,7 +164,7 @@ export const Bookings = () => {
                       startTime={eventEnrollment.startTime}
                       endTime={eventEnrollment.endTime}
                       attendeeCount={eventEnrollment.attendeeCount}
-                      onClick={onOpen}
+                      onClick={() => updateModal(eventEnrollment)}
                     />
                   ))
                 ) : (
@@ -207,24 +213,27 @@ export const Bookings = () => {
               </VStack>
             </TabPanel>
           </TabPanels>
-        </Tabs>
+        </Tabs>      
       </VStack>
       {currentModal === "view" ? (
         <ViewModal
           isOpen={isOpen}
           onClose={onCloseModal}
           setCurrentModal={setCurrentModal}
+          item={selectedItem}
         />
       ) : currentModal === "confirmation" ? (
         <ConfirmationModal
           isOpen={isOpen}
           onClose={onCloseModal}
+          item={selectedItem}
         />
       ) : (
         <CancelModal
           isOpen={isOpen}
           onClose={onCloseModal}
           setCurrentModal={setCurrentModal}
+          item={selectedItem}
         />
       )}
       <Navbar></Navbar>

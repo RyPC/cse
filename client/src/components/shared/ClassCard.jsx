@@ -24,6 +24,7 @@ export const ClassCard = ({
   startTime,
   endTime,
   attendeeCount = 0, // Default to 0 if not provided
+  onClick
 }) => {
   const formattedDate = date ? formatDate(date) : null;
   const formattedStartTime = startTime ? formatTime(startTime) : null;
@@ -72,6 +73,7 @@ export const ClassCard = ({
             color="black"
             _hover={{ bg: "gray.700" }}
             mt={2}
+            onClick={onClick}
           >
             View Details &gt;
           </Button>
