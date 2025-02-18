@@ -31,6 +31,8 @@ export const Bookings = () => {
   const [classes, setClasses] = useState([]);
   const [events, setEvents] = useState([]);
   const [attended, setAttended] = useState([]);
+  const [user_id, setUserId] = useState();
+  const [activeTab, setActiveTab] = useState("Classes")
 
   useEffect(() => {
     if (currentUser) {
@@ -38,6 +40,7 @@ export const Bookings = () => {
         .get(`/users/${currentUser.uid}`)
         .then((userRes) => {
           const userId = userRes.data[0].id;
+          setUserId(userId)
 
           backend
             .get(`/class-enrollments/student/${userId}`)
@@ -79,6 +82,39 @@ export const Bookings = () => {
     onOpen();
   }
 
+  const handleCancelEnrollment = async (itemId) => {
+    if (!user_id) {
+        console.error("User ID is missing.");
+        return;
+    }
+    
+    try {
+        // Send DELETE request
+        let response = null;
+        if (activeTab === "Classes") {
+            response = await backend.delete(`/class-enrollments/${user_id}/${itemId}`);
+        } else if (activeTab === "Events") {
+            response = await backend.delete(`/event-enrollments/${user_id}/${itemId}`);
+        }
+    
+        // If successful, remove the deleted class from state
+        if (response.status === 200) {
+            if (activeTab === "Classes") {
+                setClasses((prevClasses) =>
+                    prevClasses.filter((cls) => cls.id !== itemId)
+                );
+            } else if (activeTab === "Events") {
+                setEvents((prevEvents) =>
+                    prevEvents.filter((evt) => evt.id !== itemId)
+                );
+            }
+            
+        }
+    } catch (error) {
+        console.error("Error deleting enrollment:", error);
+    }
+  };
+
   return (
     <Box>
       <VStack
@@ -98,6 +134,7 @@ export const Bookings = () => {
                 borderColor: "black",
                 fontWeight: "bold", // Add bold when selected
               }}
+              onClick={() => setActiveTab("Classes")}
             >
               Classes
             </Tab>
@@ -107,6 +144,7 @@ export const Bookings = () => {
                 borderColor: "black",
                 fontWeight: "bold", // Add bold when selected
               }}
+              onClick={() => setActiveTab("Events")}
             >
               Events
             </Tab>
@@ -116,6 +154,7 @@ export const Bookings = () => {
                 borderColor: "black",
                 fontWeight: "bold", // Add bold when selected
               }}
+              onClick={() => setActiveTab("Attended")}
             >
               Attended
             </Tab>
@@ -234,6 +273,8 @@ export const Bookings = () => {
           onClose={onCloseModal}
           setCurrentModal={setCurrentModal}
           item={selectedItem}
+          onClick={() => handleCancelEnrollment(selectedItem.id)}
+          activeTab={activeTab}
         />
       )}
       <Navbar></Navbar>
