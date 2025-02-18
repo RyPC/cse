@@ -47,6 +47,27 @@ eventEnrollmentRouter.get("/:id", async (req, res) => {
   }
 });
 
+eventEnrollmentRouter.get("/student/:student_id", async (req, res) => {
+  try {
+    const result = await db.query(
+      `
+      SELECT
+        e.*,
+        COUNT(ee.student_id) as attendee_count
+      FROM events e
+      LEFT JOIN event_enrollments ee ON e.id = ee.event_id
+      WHERE ee.student_id = $1
+      GROUP BY e.id
+    `,
+      [req.params.student_id]
+    );
+
+    res.json(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /event-enrollments
 eventEnrollmentRouter.post("/", async (req, res) => {
   try {
@@ -81,14 +102,19 @@ eventEnrollmentRouter.put("/:id", async (req, res) => {
       req.body as EventEnrollmentRequest;
 
     const query = `
-      UPDATE event_enrollments SET 
+      UPDATE event_enrollments SET
       student_id = COALESCE($1, student_id),
       event_id = COALESCE($2, event_id),
       attendance = COALESCE($3, attendance)
       WHERE id = $4 RETURNING *;`;
 
     // Update the article with the matching id
-    const events = await db.query(query, [student_id, event_id, attendance, id]);
+    const events = await db.query(query, [
+      student_id,
+      event_id,
+      attendance,
+      id,
+    ]);
 
     // If no rows are returned, send a 404 response
     if (events.length === 0) {
