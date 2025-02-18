@@ -1,8 +1,28 @@
-import { Card, CardBody, CardHeader, CardFooter, Heading, VStack, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Heading,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
-export const EventCard = ({title, location, description, level, date, startTime, endTime, callTime, classId, costume}) => {
+export const EventCard = ({
+  title,
+  location,
+  description,
+  level,
+  date,
+  startTime,
+  endTime,
+  callTime,
+  classId,
+  costume,
+}) => {
   return (
-    <Card w={{base: "80%", md: "20em"}}>
+    <Card w={{ base: "80%", md: "20em" }}>
       <CardHeader>
         <Heading size="lg">{title}</Heading>
       </CardHeader>
@@ -10,9 +30,13 @@ export const EventCard = ({title, location, description, level, date, startTime,
       <CardBody>
         <VStack>
           <Text>{description}</Text>
-          <Text>{date} at {location}</Text>
+          <Text>
+            {date} at {location}
+          </Text>
           <Text>Call Time: {callTime}</Text>
-          <Text>{startTime} to {endTime}</Text>
+          <Text>
+            {startTime} to {endTime}
+          </Text>
           <Text>Level: {level}</Text>
           <Text>Costume: {costume}</Text>
         </VStack>
@@ -20,9 +44,8 @@ export const EventCard = ({title, location, description, level, date, startTime,
 
       <CardFooter justifyContent="right">
         <Text>Required Class ID: {classId}</Text>
+        <Button>View Details</Button>
       </CardFooter>
     </Card>
   );
 };
-
-
