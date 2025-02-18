@@ -1,4 +1,4 @@
-import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter } from "@chakra-ui/react";
+import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, Flex } from "@chakra-ui/react";
 
 export const CancelModal = ({ isOpen, onClose, setCurrentModal }) => {
   const onGoBack = () => {
@@ -9,23 +9,25 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal }) => {
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Title</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-        Are you sure?
-        </ModalBody>
+        <ModalOverlay />
+        <ModalContent>
+            <ModalHeader textAlign="center" pb={0}>Are you sure you want to cancel this class?</ModalHeader>
+            <ModalBody textAlign="center" py={4}>
+                You're cancelling Ballet A. This action can't be undone.
+            </ModalBody>
 
-        <ModalFooter>
-          <Button colorScheme='red' mr={3} onClick={onConfirm}>
-            Confirm
-          </Button>
-          <Button colorScheme='blue' mr={3} onClick={onGoBack}>
-            Go back
-          </Button>
-        </ModalFooter>
-      </ModalContent>
+            <ModalFooter borderTop="1px solid black" p={0}>
+                <Flex w="100%">
+                    <Button flex="1" bg="white" borderRight="1px solid black" onClick={onGoBack} borderRadius="0" borderBottomLeftRadius={6} py={6}>
+                        Close
+                    </Button>
+                    <Button flex="1" bg="white" fontWeight="bold" onClick={onConfirm} borderRadius="0" borderBottomRightRadius={6} py={6}>
+                        Confirm
+                    </Button>
+                </Flex>
+            </ModalFooter>
+
+        </ModalContent>
     </Modal>
 
   );
