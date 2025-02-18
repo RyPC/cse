@@ -22,6 +22,7 @@ import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Resources } from "./components/resources/Resources";
 import { Reviews } from "./components/reviews/Reviews";
+import { Settings } from "./components/profile/Settings";
 import { Signup } from "./components/signup/Signup";
 import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -53,6 +54,10 @@ const App = () => {
                 <Route
                   path="/teacher-signup"
                   element={<TeacherSignup />}
+                />
+                <Route
+                  path="/settings"
+                  element={<Settings />}
                 />
                 <Route
                   path="/dashboard"
