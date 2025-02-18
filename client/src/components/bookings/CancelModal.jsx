@@ -13,7 +13,7 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal, item }) => {
         <ModalContent>
             <ModalHeader textAlign="center" pb={0}>Are you sure you want to cancel this class?</ModalHeader>
             <ModalBody textAlign="center" py={4}>
-                You're cancelling {item.title}. This action can't be undone.
+                You're cancelling {item ? item.title : "N/A"}. This action can't be undone.
             </ModalBody>
 
             <ModalFooter borderTop="1px solid black" p={0}>

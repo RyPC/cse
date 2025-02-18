@@ -4,7 +4,7 @@ import { MdCheck } from "react-icons/md";
 
 export const ConfirmationModal = ({ isOpen, onClose, item }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} height="full">
+    <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
             <ModalHeader py={3}>
@@ -24,7 +24,7 @@ export const ConfirmationModal = ({ isOpen, onClose, item }) => {
                 </Box>
             </VStack>
             <ModalBody textAlign="center" fontSize="2xl" fontWeight="bold">
-                You've successfully cancelled {item.title}.
+                You've successfully cancelled {item ? item.title : "N/A"}.
             </ModalBody>
 
             <ModalFooter justifyContent="center">
