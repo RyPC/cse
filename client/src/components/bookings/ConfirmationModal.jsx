@@ -2,9 +2,9 @@ import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButto
 import { MdCheck } from "react-icons/md";
 
 
-export const ConfirmationModal = ({ isOpen, onClose }) => {
+export const ConfirmationModal = ({ isOpen, onClose, item }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} height="full">
         <ModalOverlay />
         <ModalContent>
             <ModalHeader py={3}>
@@ -24,7 +24,7 @@ export const ConfirmationModal = ({ isOpen, onClose }) => {
                 </Box>
             </VStack>
             <ModalBody textAlign="center" fontSize="2xl" fontWeight="bold">
-                You've successfully cancelled Ballet A.
+                You've successfully cancelled {item.title}.
             </ModalBody>
 
             <ModalFooter justifyContent="center">

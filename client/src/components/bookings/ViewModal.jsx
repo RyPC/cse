@@ -1,8 +1,9 @@
 import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, HStack, Grid, GridItem, Text, Heading } from "@chakra-ui/react";
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md"
+import { formatDate } from "../../utils/formatDateTime";
 
 
-export const ViewModal = ({ isOpen, onClose, setCurrentModal }) => {
+export const ViewModal = ({ isOpen, onClose, setCurrentModal, item }) => {
     const onCancel = () => {
         setCurrentModal("cancel");
     };
@@ -14,7 +15,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal }) => {
             <ModalHeader>
                 <HStack justify="space-between">
                     <MdArrowBackIosNew onClick={onClose}/>
-                    <Heading size="lg">Ballet A</Heading> {/* Will add from prop */}
+                    <Heading size="lg">{item.title}</Heading> {/* Will add from prop */}
                     <MdMoreHoriz/>
                 </HStack>
             </ModalHeader>
@@ -23,30 +24,31 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal }) => {
                 <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                     <GridItem>
                         <Text fontWeight="bold">Location</Text> {/* Will add from prop */}
-                        <Text>Walnut</Text>
+                        <Text>{item.location}</Text>
                     </GridItem>
 
                     <GridItem>
                         <Text fontWeight="bold">Date</Text> {/* Will add from prop */}
-                        <Text>1/30/2025</Text>
+                        <Text>{formatDate(item.date)}</Text>
                     </GridItem>
 
                     <GridItem colSpan={2}>
                         <Text fontWeight="bold">Description</Text> {/* Will add from prop */}
-                        <Text>12-week traditional Chinese dance class taught by Instructor Lin.</Text>
+                        <Text>{item.description}</Text>
                     </GridItem>
 
                     <GridItem>
                         <Text fontWeight="bold">Capacity</Text> {/* Will add from prop */}
-                        <Text>14</Text>
+                        <Text>{item.capacity}</Text>
                     </GridItem>
 
                     <GridItem>
                         <Text fontWeight="bold">Level</Text> {/* Will add from prop */}
-                        <Text>Advanced</Text>
+                        <Text>{item.level}</Text>
                     </GridItem>
 
-                    <GridItem colSpan={2}> {/* Do we even have this information? I can do costume for class and start/end time for event */}
+                    {/* Do we even have this information? I can do costume for class and start/end time for event */}
+                    <GridItem colSpan={2}> 
                         <Text fontWeight="bold">Performances</Text> 
                         <Text>Spring Traditional Chinese Dance Recital</Text>
                     </GridItem>
