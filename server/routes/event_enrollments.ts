@@ -129,4 +129,17 @@ eventEnrollmentRouter.put("/:id", async (req, res) => {
   }
 });
 
+eventEnrollmentRouter.delete("/:student_id/:event_id", async (req, res) => {
+    const { student_id, event_id } = req.params;
+
+    try {
+        const result = await db.query(
+            "DELETE FROM event_enrollments WHERE student_id = $1 AND event_id = $2 RETURNING *", [student_id, event_id]
+        )
+        res.status(200).send(keysToCamel(result[0] as EventEnrollment));
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
 export { eventEnrollmentRouter };

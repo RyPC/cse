@@ -72,4 +72,17 @@ classEnrollmentsRouter.post("/", async (req, res) => {
   }
 });
 
+classEnrollmentsRouter.delete("/:student_id/:class_id", async (req, res) => {
+    const { student_id, class_id } = req.params;
+
+    try {
+        const result = await db.query(
+            "DELETE FROM class_enrollments WHERE student_id = $1 AND class_id = $2 RETURNING *", [student_id, class_id]
+        )
+        res.status(200).send(keysToCamel(result[0]));
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
 export { classEnrollmentsRouter };
