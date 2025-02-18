@@ -53,6 +53,7 @@ export const CreateClassForm = () => {
       .catch((error) => console.log(error));
 
     setIsSubmitted(true);
+    onClose();
   };
 
   const [title, setTitle] = useState("");
