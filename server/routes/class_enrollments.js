@@ -28,6 +28,31 @@ classEnrollmentsRouter.get("/", async (req, res) => {
   }
 });
 
+classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
+  try {
+    const result = await db.query(
+      `
+      SELECT
+        c.*,
+        sc.date,
+        sc.start_time,
+        sc.end_time,
+        COUNT(ce.student_id) as attendee_count
+      FROM classes c
+      LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+      LEFT JOIN class_enrollments ce ON c.id = ce.class_id
+      WHERE ce.student_id = $1
+      GROUP BY c.id, sc.date, sc.start_time, sc.end_time
+    `,
+      [req.params.student_id]
+    );
+
+    res.json(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 classEnrollmentsRouter.post("/", async (req, res) => {
   const { studentId, classId, attendance } = req.body;
   try {
