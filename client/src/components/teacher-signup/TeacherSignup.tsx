@@ -61,7 +61,7 @@ export const TeacherSignup = () => {
       });
 
       if (user) {
-        navigate("/dashboard");
+        navigate("/teacher-signup/request");
       }
     } catch (err) {
       if (err instanceof Error) {

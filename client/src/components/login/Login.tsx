@@ -65,8 +65,24 @@ export const Login = () => {
         email: data.email,
         password: data.password,
       });
+      const response = await backend.get('/teachers');
+        const teachers = response.data;
+        const teacher = teachers.find(teach => 
+            teach.email === data.email
+        );
 
-      navigate("/dashboard");
+        if (teacher) {
+            if (teacher.isActivated) {
+                navigate('/dashboard');
+            } 
+            else {
+                navigate('/teacher-signup/pending');
+            }
+        } 
+        else {
+            navigate('/dashboard')
+        }     
+
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
@@ -154,7 +170,7 @@ export const Login = () => {
             </FormErrorMessage>
             <ChakraLink
               as={Link}
-              to="/teacher-signup/request"
+              to="/teacher-signup"
             >
               <FormHelperText>Click here to sign up</FormHelperText>
             </ChakraLink>
