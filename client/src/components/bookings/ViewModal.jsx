@@ -1,4 +1,4 @@
-import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, HStack, Grid, GridItem, Text, Heading, UnorderedList, ListItem } from "@chakra-ui/react";
+import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, HStack, Grid, GridItem, Text, Heading } from "@chakra-ui/react";
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md"
 import { formatDate } from "../../utils/formatDateTime";
 
