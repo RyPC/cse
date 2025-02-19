@@ -1,4 +1,4 @@
-import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, Flex } from "@chakra-ui/react";
+import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, Flex, Text } from "@chakra-ui/react";
 
 export const CancelModal = ({ isOpen, onClose, setCurrentModal, card, handleEvent, type }) => {
     const onGoBack = () => {
@@ -15,7 +15,7 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal, card, handleEven
             <ModalContent>
                 <ModalHeader textAlign="center" pb={0}>Are you sure you want to cancel this {type}?</ModalHeader>
                 <ModalBody textAlign="center" py={4}>
-                    You're cancelling {card ? card.title : "N/A"}. This action can't be undone.
+                    You're cancelling <Text fontWeight="bold" display="inline">{card ? card.title : "N/A"}</Text>. This action can't be undone.
                 </ModalBody>
 
                 <ModalFooter borderTop="1px solid black" p={0}>

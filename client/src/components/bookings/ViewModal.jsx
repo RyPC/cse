@@ -1,9 +1,9 @@
-import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, HStack, Grid, GridItem, Text, Heading } from "@chakra-ui/react";
+import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, HStack, Grid, GridItem, Text, Heading, UnorderedList, ListItem } from "@chakra-ui/react";
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md"
 import { formatDate } from "../../utils/formatDateTime";
 
 
-export const ViewModal = ({ isOpen, onClose, setCurrentModal, card, type }) => {
+export const ViewModal = ({ isOpen, onClose, setCurrentModal, card, coEvents, type }) => {
     const onCancel = () => {
         setCurrentModal("cancel");
     };
@@ -65,7 +65,13 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, card, type }) => {
                         <GridItem colSpan={2}>
                             {/* Make an endpoint for this :sob: */}
                             <Text fontWeight="bold">Performances</Text>
-                            <Text>Spring Traditional Chinese Dance Recital</Text>
+                            {coEvents.length > 0 ? (
+                                coEvents.map((event, index) => (
+                                    <Text key={index}>{event.title}</Text>
+                                ))
+                            ) : (
+                                <Text>No corequisite events found.</Text>
+                            )}
                         </GridItem> 
                         : 
                         <GridItem colSpan={2}>

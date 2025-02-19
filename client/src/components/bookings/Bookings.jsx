@@ -35,6 +35,7 @@ export const Bookings = () => {
   const [selectedCard, setSelectedCard] = useState();
   const [cardType, setCardType] = useState();
   const [user_id, setUserId] = useState();
+  const [coEvents, setCoEvents] = useState([]);
 
   useEffect(() => {
     if (currentUser) {
@@ -81,6 +82,8 @@ export const Bookings = () => {
 
   const updateModal = (item) => {
     const type = classes.includes(item) ? "class" : "event";
+    if (type === "class")
+        loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
     onOpen();
@@ -119,12 +122,15 @@ export const Bookings = () => {
     }
   };
 
-  const itemType = (item) => {
-    console.log(classes.includes(item));
-    if (classes.includes(item)) {
-        return "class";
-    } else if (events.includes(item)) {
-        return "event";
+  const loadCorequisites = async (classId) => {
+    try {
+        const response = await backend.get(`events/corequisites/${classId}`);
+
+        if (response.status === 200) {
+            setCoEvents(response.data)
+        }
+    } catch (error) {
+        console.error("Error fetching corequisite enrollment:", error);
     }
   }
 
@@ -270,6 +276,7 @@ export const Bookings = () => {
           onClose={onCloseModal}
           setCurrentModal={setCurrentModal}
           card={selectedCard}
+          coEvents={coEvents}
           type={cardType}
         />
       ) : currentModal === "confirmation" ? (
