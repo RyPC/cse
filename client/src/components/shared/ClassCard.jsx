@@ -14,6 +14,7 @@ import {
 import ClassInfoModal from "../discovery/ClassInfoModal";
 
 export const ClassCard = ({
+  id,
   title,
   description,
   location,
@@ -31,6 +32,12 @@ export const ClassCard = ({
         isOpenProp={openModal}
         handleClose={handleOpenModal}
         title={title}
+        description={description}
+        location={location}
+        capacity={capacity}
+        level={level}
+        costume={costume}
+        id={id}
       />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>

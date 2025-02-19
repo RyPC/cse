@@ -129,6 +129,7 @@ export const Discovery = () => {
           >
             {classes.map((classItem, index) => (
               <ClassCard
+                id={classItem.id}
                 key={index}
                 title={classItem.title}
                 description={classItem.description}
