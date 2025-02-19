@@ -40,22 +40,16 @@ eventsRouter.get("/search/:name", async (req, res) => {
   }
 });
 
-eventsRouter.get("/corequisites/events/:id", async (req, res) => {
+eventsRouter.get("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const corequisites = await db.query(
-      `SELECT c.id, c.name, c.description
+      `SELECT c.* 
        FROM classes c
        JOIN corequisites co ON c.id = co.class_id
        WHERE co.event_id = $1;`,
       [id]
     );
-
-    if (corequisites.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No corequisites found for this event" });
-    }
 
     res.status(200).json(keysToCamel(corequisites));
   } catch (err) {
