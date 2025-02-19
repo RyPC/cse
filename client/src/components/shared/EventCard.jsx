@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Button,
   Card,
@@ -8,6 +10,8 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+
+import EventInfoModal from "../discovery/EventInfoModal";
 
 export const EventCard = ({
   title,
@@ -21,31 +25,42 @@ export const EventCard = ({
   classId,
   costume,
 }) => {
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = () => {
+    setOpenModal(!openModal);
+  };
   return (
-    <Card w={{ base: "80%", md: "20em" }}>
-      <CardHeader>
-        <Heading size="lg">{title}</Heading>
-      </CardHeader>
+    <>
+      <EventInfoModal
+        isOpenProp={openModal}
+        handleClose={handleOpenModal}
+        title={title}
+      />
+      <Card w={{ base: "80%", md: "20em" }}>
+        <CardHeader>
+          <Heading size="lg">{title}</Heading>
+        </CardHeader>
 
-      <CardBody>
-        <VStack>
-          <Text>{description}</Text>
-          <Text>
-            {date} at {location}
-          </Text>
-          <Text>Call Time: {callTime}</Text>
-          <Text>
-            {startTime} to {endTime}
-          </Text>
-          <Text>Level: {level}</Text>
-          <Text>Costume: {costume}</Text>
-        </VStack>
-      </CardBody>
+        <CardBody>
+          <VStack>
+            <Text>{description}</Text>
+            <Text>
+              {date} at {location}
+            </Text>
+            <Text>Call Time: {callTime}</Text>
+            <Text>
+              {startTime} to {endTime}
+            </Text>
+            <Text>Level: {level}</Text>
+            <Text>Costume: {costume}</Text>
+          </VStack>
+        </CardBody>
 
-      <CardFooter justifyContent="right">
-        <Text>Required Class ID: {classId}</Text>
-        <Button>View Details</Button>
-      </CardFooter>
-    </Card>
+        <CardFooter justifyContent="right">
+          <Text>Required Class ID: {classId}</Text>
+          <Button onClick={handleOpenModal}>View Details</Button>
+        </CardFooter>
+      </Card>
+    </>
   );
 };
