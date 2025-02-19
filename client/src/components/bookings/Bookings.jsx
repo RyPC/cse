@@ -26,11 +26,14 @@ export const Bookings = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
+
   const [currentModal, setCurrentModal] = useState("view");
-  const [selectedItem, setSelectedItem] = useState(); // a js object i can store info into?
   const [classes, setClasses] = useState([]);
   const [events, setEvents] = useState([]);
   const [attended, setAttended] = useState([]);
+
+  const [selectedCard, setSelectedCard] = useState();
+  const [cardType, setCardType] = useState();
   const [user_id, setUserId] = useState();
   const [activeTab, setActiveTab] = useState("Classes")
 
@@ -40,7 +43,7 @@ export const Bookings = () => {
         .get(`/users/${currentUser.uid}`)
         .then((userRes) => {
           const userId = userRes.data[0].id;
-          setUserId(userId)
+          setUserId(userId);
 
           backend
             .get(`/class-enrollments/student/${userId}`)
@@ -78,7 +81,9 @@ export const Bookings = () => {
   };
 
   const updateModal = (item) => {
-    setSelectedItem(item);
+    const type = classes.includes(item) ? "class" : "event";
+    setSelectedCard(item);
+    setCardType(type);
     onOpen();
   }
 
@@ -91,19 +96,19 @@ export const Bookings = () => {
     try {
         // Send DELETE request
         let response = null;
-        if (activeTab === "Classes") {
+        if (cardType === "class") {
             response = await backend.delete(`/class-enrollments/${user_id}/${itemId}`);
-        } else if (activeTab === "Events") {
+        } else {
             response = await backend.delete(`/event-enrollments/${user_id}/${itemId}`);
         }
     
         // If successful, remove the deleted class from state
         if (response.status === 200) {
-            if (activeTab === "Classes") {
+            if (cardType === "class") {
                 setClasses((prevClasses) =>
                     prevClasses.filter((cls) => cls.id !== itemId)
                 );
-            } else if (activeTab === "Events") {
+            } else {
                 setEvents((prevEvents) =>
                     prevEvents.filter((evt) => evt.id !== itemId)
                 );
@@ -114,6 +119,15 @@ export const Bookings = () => {
         console.error("Error deleting enrollment:", error);
     }
   };
+
+  const itemType = (item) => {
+    console.log(classes.includes(item));
+    if (classes.includes(item)) {
+        return "class";
+    } else if (events.includes(item)) {
+        return "event";
+    }
+  }
 
   return (
     <Box>
@@ -231,7 +245,7 @@ export const Bookings = () => {
                         startTime={item.startTime}
                         endTime={item.endTime}
                         attendeeCount={item.attendeeCount}
-                        onClick={onOpen}
+                        onClick={() => updateModal(item)}
                       />
                     ) : (
                       <EventCard
@@ -242,7 +256,7 @@ export const Bookings = () => {
                         startTime={item.startTime}
                         endTime={item.endTime}
                         attendeeCount={item.attendeeCount}
-                        onClick={onOpen}
+                        onClick={() => updateModal(item)}
                       />
                     )
                   )
@@ -259,22 +273,22 @@ export const Bookings = () => {
           isOpen={isOpen}
           onClose={onCloseModal}
           setCurrentModal={setCurrentModal}
-          item={selectedItem}
+          card={selectedCard}
         />
       ) : currentModal === "confirmation" ? (
         <ConfirmationModal
           isOpen={isOpen}
           onClose={onCloseModal}
-          item={selectedItem}
+          card={selectedCard}
         />
       ) : (
         <CancelModal
           isOpen={isOpen}
           onClose={onCloseModal}
           setCurrentModal={setCurrentModal}
-          item={selectedItem}
-          onClick={() => handleCancelEnrollment(selectedItem.id)}
-          activeTab={activeTab}
+          card={selectedCard}
+          handleEvent={() => handleCancelEnrollment(selectedCard.id)}
+          type={cardType}
         />
       )}
       <Navbar></Navbar>

@@ -2,7 +2,7 @@ import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButto
 import { MdCheck } from "react-icons/md";
 
 
-export const ConfirmationModal = ({ isOpen, onClose, item }) => {
+export const ConfirmationModal = ({ isOpen, onClose, card }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
@@ -24,7 +24,7 @@ export const ConfirmationModal = ({ isOpen, onClose, item }) => {
                 </Box>
             </VStack>
             <ModalBody textAlign="center" fontSize="2xl" fontWeight="bold">
-                You've successfully cancelled {item ? item.title : "N/A"}.
+                You've successfully cancelled {card ? card.title : "N/A"}.
             </ModalBody>
 
             <ModalFooter justifyContent="center">

@@ -1,33 +1,21 @@
 import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, Flex } from "@chakra-ui/react";
 
-import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-
-export const CancelModal = ({ isOpen, onClose, setCurrentModal, item, onClick, activeTab }) => {
+export const CancelModal = ({ isOpen, onClose, setCurrentModal, card, handleEvent, type }) => {
     const onGoBack = () => {
         setCurrentModal("view");
     };
     const onConfirm = () => {
         setCurrentModal("confirmation");
-        onClick();
+        handleEvent(); // sql query is dependent on card type (class or event)
     };
-
-    const currentItem = (activeTab) => {
-        if (activeTab === "Classes") {
-            return " class";
-        } else if (activeTab === "Events") {
-            return " events";
-        } else {
-            return "";
-        }
-    }
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader textAlign="center" pb={0}>Are you sure you want to cancel this{currentItem(activeTab)}?</ModalHeader>
+                <ModalHeader textAlign="center" pb={0}>Are you sure you want to cancel this {type}?</ModalHeader>
                 <ModalBody textAlign="center" py={4}>
-                    You're cancelling {item ? item.title : "N/A"}. This action can't be undone.
+                    You're cancelling {card ? card.title : "N/A"}. This action can't be undone.
                 </ModalBody>
 
                 <ModalFooter borderTop="1px solid black" p={0}>

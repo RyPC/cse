@@ -3,7 +3,7 @@ import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md"
 import { formatDate } from "../../utils/formatDateTime";
 
 
-export const ViewModal = ({ isOpen, onClose, setCurrentModal, item }) => {
+export const ViewModal = ({ isOpen, onClose, setCurrentModal, card }) => {
     const onCancel = () => {
         setCurrentModal("cancel");
     };
@@ -15,7 +15,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, item }) => {
             <ModalHeader>
                 <HStack justify="space-between">
                     <MdArrowBackIosNew onClick={onClose}/>
-                    <Heading size="lg">{item ? item.title : "N/A"}</Heading> {/* Will add from prop */}
+                    <Heading size="lg">{card ? card.title : "N/A"}</Heading> {/* Will add from prop */}
                     <MdMoreHoriz/>
                 </HStack>
             </ModalHeader>
@@ -24,27 +24,27 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, item }) => {
                 <Grid templateColumns="repeat(2, 1fr)" gap={4}>
                     <GridItem>
                         <Text fontWeight="bold">Location</Text> {/* Will add from prop */}
-                        <Text>{item ? item.location : "N/A"}</Text>
+                        <Text>{card ? card.location : "N/A"}</Text>
                     </GridItem>
 
                     <GridItem>
                         <Text fontWeight="bold">Date</Text> {/* Will add from prop */}
-                        <Text>{item ? formatDate(item.date) : "N/A"}</Text>
+                        <Text>{card ? formatDate(card.date) : "N/A"}</Text>
                     </GridItem>
 
                     <GridItem colSpan={2}>
                         <Text fontWeight="bold">Description</Text> {/* Will add from prop */}
-                        <Text>{item ? item.description : "N/A"}</Text>
+                        <Text>{card ? card.description : "N/A"}</Text>
                     </GridItem>
 
                     <GridItem>
                         <Text fontWeight="bold">Capacity</Text> {/* Will add from prop */}
-                        <Text>{item ? item.capacity : "N/A"}</Text>
+                        <Text>{card ? card.capacity : "N/A"}</Text>
                     </GridItem>
 
                     <GridItem>
                         <Text fontWeight="bold">Level</Text> {/* Will add from prop */}
-                        <Text>{item ? item.level : "N/A"}</Text>
+                        <Text>{card ? card.level : "N/A"}</Text>
                     </GridItem>
 
                     {/* Do we even have this information? I can do costume for class and start/end time for event */}
