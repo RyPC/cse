@@ -1,10 +1,78 @@
 import { useState } from "react";
 
-import { CancelModal } from "../bookings/CancelModal";
-
-import { Button, Box, useDisclosure, Heading, VStack, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Input, FormControl, Card, CardBody, CardFooter, Image, Divider, Tag} from "@chakra-ui/react";
+import { Button, Box, useDisclosure, Heading, VStack, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Input, FormControl, Card, CardBody, CardFooter, Image, Divider, Tag, Text} from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+
+const UploadComponent = () => {
+
+  const { backend } = useBackendContext();
+
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const fetchS3URL = async () => {
+    try {
+      const URLResponse = await backend.get('/s3/url');
+      console.log(URLResponse);
+      return URLResponse.data.url;
+    } catch (error) {
+      console.error('Error fetching S3 URL:', error);
+    }
+  };
+
+  const uploadFile = async () => {
+    if (!file) {
+      setMessage("Please select file to upload");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("Uploading...");
+
+    try {
+      // Get S3 URL from server backend
+      const url = await fetchS3URL();
+
+      // Upload file to S3 bucket
+      const uploadResponse = await fetch(url, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      if (uploadResponse.ok) {
+        setMessage("File uploaded successfully!");
+      } else {
+        throw new Error("Failed to upload file.");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      setMessage("Upload failed, please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <Box mt={4}>
+      <Text fontWeight="bold">Upload a File</Text>
+      <Input type="file" onChange={handleFileChange} mt={2} />
+      <Button onClick={uploadFile} isDisabled={uploading} mt={2}>
+        {uploading ? "Uploading..." : "Upload"}
+      </Button>
+      {message && <Text mt={2} color="green.500">{message}</Text>}
+    </Box>
+  );
+};
+
 
 const SelectMediaModal = ({ isOpen, onClose, setCurrentModal }) => {
   const onPhoto = () => {
@@ -32,6 +100,30 @@ const SelectMediaModal = ({ isOpen, onClose, setCurrentModal }) => {
       </ModalContent>
     </Modal>
   );
+}
+
+
+const UploadFileModal = ({ isOpen, onClose, setCurrentModal }) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+    <ModalOverlay />
+    <ModalContent>
+      <ModalHeader>Upload File</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <UploadComponent />
+      </ModalBody>
+      <ModalFooter>
+        <Button colorScheme='red' mr={3}>
+          Next
+        </Button>
+        <Button colorScheme='blue' mr={3}>
+          Go back
+        </Button>
+      </ModalFooter>
+    </ModalContent>
+  </Modal>
+  )
 }
 
 const UploadLinkModal = ({ isOpen, onClose, setCurrentModal, link, setLink }) => {
@@ -230,6 +322,9 @@ const CardModal = ({ isOpen, onClose, setCurrentModal, title, tags, link, ajax }
 
 
 export const Playground = () => {
+
+  const { backend } = useBackendContext();
+
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [currentModal, setCurrentModal] = useState("select-media");
   const [ tags, setTags ] = useState([]);
@@ -243,7 +338,6 @@ export const Playground = () => {
 
 
   const ajax = async () => {
-    const { backend } = useBackendContext();
     await backend
       .post("/classes-videos", {
         title: title,
@@ -280,8 +374,11 @@ export const Playground = () => {
         (currentModal === "title" ? 
           <TitleModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} setTitle={setTitle}/> :
         (currentModal === "card" ?
-          (  <CardModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} tags={tags} link={link} ajax={ajax}/>) :
+          <CardModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} tags={tags} link={link} ajax={ajax}/>:
+        (currentModal === "upload-photo" ? 
+          <UploadFileModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} /> :
           <CancelModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} />
+        ) 
         )
         )
         )
