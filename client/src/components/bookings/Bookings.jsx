@@ -10,24 +10,21 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { BsClock, BsGeoFill, BsPersonFill, BsChevronRight } from "react-icons/bs";
 import { Button, Box, useDisclosure, Heading, Stack, VStack, Text, Icon, Spacer } from "@chakra-ui/react";
 
-const timeToDate = (dateStr, timeStr) => {
-  const [hours, minutes] = timeStr.split(":");
-
-  const d = new Date(dateStr);
-  d.setHours(hours, minutes, 0);
-  return d;
-};
-
 const dateToString = (date) => {
-  return date.toLocaleDateString("en-US", {
+  const d = new Date(date)
+  return d.toLocaleDateString("en-US", {
     year: "numeric",
     month: "numeric",
     day: "numeric"
   });
 };
 
-const dateToTimeString = (date) => {
-  return date.toLocaleTimeString("en-US", {
+const timeToString = (time) => {
+  const [hours, minutes] = time.split(":");
+  const d = new Date();
+  d.setHours(hours, minutes, 0);
+  
+  return d.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
     hour12: true
@@ -76,16 +73,16 @@ export const Bookings = () => {
       // Restructures data to be more readable
       const formattedData = classesResponse.data.map((cls) => ({
         classId: cls.classId,
-        date: new Date(cls.date),
-        startTime: timeToDate(cls.date, cls.startTime),
-        endTime: timeToDate(cls.date, cls.endTime),
+        date: dateToString(cls.date),
+        startTime: timeToString(cls.startTime),
+        endTime: timeToString(cls.endTime),
         title: classDataDict.get(cls.classId).title,
+        description: classDataDict.get(cls.classId).description,
         location: classDataDict.get(cls.classId).location,
         capacity: classDataDict.get(cls.classId).capacity,
         level: classDataDict.get(cls.classId).level,
         costume: classDataDict.get(cls.classId).costume,
         isDraft: classDataDict.get(cls.classId).isDraft,
-        // cls.data = classDataDict.get(cls.classId);
       }));
 
       console.log(formattedData);
@@ -164,7 +161,7 @@ export const Bookings = () => {
               <Stack direction="row" align="center" fontSize={16}>
                 <Icon as={BsClock} boxSize={4}/>
                 <Text>
-                  {dateToString(cls.date)} {dateToTimeString(cls.startTime)} - {dateToTimeString(cls.endTime)}
+                  {cls.date} {cls.startTime} - {cls.endTime}
                 </Text>
               </Stack>
 

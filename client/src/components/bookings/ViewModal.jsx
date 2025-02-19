@@ -26,7 +26,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
       <ModalContent>
         <Flex>
           <Container centerContent>
-            <ModalHeader>{classTitle}</ModalHeader>
+            <ModalHeader>{classData.title}</ModalHeader>
             <Menu>
               <Button onClick={enterEditMode}>
                 ...
@@ -46,7 +46,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
                 Location
               </Text>
               <Text>
-                {() => {console.log(classData); return location;}}
+                {classData.location}
               </Text>
             </div>
             <div>
@@ -54,7 +54,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
                 Date
               </Text>
               <Text>
-                {date}
+                {classData.date}
               </Text>
             </div>
           </Flex>
@@ -82,7 +82,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
               Time
             </Text>
             <Text>
-              {startTime} - {endTime}
+              {classData.startTime} - {classData.endTime}
             </Text>
           </Box>
           <Box>
@@ -90,7 +90,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
               Description
             </Text>
             <Text>
-              {description}
+              {classData.description}
             </Text>
           </Box>
           <Flex gap="40" justify="center">
@@ -99,7 +99,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
                 Capacity
               </Text>
               <Text>
-                {capacity}
+                {classData.capacity}
               </Text>
             </div>
             <div>
@@ -107,7 +107,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
                 Level
               </Text>
               <Text>
-                {level}
+                {classData.level}
               </Text>
             </div>
           </Flex>
