@@ -39,6 +39,7 @@ function ClassInfoModal({
   level,
   costume,
   id,
+  date,
 }) {
   const { backend } = useBackendContext();
   const [imageSrc, setImageSrc] = useState("");
@@ -50,7 +51,7 @@ function ClassInfoModal({
   };
 
   useEffect(() => {
-    if (isOpenProp) {
+    if (isOpenProp && !imageSrc) {
       fetch("https://dog.ceo/api/breeds/image/random")
         .then((res) => res.json())
         .then((data) => setImageSrc(data.message));
@@ -101,14 +102,20 @@ function ClassInfoModal({
                 justifyContent={"space-between"}
               >
                 <Box>
-                  <Text fontWeight="bold">Description:</Text>
-                  <Text>{description}</Text>
-                </Box>
-                <Box>
                   <Text fontWeight="bold">Location:</Text>
                   <Text>{location}</Text>
                 </Box>
+                <Box>
+                  <Text fontWeight="bold">Date:</Text>
+                  <Text>{date}</Text>
+                </Box>
               </HStack>
+
+              <Box width="100%">
+                <Text fontWeight="bold">Description:</Text>
+                <Text>{description}</Text>
+              </Box>
+
               <HStack
                 spacing={4}
                 width={"100%"}
