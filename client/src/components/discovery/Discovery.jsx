@@ -14,6 +14,7 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
+import SuccessSignupModal from "./SuccessSignupModal";
 
 export const Discovery = () => {
   // Active Tab Logic

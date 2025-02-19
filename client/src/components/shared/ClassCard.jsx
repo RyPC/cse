@@ -26,9 +26,11 @@ export const ClassCard = ({
   const { backend } = useBackendContext();
   const [openModal, setOpenModal] = useState(false);
   const [classDate, setClassDate] = useState(null);
+
   const handleOpenModal = () => {
     setOpenModal(!openModal);
   };
+
   const fetchClassDate = async () => {
     if (!classDate) {
       const response = await backend.get(`/scheduled-classes/${id}`);
@@ -43,6 +45,7 @@ export const ClassCard = ({
       }
     }
   };
+
   useEffect(() => {
     fetchClassDate();
   }, [setClassDate]);

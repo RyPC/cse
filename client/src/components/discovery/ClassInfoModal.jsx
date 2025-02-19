@@ -16,18 +16,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { useNavigate } from "react-router-dom";
 
-{
-  /* <EventCard
- title,
-  description,
-  location,
-  capacity,
-  level,
-  costume,
-/>; */
-}
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import SuccessSignupModal from "./SuccessSignupModal";
 
 function ClassInfoModal({
   isOpenProp,
@@ -41,13 +34,37 @@ function ClassInfoModal({
   id,
   date,
 }) {
+  const navigate = useNavigate();
+  const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
-  const [coreq, setCoReq] = useState([]);
+  const [corequisites, setCorequisites] = useState([]);
 
   const fetchCorequirements = async () => {
     const response = await backend.get(`/classes/corequisites/${id}`);
-    setCoReq(response.data);
+    setCorequisites(response.data);
+  };
+
+  const handleClassSignUp = async () => {
+    const users = await backend.get(`/users/${currentUser.uid}`);
+    if (users.data[0]) {
+      const req = await backend.post(`/class-enrollments`, {
+        studentId: users.data[0].id,
+        classId: id,
+        attendance: new Date(),
+      });
+      console.log(req);
+      if (req.status === 201) {
+        setOpenSuccessModal(true);
+      }
+    }
+  };
+
+  const closeAll = () => {
+    setOpenSuccessModal(false);
+    handleClose();
+    navigate("/bookings");
   };
 
   useEffect(() => {
@@ -61,6 +78,11 @@ function ClassInfoModal({
 
   return (
     <>
+      <SuccessSignupModal
+        isOpen={openSuccessModal}
+        title={title}
+        onClose={closeAll}
+      />
       <Modal
         isOpen={isOpenProp}
         size="full"
@@ -78,7 +100,9 @@ function ClassInfoModal({
               <HStack width="100%">
                 <Text>
                   Core-Req:{" "}
-                  {coreq.length === 0 ? "No corequisites for this class" : ""}
+                  {corequisites.length === 0
+                    ? "No corequisites for this class"
+                    : ""}
                 </Text>
               </HStack>
               <Box
@@ -140,7 +164,7 @@ function ClassInfoModal({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button>Sign up</Button>
+            <Button onClick={handleClassSignUp}>Sign up</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
