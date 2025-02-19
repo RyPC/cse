@@ -32,7 +32,7 @@ export const Settings = () => {
 
         <Flex
             direction="row"
-            height="50%"
+            height="40%"
             width="100%"
         >
             <Flex
@@ -43,8 +43,7 @@ export const Settings = () => {
             >
                 <Text>Name</Text>
                 <Text>Role</Text>
-                <Text>Student Number</Text>
-                <Text>Phone Number</Text>
+                <Text>ID Number</Text>
                 <Text>Email</Text>
                 <Text>Password</Text>
             </Flex>
@@ -57,10 +56,26 @@ export const Settings = () => {
             >
                 <Text>{hardcodedName}</Text>
                 <Text>{currentUser?.user_role || "Not available"}</Text>
-                <Text>1234567</Text>
-                <Text>123-456-7890</Text>
+                <Text>{currentUser?.uid || "Not available"}</Text>
                 <Text>{currentUser?.email || "Not available"}</Text>
-                <Text>Change Password button</Text>
+                <Flex
+                    direction="row"
+                    justify="space-between"
+                    align="center"
+                >
+                <Text>Change Password</Text>
+                    <Button 
+                        variant="plain"
+                        size="xs"
+                        onClick={() => console.log("Change password functionality to be implemented")}
+                    >
+                    <Image
+                        src="../Vector.png"
+                        alt="Profile"
+                        mt={1}
+                    />
+                    </Button>
+                </Flex>
             </Flex>
 
         </Flex>
