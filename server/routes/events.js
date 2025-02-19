@@ -37,6 +37,20 @@ eventsRouter.get('/search/:name', async (req,res) => {
     }
 })
 
+eventsRouter.get('/corequisites/:class_id', async (req,res) => {
+    try {
+        const { class_id } = req.params
+        const result = await db.query(
+            `SELECT DISTINCT e.title
+             FROM events AS e
+              JOIN corequisites AS co ON e.id = co.event_id
+             WHERE co.class_id = $1;`, [class_id]);
+    res.status(200).json(keysToCamel(result))
+  } catch (err){
+    res.status(500).send(err.message)
+  }
+})
+
 eventsRouter.post("/", async (req, res) => {
   try {
     const {location, title, description, level, date, start_time, end_time, call_time, costume} = req.body;
