@@ -24,6 +24,7 @@ export const EventCard = ({
   callTime,
   classId,
   costume,
+  id,
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => {
@@ -33,8 +34,10 @@ export const EventCard = ({
     <>
       <EventInfoModal
         isOpenProp={openModal}
-        handleClose={handleOpenModal}
+        handleClose={() => setOpenModal(false)}
         title={title}
+        isCoreq={false}
+        id={id}
       />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>

@@ -31,24 +31,18 @@ export const ClassCard = ({
     setOpenModal(!openModal);
   };
 
-  const fetchClassDate = async () => {
-    if (!classDate) {
-      const response = await backend.get(`/scheduled-classes/${id}`);
-      if (response?.data[0]?.date) {
-        const date = new Date(response?.data[0]?.date);
-        const formattedDate = date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-        setClassDate(formattedDate);
-      }
-    }
-  };
-
   useEffect(() => {
+    const fetchClassDate = async () => {
+      if (!classDate) {
+        const response = await backend.get(`/scheduled-classes/${id}`);
+        if (response?.data[0]?.date) {
+          setClassDate();
+        }
+      }
+    };
+
     fetchClassDate();
-  }, [setClassDate]);
+  }, [backend, classDate, id]);
   return (
     <>
       <ClassInfoModal
@@ -62,6 +56,7 @@ export const ClassCard = ({
         costume={costume}
         id={id}
         date={classDate}
+        isCoreq={false}
       />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>
@@ -73,6 +68,7 @@ export const ClassCard = ({
             <Text>{description}</Text>
             <Text>
               {level} - {location}
+              {classDate}
             </Text>
             <Text>Costume: {costume}</Text>
           </VStack>

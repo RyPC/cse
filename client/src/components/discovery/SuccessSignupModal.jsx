@@ -19,17 +19,25 @@ import {
 import { CiCircleCheck } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 
-function SuccessSignupModal({ isOpen, title, onClose }) {
+function SuccessSignupModal({
+  isOpen,
+  title,
+  onClose,
+  onSuccess = () => {},
+  isCoreq,
+}) {
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
+        onSuccess();
         onClose();
-        navigate("/bookings");
+        if (!isCoreq) navigate("/bookings");
       }, 2000);
     }
   }, [isOpen]);
+
   return (
     <Modal
       isOpen={isOpen}

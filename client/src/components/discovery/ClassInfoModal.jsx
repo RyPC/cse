@@ -5,6 +5,9 @@ import {
   Button,
   HStack,
   Image,
+  List,
+  ListIcon,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -16,10 +19,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { useNavigate } from "react-router-dom";
+import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import CoReqWarningModal from "./CoReqWarningModal";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function ClassInfoModal({
@@ -33,20 +37,62 @@ function ClassInfoModal({
   costume,
   id,
   date,
+  isCoreq,
 }) {
-  const navigate = useNavigate();
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
+
+  const [classCache, setCacheClass] = useState(null);
+  const [classInfo, setClassInfo] = useState({
+    title,
+    description,
+    location,
+    capacity,
+    level,
+    costume,
+    id,
+    date,
+  });
+
+  const [openCoreqModal, setOpenCoreqModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-  const [imageSrc, setImageSrc] = useState("");
+
   const [corequisites, setCorequisites] = useState([]);
+  const [completedCoreq, setCompletedCoreq] = useState([]);
+
+  const [imageSrc, setImageSrc] = useState("");
 
   const fetchCorequirements = async () => {
     const response = await backend.get(`/classes/corequisites/${id}`);
-    setCorequisites(response.data);
+    const coreq = response.data.map((coreq) => ({ ...coreq, enrolled: false }));
+    setCorequisites(coreq);
+    await fetchEnrolledEvents(coreq);
   };
 
-  const handleClassSignUp = async () => {
+  const fetchEnrolledEvents = async (coreq) => {
+    try {
+      const response = await backend.get(`/event-enrollments`);
+      const user = await backend
+        .get(`/users/${currentUser.uid}`)
+        .then((res) => res.data[0]);
+      const events = response.data;
+      const filteredEvents = events
+        .filter((event) => event.studentId === user.id)
+        .map((event) => event.eventId);
+
+      const updatedCorequisites = coreq.map((coreq) => {
+        if (filteredEvents.includes(coreq.id)) {
+          return { ...coreq, enrolled: true };
+        }
+        return coreq;
+      });
+      setCorequisites(updatedCorequisites);
+    } catch (error) {
+      console.error("Error fetching enrolled events or users:", error);
+    }
+  };
+
+  const enrollInClass = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
     if (users.data[0]) {
       const req = await backend.post(`/class-enrollments`, {
@@ -54,17 +100,25 @@ function ClassInfoModal({
         classId: id,
         attendance: new Date(),
       });
-      console.log(req);
       if (req.status === 201) {
         setOpenSuccessModal(true);
       }
     }
   };
 
-  const closeAll = () => {
-    setOpenSuccessModal(false);
-    handleClose();
-    navigate("/bookings");
+  const viewCoreq = async () => {
+    setCacheClass(classInfo);
+    setClassInfo(corequisites[0]);
+    setOpenCoreqModal(false);
+    await fetchCorequirements();
+  };
+
+  const classSignUp = async () => {
+    if (corequisites.length > 0) {
+      setOpenCoreqModal(true);
+    } else {
+      enrollInClass();
+    }
   };
 
   useEffect(() => {
@@ -76,13 +130,24 @@ function ClassInfoModal({
     }
   }, [isOpenProp]);
 
+  if (!id) return null;
   return (
     <>
+      <CoReqWarningModal
+        isOpenProp={openCoreqModal}
+        coreqs={corequisites}
+        handleClose={() => setOpenCoreqModal(false)}
+        handleModifyCoreq={viewCoreq}
+        origin="CLASS"
+      />
+
       <SuccessSignupModal
         isOpen={openSuccessModal}
-        title={title}
-        onClose={closeAll}
+        title={classInfo.title}
+        onClose={() => setOpenCoreqModal(false)}
+        isCoreq={isCoreq}
       />
+
       <Modal
         isOpen={isOpenProp}
         size="full"
@@ -90,7 +155,7 @@ function ClassInfoModal({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{title}</ModalHeader>
+          <ModalHeader>{classInfo.title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack
@@ -98,12 +163,27 @@ function ClassInfoModal({
               align="center"
             >
               <HStack width="100%">
-                <Text>
-                  Core-Req:{" "}
-                  {corequisites.length === 0
-                    ? "No corequisites for this class"
-                    : ""}
-                </Text>
+                <Box>
+                  <Text as="b">Corequisites</Text>
+                  {corequisites.length === 0 ? (
+                    <Text>No corequisites for this class</Text>
+                  ) : (
+                    <List>
+                      {corequisites.map((coreq, index) => (
+                        <ListItem key={index}>
+                          <ListIcon
+                            as={
+                              coreq.enrolled
+                                ? FaCircleCheck
+                                : FaCircleExclamation
+                            }
+                          />
+                          {coreq.title}
+                        </ListItem>
+                      ))}
+                    </List>
+                  )}
+                </Box>
               </HStack>
               <Box
                 boxSize="sm"
@@ -127,7 +207,7 @@ function ClassInfoModal({
               >
                 <Box>
                   <Text fontWeight="bold">Location:</Text>
-                  <Text>{location}</Text>
+                  <Text>{classInfo.location}</Text>
                 </Box>
                 <Box>
                   <Text fontWeight="bold">Date:</Text>
@@ -137,7 +217,7 @@ function ClassInfoModal({
 
               <Box width="100%">
                 <Text fontWeight="bold">Description:</Text>
-                <Text>{description}</Text>
+                <Text>{classInfo.description}</Text>
               </Box>
 
               <HStack
@@ -147,24 +227,24 @@ function ClassInfoModal({
               >
                 <Box>
                   <Text fontWeight="bold">Capacity:</Text>
-                  <Text>{capacity}</Text>
+                  <Text>{classInfo.capacity}</Text>
                 </Box>
                 <Box>
                   <Text fontWeight="bold">Level:</Text>
-                  <Text>{level}</Text>
+                  <Text>{classInfo.level}</Text>
                 </Box>
               </HStack>
 
               <HStack width={"100%"}>
                 <Box>
                   <Text fontWeight="bold">Costume:</Text>
-                  <Text>{costume}</Text>
+                  <Text>{classInfo.costume}</Text>
                 </Box>
               </HStack>
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={handleClassSignUp}>Sign up</Button>
+            <Button onClick={classSignUp}>Sign up</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

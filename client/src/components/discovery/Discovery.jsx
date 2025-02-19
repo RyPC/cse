@@ -14,7 +14,6 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
-import SuccessSignupModal from "./SuccessSignupModal";
 
 export const Discovery = () => {
   // Active Tab Logic
@@ -163,6 +162,7 @@ export const Discovery = () => {
                 callTime={eventItem.callTime}
                 classId={eventItem.classId}
                 costume={eventItem.costume}
+                id={eventItem.id}
               />
             ))}
           </Flex>
