@@ -3,7 +3,7 @@ import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md"
 import { formatDate } from "../../utils/formatDateTime";
 
 
-export const ViewModal = ({ isOpen, onClose, setCurrentModal, card }) => {
+export const ViewModal = ({ isOpen, onClose, setCurrentModal, card, type }) => {
     const onCancel = () => {
         setCurrentModal("cancel");
     };
@@ -37,21 +37,42 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, card }) => {
                         <Text>{card ? card.description : "N/A"}</Text>
                     </GridItem>
 
-                    <GridItem>
-                        <Text fontWeight="bold">Capacity</Text> {/* Will add from prop */}
-                        <Text>{card ? card.capacity : "N/A"}</Text>
-                    </GridItem>
+                    {type === "class" ? 
+                        <GridItem>
+                            <Text fontWeight="bold">Capacity</Text>
+                            <Text>{card ? card.capacity : "N/A"}</Text>
+                        </GridItem> 
+                        : 
+                        <GridItem>
+                            <Text fontWeight="bold">Start Time</Text>
+                            <Text>{card ? card.startTime : "N/A"}</Text>
+                        </GridItem>
+                    }
+                    
+                    {type === "class" ? 
+                        <GridItem>
+                            <Text fontWeight="bold">Level</Text>
+                            <Text>{card ? card.level : "N/A"}</Text>
+                        </GridItem> 
+                        : 
+                        <GridItem>
+                            <Text fontWeight="bold">End Time</Text>
+                            <Text>{card ? card.endTime : "N/A"}</Text>
+                        </GridItem>
+                    }
 
-                    <GridItem>
-                        <Text fontWeight="bold">Level</Text> {/* Will add from prop */}
-                        <Text>{card ? card.level : "N/A"}</Text>
-                    </GridItem>
-
-                    {/* Do we even have this information? I can do costume for class and start/end time for event */}
-                    <GridItem colSpan={2}> 
-                        <Text fontWeight="bold">Performances</Text> 
-                        <Text>Spring Traditional Chinese Dance Recital</Text>
-                    </GridItem>
+                    {type === "class" ? 
+                        <GridItem colSpan={2}>
+                            {/* Make an endpoint for this :sob: */}
+                            <Text fontWeight="bold">Performances</Text>
+                            <Text>Spring Traditional Chinese Dance Recital</Text>
+                        </GridItem> 
+                        : 
+                        <GridItem colSpan={2}>
+                            <Text fontWeight="bold">Level</Text>
+                            <Text>{card ? card.level : "N/A"}</Text>
+                        </GridItem>
+                    }
                 </Grid>
             </ModalBody>
 

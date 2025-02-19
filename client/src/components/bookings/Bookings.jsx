@@ -35,7 +35,6 @@ export const Bookings = () => {
   const [selectedCard, setSelectedCard] = useState();
   const [cardType, setCardType] = useState();
   const [user_id, setUserId] = useState();
-  const [activeTab, setActiveTab] = useState("Classes")
 
   useEffect(() => {
     if (currentUser) {
@@ -148,7 +147,6 @@ export const Bookings = () => {
                 borderColor: "black",
                 fontWeight: "bold", // Add bold when selected
               }}
-              onClick={() => setActiveTab("Classes")}
             >
               Classes
             </Tab>
@@ -158,7 +156,6 @@ export const Bookings = () => {
                 borderColor: "black",
                 fontWeight: "bold", // Add bold when selected
               }}
-              onClick={() => setActiveTab("Events")}
             >
               Events
             </Tab>
@@ -168,7 +165,6 @@ export const Bookings = () => {
                 borderColor: "black",
                 fontWeight: "bold", // Add bold when selected
               }}
-              onClick={() => setActiveTab("Attended")}
             >
               Attended
             </Tab>
@@ -274,6 +270,7 @@ export const Bookings = () => {
           onClose={onCloseModal}
           setCurrentModal={setCurrentModal}
           card={selectedCard}
+          type={cardType}
         />
       ) : currentModal === "confirmation" ? (
         <ConfirmationModal
