@@ -88,7 +88,12 @@ export const Discovery = () => {
 
     const handleKeyDown = async (e) => {
         if (e.key === "Enter") {
-            activeTab === "classes" ? await searchClasses() : await searchEvents();
+            if (activeTab === "classes") {
+                await searchClasses();
+            }
+            else {
+                await searchEvents();
+            }
         }
     };
 
