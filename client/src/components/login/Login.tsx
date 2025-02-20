@@ -65,8 +65,24 @@ export const Login = () => {
         email: data.email,
         password: data.password,
       });
+      const response = await backend.get('/teachers');
+        const teachers = response.data;
+        const teacher = teachers.find(teach =>
+            teach.email === data.email
+        );
 
-      navigate("/discovery");
+        if (teacher) {
+            if (teacher.isActivated) {
+                navigate('/discovery');
+            }
+            else {
+                navigate('/teacher-signup/pending');
+            }
+        }
+        else {
+            navigate('/discovery')
+        }
+
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;

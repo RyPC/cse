@@ -24,6 +24,8 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
+import { EmailTemplate } from "../signup/EmailTemplate";
+import ReactDOMServer from "react-dom/server"
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "Field Cannot Be Empty"),
@@ -38,7 +40,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export const TeacherSignup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { teacherSignup, handleRedirectResult } = useAuthContext();
+  const { teacherSignup, handleRedirectResult, updateDisplayName } = useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -61,7 +63,13 @@ export const TeacherSignup = () => {
       });
 
       if (user) {
-        navigate("/dashboard");
+        updateDisplayName(user, data.firstName + " " + data.lastName)
+        const templateEmail = EmailTemplate( {"firstName": data.firstName, "lastName":data.lastName, "email": data.email, "role": "teacher"});
+        backend.post("/nodemailer/send", {
+          "to": import.meta.env.VITE_ADMIN_EMAIL,
+          "html": ReactDOMServer.renderToString(templateEmail)
+        });
+        navigate("/teacher-signup/request");
       }
     } catch (err) {
       if (err instanceof Error) {
