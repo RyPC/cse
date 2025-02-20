@@ -2,6 +2,26 @@ import { useState } from "react";
 
 import { Box, Button, Center, Container, Flex, Menu, MenuItem, MenuList, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Text } from "@chakra-ui/react";
 
+const dateToString = (date) => {
+  if ((typeof date) !== "object")
+    return "";
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric"
+  });
+};
+
+const timeToString = (time) => {
+  if ((typeof time) !== "object")
+    return "";
+  return time.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+};
+
 export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
   const onCancel = () => {
     setCurrentModal("cancel");
@@ -11,14 +31,14 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
     setCurrentModal("edit");
   }
 
-  const [classTitle, setClassTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [description, setDescription] = useState("");
-  const [capacity, setCapacity] = useState("");
-  const [level, setLevel] = useState("");
+  // const [classTitle, setClassTitle] = useState("");
+  // const [location, setLocation] = useState("");
+  // const [date, setDate] = useState("");
+  // const [startTime, setStartTime] = useState("");
+  // const [endTime, setEndTime] = useState("");
+  // const [description, setDescription] = useState("");
+  // const [capacity, setCapacity] = useState("");
+  // const [level, setLevel] = useState("");
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -54,7 +74,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
                 Date
               </Text>
               <Text>
-                {classData.date}
+                {dateToString(classData.date)}
               </Text>
             </div>
           </Flex>
@@ -82,7 +102,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
               Time
             </Text>
             <Text>
-              {classData.startTime} - {classData.endTime}
+              {timeToString(classData.startTime)} - {timeToString(classData.endTime)}
             </Text>
           </Box>
           <Box>
@@ -121,14 +141,14 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
           </Box> */}
         </ModalBody>
 
-        <ModalFooter>
+        {/* <ModalFooter>
           <Button colorScheme='red' mr={3} onClick={onCancel}>
             Cancel
           </Button>
           <Button colorScheme='blue' mr={3} onClick={onClose}>
             Close
           </Button>
-        </ModalFooter>
+        </ModalFooter> */}
       </ModalContent>
     </Modal>
   );

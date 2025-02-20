@@ -5,18 +5,22 @@ import { Button, Container, Flex, Input, Modal, ModalOverlay, ModalHeader, Modal
 
 export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData }) => {
   const onCancel = () => {
-    setCurrentModal("cancel");
+    setCurrentModal("view");
   };
+  const onSave = () => {
+    setCurrentModal("view");
+  }
+
 
   // input values
-  const [classTitle, setClassTitle] = useState(classData.data.title);
-  const [location, setLocation] = useState(classData.data.location);
-  const [date, setDate] = useState(classData.date);
-  const [startTime, setStartTime] = useState(classData.startTime);
-  const [endTime, setEndTime] = useState(classData.endTime);
-  const [description, setDescription] = useState(classData.data.description);
-  const [capacity, setCapacity] = useState(classData.data.capacity);
-  const [level, setLevel] = useState(classData.data.level);
+  const [classTitle, setClassTitle] = useState(classData.title);
+  const [location, setLocation] = useState(classData.location);
+  const [date, setDate] = useState(classData.date.toLocaleDateString("en-CA"));
+  const [startTime, setStartTime] = useState(classData.startTime.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
+  const [endTime, setEndTime] = useState(classData.endTime.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
+  const [description, setDescription] = useState(classData.description);
+  const [capacity, setCapacity] = useState(classData.capacity);
+  const [level, setLevel] = useState(classData.level);
 
   const handleLocationSelect = (e) => {
     setLocation(e.target.value)
@@ -26,22 +30,16 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
     setLevel(e.target.value);
   }
 
-  const handleSubmit = () => {
-    setClassTitle(classTitle);
-    setDate(date);
-    setStartTime(startTime);
-    setEndTime(endTime);
-    setDescription(description);
-    setCapacity(capacity);
-
-
-    data = [classTitle, date, startTime, endTime, description, capacity];
-    setClassData(data);
-  }
+  const onTitleChange = (e) => setClassTitle(e.target.value);
+  const onDescriptionChange = (e) => setDescription(e.target.value);
+  const onCapacityChange = (e) => setCapacity(e.target.value);
+  const onDateChange = (e) => setDate(e.target.value);
+  const onStartTimeChange = (e) => setStartTime(e.target.value);
+  const onEndTimeChange = (e) => setEndTime(e.target.value);
 
   return (
     <div>
-      {data}
+      {/* {data} */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -60,12 +58,13 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             </Text>
             <Input
             value={classTitle}
+            onChange={onTitleChange}
             placeholder="Enter class title..."/>
             <Text mb='1rem'>
               Location
             </Text>
             <Select maxWidth="200px" value={location} placeholder='Select location...' onChange={handleLocationSelect}>
-              <option value="Walnut">Walnut</option>
+              <option value={classData.location}>{classData.location}</option>
               <option value="Location 1">Location 1</option>
               <option value="Location 2">Location 2</option>
             </Select>
@@ -74,6 +73,8 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             </Text>
             <Input
             type="date"
+            value={date}
+            onChange={onDateChange}
             maxWidth="200px"
             placeholder="Enter date.."/>
             <Text mb='1rem'>
@@ -83,6 +84,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             type="time"
             maxWidth="200px"
             value={startTime}
+            onChange={onStartTimeChange}
             placeholder="Enter start time..."/>
             <Text mb='1rem'>
               End Time
@@ -91,6 +93,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             type="time"
             maxWidth="200px"
             value={endTime}
+            onChange={onEndTimeChange}
             placeholder="Enter end time..."/>
             <Text mb='1rem'>
               Description
@@ -98,6 +101,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             <Input
             height="100px"
             value={description}
+            onChange={onDescriptionChange}
             placeholder="Enter description..."/>
             <Text mb='1rem'>
               Capacity
@@ -106,14 +110,15 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             type="number"
             maxWidth="200px"
             value={capacity}
+            onChange={onCapacityChange}
             placeholder="Enter time..."/>
             <Text mb='1rem'>
               Level
             </Text>
             <Select maxWidth="200px" value={level} placeholder='Select level...' onChange={handleLevelSelect}>
-              <option value='1'>1</option>
-              <option value='2'>2</option>
-              <option value='3'>3</option>
+              <option value='beginner'>1</option>
+              <option value='intermediate'>2</option>
+              <option value='advanced'>3</option>
             </Select>
           </ModalBody>
 
@@ -121,7 +126,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             <Button colorScheme='red' mr={3} onClick={onCancel}>
               Cancel
             </Button>
-            <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+            <Button colorScheme='blue' mr={3} onClick={onSave}>
               Save
             </Button>
           </ModalFooter>
