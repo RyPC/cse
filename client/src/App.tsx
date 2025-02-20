@@ -25,6 +25,9 @@ import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
 import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { CheckInHandler } from "./components/qrcode/CheckInHandler";
+import { ClassCheckInHandler } from "./components/qrcode/ClassCheckInHandler";
+import { EventCheckInHandler } from "./components/qrcode/EventCheckInHandler";
 import { Resources } from "./components/resources/Resources";
 import { Reviews } from "./components/reviews/Reviews";
 import { Signup } from "./components/signup/Signup";
@@ -142,6 +145,15 @@ const App = () => {
                 <Route
                   path="/discovery"
                   element={<ProtectedRoute element={<Discovery />} />}
+                />
+
+                <Route
+                  path="/check-in/class/:id"
+                  element={<ClassCheckInHandler />}
+                />
+                <Route
+                  path="/check-in/event/:id"
+                  element={<EventCheckInHandler />}
                 />
 
                 <Route

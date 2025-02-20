@@ -47,4 +47,21 @@ classEnrollmentsRouter.post("/", async (req, res) => {
   }
 });
 
+classEnrollmentsRouter.put("/:student_id", async (req, res) => {
+  const student_id = req.params.student_id;
+  const { class_id, attendance } = req.body;
+  try {
+    const data = await db.query(
+      `UPDATE class_enrollments
+       SET attendance = $1
+       WHERE student_id = $2 AND class_id = $3
+      `,
+      [attendance, student_id, class_id]
+    );
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 export { classEnrollmentsRouter };
