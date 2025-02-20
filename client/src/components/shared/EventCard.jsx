@@ -36,6 +36,12 @@ export const EventCard = ({
         isOpenProp={openModal}
         title={title}
         id={id}
+        location={location}
+        description={description}
+        level={level}
+        date={data}
+        capacity={capacity}
+        costume={costume}
         isCorequisiteSignUp={false}
         handleClose={() => setOpenModal(false)}
       />
