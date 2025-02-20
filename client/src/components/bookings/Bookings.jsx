@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 export const Bookings = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [ modalData, setModalData ] = useState(null);
   const { userRole } = useRoleContext();
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
@@ -188,16 +189,22 @@ export const Bookings = () => {
         >
           {selectedButton}
           {loading ? <Text>Loading...</Text> : (
-            currentBookings.map((item) => (
+            currentBookings.map((item, ind) => (
               <ClassCard
-                link={item.id}
-                key={item.id}
+                key={ind}
+                id={item.id}
                 title={item.title}
-                time="Placeholder Time"
                 location={item.location}
+                date={item.date}
+                description={item.description}
+                capacity={item.capacity}
+                level={item.level}
+                performance={item.performance}
                 navigate={navigate}
                 isDraft={item.isDraft}
                 button={selectedButton}
+                setModalData={setModalData}
+                onOpen={onOpen}
               />
             ))
           )}
@@ -209,7 +216,7 @@ export const Bookings = () => {
         onClose={onClose}
         title={"Create a Class/Draft"}
       >
-        <CreateClassForm closeModal={onClose}/>
+        <CreateClassForm closeModal={onClose} modalData={modalData} reloadCallback={handleClickDrafts}/>
       </ViewModal>
       <Navbar />
     </Box>
@@ -217,7 +224,7 @@ export const Bookings = () => {
 };
 
 const ClassCard = (
-  { title, time, location, rsvpCount, link, isDraft, navigate, button },
+  { id, title, location, date, description, capacity, level, performance, rsvpCount, link, isDraft, navigate, button, setModalData, onOpen },
 ) => {
   // button shows if it is a class draft or a button
   return (
@@ -226,7 +233,7 @@ const ClassCard = (
         <Heading size={"lg"}>{title ? title : "Placeholder Title"}</Heading>
       </CardHeader>
       <CardBody paddingTop={1}>
-        <Text>Time: {time ? time : "1/27/2025 @ 1 PM - 3 PM"}</Text>
+        <Text>Date: {date ? date : "1/27/2025 @ 1 PM - 3 PM"}</Text>
         <Text>Location: {location ? location : "Irvine"}</Text>
         <Text>RSVPd: {rsvpCount ? rsvpCount : 10}</Text>
       </CardBody>
@@ -236,7 +243,22 @@ const ClassCard = (
         position="absolute"
         bottom="8px"
         right="8px"
-        onClick={() => navigate(`/dashboard/classes/${link}`)}
+          onClick={
+            isDraft ? () => {
+                const modalData = {
+                    id,
+                    title,
+                    location,
+                    date,
+                    description,
+                    capacity,
+                    level,
+                    performance
+                }
+                setModalData(modalData)
+                onOpen()
+            } : () => navigate(`/dashboard/classes/${id}`)
+          }
       >
         {isDraft ? "Edit" : "View Details"}
       </Button>

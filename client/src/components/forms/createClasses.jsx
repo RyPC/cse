@@ -24,46 +24,62 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 import SaveClass from "./modals/saveClass";
 
-export const CreateClassForm = ({ closeModal }) => {
+export const CreateClassForm = ({ closeModal, modalData, reloadCallback}) => {
   const { backend } = useBackendContext();
 
   const postClass = async () => {
     console.log({
-      location: location ? location : "in draft",
+      location: location ? location : "",
       date: date ? date : new Date(),
-      description: description ? description : "in draft",
-      level: level ? level : "in draft",
+      description: description ? description : "",
+      level: level ? level : "",
       capacity: capacity ? capacity : 0,
-      costume: performances ? performances : "in draft",
+      costume: performances ? performances : "",
       isDraft,
-      title: title ? title : "in draft",
+      title: title ? title : "",
     });
-    await backend
-      .post("/classes", {
-        location: location ? location : "in draft",
-        date: date ? date : new Date(),
-        description: description ? description : "in draft",
-        level: level ? level : "in draft",
-        capacity: capacity ? capacity : 0,
-        costume: performances ? performances : "in draft",
-        isDraft,
-        title: title ? title : "in draft",
-      })
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error));
 
+    if (isDraft && modalData) {
+        await backend.put("/classes/" + modalData.id, {
+            location: location ? location : "",
+            date: date ? date : new Date(),
+            description: description ? description : "",
+            level: level ? level : "",
+            capacity: capacity ? capacity : 0,
+            costume: performances ? performances : "",
+            isDraft: true,
+            title: title ? title : "",
+          })
+          .then((response) => console.log(response))
+          .catch((error) => console.log(error));
+    } else {
+        await backend.post("/classes", {
+            location: location ? location : "",
+            date: date ? date : new Date(),
+            description: description ? description : "",
+            level: level ? level : "",
+            capacity: capacity ? capacity : 0,
+            costume: performances ? performances : "",
+            isDraft,
+            title: title ? title : "",
+        })
+        .then((response) => console.log(response))
+        .catch((error) => console.log(error));
+    }
+    reloadCallback();
     setIsSubmitted(true);
     onConfirmationClose();
     onClose();
   };
 
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
-  const [description, setDescription] = useState("");
-  const [capacity, setCapacity] = useState("");
-  const [level, setLevel] = useState("beginner");
-  const [performances, setPerformances] = useState("");
+  const [title, setTitle] = useState(modalData.title ?? '');
+  const [location, setLocation] = useState(modalData.location ?? '');
+  const [date, setDate] = useState(modalData.date ?? '');
+  const [description, setDescription] = useState(modalData.description ?? '');
+  const [capacity, setCapacity] = useState(modalData.capacity ?? '');
+  const [level, setLevel] = useState(modalData.level ?? "beginner");
+  const [performances, setPerformances] = useState(modalData.performances ?? '');
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
     isOpen: isConfirmationOpen,
@@ -71,7 +87,7 @@ export const CreateClassForm = ({ closeModal }) => {
     onClose: onConfirmationClose,
   } = useDisclosure();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isDraft, setIsDraft] = useState(false);
+  const [isDraft, setIsDraft] = useState(modalData !== null);
 
   return (
     <Container>

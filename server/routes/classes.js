@@ -139,7 +139,7 @@ classesRouter.put("/:id", async (req, res) => {
     capacity = COALESCE($4, capacity),
     level = COALESCE($5, level),
     costume = COALESCE($6, costume),
-    is_draft = COALESCE($7, isDraft)
+    is_draft = COALESCE($7, is_draft)
     WHERE id = $8 RETURNING *;`;
 
     const data = await db.query(query, [
