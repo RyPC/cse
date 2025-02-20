@@ -30,6 +30,9 @@ export const EventCard = ({
   const handleOpenModal = () => {
     setOpenModal(!openModal);
   };
+  const handleCancel = () => {
+    setOpenModal(false);
+  };
   return (
     <>
       <EventInfoModal
@@ -39,11 +42,11 @@ export const EventCard = ({
         location={location}
         description={description}
         level={level}
-        date={data}
-        capacity={capacity}
+        date={date}
         costume={costume}
         isCorequisiteSignUp={false}
         handleClose={() => setOpenModal(false)}
+        handleCancel={handleCancel}
       />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>

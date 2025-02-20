@@ -60,11 +60,12 @@ function CoReqWarningModal({
         />
       ) : (
         <ClassInfoModal
-          isOpen={openCoreq}
+          isOpenProp={openCoreq}
           title={coreq.title}
           description={coreq.description}
           location={coreq.location}
           date={coreq.date}
+          capacity={coreq.capacity}
           costume={coreq.costume}
           level={coreq.level}
           id={coreq.id}
@@ -93,7 +94,7 @@ function CoReqWarningModal({
 
                 <Text fontWeight="bold">
                   {lstCorequisites && lstCorequisites.length > 0
-                    ? coreq.title
+                    ? coreq?.title
                     : ""}
                 </Text>
               </VStack>

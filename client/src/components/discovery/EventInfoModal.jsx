@@ -19,6 +19,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import CoReqWarningModal from "./CoReqWarningModal";
@@ -53,14 +55,16 @@ function EventInfoModal({
   // temp for image
   const [imageSrc, setImageSrc] = useState("");
 
-const fetchCorequirements = useCallback(async () => {
+  const fetchCorequirements = useCallback(async () => {
     const fetchEnrolledClass = async (coreq) => {
       try {
-        const response = await backend.get(`/class-enrollments`);
+        const response = await backend.get(`/class-enrollments/`);
         const user = await backend
           .get(`/users/${currentUser.uid}`)
           .then((res) => res.data[0]);
+
         const classes = response.data;
+
         const filteredClass = classes
           .filter((classes) => classes.studentId === user.id)
           .map((classes) => classes.classId);
@@ -71,13 +75,14 @@ const fetchCorequirements = useCallback(async () => {
           }
           return coreq;
         });
+
         setCorequisites(updatedCorequisites);
       } catch (error) {
         console.error("Error fetching enrolled classes or users:", error);
       }
     };
 
-    const response = await backend.get(`/classes/corequisites/${id}`);
+    const response = await backend.get(`/events/corequisites/${id}`);
     const coreq = response.data.map((coreq) => ({ ...coreq, enrolled: false }));
     setCorequisites(coreq);
     await fetchEnrolledClass(coreq);
@@ -86,10 +91,9 @@ const fetchCorequirements = useCallback(async () => {
   const enrollInEvent = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
     if (users.data[0]) {
-      const req = await backend.post(`/class-enrollments/`, {
+      const req = await backend.post(`/event-enrollments/`, {
         student_id: users.data[0].id,
         event_id: id,
-        attendance: new Date(),
       });
       if (req.status === 201) {
         setOpenSuccessModal(true);
@@ -120,21 +124,24 @@ const fetchCorequirements = useCallback(async () => {
     }
   }, [fetchCorequirements, imageSrc, isOpenProp]);
 
-
   if (!id) return null; //stops recursive loop
   return (
     <>
       <CoReqWarningModal
         origin="EVENT"
-        isOpen={openCoreqModal}
-        lstCorequisites={closeCoreq}
-        handleClose={cancelCoreqModal}
+        isOpenProp={openCoreqModal}
+        lstCorequisites={corequisites}
+        handleClose={closeCoreq}
+        handleCancel={cancelCoreqModal}
       />
 
       <SuccessSignupModal
         isOpen={openSuccessModal}
         title={title}
-        onClose={() => setOpenCoreqModal(false)}
+        onClose={() => {
+          setOpenSuccessModal(false);
+          // closeCoreq();
+        }}
         isCoreq={isCorequisiteSignUp}
       />
 
@@ -154,9 +161,9 @@ const fetchCorequirements = useCallback(async () => {
             >
               <HStack width="100%">
                 <Box>
-                  <Text as="b">Corequisites</Text>
+                  <Text as="b">Corequisites {openCoreqModal ? "t" : "f"}</Text>
                   {corequisites.length === 0 ? (
-                  <Text>No corequisites for this class</Text>
+                    <Text>No corequisites for this class</Text>
                   ) : (
                     <List>
                       {corequisites.map((coreq, index) => (

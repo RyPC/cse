@@ -30,19 +30,24 @@ export const ClassCard = ({
   const handleOpenModal = () => {
     setOpenModal(!openModal);
   };
+
   const handleCancel = () => {
     setOpenModal(false);
   };
-  useEffect(() => {
-    const fetchClassDate = async () => {
-      if (!classDate) {
-        const response = await backend.get(`/scheduled-classes/${id}`);
-        if (response?.data[0]?.date) {
-          setClassDate();
-        }
+  const fetchClassDate = async () => {
+    if (!classDate) {
+      const response = await backend.get(`/scheduled-classes/${id}`);
+      if (response?.data[0]?.date) {
+        console.log(response.data[0].date);
+        const formattedDate = new Date(
+          response.data[0].date
+        ).toLocaleDateString("en-US");
+        console.log(formattedDate);
+        setClassDate(formattedDate);
       }
-    };
-
+    }
+  };
+  useEffect(() => {
     fetchClassDate();
   }, [backend, classDate, id]);
   return (
@@ -70,8 +75,7 @@ export const ClassCard = ({
           <VStack>
             <Text>{description}</Text>
             <Text>
-              {level} - {location}
-              {classDate}
+              {level} - {classDate}
             </Text>
             <Text>Costume: {costume}</Text>
           </VStack>

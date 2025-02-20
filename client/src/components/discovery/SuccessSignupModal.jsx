@@ -26,7 +26,7 @@ function SuccessSignupModal({
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
-        onSuccess();
+        // onSuccess();
         onClose();
         if (!isCorequisiteSignUp) navigate("/bookings");
       }, 2000);

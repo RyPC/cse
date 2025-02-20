@@ -63,6 +63,7 @@ function ClassInfoModal({
           .get(`/users/${currentUser.uid}`)
           .then((res) => res.data[0]);
         const events = response.data;
+
         const filteredEvents = events
           .filter((event) => event.studentId === user.id)
           .map((event) => event.eventId);
@@ -136,7 +137,10 @@ function ClassInfoModal({
       <SuccessSignupModal
         isOpen={openSuccessModal}
         title={title}
-        onClose={() => setOpenCoreqModal(false)}
+        onClose={() => {
+          setOpenSuccessModal(false);
+          // closeCoreq();
+        }}
         isCoreq={isCorequisiteSignUp}
       />
 
