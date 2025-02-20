@@ -23,6 +23,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export const Bookings = () => {
+  const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [currentModal, setCurrentModal] = useState("view");
   const { userRole } = useRoleContext();
@@ -183,6 +184,7 @@ export const Bookings = () => {
               title={item.title}
               time="Placeholder Time"
               location={item.location}
+              navigate={navigate}
               isDraft={item.isDraft}
             />
           ))}
@@ -213,8 +215,7 @@ export const Bookings = () => {
   );
 };
 
-const ClassCard = ({ title, time, location, rsvpCount, link, isDraft }) => {
-  const navigate = useNavigate();
+const ClassCard = ({ title, time, location, rsvpCount, link, isDraft, navigate }) => {
   return (
     <Card width="300px" minHeight="100px" position="relative">
       <CardHeader paddingBottom={1}>
