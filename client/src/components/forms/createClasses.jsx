@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import {
   Button,
@@ -27,50 +27,7 @@ import SaveClass from "./modals/saveClass";
 export const CreateClassForm = ({ closeModal, modalData, reloadCallback}) => {
   const { backend } = useBackendContext();
 
-  const postClass = async () => {
-    console.log({
-      location: location ? location : "",
-      date: date ? date : new Date(),
-      description: description ? description : "",
-      level: level ? level : "",
-      capacity: capacity ? capacity : 0,
-      costume: performances ? performances : "",
-      isDraft,
-      title: title ? title : "",
-    });
-
-    if (isDraft && modalData) {
-        await backend.put("/classes/" + modalData.id, {
-            location: location ? location : "",
-            date: date ? date : new Date(),
-            description: description ? description : "",
-            level: level ? level : "",
-            capacity: capacity ? capacity : 0,
-            costume: performances ? performances : "",
-            isDraft: true,
-            title: title ? title : "",
-          })
-          .then((response) => console.log(response))
-          .catch((error) => console.log(error));
-    } else {
-        await backend.post("/classes", {
-            location: location ? location : "",
-            date: date ? date : new Date(),
-            description: description ? description : "",
-            level: level ? level : "",
-            capacity: capacity ? capacity : 0,
-            costume: performances ? performances : "",
-            isDraft,
-            title: title ? title : "",
-        })
-        .then((response) => console.log(response))
-        .catch((error) => console.log(error));
-    }
-    reloadCallback();
-    setIsSubmitted(true);
-    onConfirmationClose();
-    onClose();
-  };
+  const [events, setEvents] = useState([])
 
   const [title, setTitle] = useState(modalData.title ?? '');
   const [location, setLocation] = useState(modalData.location ?? '');
@@ -78,7 +35,8 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback}) => {
   const [description, setDescription] = useState(modalData.description ?? '');
   const [capacity, setCapacity] = useState(modalData.capacity ?? '');
   const [level, setLevel] = useState(modalData.level ?? "beginner");
-  const [performances, setPerformances] = useState(modalData.performances ?? '');
+  const [costume, setCostume] = useState(modalData.costume ?? '');
+  const [performance, setPerformance] = useState(modalData.performance ?? -1);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const {
@@ -87,7 +45,46 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback}) => {
     onClose: onConfirmationClose,
   } = useDisclosure();
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isDraft, setIsDraft] = useState(modalData !== null);
+  const [isDraft, setIsDraft] = useState(false);
+
+  const postClass = async () => {
+    // console.log;
+    const body = {
+        location: location ?? "",
+        date: date ?? new Date(),
+        description: description ?? "",
+        level: level ?? "",
+        capacity: capacity ?? 0,
+        costume: costume ?? "",
+        performance: performance ?? "",
+        isDraft,
+        title: title ?? "",
+    }
+
+    if (modalData) {
+        await backend.put("/classes/" + modalData.id, body)
+                     .then((response) => console.log(response))
+                     .catch((error) => console.log(error));
+    } else {
+        await backend.post("/classes", body)
+                     .then((response) => console.log(response))
+                     .catch((error) => console.log(error));
+    }
+    reloadCallback();
+    setIsSubmitted(true);
+    onConfirmationClose();
+    onClose();
+  };
+
+  useMemo(() => {
+    if (backend) {
+      backend
+        .get('/events')
+        .then((response) => {
+          setEvents(response.data);
+        });
+    }
+  }, [backend]);
 
   return (
     <Container>
@@ -171,13 +168,28 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback}) => {
             </FormControl>
 
             <FormControl>
-              <FormLabel>Performances</FormLabel>
+              <FormLabel>Costume</FormLabel>
               <Input
                 type="text"
                 required
-                value={performances}
-                onChange={(e) => setPerformances(e.target.value)}
+                value={costume}
+                onChange={(e) => setCostume(e.target.value)}
               />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Performance</FormLabel>
+              <Select
+                required
+                value={performance}
+                onChange={(e) => setPerformance(e.target.value)}
+              >
+                  { 
+                    events ? events.map((evt, ind) => (
+                        <option key={ind} value={evt.id}>{evt.title}</option>
+                    )) : null
+                  }
+              </Select>
             </FormControl>
 
             <Stack

@@ -192,13 +192,14 @@ export const Bookings = () => {
             currentBookings.map((item, ind) => (
               <ClassCard
                 key={ind}
-                id={item.id}
+                classId={item.id}
                 title={item.title}
                 location={item.location}
                 date={item.date}
                 description={item.description}
                 capacity={item.capacity}
                 level={item.level}
+                costume={item.costume}
                 performance={item.performance}
                 navigate={navigate}
                 isDraft={item.isDraft}
@@ -224,7 +225,7 @@ export const Bookings = () => {
 };
 
 const ClassCard = (
-  { id, title, location, date, description, capacity, level, performance, rsvpCount, link, isDraft, navigate, button, setModalData, onOpen },
+  { classId, title, location, date, description, capacity, level, costume, performance, rsvpCount, link, isDraft, navigate, button, setModalData, onOpen },
 ) => {
   // button shows if it is a class draft or a button
   return (
@@ -246,18 +247,19 @@ const ClassCard = (
           onClick={
             isDraft ? () => {
                 const modalData = {
-                    id,
+                    id: classId,
                     title,
                     location,
                     date,
                     description,
                     capacity,
                     level,
+                    costume,
                     performance
                 }
                 setModalData(modalData)
                 onOpen()
-            } : () => navigate(`/dashboard/classes/${id}`)
+            } : () => navigate(`/dashboard/classes/${classId}`)
           }
       >
         {isDraft ? "Edit" : "View Details"}
