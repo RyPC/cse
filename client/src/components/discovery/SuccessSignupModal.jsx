@@ -28,7 +28,6 @@ function SuccessSignupModal({
       setTimeout(() => {
         onSuccess();
         onClose();
-        console.log("coreq", isCorequisiteSignUp);
         if (!isCorequisiteSignUp) navigate("/bookings");
       }, 2000);
     }
@@ -61,12 +60,14 @@ function SuccessSignupModal({
               </Text>
             </VStack>
 
-            <Button
-              colorScheme="teal"
-              onClick={onClose}
-            >
-              View Booking
-            </Button>
+            {!isCorequisiteSignUp && (
+              <Button
+                colorScheme="teal"
+                onClick={onClose}
+              >
+                View Booking
+              </Button>
+            )}
           </VStack>
         </ModalBody>
       </ModalContent>

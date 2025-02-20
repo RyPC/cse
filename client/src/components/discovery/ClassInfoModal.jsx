@@ -29,7 +29,6 @@ import SuccessSignupModal from "./SuccessSignupModal";
 function ClassInfoModal({
   isOpenProp,
   handleClose,
-  onSuccess = () => {},
   title,
   description,
   location,
@@ -44,8 +43,13 @@ function ClassInfoModal({
   const { backend } = useBackendContext();
 
   const [openCoreqModal, setOpenCoreqModal] = useState(false);
-  const [openSuccessModal, setOpenSuccessModal] = useState(false);
+  const closeCoreqModal = () => setOpenCoreqModal(false);
 
+  const cancelCoreqModal = () => {
+    enrollInClass();
+  };
+
+  const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [corequisites, setCorequisites] = useState([]);
 
   // temp for image
@@ -95,8 +99,8 @@ function ClassInfoModal({
     }
   };
 
-  const viewCoreq = async () => {
-    setOpenCoreqModal(false);
+  const closeCoreq = async () => {
+    closeCoreqModal();
     handleClose();
     await fetchCorequirements();
   };
@@ -122,12 +126,11 @@ function ClassInfoModal({
   return (
     <>
       <CoReqWarningModal
+        origin="CLASS"
         isOpenProp={openCoreqModal}
         lstCorequisites={corequisites}
-        handleClose={() => setOpenCoreqModal(false)}
-        handleModifyCoreq={viewCoreq}
-        origin="CLASS"
-        onSuccess={onSuccess}
+        handleClose={closeCoreq}
+        handleCancel={cancelCoreqModal}
       />
 
       <SuccessSignupModal
@@ -139,8 +142,8 @@ function ClassInfoModal({
 
       <Modal
         isOpen={isOpenProp}
-        size="full"
         onClose={handleClose}
+        size="full"
       >
         <ModalOverlay />
         <ModalContent>

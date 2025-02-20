@@ -61,6 +61,7 @@ function EventInfoModal({
     }
     handleClose();
   };
+
   const eventSignUp = async () => {
     enrollInEvent();
   };
@@ -69,8 +70,8 @@ function EventInfoModal({
   return (
     <>
       <CoReqWarningModal
-        isOpen={openCoreqModal}
         origin="EVENT"
+        isOpen={openCoreqModal}
         lstCorequisites={[]}
         handleClose={() => setOpenCoreqModal(false)}
       />

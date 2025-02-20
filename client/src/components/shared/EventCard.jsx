@@ -34,10 +34,10 @@ export const EventCard = ({
     <>
       <EventInfoModal
         isOpenProp={openModal}
-        handleClose={() => setOpenModal(false)}
         title={title}
-        isCorequisiteSignUp={false}
         id={id}
+        isCorequisiteSignUp={false}
+        handleClose={() => setOpenModal(false)}
       />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>

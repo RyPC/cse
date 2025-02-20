@@ -30,7 +30,9 @@ export const ClassCard = ({
   const handleOpenModal = () => {
     setOpenModal(!openModal);
   };
-
+  const handleCancel = () => {
+    setOpenModal(false);
+  };
   useEffect(() => {
     const fetchClassDate = async () => {
       if (!classDate) {
@@ -47,7 +49,6 @@ export const ClassCard = ({
     <>
       <ClassInfoModal
         isOpenProp={openModal}
-        handleClose={handleOpenModal}
         title={title}
         description={description}
         location={location}
@@ -57,7 +58,8 @@ export const ClassCard = ({
         id={id}
         date={classDate}
         isCorequisiteSignUp={false}
-        onSuccess={() => console.log("PLEASE")}
+        handleClose={handleOpenModal}
+        handleCancel={handleCancel}
       />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>

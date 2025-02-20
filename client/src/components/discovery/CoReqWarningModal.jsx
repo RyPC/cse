@@ -19,10 +19,9 @@ import EventInfoModal from "./EventInfoModal";
 function CoReqWarningModal({
   origin,
   isOpenProp,
-  handleClose,
-  onSuccess = () => {},
   lstCorequisites,
-  handleModifyCoreq,
+  handleClose = () => {},
+  handleCancel = () => {},
 }) {
   const [openCoreq, setOpenCoreq] = useState(false);
   const [coreq, setCoreq] = useState(null);
@@ -30,7 +29,6 @@ function CoReqWarningModal({
   const handleCoreqModal = () => {
     setOpenCoreq(!openCoreq);
     handleClose();
-    handleModifyCoreq();
   };
 
   useEffect(() => {
@@ -49,7 +47,6 @@ function CoReqWarningModal({
       {origin.toUpperCase() === "CLASS" ? (
         <EventInfoModal
           isOpenProp={openCoreq}
-          handleClose={handleCoreqModal}
           id={coreq.id}
           title={coreq.title}
           location={coreq.location}
@@ -59,12 +56,11 @@ function CoReqWarningModal({
           capacity={coreq.capacity}
           costume={coreq.costume}
           isCorequisiteSignUp={true}
-          onSuccess={onSuccess}
+          handleClose={handleCoreqModal}
         />
       ) : (
         <ClassInfoModal
           isOpen={openCoreq}
-          handleClose={handleCoreqModal}
           title={coreq.title}
           description={coreq.description}
           location={coreq.location}
@@ -73,7 +69,7 @@ function CoReqWarningModal({
           level={coreq.level}
           id={coreq.id}
           isCorequisiteSignUp={true}
-          onSuccess={onSuccess}
+          handleClose={handleCoreqModal}
         />
       )}
 
@@ -110,7 +106,7 @@ function CoReqWarningModal({
                 </Button>
                 <Button
                   colorScheme="teal"
-                  onClick={handleClose}
+                  onClick={handleCancel}
                 >
                   Cancel
                 </Button>
