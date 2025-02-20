@@ -22,12 +22,12 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
+import SaveClass from "./modals/saveClass";
 
-export const CreateClassForm = ({closeModal}) => {
+export const CreateClassForm = ({ closeModal }) => {
   const { backend } = useBackendContext();
 
-  const postClass = async (e) => {
-    e.preventDefault();
+  const postClass = async () => {
     console.log({
       location: location ? location : "in draft",
       date: date ? date : new Date(),
@@ -53,6 +53,7 @@ export const CreateClassForm = ({closeModal}) => {
       .catch((error) => console.log(error));
 
     setIsSubmitted(true);
+    onConfirmationClose();
     onClose();
   };
 
@@ -64,6 +65,11 @@ export const CreateClassForm = ({closeModal}) => {
   const [level, setLevel] = useState("beginner");
   const [performances, setPerformances] = useState("");
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isConfirmationOpen,
+    onOpen: onConfirmationOpen,
+    onClose: onConfirmationClose,
+  } = useDisclosure();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isDraft, setIsDraft] = useState(false);
 
@@ -80,7 +86,12 @@ export const CreateClassForm = ({closeModal}) => {
       </Text>
       {!isSubmitted
         ? (
-          <form onSubmit={postClass}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              onConfirmationOpen();
+            }}
+          >
             <FormControl>
               <FormLabel>Class Title</FormLabel>
               <Input
@@ -194,6 +205,11 @@ export const CreateClassForm = ({closeModal}) => {
       <SaveClassAsDraftModal
         isOpen={isOpen}
         onClose={onClose}
+        postClass={postClass}
+      />
+      <SaveClass
+        isOpen={isConfirmationOpen}
+        onClose={onConfirmationClose}
         postClass={postClass}
       />
     </Container>
