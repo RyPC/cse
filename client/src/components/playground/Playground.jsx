@@ -1,4 +1,4 @@
-import { ControllerModal } from "../resources/teacher/ControllerModal";
+import { ControllerModal } from "../resources/ResourceFlow/ResourceFlowController";
 
 
 
