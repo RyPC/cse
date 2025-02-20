@@ -118,14 +118,14 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
         </Flex>
         <ModalBody>
           <Text mb='1rem'>
-            Class Title
+            Class Title (affects all classes with this title)
           </Text>
           <Input
           value={classTitle}
           onChange={onTitleChange}
           placeholder="Enter class title..."/>
           <Text mb='1rem'>
-            Location
+            Location (affects all classes with this title)
           </Text>
           <Select maxWidth="200px" value={location} placeholder='Select location...' onChange={handleLocationSelect}>
             <option value={classData.location}>{classData.location}</option>
@@ -143,7 +143,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
           maxWidth="200px"
           placeholder="Enter date.."/>
           <Text mb='1rem'>
-            Start Time
+            Start Time (affects only this specific offering)
           </Text>
           <Input
           // disabled // REMOVE LATER
@@ -153,7 +153,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
           onChange={onStartTimeChange}
           placeholder="Enter start time..."/>
           <Text mb='1rem'>
-            End Time
+            End Time (affects only this specific offering)
           </Text>
           <Input
           // disabled // REMOVE LATER
@@ -163,7 +163,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
           onChange={onEndTimeChange}
           placeholder="Enter end time..."/>
           <Text mb='1rem'>
-            Description
+            Description (affects all classes with this title)
           </Text>
           <Input
           height="100px"
@@ -171,7 +171,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
           onChange={onDescriptionChange}
           placeholder="Enter description..."/>
           <Text mb='1rem'>
-            Capacity
+            Capacity (affects all classes with this title)
           </Text>
           <Input
           type="number"
@@ -180,12 +180,12 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
           onChange={onCapacityChange}
           placeholder="Enter time..."/>
           <Text mb='1rem'>
-            Level
+            Level (affects all classes with this title)
           </Text>
           <Select maxWidth="200px" value={level} placeholder='Select level...' onChange={handleLevelSelect}>
-            <option value='beginner'>1</option>
-            <option value='intermediate'>2</option>
-            <option value='advanced'>3</option>
+            <option value='beginner'>Beginner</option>
+            <option value='intermediate'>Intermediate</option>
+            <option value='advanced'>Advanced</option>
           </Select>
         </ModalBody>
 
