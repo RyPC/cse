@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
+import { useEffect } from "react";
 
-import { Button, Box, useDisclosure, Heading, VStack } from "@chakra-ui/react";
+import { Button, Box, useDisclosure, Heading, VStack , Select} from "@chakra-ui/react";
 
 import { CardModal } from "./CardModal"
 import { SelectMediaModal } from "./SelectMediaModal"
@@ -21,11 +22,32 @@ export const ControllerModal = () => {
   const [ tags, setTags ] = useState([]);
   const [ link, setLink ] = useState('');
   const [ title, setTitle ] = useState('')
+  const [classId, setClassId] = useState("");
+  const [classes, setClasses] = useState([]);
 
   const onCloseModal = () => {
     setCurrentModal("select-media");
     onClose();
   };
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const response = await backend.get("/classes");
+        const formattedClasses = response.data.map(cls => ({
+          id: cls.id,
+          name: cls.title, // Using title for dropdown display
+        }));
+  
+        setClasses(formattedClasses); 
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    };
+
+    fetchClasses();
+  }, [backend]);
 
 
   const ajax = async () => {
@@ -36,7 +58,7 @@ export const ControllerModal = () => {
         s3Url: "https://aws.com", // TODO: Need to obtain the actual S3 Url
         description : "TODO",
         mediaUrl: link,
-        classId: 4 // TODO: Need to find the actual class id
+        classId: classId  // added classId, will change the look base on design
         // TODO: what to do with tags? 
       })
       .then((response) => console.log(response))
@@ -61,6 +83,19 @@ export const ControllerModal = () => {
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
         <Heading>Resource Flows for Teacher</Heading>
+
+
+        <Select placeholder="Select a class" value={classId} onChange={(e) => setClassId(e.target.value)}>
+        {classes.length > 0 ? (
+          classes.map((cls) => (
+            <option key={cls.id} value={cls.id}>
+              {cls.id} {/* Display title */}
+            </option>
+          ))
+        ) : (
+          <option disabled>No classes available</option>
+        )}
+      </Select>
 
 
       <Button onClick={onOpen}>
