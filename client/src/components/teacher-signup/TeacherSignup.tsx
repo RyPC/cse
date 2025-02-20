@@ -24,6 +24,8 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
+import { EmailTemplate } from "../signup/EmailTemplate";
+import ReactDOMServer from "react-dom/server"
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "Field Cannot Be Empty"),
@@ -62,6 +64,11 @@ export const TeacherSignup = () => {
 
       if (user) {
         updateDisplayName(user, data.firstName + " " + data.lastName)
+        const templateEmail = EmailTemplate( {"firstName": data.firstName, "lastName":data.lastName, "email": data.email, "role": "teacher"});
+        backend.post("/nodemailer/send", {
+          "to": import.meta.env.VITE_ADMIN_EMAIL,
+          "html": ReactDOMServer.renderToString(templateEmail)
+        });
         navigate("/teacher-signup/request");
       }
     } catch (err) {
