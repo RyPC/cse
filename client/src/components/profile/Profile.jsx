@@ -49,7 +49,7 @@ export const Profile = () => {
           onClick={() => console.log("Settings opened!")}
           colorScheme="gray"
         >
-          Settings
+          <a href="/settings">Settings</a>
         </Button>
       </VStack>
     </Flex>

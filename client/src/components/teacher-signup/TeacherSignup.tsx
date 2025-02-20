@@ -38,7 +38,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export const TeacherSignup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { teacherSignup, handleRedirectResult } = useAuthContext();
+  const { teacherSignup, handleRedirectResult, updateDisplayName } = useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -61,6 +61,7 @@ export const TeacherSignup = () => {
       });
 
       if (user) {
+        updateDisplayName(user, data.firstName + " " + data.lastName)
         navigate("/teacher-signup/request");
       }
     } catch (err) {

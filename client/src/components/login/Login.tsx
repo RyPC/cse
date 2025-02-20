@@ -67,21 +67,21 @@ export const Login = () => {
       });
       const response = await backend.get('/teachers');
         const teachers = response.data;
-        const teacher = teachers.find(teach => 
+        const teacher = teachers.find(teach =>
             teach.email === data.email
         );
 
         if (teacher) {
             if (teacher.isActivated) {
-                navigate('/dashboard');
-            } 
+                navigate('/discovery');
+            }
             else {
                 navigate('/teacher-signup/pending');
             }
-        } 
+        }
         else {
-            navigate('/dashboard')
-        }     
+            navigate('/discovery')
+        }
 
     } catch (err) {
       const errorCode = err.code;
@@ -170,7 +170,7 @@ export const Login = () => {
             </FormErrorMessage>
             <ChakraLink
               as={Link}
-              to="/teacher-signup"
+              to="/signup"
             >
               <FormHelperText>Click here to sign up</FormHelperText>
             </ChakraLink>

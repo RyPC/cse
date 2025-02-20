@@ -14,6 +14,11 @@ import ClassDashboard, {
 } from "./components/dashboard/classDashboard/ClassDashboard";
 import ClassInfoDashboard from "./components/dashboard/classInfoDashboard/ClassInfoDashboard";
 import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
+import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
+import { StudentDashboard } from "./components/dashboard/studentDashboard/StudentDashboard";
+import { StudentInfoDashboard } from "./components/dashboard/studentInfoDashboard/StudentInfoDashboard";
+import { TeacherDashboard } from "./components/dashboard/teacherDashboard/TeacherDashboard";
+import { TeacherInfoDashboard } from "./components/dashboard/teacherInfoDashboard/TeacherInfoDashboard";
 import { Discovery } from "./components/discovery/Discovery";
 import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
@@ -28,7 +33,6 @@ import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
-import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
 import Request from "./components/teacher-signup/requests/Request";
 
 const App = () => {
@@ -89,6 +93,26 @@ const App = () => {
                       element={<ClassInfoDashboard />}
                     />
                   </Route>
+                  <Route
+                    path="/dashboard/students"
+                    element={<ProtectedRoute element={<StudentDashboard />} />}
+                  />
+                  <Route
+                    path="/dashboard/students/:id"
+                    element={
+                      <ProtectedRoute element={<StudentInfoDashboard />} />
+                    }
+                  />
+                  <Route
+                    path="/dashboard/teachers/"
+                    element={<ProtectedRoute element={<TeacherDashboard />} />}
+                  />
+                  <Route
+                    path="/dashboard/teachers/:teacherId"
+                    element={
+                      <ProtectedRoute element={<TeacherInfoDashboard />} />
+                    }
+                  />
                 </Route>
                 <Route
                   path="/bookings"
@@ -125,6 +149,7 @@ const App = () => {
                   path="/discovery"
                   element={<ProtectedRoute element={<Discovery />} />}
                 />
+
                 <Route
                   path="/"
                   element={
@@ -138,11 +163,11 @@ const App = () => {
                   path="*"
                   element={<ProtectedRoute element={<CatchAll />} />}
                 />
-                <Route 
+                <Route
                   path = "/teacher-signup/request"
                   element = {<ProtectedRoute element = {<Request />} />}
                 />
-                <Route 
+                <Route
                   path = "/teacher-signup/pending"
                   element = {<ProtectedRoute element = {<Request />} />}
                 />
