@@ -25,7 +25,6 @@ import { useNavigate } from "react-router-dom";
 export const Bookings = () => {
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [currentModal, setCurrentModal] = useState("view");
   const { userRole } = useRoleContext();
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
@@ -208,10 +207,9 @@ export const Bookings = () => {
       <ViewModal
         isOpen={isOpen}
         onClose={onClose}
-        setCurrentModal={setCurrentModal}
         title={"Create a Class/Draft"}
       >
-        <CreateClassForm />
+        <CreateClassForm closeModal={onClose}/>
       </ViewModal>
       <Navbar />
     </Box>

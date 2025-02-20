@@ -23,7 +23,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 
-export const CreateClassForm = () => {
+export const CreateClassForm = ({closeModal}) => {
   const { backend } = useBackendContext();
 
   const postClass = async (e) => {
@@ -74,7 +74,9 @@ export const CreateClassForm = () => {
         textAlign="center"
         mb={4}
       >
-        {!isSubmitted ? "New Class" : `${title} ${isDraft ? "Draft" : "Published"}`}
+        {!isSubmitted
+          ? "New Class"
+          : `${title} ${isDraft ? "Draft" : "Published"}`}
       </Text>
       {!isSubmitted
         ? (
@@ -180,10 +182,12 @@ export const CreateClassForm = () => {
               as="h3"
               size="xl"
             >
-              Class Submitted!
+              {isDraft ? "Draft" : "Class"} Submitted!
             </Heading>{" "}
             <br />
-            <Button colorScheme="blue" onClick={onClose}>Return to Classes Page</Button>
+            <Button colorScheme="blue" onClick={closeModal}>
+              Return to Classes Page
+            </Button>
           </VStack>
         )}
 
