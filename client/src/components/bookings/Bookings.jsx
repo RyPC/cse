@@ -145,7 +145,6 @@ export const Bookings = () => {
             <Button
               backgroundColor="#646363"
               color="white"
-              // fontsi
             >
               View Details
               <Icon as={BsChevronRight}/>

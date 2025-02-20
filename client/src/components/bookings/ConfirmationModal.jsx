@@ -1,4 +1,4 @@
-import { Icon, Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Flex, Text, VStack } from "@chakra-ui/react";
+import { Icon, Button, Modal, ModalOverlay, ModalContent, ModalFooter, Flex, Text, VStack } from "@chakra-ui/react";
 
 import { BsCheck } from "react-icons/bs";
 

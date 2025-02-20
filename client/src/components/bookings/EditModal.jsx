@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-import { Button, Container, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter,
-  Select, Text, 
-  IconButton } from "@chakra-ui/react";
+import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
+  Select, Text, IconButton } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -52,7 +51,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
         costume: null,
         isDraft: draft,
       };
-      const response = await backend.put(`/classes/${classData.classId}`, updatedData);
+      await backend.put(`/classes/${classData.classId}`, updatedData);
 
       // Update classData
       setClassData({
@@ -135,7 +134,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             Date
           </Text>
           <Input
-          disabled // HERE BECAUSE CONFSUED
+          disabled // REMOVE LATER
           type="date"
           value={date}
           onChange={onDateChange}
@@ -145,7 +144,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             Start Time
           </Text>
           <Input
-          disabled // HERE BECAUSE CONFSUED
+          disabled // REMOVE LATER
           type="time"
           maxWidth="200px"
           value={startTime}
@@ -155,7 +154,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             End Time
           </Text>
           <Input
-          disabled // HERE BECAUSE CONFSUED
+          disabled // REMOVE LATER
           type="time"
           maxWidth="200px"
           value={endTime}

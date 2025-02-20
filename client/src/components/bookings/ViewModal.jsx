@@ -1,7 +1,5 @@
-import { useState } from "react";
-
 import { Box, Button, Center, Container, Flex, Menu, MenuItem, MenuList, MenuButton, Modal,
-  ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Text, 
+  ModalOverlay, ModalHeader, ModalContent, ModalBody, Text, 
   IconButton} from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
@@ -61,7 +59,6 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
             </MenuList>
           </Menu>
         </Flex>
-        {/* <ModalCloseButton /> */}
         <ModalBody>
           <Flex gap="40" justify="center">
             <div>
@@ -134,24 +131,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
               </Text>
             </div>
           </Flex>
-          {/* <Box>
-            <Text fontWeight='bold' mb='1rem'>
-              Performances
-            </Text>
-            <Text>
-              {performances}
-            </Text>
-          </Box> */}
         </ModalBody>
-
-        {/* <ModalFooter>
-          <Button colorScheme='red' mr={3} onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button colorScheme='blue' mr={3} onClick={onClose}>
-            Close
-          </Button>
-        </ModalFooter> */}
       </ModalContent>
     </Modal>
   );
