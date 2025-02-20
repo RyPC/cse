@@ -20,7 +20,7 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { redirect } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const Bookings = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -60,7 +60,6 @@ export const Bookings = () => {
           } else {
             classesResponse = await backend.get(`/classes`);
           }
-          console.log(classesResponse.data);
           const tempClass = [];
           for (const value of Object.values(classesResponse.data)) {
             if (!value["isDraft"]) {
@@ -176,12 +175,15 @@ export const Bookings = () => {
           gap={4}
           width="100%"
         >
+          {selectedButton}
           {displayedClasses.map((item) => (
             <ClassCard
+              link={item.id}
               key={item.id}
               title={item.title}
               time="Placeholder Time"
               location={item.location}
+              isDraft={item.isDraft}
             />
           ))}
         </Box>
@@ -211,7 +213,8 @@ export const Bookings = () => {
   );
 };
 
-const ClassCard = ({ title, time, location, rsvpCount, link }) => {
+const ClassCard = ({ title, time, location, rsvpCount, link, isDraft }) => {
+  const navigate = useNavigate();
   return (
     <Card width="300px" minHeight="100px" position="relative">
       <CardHeader paddingBottom={1}>
@@ -228,9 +231,9 @@ const ClassCard = ({ title, time, location, rsvpCount, link }) => {
         position="absolute"
         bottom="8px"
         right="8px"
-        onClick={() => redirect(link ? link : "#")}
+        onClick={() => navigate(`/dashboard/classes/${link}`)}
       >
-        View Details
+        {isDraft ? "Edit" : "View Details"}
       </Button>
     </Card>
   );
