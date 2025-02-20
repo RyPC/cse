@@ -52,7 +52,9 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
         isDraft: draft,
       };
       await backend.put(`/classes/${classData.classId}`, updatedData);
-
+      await backend.put(`/scheduled-classes/`, 
+        { class_id: classData.classId, date: date, start_time: startTime, end_time: endTime }
+      );
       // Update classData
       setClassData({
         classId: classData.classId,
@@ -144,7 +146,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             Start Time
           </Text>
           <Input
-          disabled // REMOVE LATER
+          // disabled // REMOVE LATER
           type="time"
           maxWidth="200px"
           value={startTime}
@@ -154,7 +156,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
             End Time
           </Text>
           <Input
-          disabled // REMOVE LATER
+          // disabled // REMOVE LATER
           type="time"
           maxWidth="200px"
           value={endTime}
