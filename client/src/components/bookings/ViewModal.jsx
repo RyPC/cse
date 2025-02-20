@@ -1,6 +1,6 @@
 import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter } from "@chakra-ui/react";
 
-export const ViewModal = ({ isOpen, onClose, setCurrentModal, children }) => {
+export const ViewModal = ({ isOpen, onClose, setCurrentModal, children, title }) => {
   const onCancel = () => {
     setCurrentModal("cancel");
   };
@@ -8,7 +8,7 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, children }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Title</ModalHeader>
+        <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody paddingBottom={10}>
           {children}

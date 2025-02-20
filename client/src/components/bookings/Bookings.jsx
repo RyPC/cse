@@ -205,25 +205,14 @@ export const Bookings = () => {
         </Box>
         {!isStudent && <AddButton onOpen={onOpen} />}
       </VStack>
-      {currentModal === "view"
-        ? (
-          <ViewModal
-            isOpen={isOpen}
-            onClose={onClose}
-            setCurrentModal={setCurrentModal}
-          >
-            <CreateClassForm />
-          </ViewModal>
-        )
-        : currentModal === "confirmation"
-        ? <ConfirmationModal isOpen={isOpen} onClose={onClose} />
-        : (
-          <CancelModal
-            isOpen={isOpen}
-            onClose={onClose}
-            setCurrentModal={setCurrentModal}
-          />
-        )}
+      <ViewModal
+        isOpen={isOpen}
+        onClose={onClose}
+        setCurrentModal={setCurrentModal}
+        title={"Create a Class/Draft"}
+      >
+        <CreateClassForm />
+      </ViewModal>
       <Navbar />
     </Box>
   );
