@@ -3,12 +3,73 @@ import { useState } from "react";
 import { Button, Container, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter,
   Select, Text } from "@chakra-ui/react";
 
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+
+
+const stringToDate = (dateString) => {
+  // Split string and convert to numbers
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+const stringToTime = (timeString) => {
+  const d = new Date();
+  // Split time and AM/PM
+  const [time, modifier] = timeString.split(" ");
+  const [hours, minutes] = time.split(":");
+
+  // Convert to 24-hour time
+  let hoursIn24 = parseInt(hours, 10);
+  if (modifier === "PM" && hoursIn24 !== 12) {
+    hoursIn24+= 12;
+  }
+  else if (modifier === "AM" && hoursIn24 === 12) {
+    hoursIn24 = 0;
+  }
+
+  d.setHours(hoursIn24, parseInt(minutes, 10), 0);
+
+  return d;
+};
+
 export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData }) => {
+  const { backend } = useBackendContext();
   const onCancel = () => {
     setCurrentModal("view");
   };
-  const onSave = () => {
-    setCurrentModal("view");
+  const onSave = async () => {
+    try {
+      // PUT request to save class data
+      const updatedData = {
+        title: classTitle,
+        description,
+        location,
+        capacity,
+        level,
+        costume: null,
+        isDraft: false,
+      };
+      const response = await backend.put(`/classes/${classData.classId}`, updatedData);
+
+      // Update classData
+      setClassData({
+        classId: classData.classId,
+        date: stringToDate(date),
+        startTime: stringToTime(startTime),
+        endTime: stringToTime(endTime),
+        title: classTitle,
+        description,
+        location,
+        capacity,
+        level,
+        costume: classData.costume,
+        isDraft: classData.isDraft,
+      });
+
+      setCurrentModal("view");
+    } catch (error) {
+      console.error('Error updating class data:', error);
+    }
   }
 
 
@@ -23,7 +84,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
   const [level, setLevel] = useState(classData.level);
 
   const handleLocationSelect = (e) => {
-    setLocation(e.target.value)
+    setLocation(e.target.value);
   }
 
   const handleLevelSelect = (e) => {
@@ -38,101 +99,101 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
   const onEndTimeChange = (e) => setEndTime(e.target.value);
 
   return (
-    <div>
-      {/* {data} */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <Flex>
-            <Container centerContent>
-              <ModalHeader>Edit Mode</ModalHeader>
-              <Button onClick={onCancel}>
-                ...
-              </Button>
-            </Container>
-          </Flex>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text mb='1rem'>
-              Class Title
-            </Text>
-            <Input
-            value={classTitle}
-            onChange={onTitleChange}
-            placeholder="Enter class title..."/>
-            <Text mb='1rem'>
-              Location
-            </Text>
-            <Select maxWidth="200px" value={location} placeholder='Select location...' onChange={handleLocationSelect}>
-              <option value={classData.location}>{classData.location}</option>
-              <option value="Location 1">Location 1</option>
-              <option value="Location 2">Location 2</option>
-            </Select>
-            <Text mb='1rem'>
-              Date
-            </Text>
-            <Input
-            type="date"
-            value={date}
-            onChange={onDateChange}
-            maxWidth="200px"
-            placeholder="Enter date.."/>
-            <Text mb='1rem'>
-              Start Time
-            </Text>
-            <Input
-            type="time"
-            maxWidth="200px"
-            value={startTime}
-            onChange={onStartTimeChange}
-            placeholder="Enter start time..."/>
-            <Text mb='1rem'>
-              End Time
-            </Text>
-            <Input
-            type="time"
-            maxWidth="200px"
-            value={endTime}
-            onChange={onEndTimeChange}
-            placeholder="Enter end time..."/>
-            <Text mb='1rem'>
-              Description
-            </Text>
-            <Input
-            height="100px"
-            value={description}
-            onChange={onDescriptionChange}
-            placeholder="Enter description..."/>
-            <Text mb='1rem'>
-              Capacity
-            </Text>
-            <Input
-            type="number"
-            maxWidth="200px"
-            value={capacity}
-            onChange={onCapacityChange}
-            placeholder="Enter time..."/>
-            <Text mb='1rem'>
-              Level
-            </Text>
-            <Select maxWidth="200px" value={level} placeholder='Select level...' onChange={handleLevelSelect}>
-              <option value='beginner'>1</option>
-              <option value='intermediate'>2</option>
-              <option value='advanced'>3</option>
-            </Select>
-          </ModalBody>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <Flex>
+          <Container centerContent>
+            <ModalHeader>Edit Mode</ModalHeader>
+            <Button onClick={onCancel}>
+              ...
+            </Button>
+          </Container>
+        </Flex>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text mb='1rem'>
+            Class Title
+          </Text>
+          <Input
+          value={classTitle}
+          onChange={onTitleChange}
+          placeholder="Enter class title..."/>
+          <Text mb='1rem'>
+            Location
+          </Text>
+          <Select maxWidth="200px" value={location} placeholder='Select location...' onChange={handleLocationSelect}>
+            <option value={classData.location}>{classData.location}</option>
+            <option value="Location 1">Location 1</option>
+            <option value="Location 2">Location 2</option>
+          </Select>
+          <Text mb='1rem'>
+            Date
+          </Text>
+          <Input
+          disabled // HERE BECAUSE CONFSUED
+          type="date"
+          value={date}
+          onChange={onDateChange}
+          maxWidth="200px"
+          placeholder="Enter date.."/>
+          <Text mb='1rem'>
+            Start Time
+          </Text>
+          <Input
+          disabled // HERE BECAUSE CONFSUED
+          type="time"
+          maxWidth="200px"
+          value={startTime}
+          onChange={onStartTimeChange}
+          placeholder="Enter start time..."/>
+          <Text mb='1rem'>
+            End Time
+          </Text>
+          <Input
+          disabled // HERE BECAUSE CONFSUED
+          type="time"
+          maxWidth="200px"
+          value={endTime}
+          onChange={onEndTimeChange}
+          placeholder="Enter end time..."/>
+          <Text mb='1rem'>
+            Description
+          </Text>
+          <Input
+          height="100px"
+          value={description}
+          onChange={onDescriptionChange}
+          placeholder="Enter description..."/>
+          <Text mb='1rem'>
+            Capacity
+          </Text>
+          <Input
+          type="number"
+          maxWidth="200px"
+          value={capacity}
+          onChange={onCapacityChange}
+          placeholder="Enter time..."/>
+          <Text mb='1rem'>
+            Level
+          </Text>
+          <Select maxWidth="200px" value={level} placeholder='Select level...' onChange={handleLevelSelect}>
+            <option value='beginner'>1</option>
+            <option value='intermediate'>2</option>
+            <option value='advanced'>3</option>
+          </Select>
+        </ModalBody>
 
-          <ModalFooter>
-            <Button colorScheme='red' mr={3} onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button colorScheme='blue' mr={3} onClick={onSave}>
-              Save
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </div>
+        <ModalFooter>
+          <Button colorScheme='red' mr={3} onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button colorScheme='blue' mr={3} onClick={onSave}>
+            Save
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

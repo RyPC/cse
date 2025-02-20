@@ -93,8 +93,6 @@ export const Bookings = () => {
         isDraft: classDataDict.get(cls.classId).isDraft,
       }));
 
-      console.log(formattedData);
-
       setClasses(formattedData);
     } catch (error) {
       console.error('Error fetching class data:', error);
