@@ -57,6 +57,7 @@ export const ClassCard = ({
         id={id}
         date={classDate}
         isCoreq={false}
+        onSuccess={() => console.log("PLEASE")}
       />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>

@@ -20,6 +20,7 @@ function CoReqWarningModal({
   origin,
   isOpenProp,
   handleClose,
+  onSuccess = () => {},
   coreqs,
   handleModifyCoreq,
 }) {
@@ -42,7 +43,7 @@ function CoReqWarningModal({
     return null;
   }
   return (
-    <>
+    <Box>
       {origin.toUpperCase() === "CLASS" ? (
         <EventInfoModal
           isOpenProp={openCoreq}
@@ -56,6 +57,7 @@ function CoReqWarningModal({
           capacity={coreq.capacity}
           costume={coreq.costume}
           isCoreq={true}
+          onSuccess={onSuccess}
         />
       ) : (
         <ClassInfoModal
@@ -69,8 +71,10 @@ function CoReqWarningModal({
           level={coreq.level}
           id={coreq.id}
           isCoreq={true}
+          onSuccess={onSuccess}
         />
       )}
+
       <Modal
         isOpen={isOpenProp}
         size="full"
@@ -111,7 +115,7 @@ function CoReqWarningModal({
           </ModalBody>
         </ModalContent>
       </Modal>
-    </>
+    </Box>
   );
 }
 

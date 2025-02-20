@@ -33,6 +33,7 @@ function SuccessSignupModal({
       setTimeout(() => {
         onSuccess();
         onClose();
+        console.log("coreq", isCoreq);
         if (!isCoreq) navigate("/bookings");
       }, 2000);
     }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   Box,
@@ -29,6 +29,7 @@ import SuccessSignupModal from "./SuccessSignupModal";
 function ClassInfoModal({
   isOpenProp,
   handleClose,
+  onSuccess = () => {},
   title,
   description,
   location,
@@ -42,55 +43,43 @@ function ClassInfoModal({
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
 
-  const [classCache, setCacheClass] = useState(null);
-  const [classInfo, setClassInfo] = useState({
-    title,
-    description,
-    location,
-    capacity,
-    level,
-    costume,
-    id,
-    date,
-  });
-
   const [openCoreqModal, setOpenCoreqModal] = useState(false);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   const [corequisites, setCorequisites] = useState([]);
-  const [completedCoreq, setCompletedCoreq] = useState([]);
 
+  // temp for image
   const [imageSrc, setImageSrc] = useState("");
 
-  const fetchCorequirements = async () => {
+  const fetchCorequirements = useCallback(async () => {
+    const fetchEnrolledEvents = async (coreq) => {
+      try {
+        const response = await backend.get(`/event-enrollments`);
+        const user = await backend
+          .get(`/users/${currentUser.uid}`)
+          .then((res) => res.data[0]);
+        const events = response.data;
+        const filteredEvents = events
+          .filter((event) => event.studentId === user.id)
+          .map((event) => event.eventId);
+
+        const updatedCorequisites = coreq.map((coreq) => {
+          if (filteredEvents.includes(coreq.id)) {
+            return { ...coreq, enrolled: true };
+          }
+          return coreq;
+        });
+        setCorequisites(updatedCorequisites);
+      } catch (error) {
+        console.error("Error fetching enrolled events or users:", error);
+      }
+    };
+
     const response = await backend.get(`/classes/corequisites/${id}`);
     const coreq = response.data.map((coreq) => ({ ...coreq, enrolled: false }));
     setCorequisites(coreq);
     await fetchEnrolledEvents(coreq);
-  };
-
-  const fetchEnrolledEvents = async (coreq) => {
-    try {
-      const response = await backend.get(`/event-enrollments`);
-      const user = await backend
-        .get(`/users/${currentUser.uid}`)
-        .then((res) => res.data[0]);
-      const events = response.data;
-      const filteredEvents = events
-        .filter((event) => event.studentId === user.id)
-        .map((event) => event.eventId);
-
-      const updatedCorequisites = coreq.map((coreq) => {
-        if (filteredEvents.includes(coreq.id)) {
-          return { ...coreq, enrolled: true };
-        }
-        return coreq;
-      });
-      setCorequisites(updatedCorequisites);
-    } catch (error) {
-      console.error("Error fetching enrolled events or users:", error);
-    }
-  };
+  }, [backend, id, currentUser.uid]);
 
   const enrollInClass = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
@@ -107,14 +96,13 @@ function ClassInfoModal({
   };
 
   const viewCoreq = async () => {
-    setCacheClass(classInfo);
-    setClassInfo(corequisites[0]);
     setOpenCoreqModal(false);
+    handleClose();
     await fetchCorequirements();
   };
 
   const classSignUp = async () => {
-    if (corequisites.length > 0) {
+    if (corequisites.some((coreq) => !coreq.enrolled)) {
       setOpenCoreqModal(true);
     } else {
       enrollInClass();
@@ -123,12 +111,12 @@ function ClassInfoModal({
 
   useEffect(() => {
     if (isOpenProp && !imageSrc) {
-      fetch("https://dog.ceo/api/breeds/image/random")
+      fetch("https://dog.ceo/api/breeds/image/random") // for fun
         .then((res) => res.json())
         .then((data) => setImageSrc(data.message));
       fetchCorequirements();
     }
-  }, [isOpenProp]);
+  }, [fetchCorequirements, imageSrc, isOpenProp]);
 
   if (!id) return null;
   return (
@@ -139,11 +127,12 @@ function ClassInfoModal({
         handleClose={() => setOpenCoreqModal(false)}
         handleModifyCoreq={viewCoreq}
         origin="CLASS"
+        onSuccess={onSuccess}
       />
 
       <SuccessSignupModal
         isOpen={openSuccessModal}
-        title={classInfo.title}
+        title={title}
         onClose={() => setOpenCoreqModal(false)}
         isCoreq={isCoreq}
       />
@@ -155,7 +144,7 @@ function ClassInfoModal({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{classInfo.title}</ModalHeader>
+          <ModalHeader>{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack
@@ -207,7 +196,7 @@ function ClassInfoModal({
               >
                 <Box>
                   <Text fontWeight="bold">Location:</Text>
-                  <Text>{classInfo.location}</Text>
+                  <Text>{location}</Text>
                 </Box>
                 <Box>
                   <Text fontWeight="bold">Date:</Text>
@@ -217,7 +206,7 @@ function ClassInfoModal({
 
               <Box width="100%">
                 <Text fontWeight="bold">Description:</Text>
-                <Text>{classInfo.description}</Text>
+                <Text>{description}</Text>
               </Box>
 
               <HStack
@@ -227,18 +216,18 @@ function ClassInfoModal({
               >
                 <Box>
                   <Text fontWeight="bold">Capacity:</Text>
-                  <Text>{classInfo.capacity}</Text>
+                  <Text>{capacity}</Text>
                 </Box>
                 <Box>
                   <Text fontWeight="bold">Level:</Text>
-                  <Text>{classInfo.level}</Text>
+                  <Text>{level}</Text>
                 </Box>
               </HStack>
 
               <HStack width={"100%"}>
                 <Box>
                   <Text fontWeight="bold">Costume:</Text>
-                  <Text>{classInfo.costume}</Text>
+                  <Text>{costume}</Text>
                 </Box>
               </HStack>
             </VStack>
