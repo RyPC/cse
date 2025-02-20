@@ -71,7 +71,7 @@ function EventInfoModal({
       <CoReqWarningModal
         isOpen={openCoreqModal}
         origin="EVENT"
-        coreqs={[]}
+        lstCorequisites={[]}
         handleClose={() => setOpenCoreqModal(false)}
       />
 

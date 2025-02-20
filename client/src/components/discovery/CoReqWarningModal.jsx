@@ -21,7 +21,7 @@ function CoReqWarningModal({
   isOpenProp,
   handleClose,
   onSuccess = () => {},
-  coreqs: lstCorequisites,
+  lstCorequisites,
   handleModifyCoreq,
 }) {
   const [openCoreq, setOpenCoreq] = useState(false);

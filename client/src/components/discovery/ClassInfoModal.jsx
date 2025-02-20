@@ -123,7 +123,7 @@ function ClassInfoModal({
     <>
       <CoReqWarningModal
         isOpenProp={openCoreqModal}
-        coreqs={corequisites}
+        lstCorequisites={corequisites}
         handleClose={() => setOpenCoreqModal(false)}
         handleModifyCoreq={viewCoreq}
         origin="CLASS"
