@@ -30,10 +30,8 @@ export const Bookings = () => {
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const [id, setId] = useState(null);
-  const [drafts, setDrafts] = useState([]);
-  const [classes, setClasses] = useState([]);
-  const [displayedClasses, setDisplayedClasses] = useState([]);
-  const [showDrafts, setShowDrafts] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [currentBookings, setCurrentBookings] = useState([]);
   const [selectedButton, setSelectedButton] = useState("classes");
 
   useMemo(() => {
@@ -47,7 +45,7 @@ export const Bookings = () => {
   }, [backend, currentUser?.uid]);
 
   const isStudent = userRole === "student";
-
+  // On mount, get the classes if the teacher else get the student classes I assume, and set them respectively, and also get the dra
   useEffect(() => {
     const fetchData = async () => {
       if (currentUser?.uid && backend) {
@@ -67,34 +65,30 @@ export const Bookings = () => {
               tempClass.push(value);
             }
           }
-          setClasses(classesResponse.data);
-          setDisplayedClasses(tempClass);
-          const allClasses = await backend.get("/classes");
-          const tempDrafts = Object.values(allClasses.data).filter(
-            (value) => value["isDraft"],
-          );
-          setDrafts(tempDrafts);
+          setCurrentBookings(tempClass);
         } catch (error) {
           console.error("Error fetching data:", error);
         }
       }
     };
-
     fetchData();
+    setLoading(false);
   }, [backend, currentUser?.uid, isStudent]);
 
   const handleClickEvents = async () => {
     setSelectedButton("events");
+    setLoading(true);
     try {
       const events = await backend.get("/events");
-      setDisplayedClasses(events.data);
-      setShowDrafts(false);
+      setCurrentBookings(events.data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching events:", error);
     }
   };
   const handleClickClasses = async () => {
     setSelectedButton("classes");
+    setLoading(true);
     try {
       let classesResponse;
       if (isStudent) {
@@ -108,17 +102,34 @@ export const Bookings = () => {
           tempDrafts.push(value);
         }
       }
-      setDisplayedClasses(tempDrafts);
-      setShowDrafts(false);
+      setCurrentBookings(tempDrafts);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
   };
 
-  const handleClickDrafts = () => {
+  const handleClickDrafts = async () => {
     setSelectedButton("drafts");
-    setDisplayedClasses(drafts);
-    setShowDrafts(true);
+    setLoading(true);
+    try {
+      let classesResponse;
+      if (isStudent) {
+        classesResponse = await backend.get(`/students/joined/${id}`);
+      } else {
+        classesResponse = await backend.get(`/classes`);
+      }
+      const tempDrafts = [];
+      for (const value of Object.values(classesResponse.data)) {
+        if (value["isDraft"]) {
+          tempDrafts.push(value);
+        }
+      }
+      setCurrentBookings(tempDrafts);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching drafts:", error);
+    }
   };
 
   return (
@@ -177,17 +188,20 @@ export const Bookings = () => {
           width="100%"
         >
           {selectedButton}
-          {displayedClasses.map((item) => (
-            <ClassCard
-              link={item.id}
-              key={item.id}
-              title={item.title}
-              time="Placeholder Time"
-              location={item.location}
-              navigate={navigate}
-              isDraft={item.isDraft}
-            />
-          ))}
+          {loading ? <Text>Loading...</Text> : (
+            currentBookings.map((item) => (
+              <ClassCard
+                link={item.id}
+                key={item.id}
+                title={item.title}
+                time="Placeholder Time"
+                location={item.location}
+                navigate={navigate}
+                isDraft={item.isDraft}
+                button={selectedButton}
+              />
+            ))
+          )}
         </Box>
         {!isStudent && <AddButton onOpen={onOpen} />}
       </VStack>
@@ -215,7 +229,10 @@ export const Bookings = () => {
   );
 };
 
-const ClassCard = ({ title, time, location, rsvpCount, link, isDraft, navigate }) => {
+const ClassCard = (
+  { title, time, location, rsvpCount, link, isDraft, navigate, button },
+) => {
+  // button shows if it is a class draft or a button
   return (
     <Card width="300px" minHeight="100px" position="relative">
       <CardHeader paddingBottom={1}>
