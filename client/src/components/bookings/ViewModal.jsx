@@ -10,18 +10,9 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, children }) => {
       <ModalContent>
         <ModalHeader>Title</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody paddingBottom={10}>
           {children}
         </ModalBody>
-
-        <ModalFooter>
-          <Button colorScheme='red' mr={3} onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button colorScheme='blue' mr={3} onClick={onClose}>
-            Close
-          </Button>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );

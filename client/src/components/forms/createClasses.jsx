@@ -29,15 +29,15 @@ export const CreateClassForm = () => {
   const postClass = async (e) => {
     e.preventDefault();
     console.log({
-        location: location ? location : "in draft",
-        date: date ? date : new Date(),
-        description: description ? description : "in draft",
-        level: level ? level : "in draft",
-        capacity: capacity ? capacity : 0,
-        costume: performances ? performances : "in draft",
-        isDraft,
-        title: title ? title : "in draft",
-      })
+      location: location ? location : "in draft",
+      date: date ? date : new Date(),
+      description: description ? description : "in draft",
+      level: level ? level : "in draft",
+      capacity: capacity ? capacity : 0,
+      costume: performances ? performances : "in draft",
+      isDraft,
+      title: title ? title : "in draft",
+    });
     await backend
       .post("/classes", {
         location: location ? location : "in draft",
@@ -74,116 +74,118 @@ export const CreateClassForm = () => {
         textAlign="center"
         mb={4}
       >
-        New Class
+        {!isSubmitted ? "New Class" : `${title} ${isDraft ? "Draft" : "Published"}`}
       </Text>
-      {!isSubmitted ? (
-        <form onSubmit={postClass}>
-          <FormControl>
-            <FormLabel>Class Title</FormLabel>
-            <Input
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Location</FormLabel>
-            <Input
-              type="text"
-              required
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Date</FormLabel>
-            <Input
-              type="date"
-              required
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Description</FormLabel>
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Capacity</FormLabel>
-            <NumberInput min={0}>
-              <NumberInputField
+      {!isSubmitted
+        ? (
+          <form onSubmit={postClass}>
+            <FormControl>
+              <FormLabel>Class Title</FormLabel>
+              <Input
+                type="text"
                 required
-                value={capacity}
-                onChange={(e) => setCapacity(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
-            </NumberInput>
-          </FormControl>
+            </FormControl>
 
-          <FormControl>
-            <FormLabel>Level</FormLabel>
-            <Select
-              required
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-            >
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
-            </Select>
-          </FormControl>
+            <FormControl>
+              <FormLabel>Location</FormLabel>
+              <Input
+                type="text"
+                required
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </FormControl>
 
-          <FormControl>
-            <FormLabel>Performances</FormLabel>
-            <Input
-              type="text"
-              required
-              value={performances}
-              onChange={(e) => setPerformances(e.target.value)}
-            />
-          </FormControl>
+            <FormControl>
+              <FormLabel>Date</FormLabel>
+              <Input
+                type="date"
+                required
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </FormControl>
 
-          <Stack
-            direction="row"
-            justifyContent="center"
-            mt={4}
-          >
-            <Button
-              onClick={() => {
-                onOpen();
-                setIsDraft(true);
-              }}
+            <FormControl>
+              <FormLabel>Description</FormLabel>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Capacity</FormLabel>
+              <NumberInput min={0}>
+                <NumberInputField
+                  required
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                />
+              </NumberInput>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Level</FormLabel>
+              <Select
+                required
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+              >
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Performances</FormLabel>
+              <Input
+                type="text"
+                required
+                value={performances}
+                onChange={(e) => setPerformances(e.target.value)}
+              />
+            </FormControl>
+
+            <Stack
+              direction="row"
+              justifyContent="center"
+              mt={4}
             >
-              Save as Draft
-            </Button>
-            <Button
-              colorScheme="blue"
-              type="submit"
+              <Button
+                onClick={() => {
+                  onOpen();
+                  setIsDraft(true);
+                }}
+              >
+                Save as Draft
+              </Button>
+              <Button
+                colorScheme="blue"
+                type="submit"
+              >
+                Publish
+              </Button>
+            </Stack>
+          </form>
+        )
+        : (
+          <VStack>
+            <IoIosCheckmarkCircle size={100} />
+            <Heading
+              as="h3"
+              size="xl"
             >
-              Publish
-            </Button>
-          </Stack>
-        </form>
-      ) : (
-        <VStack>
-          <IoIosCheckmarkCircle size={100} />
-          <Heading
-            as="h3"
-            size="xl"
-          >
-            Class Submitted!
-          </Heading>{" "}
-          <br />
-          <Button colorScheme="blue">Return to Classes Page</Button>
-        </VStack>
-      )}
+              Class Submitted!
+            </Heading>{" "}
+            <br />
+            <Button colorScheme="blue" onClick={onClose}>Return to Classes Page</Button>
+          </VStack>
+        )}
 
       <SaveClassAsDraftModal
         isOpen={isOpen}
