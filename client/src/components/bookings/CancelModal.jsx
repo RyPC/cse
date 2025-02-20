@@ -1,6 +1,6 @@
-import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter } from "@chakra-ui/react";
+import { Text, Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Flex } from "@chakra-ui/react";
 
-export const CancelModal = ({ isOpen, onClose, setCurrentModal }) => {
+export const CancelModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
   const onGoBack = () => {
     setCurrentModal("view");
   };
@@ -11,19 +11,22 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Title</ModalHeader>
+        <ModalHeader textAlign="center">Are you sure you want to delete this class?</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-        Are you sure?
+        <ModalBody textAlign="center">
+          <Text>You are deleting {classData.title}.</Text>
+          <Text>This action can't be undone.</Text>
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme='red' mr={3} onClick={onConfirm}>
-            Confirm
-          </Button>
-          <Button colorScheme='blue' mr={3} onClick={onGoBack}>
-            Go back
-          </Button>
+          <Flex justifyContent="center" w="100%">
+            <Button backgroundColor="#D9D9D9" mr={3} onClick={onGoBack}>
+            <Text>Close</Text>
+            </Button>
+            <Button backgroundColor="#D9D9D9" mr={3} onClick={onConfirm}>
+              <Text fontWeight="bold">Delete</Text>
+            </Button>
+          </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>

@@ -1,8 +1,10 @@
 import { useState } from "react";
 
 import { Button, Container, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter,
-  Select, Text } from "@chakra-ui/react";
+  Select, Text, 
+  IconButton } from "@chakra-ui/react";
 
+import { BsChevronLeft } from "react-icons/bs";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 
@@ -34,10 +36,11 @@ const stringToTime = (timeString) => {
 
 export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData }) => {
   const { backend } = useBackendContext();
-  const onCancel = () => {
+
+  const onBack = () => {
     setCurrentModal("view");
   };
-  const onSave = async () => {
+  const onSave = async (draft) => {
     try {
       // PUT request to save class data
       const updatedData = {
@@ -47,7 +50,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
         capacity,
         level,
         costume: null,
-        isDraft: false,
+        isDraft: draft,
       };
       const response = await backend.put(`/classes/${classData.classId}`, updatedData);
 
@@ -63,14 +66,20 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
         capacity,
         level,
         costume: classData.costume,
-        isDraft: classData.isDraft,
+        isDraft: draft,
       });
 
       setCurrentModal("view");
     } catch (error) {
       console.error('Error updating class data:', error);
     }
-  }
+  };
+  const onSaveAsDraft = async () => {
+    await onSave(false);
+  };
+  const onPublish = async () => {
+    await onSave(true);
+  };
 
 
   // input values
@@ -102,15 +111,10 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <Flex>
-          <Container centerContent>
-            <ModalHeader>Edit Mode</ModalHeader>
-            <Button onClick={onCancel}>
-              ...
-            </Button>
-          </Container>
+        <Flex align="center" w="100%" position="relative">
+          <IconButton onClick={onBack} icon={<BsChevronLeft />} position="absolute" left={5} backgroundColor="white"/>
+          <ModalHeader flex={1} textAlign="center">{classData.title}</ModalHeader>
         </Flex>
-        <ModalCloseButton />
         <ModalBody>
           <Text mb='1rem'>
             Class Title
@@ -185,12 +189,14 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
         </ModalBody>
 
         <ModalFooter>
-          <Button colorScheme='red' mr={3} onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button colorScheme='blue' mr={3} onClick={onSave}>
-            Save
-          </Button>
+          <Flex justifyContent="center" w="100%">
+            <Button backgroundColor="#D9D9D9" mr={3} onClick={onSaveAsDraft}>
+              Save as Draft
+            </Button>
+            <Button backgroundColor="#646363" mr={3} onClick={onPublish}>
+              Publish
+            </Button>
+          </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>

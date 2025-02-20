@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-import { Box, Button, Center, Container, Flex, Menu, MenuItem, MenuList, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Text } from "@chakra-ui/react";
+import { Box, Button, Center, Container, Flex, Menu, MenuItem, MenuList, MenuButton, Modal,
+  ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Text, 
+  IconButton} from "@chakra-ui/react";
+
+import { BsChevronLeft } from "react-icons/bs";
 
 const dateToString = (date) => {
   if ((typeof date) !== "object")
@@ -44,21 +48,20 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <Flex>
-          <Container centerContent>
-            <ModalHeader>{classData.title}</ModalHeader>
-            <Menu>
-              <Button onClick={enterEditMode}>
-                ...
-              </Button>
-              <MenuList>
-                <MenuItem value="edit">Edit</MenuItem>
-                <MenuItem value="delete">Delete</MenuItem>
-              </MenuList>
-            </Menu>
-          </Container>
+        <Flex align="center" w="100%" position="relative">
+          <IconButton onClick={onClose} icon={<BsChevronLeft />} position="absolute" left={5} backgroundColor="white"/>
+          <ModalHeader flex={1} textAlign="center">{classData.title}</ModalHeader>
+          <Menu>
+            <MenuButton as={Button} position="absolute" right={5}>
+              ...
+            </MenuButton>
+            <MenuList backgroundColor="rgba(0, 0, 0, 0.7)" color="white" borderRadius="8px" padding="4px">
+              <MenuItem value="edit" onClick={enterEditMode}  background="transparent">Edit</MenuItem>
+              <MenuItem value="delete" onClick={onCancel} background="transparent">Delete</MenuItem>
+            </MenuList>
+          </Menu>
         </Flex>
-        <ModalCloseButton />
+        {/* <ModalCloseButton /> */}
         <ModalBody>
           <Flex gap="40" justify="center">
             <div>
