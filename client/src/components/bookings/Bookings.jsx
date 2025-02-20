@@ -116,42 +116,6 @@ export const Bookings = () => {
           <Button onClick={handleClickClasses}>Classes</Button>
           <Button onClick={handleClickHistory}>History</Button>
         </div>
-        <Box
-          p="16px"
-          width="90vw"
-          borderRadius="4px"
-          backgroundColor="#D9D9D9"
-          onClick={onOpen}
-        >
-          <Text fontWeight="bold" paddingBottom="8px" fontSize={18}> thing </Text>
-
-          <Stack direction="row" align="center" fontSize={16}>
-            <Icon as={BsClock} boxSize={4}/>
-            <Text>Date and time</Text>
-          </Stack>
-
-          <Stack direction="row" align="center" fontSize={16}>
-            <Icon as={BsGeoFill} boxSize={4}/>
-            <Text> location </Text>
-          </Stack>
-
-          <Stack direction="row" align="center" fontSize={16}>
-            <Icon as={BsPersonFill} boxSize={4}/>
-            <Text> asdf </Text>
-          </Stack>
-
-          <Stack direction="row">
-            <Spacer />
-            <Button
-              backgroundColor="#646363"
-              color="white"
-            >
-              View Details
-              <Icon as={BsChevronRight}/>
-            </Button>
-          </Stack>
-
-        </Box>
         {
           classes.map((cls) => (
             <Box
