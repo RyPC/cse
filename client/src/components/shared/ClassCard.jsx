@@ -56,7 +56,7 @@ export const ClassCard = ({
         costume={costume}
         id={id}
         date={classDate}
-        isCoreq={false}
+        isCorequisiteSignUp={false}
         onSuccess={() => console.log("PLEASE")}
       />
       <Card w={{ base: "80%", md: "20em" }}>

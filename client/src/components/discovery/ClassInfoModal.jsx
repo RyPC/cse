@@ -38,7 +38,7 @@ function ClassInfoModal({
   costume,
   id,
   date,
-  isCoreq,
+  isCorequisiteSignUp,
 }) {
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
@@ -134,7 +134,7 @@ function ClassInfoModal({
         isOpen={openSuccessModal}
         title={title}
         onClose={() => setOpenCoreqModal(false)}
-        isCoreq={isCoreq}
+        isCoreq={isCorequisiteSignUp}
       />
 
       <Modal

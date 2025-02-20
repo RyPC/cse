@@ -3,14 +3,9 @@ import { useEffect } from "react";
 import {
   Box,
   Button,
-  HStack,
-  Image,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
-  ModalFooter,
-  ModalHeader,
   ModalOverlay,
   Text,
   VStack,
@@ -24,7 +19,7 @@ function SuccessSignupModal({
   title,
   onClose,
   onSuccess = () => {},
-  isCoreq,
+  isCoreq: isCorequisiteSignUp,
 }) {
   const navigate = useNavigate();
 
@@ -33,11 +28,11 @@ function SuccessSignupModal({
       setTimeout(() => {
         onSuccess();
         onClose();
-        console.log("coreq", isCoreq);
-        if (!isCoreq) navigate("/bookings");
+        console.log("coreq", isCorequisiteSignUp);
+        if (!isCorequisiteSignUp) navigate("/bookings");
       }, 2000);
     }
-  }, [isOpen]);
+  }, [isCorequisiteSignUp, isOpen, navigate, onClose, onSuccess]);
 
   return (
     <Modal

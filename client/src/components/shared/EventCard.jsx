@@ -36,7 +36,7 @@ export const EventCard = ({
         isOpenProp={openModal}
         handleClose={() => setOpenModal(false)}
         title={title}
-        isCoreq={false}
+        isCorequisiteSignUp={false}
         id={id}
       />
       <Card w={{ base: "80%", md: "20em" }}>

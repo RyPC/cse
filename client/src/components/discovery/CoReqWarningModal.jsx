@@ -21,7 +21,7 @@ function CoReqWarningModal({
   isOpenProp,
   handleClose,
   onSuccess = () => {},
-  coreqs,
+  coreqs: lstCorequisites,
   handleModifyCoreq,
 }) {
   const [openCoreq, setOpenCoreq] = useState(false);
@@ -34,12 +34,14 @@ function CoReqWarningModal({
   };
 
   useEffect(() => {
-    if (coreqs.length > 0) {
-      setCoreq(coreqs.find((coreq) => coreq.enrolled === false) || null);
+    if (lstCorequisites.length > 0) {
+      setCoreq(
+        lstCorequisites.find((coreq) => coreq.enrolled === false) || null
+      );
     }
-  }, [coreqs, coreqs]);
+  }, [lstCorequisites]);
 
-  if (!coreq || !coreqs || coreqs.length === 0) {
+  if (!coreq || !lstCorequisites || lstCorequisites.length === 0) {
     return null;
   }
   return (
@@ -56,7 +58,7 @@ function CoReqWarningModal({
           date={coreq.date}
           capacity={coreq.capacity}
           costume={coreq.costume}
-          isCoreq={true}
+          isCorequisiteSignUp={true}
           onSuccess={onSuccess}
         />
       ) : (
@@ -70,7 +72,7 @@ function CoReqWarningModal({
           costume={coreq.costume}
           level={coreq.level}
           id={coreq.id}
-          isCoreq={true}
+          isCorequisiteSignUp={true}
           onSuccess={onSuccess}
         />
       )}
@@ -94,7 +96,9 @@ function CoReqWarningModal({
                 <Text>You still need to sign up for...</Text>
 
                 <Text fontWeight="bold">
-                  {coreqs && coreqs.length > 0 ? coreq.title : ""}
+                  {lstCorequisites && lstCorequisites.length > 0
+                    ? coreq.title
+                    : ""}
                 </Text>
               </VStack>
               <VStack>

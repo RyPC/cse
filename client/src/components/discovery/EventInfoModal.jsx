@@ -32,7 +32,7 @@ function EventInfoModal({
   id,
   capacity,
   costume,
-  isCoreq,
+  isCorequisiteSignUp,
 }) {
   const { backend } = useBackendContext();
   const { currentUser } = useAuthContext();
@@ -55,7 +55,7 @@ function EventInfoModal({
   };
 
   const onClose = () => {
-    if (isCoreq) {
+    if (isCorequisiteSignUp) {
       handleClose();
       setOpenSuccessModal(false);
     }
@@ -77,7 +77,7 @@ function EventInfoModal({
 
       <SuccessSignupModal
         isOpen={openSuccessModal}
-        isCoreq={isCoreq}
+        isCoreq={isCorequisiteSignUp}
         title={title}
         onClose={onClose}
       />
