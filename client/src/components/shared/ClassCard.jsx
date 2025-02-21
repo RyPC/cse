@@ -29,11 +29,9 @@ export const ClassCard = ({
     if (!classDate) {
       const response = await backend.get(`/scheduled-classes/${id}`);
       if (response?.data[0]?.date) {
-        console.log(response.data[0].date);
         const formattedDate = new Date(
           response.data[0].date
         ).toLocaleDateString("en-US");
-        console.log(formattedDate);
         setClassDate(formattedDate);
       }
     }
