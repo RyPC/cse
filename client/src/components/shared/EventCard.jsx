@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import {
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -11,7 +10,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import EventInfoModal from "../discovery/EventInfoModal";
 import SignUpController from "../discovery/SignUpController";
 
 export const EventCard = ({
@@ -27,28 +25,8 @@ export const EventCard = ({
   costume,
   id,
 }) => {
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => {
-    setOpenModal(!openModal);
-  };
-  const handleCancel = () => {
-    setOpenModal(false);
-  };
   return (
     <>
-      <EventInfoModal
-        isOpenProp={openModal}
-        title={title}
-        id={id}
-        location={location}
-        description={description}
-        level={level}
-        date={date}
-        costume={costume}
-        isCorequisiteSignUp={false}
-        handleClose={() => setOpenModal(false)}
-        handleCancel={handleCancel}
-      />
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>
           <Heading size="lg">{title}</Heading>

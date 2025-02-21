@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import {
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -12,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import ClassInfoModal from "../discovery/ClassInfoModal";
 import SignUpController from "../discovery/SignUpController";
 
 export const ClassCard = ({
@@ -25,16 +23,8 @@ export const ClassCard = ({
   costume,
 }) => {
   const { backend } = useBackendContext();
-  const [openModal, setOpenModal] = useState(false);
   const [classDate, setClassDate] = useState(null);
 
-  const handleOpenModal = () => {
-    setOpenModal(!openModal);
-  };
-
-  const handleCancel = () => {
-    setOpenModal(false);
-  };
   const fetchClassDate = async () => {
     if (!classDate) {
       const response = await backend.get(`/scheduled-classes/${id}`);
@@ -53,20 +43,6 @@ export const ClassCard = ({
   }, [backend, classDate, id]);
   return (
     <>
-      {/* <ClassInfoModal
-        isOpenProp={openModal}
-        title={title}
-        description={description}
-        location={location}
-        capacity={capacity}
-        level={level}
-        costume={costume}
-        id={id}
-        date={classDate}
-        isCorequisiteSignUp={false}
-        handleClose={handleOpenModal}
-        handleCancel={handleCancel}
-      /> */}
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>
           <Heading size="lg">{title}</Heading>
@@ -84,7 +60,6 @@ export const ClassCard = ({
 
         <CardFooter justifyContent="right">
           <Text>0/{capacity} spots left</Text>
-          {/* <Button onClick={handleOpenModal}>View Details</Button> */}
           <SignUpController
             class_id={id}
             title={title}
