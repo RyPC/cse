@@ -79,7 +79,8 @@ export const Playground = () => {
   const [performances, setPerformances] = useState("");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [classes, setClasses] = useState([]);
+  const [events, setEvents] = useState([]);
 
   return (
     <Box>

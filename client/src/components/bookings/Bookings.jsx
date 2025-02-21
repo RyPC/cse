@@ -81,57 +81,59 @@ export const Bookings = () => {
 
   const updateModal = (item) => {
     const type = classes.includes(item) ? "class" : "event";
-    if (type === "class")
-        loadCorequisites(item.id);
+    if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
     onOpen();
-  }
+  };
 
   const handleCancelEnrollment = async (itemId) => {
     if (!user_id) {
-        console.error("User ID is missing.");
-        return;
+      console.error("User ID is missing.");
+      return;
     }
-    
+
     try {
-        // Send DELETE request
-        let response = null;
+      // Send DELETE request
+      let response = null;
+      if (cardType === "class") {
+        response = await backend.delete(
+          `/class-enrollments/${user_id}/${itemId}`
+        );
+      } else {
+        response = await backend.delete(
+          `/event-enrollments/${user_id}/${itemId}`
+        );
+      }
+
+      // If successful, remove the deleted class from state
+      if (response.status === 200) {
         if (cardType === "class") {
-            response = await backend.delete(`/class-enrollments/${user_id}/${itemId}`);
+          setClasses((prevClasses) =>
+            prevClasses.filter((cls) => cls.id !== itemId)
+          );
         } else {
-            response = await backend.delete(`/event-enrollments/${user_id}/${itemId}`);
+          setEvents((prevEvents) =>
+            prevEvents.filter((evt) => evt.id !== itemId)
+          );
         }
-    
-        // If successful, remove the deleted class from state
-        if (response.status === 200) {
-            if (cardType === "class") {
-                setClasses((prevClasses) =>
-                    prevClasses.filter((cls) => cls.id !== itemId)
-                );
-            } else {
-                setEvents((prevEvents) =>
-                    prevEvents.filter((evt) => evt.id !== itemId)
-                );
-            }
-            
-        }
+      }
     } catch (error) {
-        console.error("Error deleting enrollment:", error);
+      console.error("Error deleting enrollment:", error);
     }
   };
 
   const loadCorequisites = async (classId) => {
     try {
-        const response = await backend.get(`events/corequisites/${classId}`);
+      const response = await backend.get(`events/corequisites/${classId}`);
 
-        if (response.status === 200) {
-            setCoEvents(response.data)
-        }
+      if (response.status === 200) {
+        setCoEvents(response.data);
+      }
     } catch (error) {
-        console.error("Error fetching corequisite enrollment:", error);
+      console.error("Error fetching corequisite enrollment:", error);
     }
-  }
+  };
 
   return (
     <Box>
@@ -184,6 +186,7 @@ export const Bookings = () => {
                 {classes.length > 0 ? (
                   classes.map((classEnrollment) => (
                     <ClassCard
+                      id={classEnrollment.id}
                       key={classEnrollment.id}
                       title={classEnrollment.title}
                       description={classEnrollment.description}
@@ -211,6 +214,7 @@ export const Bookings = () => {
                 {events.length > 0 ? (
                   events.map((eventEnrollment) => (
                     <EventCard
+                      id={eventEnrollment.id}
                       key={eventEnrollment.id}
                       title={eventEnrollment.title}
                       location={eventEnrollment.location}
@@ -267,7 +271,7 @@ export const Bookings = () => {
               </VStack>
             </TabPanel>
           </TabPanels>
-        </Tabs>      
+        </Tabs>
       </VStack>
       {currentModal === "view" ? (
         <ViewModal

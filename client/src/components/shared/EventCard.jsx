@@ -1,5 +1,4 @@
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -7,11 +6,16 @@ import {
   HStack,
   Text,
   VStack,
+  Button,
+  CardFooter
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 import { formatDate, formatTime } from "../../utils/formatDateTime";
+import SignUpController from "../discovery/SignUpController";
+import { useState } from "react";
 
 export const EventCard = ({
   title,
@@ -25,13 +29,25 @@ export const EventCard = ({
   classId,
   costume,
   attendeeCount = 0, // Default to 0 if not provided
-  onClick
+  onClick,
+  id,
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
+  const [openModal, setOpenModal] = useState(false);
+  const { pathname } = useLocation();
+  const [openRootModal, setOpenRootModal] = useState(false);
+
+  const handleOpenModal = () => {
+    setOpenModal(!openModal);
+  };
+  const handleCancel = () => {
+    setOpenModal(false);
+  };
   return (
-    <Card
+    <>
+       <Card
       w={{ base: "90%", md: "30em" }}
       bg="gray.200"
     >
@@ -74,12 +90,35 @@ export const EventCard = ({
             color="black"
             _hover={{ bg: "gray.700" }}
             mt={2}
-            onClick={onClick}
+            onClick={() => {
+              if (pathname === "/bookings") {
+                onClick();
+              } else {
+                setOpenRootModal(true);
+              }
+            }}
           >
             View Details &gt;
           </Button>
         </VStack>
       </CardBody>
-    </Card>
+
+        <CardFooter justifyContent="right" hidden>
+          {/* <Text>Required Class ID: {classId}</Text> */}
+          <SignUpController
+            event_id={id}
+            title={title}
+            description={description}
+            location={location}
+            capacity={"might remove for events"}
+            level={level}
+            costume={costume}
+            date={date}
+            setOpenRootModal={setOpenRootModal}
+            openRootModal={openRootModal}
+          />
+        </CardFooter>
+      </Card>
+    </>
   );
 };
