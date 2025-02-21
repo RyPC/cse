@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { Box, Text, Input, Button } from "@chakra-ui/react"
 
@@ -36,7 +37,7 @@ export const UploadComponent = (setS3URL) => {
       // Get S3 URL from server backend
       const url = await fetchS3URL();
 
-      setS3URL(url)
+      console.log(setS3URL)
 
       // Upload file to S3 bucket
       const uploadResponse = await fetch(url, {
@@ -49,6 +50,7 @@ export const UploadComponent = (setS3URL) => {
 
       if (uploadResponse.ok) {
         setMessage("File uploaded successfully!");
+        setS3URL['setS3URL'](url)
       } else {
         throw new Error("Failed to upload file.");
       }
