@@ -13,6 +13,7 @@ import {
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import ClassInfoModal from "../discovery/ClassInfoModal";
+import SignUpController from "../discovery/SignUpController";
 
 export const ClassCard = ({
   id,
@@ -52,7 +53,7 @@ export const ClassCard = ({
   }, [backend, classDate, id]);
   return (
     <>
-      <ClassInfoModal
+      {/* <ClassInfoModal
         isOpenProp={openModal}
         title={title}
         description={description}
@@ -65,7 +66,7 @@ export const ClassCard = ({
         isCorequisiteSignUp={false}
         handleClose={handleOpenModal}
         handleCancel={handleCancel}
-      />
+      /> */}
       <Card w={{ base: "80%", md: "20em" }}>
         <CardHeader>
           <Heading size="lg">{title}</Heading>
@@ -83,7 +84,17 @@ export const ClassCard = ({
 
         <CardFooter justifyContent="right">
           <Text>0/{capacity} spots left</Text>
-          <Button onClick={handleOpenModal}>View Details</Button>
+          {/* <Button onClick={handleOpenModal}>View Details</Button> */}
+          <SignUpController
+            class_id={id}
+            title={title}
+            description={description}
+            location={location}
+            capacity={capacity}
+            level={level}
+            costume={costume}
+            date={classDate}
+          />
         </CardFooter>
       </Card>
     </>

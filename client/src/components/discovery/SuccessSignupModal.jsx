@@ -18,7 +18,6 @@ function SuccessSignupModal({
   isOpen,
   title,
   onClose,
-  onSuccess = () => {},
   isCoreq: isCorequisiteSignUp,
 }) {
   const navigate = useNavigate();
@@ -26,12 +25,11 @@ function SuccessSignupModal({
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
-        // onSuccess();
         onClose();
         if (!isCorequisiteSignUp) navigate("/bookings");
       }, 2000);
     }
-  }, [isCorequisiteSignUp, isOpen, navigate, onClose, onSuccess]);
+  }, [isCorequisiteSignUp, isOpen, navigate, onClose]);
 
   return (
     <Modal

@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 
 import EventInfoModal from "../discovery/EventInfoModal";
+import SignUpController from "../discovery/SignUpController";
 
 export const EventCard = ({
   title,
@@ -70,7 +71,16 @@ export const EventCard = ({
 
         <CardFooter justifyContent="right">
           <Text>Required Class ID: {classId}</Text>
-          <Button onClick={handleOpenModal}>View Details</Button>
+          <SignUpController
+            event_id={id}
+            title={title}
+            description={description}
+            location={location}
+            capacity={10}
+            level={level}
+            costume={costume}
+            date={date}
+          />
         </CardFooter>
       </Card>
     </>

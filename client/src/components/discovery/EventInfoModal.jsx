@@ -38,6 +38,8 @@ function EventInfoModal({
   capacity,
   costume,
   isCorequisiteSignUp,
+  corequisites,
+  handleResolveCoreq = () => {},
 }) {
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
@@ -50,43 +52,9 @@ function EventInfoModal({
   };
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-  const [corequisites, setCorequisites] = useState([]);
 
   // temp for image
   const [imageSrc, setImageSrc] = useState("");
-
-  const fetchCorequirements = useCallback(async () => {
-    const fetchEnrolledClass = async (coreq) => {
-      try {
-        const response = await backend.get(`/class-enrollments/`);
-        const user = await backend
-          .get(`/users/${currentUser.uid}`)
-          .then((res) => res.data[0]);
-
-        const classes = response.data;
-
-        const filteredClass = classes
-          .filter((classes) => classes.studentId === user.id)
-          .map((classes) => classes.classId);
-
-        const updatedCorequisites = coreq.map((coreq) => {
-          if (filteredClass.includes(coreq.id)) {
-            return { ...coreq, enrolled: true };
-          }
-          return coreq;
-        });
-
-        setCorequisites(updatedCorequisites);
-      } catch (error) {
-        console.error("Error fetching enrolled classes or users:", error);
-      }
-    };
-
-    const response = await backend.get(`/events/corequisites/${id}`);
-    const coreq = response.data.map((coreq) => ({ ...coreq, enrolled: false }));
-    setCorequisites(coreq);
-    await fetchEnrolledClass(coreq);
-  }, [backend, id, currentUser.uid]);
 
   const enrollInEvent = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
@@ -96,23 +64,28 @@ function EventInfoModal({
         event_id: id,
       });
       if (req.status === 201) {
+        console.log(req);
         setOpenSuccessModal(true);
       }
     }
   };
 
-  const closeCoreq = async () => {
-    closeCoreqModal();
-    handleClose();
-    await fetchCorequirements();
-  };
-
   const eventSignUp = async () => {
+    if (isCorequisiteSignUp) {
+      enrollInEvent();
+      return;
+    }
+
     if (corequisites.some((coreq) => !coreq.enrolled)) {
-      setOpenCoreqModal(true);
+      handleResolveCoreq();
     } else {
       enrollInEvent();
     }
+  };
+
+  const handleSuccess = () => {
+    setOpenSuccessModal(false);
+    handleClose();
   };
 
   useEffect(() => {
@@ -120,28 +93,16 @@ function EventInfoModal({
       fetch("https://dog.ceo/api/breeds/image/random") // for fun
         .then((res) => res.json())
         .then((data) => setImageSrc(data.message));
-      fetchCorequirements();
     }
-  }, [fetchCorequirements, imageSrc, isOpenProp]);
+  }, [imageSrc, isOpenProp]);
 
   if (!id) return null; //stops recursive loop
   return (
     <>
-      <CoReqWarningModal
-        origin="EVENT"
-        isOpenProp={openCoreqModal}
-        lstCorequisites={corequisites}
-        handleClose={closeCoreq}
-        handleCancel={cancelCoreqModal}
-      />
-
       <SuccessSignupModal
         isOpen={openSuccessModal}
         title={title}
-        onClose={() => {
-          setOpenSuccessModal(false);
-          // closeCoreq();
-        }}
+        onClose={handleSuccess}
         isCoreq={isCorequisiteSignUp}
       />
 
@@ -152,7 +113,9 @@ function EventInfoModal({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{title}</ModalHeader>
+          <ModalHeader>
+            {title} {id}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack
@@ -160,27 +123,31 @@ function EventInfoModal({
               align="center"
             >
               <HStack width="100%">
-                <Box>
-                  <Text as="b">Corequisites {openCoreqModal ? "t" : "f"}</Text>
-                  {corequisites.length === 0 ? (
-                    <Text>No corequisites for this class</Text>
-                  ) : (
-                    <List>
-                      {corequisites.map((coreq, index) => (
-                        <ListItem key={index}>
-                          <ListIcon
-                            as={
-                              coreq.enrolled
-                                ? FaCircleCheck
-                                : FaCircleExclamation
-                            }
-                          />
-                          {coreq.title}
-                        </ListItem>
-                      ))}
-                    </List>
-                  )}
-                </Box>
+                {!isCorequisiteSignUp && (
+                  <Box>
+                    <Text as="b">
+                      Corequisites {openCoreqModal ? "t" : "f"}
+                    </Text>
+                    {!corequisites || corequisites.length === 0 ? (
+                      <Text>No corequisites for this class</Text>
+                    ) : (
+                      <List>
+                        {corequisites.map((coreq, index) => (
+                          <ListItem key={index}>
+                            <ListIcon
+                              as={
+                                coreq.enrolled
+                                  ? FaCircleCheck
+                                  : FaCircleExclamation
+                              }
+                            />
+                            {coreq.title}
+                          </ListItem>
+                        ))}
+                      </List>
+                    )}
+                  </Box>
+                )}
               </HStack>
               <Box
                 boxSize="sm"
