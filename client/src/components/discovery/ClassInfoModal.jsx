@@ -122,7 +122,7 @@ function ClassInfoModal({
       fetchCorequirements();
     }
   }, [fetchCorequirements, imageSrc, isOpenProp]);
-
+  console.log("capacity", typeof capacity)
   if (!id) return null;
   return (
     <>
@@ -223,7 +223,7 @@ function ClassInfoModal({
               >
                 <Box>
                   <Text fontWeight="bold">Capacity:</Text>
-                  <Text>{capacity}</Text>
+                  <Text>{capacity ? capacity : "hel"}</Text>
                 </Box>
                 <Box>
                   <Text fontWeight="bold">Level:</Text>

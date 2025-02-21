@@ -37,6 +37,7 @@ export const Profile = () => {
         mt={6}
       >
         <Button
+          onClick={() => console.log("Redirect to GoFundMe to be implemented")}
           as="a"
           href="https://ctc-uci.com/"
           target="_blank"
@@ -48,7 +49,7 @@ export const Profile = () => {
           onClick={() => console.log("Settings opened!")}
           colorScheme="gray"
         >
-          Settings
+          <a href="/settings">Settings</a>
         </Button>
       </VStack>
     </Flex>

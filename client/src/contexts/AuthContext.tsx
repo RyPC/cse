@@ -20,6 +20,7 @@ import { useBackendContext } from "./hooks/useBackendContext";
 
 interface AuthContextProps {
   currentUser: User | null;
+  role: string | null;
   teacherSignup: ({
     firstName,
     lastName,
@@ -42,7 +43,8 @@ interface AuthContextProps {
     navigate: NavigateFunction,
     toast: CreateToastFnReturn
   ) => Promise<void>;
-  updateDisplayName: (fullName: string) => Promise<void>;
+  updateDisplayName: (user: UserCredential, fullName: string) => Promise<void>;
+  updateRole: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);
@@ -73,6 +75,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
 
   const studentSignup = async ({
     firstName,
@@ -186,17 +189,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateDisplayName = async (fullName: string) => {
-    if (currentUser) {
+  const updateDisplayName = async (userCredential: UserCredential, fullName: string) => {
+    if (userCredential?.user) {
       try {
-        await updateProfile(currentUser, { displayName: fullName });
+        await updateProfile(userCredential.user, { displayName: fullName });
       } catch (error) {
-        console.error(error);
+        console.error("error", error);
       }
     } else {
       console.error("No user is signed in.");
     }
   };
+
+  const updateRole = async () => {
+    if (currentUser) {
+      try {
+        const response = await backend.get(`/users/${currentUser.uid}`);
+
+        if (response.data && response.data[0].userRole) {
+          setRole(response.data[0].userRole);
+        } else {
+          console.warn("User role not found in API response");
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    }
+  }
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -207,9 +226,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (currentUser) {
+      updateRole();
+    }
+  }, [currentUser]);
+
   return (
     <AuthContext.Provider
       value={{
+        role,
         currentUser,
         studentSignup,
         teacherSignup,
@@ -218,6 +244,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         resetPassword,
         handleRedirectResult,
         updateDisplayName,
+        updateRole
       }}
     >
       {loading ? <Spinner /> : children}

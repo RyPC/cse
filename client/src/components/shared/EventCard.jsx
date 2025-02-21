@@ -4,13 +4,17 @@ import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Heading,
+  HStack,
   Text,
   VStack,
 } from "@chakra-ui/react";
 
+import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
+
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import EventInfoModal from "../discovery/EventInfoModal";
 
 export const EventCard = ({
@@ -24,9 +28,16 @@ export const EventCard = ({
   callTime,
   classId,
   costume,
+  attendeeCount = 0, // Default to 0 if not provided
+  onClick,
   id,
 }) => {
+  const formattedDate = formatDate(date);
+  const formattedStartTime = formatTime(startTime);
+  const formattedEndTime = formatTime(endTime);
   const [openModal, setOpenModal] = useState(false);
+  const { pathname } = useLocation();
+
   const handleOpenModal = () => {
     setOpenModal(!openModal);
   };
@@ -48,30 +59,62 @@ export const EventCard = ({
         handleClose={() => setOpenModal(false)}
         handleCancel={handleCancel}
       />
-      <Card w={{ base: "80%", md: "20em" }}>
-        <CardHeader>
-          <Heading size="lg">{title}</Heading>
+      <Card
+        w={{ base: "90%", md: "30em" }}
+        bg="gray.200"
+      >
+        <CardHeader pb={0}>
+          <Heading
+            size="md"
+            fontWeight="bold"
+          >
+            {title}
+          </Heading>
         </CardHeader>
-
         <CardBody>
-          <VStack>
-            <Text>{description}</Text>
-            <Text>
-              {date} at {location}
-            </Text>
-            <Text>Call Time: {callTime}</Text>
-            <Text>
-              {startTime} to {endTime}
-            </Text>
-            <Text>Level: {level}</Text>
-            <Text>Costume: {costume}</Text>
+          <VStack
+            align="stretch"
+            spacing={2}
+          >
+            <HStack>
+              <FaClock size={14} />
+              <Text fontSize="sm">
+                {formattedDate} @ {formattedStartTime} - {formattedEndTime}
+              </Text>
+            </HStack>
+
+            <HStack>
+              <FaMapMarkerAlt size={14} />
+              <Text fontSize="sm">{location}</Text>
+            </HStack>
+
+            <HStack>
+              <FaUser size={14} />
+              <Text fontSize="sm">
+                {attendeeCount} {attendeeCount === 1 ? "person" : "people"}{" "}
+                RSVP'd
+              </Text>
+            </HStack>
+            <Button
+              alignSelf="flex-end"
+              variant="solid"
+              size="sm"
+              bg="gray.500"
+              color="black"
+              _hover={{ bg: "gray.700" }}
+              mt={2}
+              onClick={() => {
+                if (pathname === "/bookings") {
+                  onClick();
+                } else {
+                  handleOpenModal();
+                }
+              }}
+            >
+              View Details &gt;
+            </Button>
           </VStack>
         </CardBody>
-
-        <CardFooter justifyContent="right">
-          <Text>Required Class ID: {classId}</Text>
-          <Button onClick={handleOpenModal}>View Details</Button>
-        </CardFooter>
       </Card>
     </>
   );

@@ -100,7 +100,7 @@ export const Discovery = () => {
       activeTab === "classes" ? await searchClasses() : await searchEvents();
     }
   };
-
+console.log(classes)
   return (
     <Box>
       <VStack
