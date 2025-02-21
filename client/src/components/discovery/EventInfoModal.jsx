@@ -44,8 +44,6 @@ function EventInfoModal({
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
 
-  const [openCoreqModal, setOpenCoreqModal] = useState(false);
-
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   // temp for image
@@ -59,7 +57,6 @@ function EventInfoModal({
         event_id: id,
       });
       if (req.status === 201) {
-        console.log(req);
         setOpenSuccessModal(true);
       }
     }

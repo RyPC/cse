@@ -53,7 +53,6 @@ function SignUpController({ class_id = null, event_id = null, ...infoProps }) {
           }
           return coreq;
         });
-        console.log(userEnrollments);
         setCorequisites(corequisitesWithEnrollmentStatus);
       } catch (error) {
         console.error("Error fetching enrolled events or users:", error);

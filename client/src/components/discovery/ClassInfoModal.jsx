@@ -58,7 +58,6 @@ function ClassInfoModal({
         attendance: new Date(),
       });
       if (req.status === 201) {
-        console.log(req);
         setOpenSuccessModal(true);
       }
     }
@@ -112,29 +111,31 @@ function ClassInfoModal({
               spacing={4}
               align="center"
             >
-              <HStack width="100%">
-                <Box>
-                  <Text as="b">Corequisites</Text>
-                  {!corequisites || corequisites.length === 0 ? (
-                    <Text>No corequisites for this class</Text>
-                  ) : (
-                    <List>
-                      {corequisites.map((coreq, index) => (
-                        <ListItem key={index}>
-                          <ListIcon
-                            as={
-                              coreq.enrolled
-                                ? FaCircleCheck
-                                : FaCircleExclamation
-                            }
-                          />
-                          {coreq.title}
-                        </ListItem>
-                      ))}
-                    </List>
-                  )}
-                </Box>
-              </HStack>
+              {!isCorequisiteSignUp && (
+                <HStack width="100%">
+                  <Box>
+                    <Text as="b">Corequisites</Text>
+                    {!corequisites || corequisites.length === 0 ? (
+                      <Text>No corequisites for this class</Text>
+                    ) : (
+                      <List>
+                        {corequisites.map((coreq, index) => (
+                          <ListItem key={index}>
+                            <ListIcon
+                              as={
+                                coreq.enrolled
+                                  ? FaCircleCheck
+                                  : FaCircleExclamation
+                              }
+                            />
+                            {coreq.title}
+                          </ListItem>
+                        ))}
+                      </List>
+                    )}
+                  </Box>
+                </HStack>
+              )}
               <Box
                 boxSize="sm"
                 height="15rem"
