@@ -116,9 +116,7 @@ function EventInfoModal({
               <HStack width="100%">
                 {!isCorequisiteSignUp && (
                   <Box>
-                    <Text as="b">
-                      Corequisites {openCoreqModal ? "t" : "f"}
-                    </Text>
+                    <Text as="b">Corequisites</Text>
                     {!corequisites || corequisites.length === 0 ? (
                       <Text>No corequisites for this class</Text>
                     ) : (

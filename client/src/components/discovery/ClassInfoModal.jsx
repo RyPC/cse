@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Box,
@@ -23,7 +23,6 @@ import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import CoReqWarningModal from "./CoReqWarningModal";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function ClassInfoModal({
