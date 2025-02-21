@@ -44,13 +44,6 @@ function ClassInfoModal({
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
 
-  const [openCoreqModal, setOpenCoreqModal] = useState(false);
-  const closeCoreqModal = () => setOpenCoreqModal(false);
-
-  const cancelCoreqModal = () => {
-    enrollInClass();
-  };
-
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   // temp for image

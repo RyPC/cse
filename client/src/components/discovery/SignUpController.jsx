@@ -2,14 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 
 import { Button } from "@chakra-ui/react";
 
-import { set } from "react-hook-form";
-
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import ClassInfoModal from "./ClassInfoModal";
 import CoReqWarningModal from "./CoReqWarningModal";
 import EventInfoModal from "./EventInfoModal";
-import SuccessSignupModal from "./SuccessSignupModal";
 
 /*
 infoProps: title, location, description, level, date, id, capacity, costume

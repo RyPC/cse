@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Box,
@@ -45,11 +45,6 @@ function EventInfoModal({
   const { backend } = useBackendContext();
 
   const [openCoreqModal, setOpenCoreqModal] = useState(false);
-  const closeCoreqModal = () => setOpenCoreqModal(false);
-
-  const cancelCoreqModal = () => {
-    enrollInEvent();
-  };
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
@@ -96,7 +91,7 @@ function EventInfoModal({
     }
   }, [imageSrc, isOpenProp]);
 
-  if (!id) return null; //stops recursive loop
+  if (!id) return null;
   return (
     <>
       <SuccessSignupModal
