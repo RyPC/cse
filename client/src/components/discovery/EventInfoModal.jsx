@@ -91,7 +91,6 @@ function EventInfoModal({
     }
   }, [imageSrc, isOpenProp]);
 
-  if (!id) return null;
   return (
     <>
       <SuccessSignupModal

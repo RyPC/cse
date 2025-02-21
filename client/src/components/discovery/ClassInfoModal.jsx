@@ -89,7 +89,6 @@ function ClassInfoModal({
     }
   }, [imageSrc, isOpenProp]);
 
-  if (!id) return null;
   return (
     <>
       <SuccessSignupModal
