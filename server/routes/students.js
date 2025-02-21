@@ -6,6 +6,27 @@ import { db } from "../db/db-pgp";
 const studentsRouter = express.Router();
 studentsRouter.use(express.json());
 
+studentsRouter.get("/firebase/:firebaseUid", async (req, res) => {
+  try {
+    const { firebaseUid } = req.params;
+    const student = await db.query(
+      `SELECT u.id
+       FROM users u
+       JOIN students s ON u.id = s.id
+       WHERE u.firebase_uid = $1`,
+      [firebaseUid]
+    );
+
+    if (student.length === 0) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    res.status(200).json(keysToCamel(student[0]));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 studentsRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -51,8 +72,8 @@ studentsRouter.post("/", async (req, res) => {
       [firstName, lastName, "student", email, firebaseUid]
     );
 
-    const userId =newUser[0].id;
-    console.log("userId", userId)
+    const userId = newUser[0].id;
+    console.log("userId", userId);
 
     const newStudent = await db.query(
       `INSERT INTO students (id, level)
@@ -127,8 +148,9 @@ studentsRouter.get("/joined/:id", async (req, res) => {
         JOIN students s ON u.id = s.id
         JOIN class_enrollments e ON s.id = e.student_id
         JOIN classes c ON e.class_id = c.id
-       WHERE u.id = $1;`, [id]
-    ); 
+       WHERE u.id = $1;`,
+      [id]
+    );
     // !! Might return nothing, if a student is not enrolled in any classes !!
     //  Possibly add a second query just grabbing their username so u can display
     //   something like "Joshua Sullivan is not enrolled in any classes" to make it more personalized rather than just "Student"
