@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Heading,
   HStack,
@@ -16,7 +17,7 @@ import { useLocation } from "react-router-dom";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
-import ClassInfoModal from "../discovery/ClassInfoModal";
+import SignUpController from "../discovery/SignUpController";
 
 export const ClassCard = ({
   title,
@@ -36,27 +37,18 @@ export const ClassCard = ({
   const formattedStartTime = startTime ? formatTime(startTime) : null;
   const formattedEndTime = endTime ? formatTime(endTime) : null;
   const { backend } = useBackendContext();
-  const [openModal, setOpenModal] = useState(false);
   const [classDate, setClassDate] = useState(null);
   const { pathname } = useLocation();
-
-  const handleOpenModal = () => {
-    setOpenModal(!openModal);
-  };
-
-  const handleCancel = () => {
-    setOpenModal(false);
-  };
+  const [openRootModal, setOpenRootModal] = useState(false);
+  console.log({formattedDate, formattedStartTime, formattedEndTime})
   const fetchClassDate = async () => {
     if (!classDate) {
-      console.log("id", id)
+      console.log("id", id);
       const response = await backend.get(`/scheduled-classes/${id}`);
       if (response?.data[0]?.date) {
-        console.log(response.data[0].date);
         const formattedDate = new Date(
           response.data[0].date
         ).toLocaleDateString("en-US");
-        console.log(formattedDate);
         setClassDate(formattedDate);
       }
     }
@@ -67,20 +59,6 @@ export const ClassCard = ({
 
   return (
     <>
-      <ClassInfoModal
-        isOpenProp={openModal}
-        title={title}
-        description={description}
-        location={location}
-        capacity={capacity}
-        level={level}
-        costume={costume}
-        id={id}
-        date={classDate}
-        isCorequisiteSignUp={false}
-        handleClose={handleOpenModal}
-        handleCancel={handleCancel}
-      />
       <Card
         w={{ base: "90%", md: "30em" }}
         bg="gray.200"
@@ -129,7 +107,7 @@ export const ClassCard = ({
                 if (pathname === "/bookings") {
                   onClick();
                 } else {
-                  handleOpenModal();
+                  setOpenRootModal(true);
                 }
               }}
             >
@@ -137,6 +115,22 @@ export const ClassCard = ({
             </Button>
           </VStack>
         </CardBody>
+
+        <CardFooter justifyContent="right" hidden>
+          {/* <Text>0/{capacity} spots left</Text> */}
+          <SignUpController
+            class_id={id}
+            title={title}
+            description={description}
+            location={location}
+            capacity={capacity}
+            level={level}
+            costume={costume}
+            date={classDate}
+            setOpenRootModal={setOpenRootModal}
+            openRootModal={openRootModal}
+          />
+        </CardFooter>
       </Card>
     </>
   );

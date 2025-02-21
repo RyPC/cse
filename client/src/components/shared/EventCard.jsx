@@ -1,7 +1,4 @@
-import { useState } from "react";
-
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -9,13 +6,16 @@ import {
   HStack,
   Text,
   VStack,
+  Button,
+  CardFooter
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 
 import { formatDate, formatTime } from "../../utils/formatDateTime";
-import EventInfoModal from "../discovery/EventInfoModal";
+import SignUpController from "../discovery/SignUpController";
+import { useState } from "react";
 
 export const EventCard = ({
   title,
@@ -37,6 +37,7 @@ export const EventCard = ({
   const formattedEndTime = formatTime(endTime);
   const [openModal, setOpenModal] = useState(false);
   const { pathname } = useLocation();
+  const [openRootModal, setOpenRootModal] = useState(false);
 
   const handleOpenModal = () => {
     setOpenModal(!openModal);
@@ -46,75 +47,77 @@ export const EventCard = ({
   };
   return (
     <>
-      <EventInfoModal
-        isOpenProp={openModal}
-        title={title}
-        id={id}
-        location={location}
-        description={description}
-        level={level}
-        date={date}
-        costume={costume}
-        isCorequisiteSignUp={false}
-        handleClose={() => setOpenModal(false)}
-        handleCancel={handleCancel}
-      />
-      <Card
-        w={{ base: "90%", md: "30em" }}
-        bg="gray.200"
-      >
-        <CardHeader pb={0}>
-          <Heading
-            size="md"
-            fontWeight="bold"
-          >
-            {title}
-          </Heading>
-        </CardHeader>
-        <CardBody>
-          <VStack
-            align="stretch"
-            spacing={2}
-          >
-            <HStack>
-              <FaClock size={14} />
-              <Text fontSize="sm">
-                {formattedDate} @ {formattedStartTime} - {formattedEndTime}
-              </Text>
-            </HStack>
+       <Card
+      w={{ base: "90%", md: "30em" }}
+      bg="gray.200"
+    >
+      <CardHeader pb={0}>
+        <Heading
+          size="md"
+          fontWeight="bold"
+        >
+          {title}
+        </Heading>
+      </CardHeader>
+      <CardBody>
+        <VStack
+          align="stretch"
+          spacing={2}
+        >
+          <HStack>
+            <FaClock size={14} />
+            <Text fontSize="sm">
+              {formattedDate} @ {formattedStartTime} - {formattedEndTime}
+            </Text>
+          </HStack>
 
-            <HStack>
-              <FaMapMarkerAlt size={14} />
-              <Text fontSize="sm">{location}</Text>
-            </HStack>
+          <HStack>
+            <FaMapMarkerAlt size={14} />
+            <Text fontSize="sm">{location}</Text>
+          </HStack>
 
-            <HStack>
-              <FaUser size={14} />
-              <Text fontSize="sm">
-                {attendeeCount} {attendeeCount === 1 ? "person" : "people"}{" "}
-                RSVP'd
-              </Text>
-            </HStack>
-            <Button
-              alignSelf="flex-end"
-              variant="solid"
-              size="sm"
-              bg="gray.500"
-              color="black"
-              _hover={{ bg: "gray.700" }}
-              mt={2}
-              onClick={() => {
-                if (pathname === "/bookings") {
-                  onClick();
-                } else {
-                  handleOpenModal();
-                }
-              }}
-            >
-              View Details &gt;
-            </Button>
-          </VStack>
-        </CardBody>
+          <HStack>
+            <FaUser size={14} />
+            <Text fontSize="sm">
+              {attendeeCount} {attendeeCount === 1 ? "person" : "people"} RSVP'd
+            </Text>
+          </HStack>
+          <Button
+            alignSelf="flex-end"
+            variant="solid"
+            size="sm"
+            bg="gray.500"
+            color="black"
+            _hover={{ bg: "gray.700" }}
+            mt={2}
+            onClick={() => {
+              if (pathname === "/bookings") {
+                onClick();
+              } else {
+                setOpenRootModal(true);
+              }
+            }}
+          >
+            View Details &gt;
+          </Button>
+        </VStack>
+      </CardBody>
+
+        <CardFooter justifyContent="right" hidden>
+          {/* <Text>Required Class ID: {classId}</Text> */}
+          <SignUpController
+            event_id={id}
+            title={title}
+            description={description}
+            location={location}
+            capacity={"might remove for events"}
+            level={level}
+            costume={costume}
+            date={date}
+            setOpenRootModal={setOpenRootModal}
+            openRootModal={openRootModal}
+          />
+        </CardFooter>
       </Card>
     </>
   );

@@ -21,14 +21,20 @@ function CoReqWarningModal({
   isOpenProp,
   lstCorequisites,
   handleClose = () => {},
-  handleCancel = () => {},
+  killModal = () => {},
 }) {
   const [openCoreq, setOpenCoreq] = useState(false);
   const [coreq, setCoreq] = useState(null);
 
-  const handleCoreqModal = () => {
-    setOpenCoreq(!openCoreq);
+  const signup = () => {
+    setOpenCoreq(true);
+    killModal();
+  };
+
+  const cancelSignUp = () => {
+    setOpenCoreq(false);
     handleClose();
+    killModal();
   };
 
   useEffect(() => {
@@ -56,7 +62,7 @@ function CoReqWarningModal({
           capacity={coreq.capacity}
           costume={coreq.costume}
           isCorequisiteSignUp={true}
-          handleClose={handleCoreqModal}
+          handleClose={cancelSignUp}
         />
       ) : (
         <ClassInfoModal
@@ -70,7 +76,7 @@ function CoReqWarningModal({
           level={coreq.level}
           id={coreq.id}
           isCorequisiteSignUp={true}
-          handleClose={handleCoreqModal}
+          handleClose={cancelSignUp}
         />
       )}
 
@@ -101,13 +107,13 @@ function CoReqWarningModal({
               <VStack>
                 <Button
                   colorScheme="teal"
-                  onClick={handleCoreqModal}
+                  onClick={signup}
                 >
                   Sign up
                 </Button>
                 <Button
                   colorScheme="teal"
-                  onClick={handleCancel}
+                  onClick={cancelSignUp}
                 >
                   Cancel
                 </Button>
