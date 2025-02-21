@@ -52,7 +52,7 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
         isDraft: draft,
       };
       await backend.put(`/classes/${classData.classId}`, updatedData);
-      await backend.put(`/scheduled-classes/`, 
+      await backend.put(`/scheduled-classes/`,
         { class_id: classData.classId, date: date, start_time: startTime, end_time: endTime }
       );
       // Update classData
@@ -191,9 +191,9 @@ export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClas
 
         <ModalFooter>
           <Flex justifyContent="center" w="100%">
-            <Button backgroundColor="#D9D9D9" mr={3} onClick={onSaveAsDraft}>
+            {/* <Button backgroundColor="#D9D9D9" mr={3} onClick={onSaveAsDraft}>
               Save as Draft
-            </Button>
+            </Button> */}
             <Button backgroundColor="#646363" mr={3} onClick={onPublish}>
               Publish
             </Button>
