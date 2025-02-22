@@ -6,12 +6,12 @@ import { db } from "../db/db-pgp";
 const classesRouter = express.Router();
 classesRouter.use(express.json());
 
-classesRouter.get("/students/teacher/:id", async(req, res) => {
-    try {
-        const teacherId = req.params.id
+classesRouter.get("/students/teacher/:id", async (req, res) => {
+  try {
+    const teacherId = req.params.id;
 
-        const classStudents = await db.query(
-            `
+    const classStudents = await db.query(
+      `
             SELECT 
                 c.id AS class_id,
                 s.id as student_id,
@@ -26,66 +26,66 @@ classesRouter.get("/students/teacher/:id", async(req, res) => {
             INNER JOIN users u ON u.id = s.id
             WHERE t.id = $1
             `,
-            [teacherId]
-        )
+      [teacherId]
+    );
 
-        res.status(200).json(keysToCamel(classStudents));
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            status: "Failed",
-            msg: err.message,
-        });
-    }
-})
+    res.status(200).json(keysToCamel(classStudents));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
 
 // UNUSED
-classesRouter.get("/students/", async(req, res) => {
-    try {
-        const classStudents = await db.query(
-            `
+classesRouter.get("/students/", async (req, res) => {
+  try {
+    const classStudents = await db.query(
+      `
             SELECT * FROM classes c
             LEFT JOIN class_enrollments ce ON c.id = ce.class_id
             LEFT JOIN students s ON s.id = ce.student_id 
             INNER JOIN users u ON u.id = s.id
             `
-        )
+    );
 
-        res.status(200).json(keysToCamel(classStudents));
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            status: "Failed",
-            msg: err.message,
-        });
-    }
-})
+    res.status(200).json(keysToCamel(classStudents));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
 
 // UNUSED
-classesRouter.get("/students/:id", async(req, res) => {
-    try {
-        const classId = req.params.id
+classesRouter.get("/students/:id", async (req, res) => {
+  try {
+    const classId = req.params.id;
 
-        const classStudents = await db.query(
-            `
+    const classStudents = await db.query(
+      `
             SELECT * FROM classes c
             LEFT JOIN class_enrollments ce ON c.id = ce.class_id
             LEFT JOIN students s ON s.id = ce.student_id 
             INNER JOIN users u ON u.id = s.id
             WHERE c.id = $1
             `,
-            [classId]
-        )
+      [classId]
+    );
 
-        res.status(200).json(keysToCamel(classStudents));
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            status: "Failed",
-            msg: err.message,
-        });
-    }
-})
+    res.status(200).json(keysToCamel(classStudents));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
 
 classesRouter.get("/:id", async (req, res) => {
   try {
@@ -103,6 +103,23 @@ classesRouter.get("/", async (req, res) => {
     const data = await db.query(`SELECT * FROM classes;`);
 
     res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.get("/corequisites/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const events = await db.query(
+      `SELECT e.*
+       FROM events e
+       JOIN corequisites co ON e.id = co.event_id
+       WHERE co.class_id = $1;`,
+      [id]
+    );
+
+    res.status(200).json(keysToCamel(events));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -213,15 +230,18 @@ classesRouter.get("/search/:name", async (req, res) => {
   }
 });
 
-classesRouter.get('/search/:name', async (req,res) => {
-    try {
-        const { name } = req.params
-        const search = `%${name}%`
-        const allClasses = await db.query("SELECT * FROM classes WHERE title ILIKE $1;", [search]);
-      res.status(200).json(keysToCamel(allClasses))
-    } catch (err){
-      res.status(500).send(err.message)
-    }
-})
+classesRouter.get("/search/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const search = `%${name}%`;
+    const allClasses = await db.query(
+      "SELECT * FROM classes WHERE title ILIKE $1;",
+      [search]
+    );
+    res.status(200).json(keysToCamel(allClasses));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 export { classesRouter };
