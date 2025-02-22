@@ -70,7 +70,7 @@ export const SelectClassModal = ({ isOpen, onClose, setCurrentModal, setClsId })
                   <div>
                     <Card key={cls.id} onClick={() => {
                       setClsId(cls.id)
-                      setCurrentModal("select-tag")
+                      setCurrentModal("form")
                     }}>
                       <CardBody>
                         <b>{cls.name}</b> <br />

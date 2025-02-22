@@ -1,7 +1,7 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Card, CardBody, Image, Heading, Divider, CardFooter, ModalFooter, Tag } from "@chakra-ui/react"
 
 
-export const CardModal = ({ isOpen, onClose, setCurrentModal, title, tags, link, ajax }) => {
+export const CardModal = ({ isOpen, onClose, setCurrentModal, title, description, tags, link, s3URL, ajax }) => {
     const onGoBack = () => {
       setCurrentModal("title")
     }
@@ -15,21 +15,14 @@ export const CardModal = ({ isOpen, onClose, setCurrentModal, title, tags, link,
           <ModalBody>
             <Card maxW='sm'>
               <CardBody>
-                {
-                  link == "" ?
-                    (
-                      <Image
-                        src={link}
-                        alt=''
-                        borderRadius='lg'
-                      />
-                    ) : 
-                    (
-                      <></>
-                    )
-                }
-                
+                <Image
+                  src={s3URL}
+                  alt=''
+                  borderRadius='lg'
+                />
                 <Heading>{title}</Heading>
+                <p>{description}</p>
+                <p>Link: {link}</p>
               </CardBody>
               <Divider />
               <CardFooter>

@@ -10,6 +10,7 @@ import { TitleModal } from "./TitleModal";
 import { UploadFileModal } from "./UploadFileModal";
 import { UploadLinkModal } from "./UploadLinkModal";
 import { SelectClassModal } from "./SelectClassModal";
+import { FormModal } from "./FormModal"
 
 
 
@@ -24,6 +25,7 @@ export const ControllerModal = () => {
   const [ title, setTitle ] = useState('')
   const [ s3URL, setS3URL ] = useState('')
   const [ clsId, setClsId ] = useState('')
+  const [ description, setDescription ] = useState('')
 
   const onCloseModal = () => {
     setCurrentModal("select-class");
@@ -32,27 +34,39 @@ export const ControllerModal = () => {
 
 
   const ajax = async () => {
+
+    const url = new URL(s3URL);
+    const urlBeforeQuery = url.origin + url.pathname;
+  
     if (link.includes("youtu.be") || link.includes("youtube")) {
+      console.log(title)
+      console.log(s3URL)
+      console.log(description)
+      console.log(link),
+      console.log(clsId)
+      
       await backend
       .post("/classes-videos", {
         title: title,
-        s3Url: "https://aws.com", // TODO: Need to obtain the actual S3 Url
-        description : "TODO",
+        s3Url: urlBeforeQuery, // TODO: Need to obtain the actual S3 Url
+        description : description,
         mediaUrl: link,
         classId: clsId  // added classId, will change the look base on design
         // TODO: what to do with tags? 
       })
       .then((response) => console.log(response))
       .catch((error) => console.log(error));
+      alert("New class video created successfully")
     } else {
       await backend
         .post("/articles", {
-          s3_url: "https://aws.com",
+          s3_url: urlBeforeQuery,
           description: title,
           media_url: link
         })
         .then((response) => console.log(response))
         .catch((error) => console.log(error))
+      alert("New Article created successfully!")
     }
     
   }
@@ -67,11 +81,15 @@ export const ControllerModal = () => {
     } else if (currentModal == "title") {
       return <TitleModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} setTitle={setTitle}/>
     } else if (currentModal == "card") {
-      return <CardModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} tags={tags} link={link} ajax={ajax}/>
+      const url = new URL(s3URL);
+      const urlBeforeQuery = url.origin + url.pathname;
+      return <CardModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} description={description} tags={tags} link={link} s3URL={urlBeforeQuery} ajax={ajax}/>
     } else if (currentModal == "upload-photo") {
-      return <UploadFileModal isOpen={isOpen} onClose={onCloseModal} setS3URL={setS3URL} />
+      return <UploadFileModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} setS3URL={setS3URL} />
     } else if (currentModal == "select-class") {
       return <SelectClassModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} setClsId={setClsId} />
+    } else if (currentModal == "form") {
+      return <FormModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} setTitle={setTitle} description={description} setDescription={setDescription} link={link} setLink={setLink} />
     }
   }
 

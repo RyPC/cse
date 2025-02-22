@@ -1,9 +1,14 @@
 import { ControllerModal } from "../resources/ResourceFlow/ResourceFlowController";
 
-
-
 export const Playground = () => {
-  return (
-    <ControllerModal />
-  )
+  const userRole = "teacher"
+  if (userRole == "teacher") {
+    return (
+      <ControllerModal />
+    )
+  } else {
+    return (
+      <></>
+    )
+  }
 };

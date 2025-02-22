@@ -1,7 +1,7 @@
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button } from "@chakra-ui/react"
 import { UploadComponent } from "./UploadComponent"
 
-export const UploadFileModal = ({ isOpen, onClose, setS3URL }) => {
+export const UploadFileModal = ({ isOpen, onClose, setCurrentModal, setS3URL }) => {
     return (
       <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -12,7 +12,7 @@ export const UploadFileModal = ({ isOpen, onClose, setS3URL }) => {
           <UploadComponent setS3URL={setS3URL} />
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme='red' mr={3}>
+          <Button colorScheme='red' mr={3} onClick={() => {setCurrentModal("card")}}>
             Next
           </Button>
           <Button colorScheme='blue' mr={3}>

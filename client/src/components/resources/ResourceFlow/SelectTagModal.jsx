@@ -3,11 +3,11 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, Modal
 export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags }) => {
 
     const onGoBack = () => {
-      setCurrentModal("select-media")
+      setCurrentModal("form")
     }
   
     const onConfirm = () => {
-      setCurrentModal("title")
+      setCurrentModal("upload-photo")
     }
   
     const addTag = (value) => {
@@ -52,7 +52,7 @@ export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags
           </ModalBody>
           <ModalFooter>
             <Button colorScheme='red' mr={3} onClick={onConfirm}>
-              Confirm
+              Next
             </Button>
             <Button colorScheme='blue' mr={3} onClick={onGoBack}>
               Go back
