@@ -1,6 +1,7 @@
 import { Box, Button, Center, Container, Flex, Menu, MenuItem, MenuList, MenuButton, Modal,
   ModalOverlay, ModalHeader, ModalContent, ModalBody, Text, 
   IconButton} from "@chakra-ui/react";
+import { useEffect } from "react";
 
 import { BsChevronLeft } from "react-icons/bs";
 
@@ -24,7 +25,7 @@ const timeToString = (time) => {
   });
 };
 
-export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
+export const TeacherViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
   const onCancel = () => {
     setCurrentModal("cancel");
   };
@@ -33,14 +34,21 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
     setCurrentModal("edit");
   }
 
-  // const [classTitle, setClassTitle] = useState("");
-  // const [location, setLocation] = useState("");
-  // const [date, setDate] = useState("");
-  // const [startTime, setStartTime] = useState("");
-  // const [endTime, setEndTime] = useState("");
-  // const [description, setDescription] = useState("");
-  // const [capacity, setCapacity] = useState("");
-  // const [level, setLevel] = useState("");
+  const fetchPerformances = async () => {
+    try {
+      // Fetch scheduled classes
+      const classesResponse = await backend.get('/events');
+
+      setClasses(formattedData);
+    } catch (error) {
+      console.error('Error fetching class data:', error);
+    }
+  };
+
+  useEffect(() => {
+
+
+  }, [classData]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -131,6 +139,14 @@ export const ViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
               </Text>
             </div>
           </Flex>
+          <Box>
+            <Text fontWeight='bold' mb='1rem'>
+              Performance(s)
+            </Text>
+            <Text>
+              {/* {classData.description} */}
+            </Text>
+          </Box>
         </ModalBody>
       </ModalContent>
     </Modal>

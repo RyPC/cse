@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 
-import { ConfirmationModal } from "./ConfirmationModal";
-import { ViewModal } from "./ViewModal";
-import { CancelModal } from "./CancelModal";
-import { EditModal } from "./EditModal";
+import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
+import { TeacherViewModal } from "./TeacherViewModal";
+import { TeacherCancelModal } from "./TeacherCancelModal";
+import { TeacherEditModal } from "./TeacherEditModal";
 import { Navbar } from "../navbar/Navbar";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -40,10 +40,12 @@ const timeToString = (time) => {
 
 export const Bookings = () => {
   const { backend } = useBackendContext();
+  
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [currentModal, setCurrentModal] = useState("view");
   const [classData, setClassData] = useState({});  // data specific to class in current modal
   const [classes, setClasses] = useState([]);
+  const [role, setRole] = useState("teacher");
 
   const onCloseModal = () => {
     setCurrentModal("view");
@@ -105,75 +107,84 @@ export const Bookings = () => {
   }, []);
 
   return (
-    <Box>
-      <VStack
-        spacing={8}
-        sx={{ maxWidth: "100%", marginX: "auto" }}
-      >
-        <Heading>Bookings</Heading>
-        <div>
-          <Button onClick={handleClickEvents}>Events</Button>
-          <Button onClick={handleClickClasses}>Classes</Button>
-          <Button onClick={handleClickHistory}>History</Button>
-        </div>
-        {
-          classes.map((cls) => (
-            <Box
-              p="16px"
-              width="90vw"
-              borderRadius="4px"
-              backgroundColor="#D9D9D9"
-              onClick={() => onOpenModal(cls)}
-            >
-              <Text fontWeight="bold" paddingBottom="8px" fontSize={18}> {cls.title} </Text>
+    <Box 
+      display="flex"
+      flexDirection="column"
+      minHeight="100vh"
+    >
+      <Box flex="1">
+        <VStack
+          spacing={8}
+          sx={{ maxWidth: "100%", marginX: "auto" }}
+        >
+          <Heading>Bookings</Heading>
+          <div>
+            <Button onClick={handleClickEvents}>Events</Button>
+            <Button onClick={handleClickClasses}>Classes</Button>
+            <Button onClick={handleClickHistory}>History</Button>
+          </div>
+          { role === "teacher" &&
+            classes.map((cls) => (
+              <Box
+                p="16px"
+                width="90vw"
+                borderRadius="4px"
+                backgroundColor="#D9D9D9"
+                onClick={() => onOpenModal(cls)}
+              >
+                <Text fontWeight="bold" paddingBottom="8px" fontSize={18}> {cls.title} </Text>
 
-              <Stack direction="row" align="center" fontSize={16}>
-                <Icon as={BsClock} boxSize={4}/>
-                <Text>
-                  {dateToString(cls.date)} {timeToString(cls.startTime)} - {timeToString(cls.endTime)}
-                </Text>
-              </Stack>
+                <Stack direction="row" align="center" fontSize={16}>
+                  <Icon as={BsClock} boxSize={4}/>
+                  <Text>
+                    {dateToString(cls.date)} {timeToString(cls.startTime)} - {timeToString(cls.endTime)}
+                  </Text>
+                </Stack>
 
-              <Stack direction="row" align="center" fontSize={16}>
-                <Icon as={BsGeoFill} boxSize={4}/>
-                <Text> {cls.location} </Text>
-              </Stack>
+                <Stack direction="row" align="center" fontSize={16}>
+                  <Icon as={BsGeoFill} boxSize={4}/>
+                  <Text> {cls.location} </Text>
+                </Stack>
 
-              <Stack direction="row" align="center" fontSize={16}>
-                <Icon as={BsPersonFill} boxSize={4}/>
-                <Text> {cls.capacity} </Text>
-              </Stack>
+                <Stack direction="row" align="center" fontSize={16}>
+                  <Icon as={BsPersonFill} boxSize={4}/>
+                  <Text> {cls.capacity} </Text>
+                </Stack>
 
-              <Stack direction="row">
-                <Spacer />
-                <Button
-                  backgroundColor="#646363"
-                  color="white"
-                >
-                  View Details
-                  <Icon as={BsChevronRight}/>
-                </Button>
-              </Stack>
+                <Stack direction="row">
+                  <Spacer />
+                  <Button
+                    backgroundColor="#646363"
+                    color="white"
+                  >
+                    View Details
+                    <Icon as={BsChevronRight}/>
+                  </Button>
+                </Stack>
 
-            </Box>
-          ))
-        }
-      </VStack>
-      {
-        currentModal === "view" ?
-          <ViewModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData}/> :
-        (currentModal === "confirmation" ?
-          <ConfirmationModal isOpen={isOpen} onClose={onCloseModal} /> :
-          (currentModal === "edit" ?
-            <EditModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} setClassData={setClassData} /> :
-            
-            <CancelModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} />
+              </Box>
+            ))
+          }
+        </VStack>
+        { role === "teacher" ? (
+            currentModal === "view" ?
+              <TeacherViewModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData}/> :
+            (currentModal === "confirmation" ?
+              <TeacherConfirmationModal isOpen={isOpen} onClose={onCloseModal} /> :
+              (currentModal === "edit" ?
+                <TeacherEditModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} setClassData={setClassData} /> :
+                
+                <TeacherCancelModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} />
+            )
+          )
+        ) : (
+          // STUDENT VIEW HERE
+          <div></div>
         )
-      )
-      }
-      <Navbar></Navbar>
+        }
+        <Navbar></Navbar>
+      </Box>
     </Box>
-
   );
 };
 

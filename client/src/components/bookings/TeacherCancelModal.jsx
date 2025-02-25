@@ -1,6 +1,6 @@
 import { Text, Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Flex } from "@chakra-ui/react";
 
-export const CancelModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
+export const TeacherCancelModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
   const onGoBack = () => {
     setCurrentModal("view");
   };
@@ -11,7 +11,8 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal, classData }) => 
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader textAlign="center">Are you sure you want to delete this class?</ModalHeader>
+        <ModalHeader textAlign="center">A
+          re you sure you want to delete this class?</ModalHeader>
         <ModalCloseButton />
         <ModalBody textAlign="center">
           <Text>You are deleting {classData.title}.</Text>

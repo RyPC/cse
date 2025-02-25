@@ -33,7 +33,7 @@ const stringToTime = (timeString) => {
   return d;
 };
 
-export const EditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData }) => {
+export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData }) => {
   const { backend } = useBackendContext();
 
   const onBack = () => {

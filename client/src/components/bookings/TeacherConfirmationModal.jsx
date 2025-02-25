@@ -2,7 +2,7 @@ import { Icon, Button, Modal, ModalOverlay, ModalContent, ModalFooter, Flex, Tex
 
 import { BsCheck } from "react-icons/bs";
 
-export const ConfirmationModal = ({ isOpen, onClose }) => {
+export const TeacherConfirmationModal = ({ isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
