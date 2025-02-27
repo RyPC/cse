@@ -40,7 +40,7 @@ export const ClassCard = ({
   const [classDate, setClassDate] = useState(null);
   const { pathname } = useLocation();
   const [openRootModal, setOpenRootModal] = useState(false);
-  console.log({formattedDate, formattedStartTime, formattedEndTime})
+  console.log({ formattedDate, formattedStartTime, formattedEndTime });
   const fetchClassDate = async () => {
     if (!classDate) {
       console.log("id", id);
@@ -116,7 +116,10 @@ export const ClassCard = ({
           </VStack>
         </CardBody>
 
-        <CardFooter justifyContent="right" hidden>
+        <CardFooter
+          justifyContent="right"
+          hidden
+        >
           {/* <Text>0/{capacity} spots left</Text> */}
           <SignUpController
             class_id={id}

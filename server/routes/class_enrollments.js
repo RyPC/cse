@@ -37,12 +37,12 @@ classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
         sc.date,
         sc.start_time,
         sc.end_time,
-        COUNT(ce.student_id) as attendee_count
+        ce.attendance,
+        (SELECT COUNT(*) FROM class_enrollments WHERE class_id = c.id) as attendee_count
       FROM classes c
+      JOIN class_enrollments ce ON c.id = ce.class_id AND ce.student_id = $1
       LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
-      LEFT JOIN class_enrollments ce ON c.id = ce.class_id
-      WHERE ce.student_id = $1
-      GROUP BY c.id, sc.date, sc.start_time, sc.end_time
+      GROUP BY c.id, sc.date, sc.start_time, sc.end_time, ce.attendance
     `,
       [req.params.student_id]
     );
@@ -89,16 +89,17 @@ classEnrollmentsRouter.put("/:student_id", async (req, res) => {
   }
 });
 classEnrollmentsRouter.delete("/:student_id/:class_id", async (req, res) => {
-    const { student_id, class_id } = req.params;
+  const { student_id, class_id } = req.params;
 
-    try {
-        const result = await db.query(
-            "DELETE FROM class_enrollments WHERE student_id = $1 AND class_id = $2 RETURNING *", [student_id, class_id]
-        )
-        res.status(200).send(keysToCamel(result[0]));
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+  try {
+    const result = await db.query(
+      "DELETE FROM class_enrollments WHERE student_id = $1 AND class_id = $2 RETURNING *",
+      [student_id, class_id]
+    );
+    res.status(200).send(keysToCamel(result[0]));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 export { classEnrollmentsRouter };

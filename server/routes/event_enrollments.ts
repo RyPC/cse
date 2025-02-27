@@ -53,11 +53,11 @@ eventEnrollmentRouter.get("/student/:student_id", async (req, res) => {
       `
       SELECT
         e.*,
-        COUNT(ee.student_id) as attendee_count
+        ee.attendance,
+        (SELECT COUNT(*) FROM event_enrollments WHERE event_id = e.id) as attendee_count
       FROM events e
-      LEFT JOIN event_enrollments ee ON e.id = ee.event_id
-      WHERE ee.student_id = $1
-      GROUP BY e.id
+      JOIN event_enrollments ee ON e.id = ee.event_id AND ee.student_id = $1
+      GROUP BY e.id, ee.attendance
     `,
       [req.params.student_id]
     );
@@ -102,7 +102,7 @@ eventEnrollmentRouter.put("/:student_id", async (req, res) => {
     if (!event_id || attendance === undefined) {
       return res.status(400).json({ error: "Missing required parameters" });
     }
-    
+
     const data = await db.query(
       `UPDATE event_enrollments
        SET attendance = $1
@@ -122,16 +122,17 @@ eventEnrollmentRouter.put("/:student_id", async (req, res) => {
 });
 
 eventEnrollmentRouter.delete("/:student_id/:event_id", async (req, res) => {
-    const { student_id, event_id } = req.params;
+  const { student_id, event_id } = req.params;
 
-    try {
-        const result = await db.query(
-            "DELETE FROM event_enrollments WHERE student_id = $1 AND event_id = $2 RETURNING *", [student_id, event_id]
-        )
-        res.status(200).send(keysToCamel(result[0] as EventEnrollment));
-    } catch (err) {
-        res.status(500).send(err.message);
-    }
+  try {
+    const result = await db.query(
+      "DELETE FROM event_enrollments WHERE student_id = $1 AND event_id = $2 RETURNING *",
+      [student_id, event_id]
+    );
+    res.status(200).send(keysToCamel(result[0] as EventEnrollment));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 export { eventEnrollmentRouter };
