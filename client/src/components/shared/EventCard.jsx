@@ -7,7 +7,8 @@ import {
   Text,
   VStack,
   Button,
-  CardFooter
+  CardFooter,
+  useDisclosure
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -15,6 +16,7 @@ import { useLocation } from "react-router-dom";
 
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
+import EventInfoModal from "../discovery/EventInfoModal";
 import { useState } from "react";
 
 export const EventCard = ({
@@ -39,12 +41,25 @@ export const EventCard = ({
   const { pathname } = useLocation();
   const [openRootModal, setOpenRootModal] = useState(false);
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedCard, setSelectedCard] = useState();
+  const [cardType, setCardType] = useState();
+  const [coEvents, setCoEvents] = useState([]);
+  const [currentModal, setCurrentModal] = useState("view");
+
   const handleOpenModal = () => {
     setOpenModal(!openModal);
   };
   const handleCancel = () => {
     setOpenModal(false);
   };
+
+  const onCloseModal = () => {
+    setCurrentModal("view");
+    onClose();
+  };
+
+
   return (
     <>
        <Card
@@ -94,6 +109,7 @@ export const EventCard = ({
               if (pathname === "/bookings") {
                 onClick();
               } else {
+                console.log("open modal!");
                 setOpenRootModal(true);
               }
             }}
@@ -105,7 +121,7 @@ export const EventCard = ({
 
         <CardFooter justifyContent="right" hidden>
           {/* <Text>Required Class ID: {classId}</Text> */}
-          <SignUpController
+          {/* <SignUpController
             event_id={id}
             title={title}
             description={description}
@@ -116,6 +132,9 @@ export const EventCard = ({
             date={date}
             setOpenRootModal={setOpenRootModal}
             openRootModal={openRootModal}
+          /> */}
+          <EventInfoModal
+            isOpenProp={openRootModal}
           />
         </CardFooter>
       </Card>
