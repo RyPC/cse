@@ -25,7 +25,7 @@ import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 
 export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
   const { backend } = useBackendContext();
-
+  console.log(modalData);
   const [events, setEvents] = useState([]);
 
   const [title, setTitle] = useState(modalData?.title ?? "");
