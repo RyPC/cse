@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 
 import {
   Button,
-  Center,
   Container,
   FormControl,
   FormLabel,
@@ -32,10 +31,14 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
   const [title, setTitle] = useState(modalData?.title ?? "");
   const [location, setLocation] = useState(modalData?.location ?? "");
   const [date, setDate] = useState(modalData?.date ?? "");
+  const [startTime, setStartTime] = useState(modalData?.startTime ?? "");
+  const [endTime, setEndTime] = useState(modalData?.endTime ?? "");
   const [description, setDescription] = useState(modalData?.description ?? "");
   const [capacity, setCapacity] = useState(modalData?.capacity ?? 0);
   const [level, setLevel] = useState(modalData?.level ?? "beginner");
-  const [costume, setCostume] = useState(modalData?.costume ?? "");
+  const [classType, setClassType] = useState(
+    modalData?.classType ?? "classical"
+  );
   const [performance, setPerformance] = useState(modalData?.performance ?? -1);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -50,10 +53,12 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
     const body = {
       location: location ?? "",
       date: date ?? new Date(),
+      startTime: startTime ?? "",
+      endTime: endTime ?? "",
       description: description ?? "",
       level: level ?? "",
-      capacity: capacity == "" ? 0 : capacity,
-      costume: costume ?? "",
+      capacity: capacity === "" ? 0 : capacity,
+      classType: classType ?? "",
       performance: performance ?? "",
       isDraft,
       title: title ?? "",
@@ -133,6 +138,26 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
           </FormControl>
 
           <FormControl>
+            <FormLabel>Start Time</FormLabel>
+            <Input
+              type="time"
+              required
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>End Time</FormLabel>
+            <Input
+              type="time"
+              required
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </FormControl>
+
+          <FormControl>
             <FormLabel>Description</FormLabel>
             <Textarea
               value={description}
@@ -165,16 +190,6 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
           </FormControl>
 
           <FormControl>
-            <FormLabel>Costume</FormLabel>
-            <Input
-              type="text"
-              required
-              value={costume}
-              onChange={(e) => setCostume(e.target.value)}
-            />
-          </FormControl>
-
-          <FormControl>
             <FormLabel>Performance</FormLabel>
             <Select
               required
@@ -191,6 +206,17 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
                     </option>
                   ))
                 : null}
+            </Select>
+          </FormControl>
+          <FormControl>
+            <FormLabel>Class Type</FormLabel>
+            <Select
+              required
+              value={classType}
+              onChange={(e) => setClassType(e.target.value)}
+            >
+              <option value="classical">Classical</option>
+              <option value="ballet">Ballet</option>
             </Select>
           </FormControl>
 
