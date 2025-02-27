@@ -181,6 +181,10 @@ export const Bookings = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("selectedCard", selectedCard);
+  }, [selectedCard]);
+
   return (
     <Box>
       <VStack
@@ -335,7 +339,7 @@ export const Bookings = () => {
           ) : (
             <CreateClassForm
               closeModal={onCloseModal}
-              setSelectedCard={selectedCard}
+              modalData={selectedCard}
               reloadCallback={reloadClassesAndDrafts}
             />
           )}
