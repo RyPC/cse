@@ -13,10 +13,11 @@ import {
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
-import EventInfoModal from "../discovery/EventInfoModal";
+import TeacherEventViewModal from "../discovery/TeacherEventViewModal";
 import { useState } from "react";
 
 export const EventCard = ({
@@ -40,12 +41,13 @@ export const EventCard = ({
   const [openModal, setOpenModal] = useState(false);
   const { pathname } = useLocation();
   const [openRootModal, setOpenRootModal] = useState(false);
+  const [openTeacherModal, setOpenTeacherModal] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedCard, setSelectedCard] = useState();
-  const [cardType, setCardType] = useState();
   const [coEvents, setCoEvents] = useState([]);
   const [currentModal, setCurrentModal] = useState("view");
+  const { currentUser, role } = useAuthContext();
 
   const handleOpenModal = () => {
     setOpenModal(!openModal);
@@ -56,6 +58,11 @@ export const EventCard = ({
 
   const onCloseModal = () => {
     setCurrentModal("view");
+    onClose();
+  };
+
+  const closeTeacherModal = () => {
+    setOpenTeacherModal(false);
     onClose();
   };
 
@@ -108,8 +115,11 @@ export const EventCard = ({
             onClick={() => {
               if (pathname === "/bookings") {
                 onClick();
-              } else {
-                console.log("open modal!");
+              } else if (role !== "student") {
+                console.log("ur not a student, open teacher view modal!");
+                setOpenTeacherModal(true);
+              }
+              else {
                 setOpenRootModal(true);
               }
             }}
@@ -121,7 +131,7 @@ export const EventCard = ({
 
         <CardFooter justifyContent="right" hidden>
           {/* <Text>Required Class ID: {classId}</Text> */}
-          {/* <SignUpController
+          <SignUpController
             event_id={id}
             title={title}
             description={description}
@@ -132,9 +142,10 @@ export const EventCard = ({
             date={date}
             setOpenRootModal={setOpenRootModal}
             openRootModal={openRootModal}
-          /> */}
-          <EventInfoModal
-            isOpenProp={openRootModal}
+          />
+          <TeacherEventViewModal
+            isOpenProp={openTeacherModal}
+            handleClose={closeTeacherModal}
           />
         </CardFooter>
       </Card>
