@@ -61,4 +61,4 @@ articleTagsRouter.delete('/', async (req, res) => {
     }
 });
 
-export default { articleTagsRouter };
+export { articleTagsRouter };

@@ -61,4 +61,4 @@ videoTagsRouter.delete('/', async (req, res) => {
 });
 
 
-export default { videoTagsRouter };
+export { videoTagsRouter };
