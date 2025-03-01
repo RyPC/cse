@@ -7,6 +7,7 @@ import {
   CardBody,
   CardHeader,
   Heading,
+  HStack,
   Tab,
   TabList,
   TabPanel,
@@ -16,6 +17,7 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
+import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
 
@@ -236,13 +238,10 @@ export const Bookings = () => {
                 {isTeacher ? (
                   classes.length > 0 ? (
                     classes.map((classItem) => (
-                      <ClassTeacherCard
+                      <ClassCard
                         key={classItem.id}
                         {...classItem}
-                        navigate={navigate}
-                        button={true}
-                        setSelectedCard={setSelectedCard}
-                        onOpen={onOpen}
+                        onClick={() => updateModal(classItem)}
                       />
                     ))
                   ) : (
@@ -403,50 +402,73 @@ const ClassTeacherCard = ({
   setSelectedCard,
   onOpen,
 }) => {
-  // button shows if it is a class draft or a button
   return (
     <Card
-      width="300px"
-      minHeight="100px"
-      position="relative"
+      w={{ base: "90%", md: "30em" }}
+      bg="gray.200"
     >
-      <CardHeader paddingBottom={1}>
-        <Heading size={"lg"}>{title ? title : "Placeholder Title"}</Heading>
+      <CardHeader pb={0}>
+        <Heading
+          size="md"
+          fontWeight="bold"
+        >
+          {title ? title : "Placeholder Title"}
+        </Heading>
       </CardHeader>
-      <CardBody paddingTop={1}>
-        <Text>Date: {date ? date : "1/27/2025 @ 1 PM - 3 PM"}</Text>
-        <Text>Location: {location ? location : "Irvine"}</Text>
-        <Text>RSVPd: {rsvpCount ? rsvpCount : 10}</Text>
+      <CardBody>
+        <VStack
+          align="stretch"
+          spacing={2}
+        >
+          <HStack>
+            <FaClock size={14} />
+            <Text fontSize="sm">{date ? date : "1/27/2025 @ 1 PM - 3 PM"}</Text>
+          </HStack>
+
+          <HStack>
+            <FaMapMarkerAlt size={14} />
+            <Text fontSize="sm">{location ? location : "Irvine"}</Text>
+          </HStack>
+
+          <HStack>
+            <FaUser size={14} />
+            <Text fontSize="sm">
+              {rsvpCount ? rsvpCount : 10}{" "}
+              {rsvpCount === 1 ? "person" : "people"} RSVP'd
+            </Text>
+          </HStack>
+          <Button
+            alignSelf="flex-end"
+            variant="solid"
+            size="sm"
+            bg="gray.500"
+            color="black"
+            _hover={{ bg: "gray.700" }}
+            mt={2}
+            onClick={
+              isDraft
+                ? () => {
+                    const modalData = {
+                      id: classId,
+                      title,
+                      location,
+                      date,
+                      description,
+                      capacity,
+                      level,
+                      costume,
+                      performance,
+                    };
+                    setSelectedCard(modalData);
+                    onOpen();
+                  }
+                : () => navigate(`/dashboard/classes/${classId}`)
+            }
+          >
+            {isDraft ? "Edit" : "View Details >"}
+          </Button>
+        </VStack>
       </CardBody>
-      <Button
-        size="sm"
-        colorScheme="blue"
-        position="absolute"
-        bottom="8px"
-        right="8px"
-        onClick={
-          isDraft
-            ? () => {
-                const modalData = {
-                  id: classId,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  level,
-                  costume,
-                  performance,
-                };
-                console.log(modalData);
-                setSelectedCard(modalData);
-                onOpen();
-              }
-            : () => navigate(`/dashboard/classes/${classId}`)
-        }
-      >
-        {isDraft ? "Edit" : "View Details"}
-      </Button>
     </Card>
   );
 };
