@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 import {
   Box,
@@ -17,8 +17,8 @@ import {
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 
+import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -56,8 +56,20 @@ export const Bookings = () => {
           .get("/classes")
           .then((res) => {
             const allClasses = res.data;
-            const published = allClasses.filter((cls) => !cls.isDraft);
-            const drafts = allClasses.filter((cls) => cls.isDraft);
+            const published = allClasses
+              .filter((cls) => !cls.isDraft)
+              .map((cls) => {
+                cls.classId = cls.id;
+                return cls;
+              });
+            const drafts = allClasses
+              .filter((cls) => cls.isDraft)
+              .map((cls) => {
+                cls.classId = cls.id;
+                return cls;
+              });
+            console.log("published", published);
+            console.log("drafts", drafts);
             setClasses(published);
             setDrafts(drafts);
           })
@@ -174,8 +186,19 @@ export const Bookings = () => {
     try {
       const response = await backend.get("/classes");
       const allClasses = response.data;
-      const published = allClasses.filter((cls) => !cls.isDraft);
-      const updatedDrafts = allClasses.filter((cls) => cls.isDraft);
+      const published = allClasses
+        .filter((cls) => !cls.isDraft)
+        .map((cls) => {
+          cls.classId = cls.id;
+          return cls;
+        });
+      const updatedDrafts = allClasses
+        .filter((cls) => cls.isDraft)
+        .map((cls) => {
+          cls.classId = cls.id;
+          return cls;
+        });
+
       setClasses(published);
       setDrafts(updatedDrafts);
     } catch (error) {
@@ -237,11 +260,13 @@ export const Bookings = () => {
               >
                 {isTeacher ? (
                   classes.length > 0 ? (
-                    classes.map((classItem) => (
-                      <ClassCard
-                        key={classItem.id}
+                    classes.map((classItem, index) => (
+                      <ClassTeacherCard
+                        key={index}
+                        setSelectedCard={setSelectedCard}
                         {...classItem}
-                        onClick={() => updateModal(classItem)}
+                        navigate={navigate}
+                        onOpen={onOpen}
                       />
                     ))
                   ) : (
@@ -287,13 +312,13 @@ export const Bookings = () => {
               >
                 {isTeacher ? (
                   drafts.length > 0 ? (
-                    drafts.map((draft) => (
+                    drafts.map((draft, index) => (
                       <ClassTeacherCard
-                        key={draft.id}
+                        key={index}
                         setSelectedCard={setSelectedCard}
                         onOpen={onOpen}
+                        classId={draft.id}
                         {...draft}
-                        onClick={() => updateModal(draft)}
                       />
                     ))
                   ) : (
@@ -384,91 +409,94 @@ export const Bookings = () => {
   );
 };
 
-const ClassTeacherCard = ({
-  classId,
-  title,
-  location,
-  date,
-  description,
-  capacity,
-  level,
-  costume,
-  performance,
-  rsvpCount,
-  link,
-  isDraft,
-  navigate,
-  button,
-  setSelectedCard,
-  onOpen,
-}) => {
-  return (
-    <Card
-      w={{ base: "90%", md: "30em" }}
-      bg="gray.200"
-    >
-      <CardHeader pb={0}>
-        <Heading
-          size="md"
-          fontWeight="bold"
-        >
-          {title ? title : "Placeholder Title"}
-        </Heading>
-      </CardHeader>
-      <CardBody>
-        <VStack
-          align="stretch"
-          spacing={2}
-        >
-          <HStack>
-            <FaClock size={14} />
-            <Text fontSize="sm">{date ? date : "1/27/2025 @ 1 PM - 3 PM"}</Text>
-          </HStack>
-
-          <HStack>
-            <FaMapMarkerAlt size={14} />
-            <Text fontSize="sm">{location ? location : "Irvine"}</Text>
-          </HStack>
-
-          <HStack>
-            <FaUser size={14} />
-            <Text fontSize="sm">
-              {rsvpCount ? rsvpCount : 10}{" "}
-              {rsvpCount === 1 ? "person" : "people"} RSVP'd
-            </Text>
-          </HStack>
-          <Button
-            alignSelf="flex-end"
-            variant="solid"
-            size="sm"
-            bg="gray.500"
-            color="black"
-            _hover={{ bg: "gray.700" }}
-            mt={2}
-            onClick={
-              isDraft
-                ? () => {
-                    const modalData = {
-                      id: classId,
-                      title,
-                      location,
-                      date,
-                      description,
-                      capacity,
-                      level,
-                      costume,
-                      performance,
-                    };
-                    setSelectedCard(modalData);
-                    onOpen();
-                  }
-                : () => navigate(`/dashboard/classes/${classId}`)
-            }
+const ClassTeacherCard = memo(
+  ({
+    classId,
+    title,
+    location,
+    date,
+    description,
+    capacity,
+    level,
+    costume,
+    performance,
+    rsvpCount,
+    isDraft,
+    navigate,
+    setSelectedCard,
+    onOpen,
+  }) => {
+    return (
+      <Card
+        w={{ base: "90%", md: "30em" }}
+        bg="gray.200"
+      >
+        <CardHeader pb={0}>
+          <Heading
+            size="md"
+            fontWeight="bold"
           >
-            {isDraft ? "Edit" : "View Details >"}
-          </Button>
-        </VStack>
-      </CardBody>
-    </Card>
-  );
-};
+            {title ? title : "Placeholder Title"}
+          </Heading>
+        </CardHeader>
+        <CardBody>
+          <VStack
+            align="stretch"
+            spacing={2}
+          >
+            <HStack>
+              <FaClock size={14} />
+              <Text fontSize="sm">
+                {date ? date : "1/27/2025 @ 1 PM - 3 PM"}
+              </Text>
+            </HStack>
+
+            <HStack>
+              <FaMapMarkerAlt size={14} />
+              <Text fontSize="sm">{location ? location : "Irvine"}</Text>
+            </HStack>
+
+            <HStack>
+              <FaUser size={14} />
+              <Text fontSize="sm">
+                {rsvpCount ? rsvpCount : 10}{" "}
+                {rsvpCount === 1 ? "person" : "people"} RSVP'd
+              </Text>
+            </HStack>
+            <Button
+              alignSelf="flex-end"
+              variant="solid"
+              size="sm"
+              bg="gray.500"
+              color="black"
+              _hover={{ bg: "gray.700" }}
+              mt={2}
+              onClick={
+                isDraft
+                  ? () => {
+                      const modalData = {
+                        classId,
+                        title,
+                        location,
+                        date,
+                        description,
+                        capacity,
+                        level,
+                        costume,
+                        performance,
+                        isDraft,
+                      };
+                      setSelectedCard(modalData);
+                      onOpen();
+                    }
+                  : () => navigate(`/dashboard/classes/${classId}`)
+              }
+            >
+              {isDraft ? "Edit" : "View Details >"}
+            </Button>
+          </VStack>
+        </CardBody>
+      </Card>
+    );
+  }
+);
