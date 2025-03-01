@@ -64,17 +64,31 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
       title: title ?? "",
     };
 
+    let classId;
     if (modalData) {
       await backend
         .put("/classes/" + modalData.id, body)
-        .then((response) => console.log(response))
         .catch((error) => console.log(error));
+      classId = modalData.id;
     } else {
-      await backend
-        .post("/classes", body)
-        .then((response) => console.log(response))
-        .catch((error) => console.log(error));
+      await backend.post("/classes", body).catch((error) => console.log(error));
+      classId = response?.data[0]?.id;
     }
+
+    if (classId && date && startTime && endTime) {
+      const scheduledClassBody = {
+        class_id: classId,
+        date,
+        start_time: startTime,
+        end_time: endTime,
+      };
+      // Add scheduled class as well
+      await backend
+        .post("/scheduled_classes", scheduledClassBody)
+        .then((response) => console.log("Scheduled class added:", response))
+        .catch((error) => console.log("Error adding scheduled class:", error));
+    }
+
     reloadCallback();
     setIsSubmitted(true);
     onConfirmationClose();
@@ -89,6 +103,7 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
     }
   }, [backend]);
 
+  const isEditingDraft = modalData && modalData.isDraft;
   return (
     <Container>
       <Text
@@ -97,7 +112,10 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
         mb={4}
       >
         {!isSubmitted
-          ? "New Class"
+          ? modalData
+            ? // if it is not submitted, and coming from a draft, then it is an edit, else it is a new class, else it is a published class
+              "Edit Class"
+            : "New Class"
           : `${title} ${isDraft ? "Draft" : "Published"}`}
       </Text>
       {!isSubmitted ? (
@@ -225,18 +243,22 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
             justifyContent="center"
             mt={4}
           >
-            <Button
-              onClick={() => {
-                onOpen();
-                setIsDraft(true);
-              }}
-            >
-              Save as Draft
-            </Button>
+            {/* wasnt a draft then show the button to save as draft */}
+            {!isEditingDraft && (
+              <Button
+                onClick={() => {
+                  onOpen();
+                  setIsDraft(true);
+                }}
+              >
+                Save as Draft
+              </Button>
+            )}
             <Button
               colorScheme="blue"
               type="submit"
             >
+              {/* publish either way */}
               Publish
             </Button>
           </Stack>
@@ -248,7 +270,7 @@ export const CreateClassForm = ({ closeModal, modalData, reloadCallback }) => {
             as="h3"
             size="xl"
           >
-            {isDraft ? "Draft" : "Class"} Submitted!
+            {isDraft ? "Draft" : "Class"} {modalData ? "Updated" : "Submitted"}!
           </Heading>{" "}
           <br />
           <Button
