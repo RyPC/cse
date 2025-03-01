@@ -65,7 +65,7 @@ export const UploadComponent = (setS3URL) => {
   return (
     <Box mt={4}>
       <Text fontWeight="bold">Upload a File</Text>
-      <Input type="file" onChange={handleFileChange} mt={2} />
+      <Input type="file" onChange={handleFileChange} mt={2} accept={["image/png", "image/jpg"]} />
       <Button onClick={uploadFile} isDisabled={uploading} mt={2}>
         {uploading ? "Uploading..." : "Upload"}
       </Button>

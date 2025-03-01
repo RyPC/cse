@@ -1,4 +1,5 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Input, ModalFooter } from "@chakra-ui/react"
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Input, ModalFooter, IconButton, VStack } from "@chakra-ui/react"
+import { IoIosArrowBack } from "react-icons/io";
 
 export const TitleModal = ({ isOpen, onClose, setCurrentModal, title, setTitle }) => {
     const onGoBack = () => {
@@ -13,7 +14,12 @@ export const TitleModal = ({ isOpen, onClose, setCurrentModal, title, setTitle }
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Title</ModalHeader>
+          <ModalHeader>
+            <IconButton aria-label="Search database" variant='ghost' onClick={onGoBack}>
+              <IoIosArrowBack />
+            </IconButton>
+            Title
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Input value={title}
@@ -26,12 +32,14 @@ export const TitleModal = ({ isOpen, onClose, setCurrentModal, title, setTitle }
             }}/>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='red' mr={3} onClick={onConfirm}>
-              Next
-            </Button>
-            <Button colorScheme='blue' mr={3} onClick={onGoBack}>
-              Go back
-            </Button>
+          <VStack
+              spacing={8}
+              sx={{ maxWidth: "100%", marginX: "auto" }}
+            >
+              <Button colorScheme='gray' mr={3} onClick={onConfirm}>
+                Next
+              </Button>
+            </VStack>
           </ModalFooter>
         </ModalContent>
       </Modal>

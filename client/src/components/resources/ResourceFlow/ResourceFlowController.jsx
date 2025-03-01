@@ -56,7 +56,7 @@ export const ControllerModal = () => {
       })
       .then((response) => console.log(response))
       .catch((error) => console.log(error));
-      alert("New class video created successfully")
+      // alert("New class video created successfully")
     } else {
       await backend
         .post("/articles", {
@@ -66,9 +66,9 @@ export const ControllerModal = () => {
         })
         .then((response) => console.log(response))
         .catch((error) => console.log(error))
-      alert("New Article created successfully!")
+      // alert("New Article created successfully!")
     }
-    
+    window.location.href = "/resources"
   }
 
   const renderModal = () => {
@@ -85,7 +85,7 @@ export const ControllerModal = () => {
       const urlBeforeQuery = url.origin + url.pathname;
       return <CardModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} description={description} tags={tags} link={link} s3URL={urlBeforeQuery} ajax={ajax}/>
     } else if (currentModal == "upload-photo") {
-      return <UploadFileModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} setS3URL={setS3URL} />
+      return <UploadFileModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} s3URL={s3URL} setS3URL={setS3URL} />
     } else if (currentModal == "select-class") {
       return <SelectClassModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} setClsId={setClsId} />
     } else if (currentModal == "form") {

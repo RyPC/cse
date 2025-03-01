@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, ModalFooter, Select, Card, CardBody, Input } from "@chakra-ui/react"
 
+import { ProgressBar } from "./ProgressBar";
 
 export const SelectClassModal = ({ isOpen, onClose, setCurrentModal, setClsId }) => {
   const [classes, setClasses] = useState([]);
@@ -60,7 +61,10 @@ export const SelectClassModal = ({ isOpen, onClose, setCurrentModal, setClsId })
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select Class</ModalHeader>
+          <ModalHeader>
+            Select Class
+            <ProgressBar currStep={1}/>
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
               <Input placeholder="Search for a class..." 

@@ -13,7 +13,9 @@ export const SelectMediaModal = ({ isOpen, onClose, setCurrentModal }) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select Media</ModalHeader>
+          <ModalHeader>
+            Select Media
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Button onClick={onPhoto}>

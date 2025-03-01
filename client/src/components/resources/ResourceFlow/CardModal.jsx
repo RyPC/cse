@@ -1,16 +1,24 @@
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Card, CardBody, Image, Heading, Divider, CardFooter, ModalFooter, Tag } from "@chakra-ui/react"
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Card, CardBody, Image, Heading, Divider, CardFooter, ModalFooter, Tag, IconButton, VStack } from "@chakra-ui/react"
+import { IoIosArrowBack } from "react-icons/io";
+import { ProgressBar } from "./ProgressBar";
 
 
 export const CardModal = ({ isOpen, onClose, setCurrentModal, title, description, tags, link, s3URL, ajax }) => {
     const onGoBack = () => {
-      setCurrentModal("title")
+      setCurrentModal("upload-photo")
     }
   
     return (
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Is everything correct?</ModalHeader>
+          <ModalHeader>
+            <IconButton aria-label="Search database" variant='ghost' onClick={onGoBack}>
+              <IoIosArrowBack />
+            </IconButton>
+            Is everything correct?
+            <ProgressBar currStep={5}/>
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Card maxW='sm'>
@@ -33,12 +41,14 @@ export const CardModal = ({ isOpen, onClose, setCurrentModal, title, description
             </Card>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme='red' mr={3} onClick={ajax}>
-              Confirm
-            </Button>
-            <Button colorScheme='blue' mr={3} onClick={onGoBack}>
-              Go back
-            </Button>
+            <VStack
+              spacing={8}
+              sx={{ maxWidth: "100%", marginX: "auto" }}
+            >
+              <Button colorScheme='gray' mr={3} onClick={ajax}>
+                Post
+              </Button>
+            </VStack>
           </ModalFooter>
         </ModalContent>
       </Modal>
