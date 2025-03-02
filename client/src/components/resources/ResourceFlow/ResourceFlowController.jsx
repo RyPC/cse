@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 
 import { Button, Box, useDisclosure, Heading, VStack , Select} from "@chakra-ui/react";
@@ -14,7 +14,7 @@ import { FormModal } from "./FormModal"
 
 
 
-export const ControllerModal = () => {
+export const ControllerModal = ({ autoOpen = false }) => {
 
   const { backend } = useBackendContext();
 
@@ -26,6 +26,12 @@ export const ControllerModal = () => {
   const [ s3URL, setS3URL ] = useState('')
   const [ clsId, setClsId ] = useState('')
   const [ description, setDescription ] = useState('')
+
+  useEffect(() => {
+    if (autoOpen) {
+      onOpen();
+    }
+  }, [autoOpen, onOpen]);
 
   const onCloseModal = () => {
     setCurrentModal("select-class");
@@ -91,23 +97,27 @@ export const ControllerModal = () => {
     } else if (currentModal == "form") {
       return <FormModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} title={title} setTitle={setTitle} description={description} setDescription={setDescription} link={link} setLink={setLink} />
     }
+    return null;
   }
 
   return (
-    <Box>
-      <VStack
-        spacing={8}
-        sx={{ maxWidth: "100%", marginX: "auto" }}
-      >
-        <Heading>Resource Flows for Teacher</Heading>
+    // <Box>
+      
+    //   <VStack
+    //     spacing={8}
+    //     sx={{ maxWidth: "100%", marginX: "auto" }}
+    //   >
+    //     <Heading>Resource Flows for Teacher</Heading>
 
 
-      <Button onClick={onOpen}>
-        Initiate
-      </Button>
-      </VStack>
-      {renderModal()}
-    </Box>
+    //   <Button onClick={onOpen}>
+    //     Initiate
+    //   </Button>
+    //   </VStack>
+    //   {renderModal()}
+    // </Box>
+    <>{renderModal()}</>
+
 
   );
 };
