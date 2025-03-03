@@ -6,18 +6,38 @@ import { db } from "../db/db-pgp";
 const classesRouter = express.Router();
 classesRouter.use(express.json());
 
+classesRouter.get("/scheduled", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT
+        c.*,
+        sc.date,
+        sc.start_time,
+        sc.end_time,
+        (SELECT COUNT(*) FROM class_enrollments WHERE class_id = c.id) as attendee_count
+      FROM classes c
+      LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+      GROUP BY c.id, sc.date, sc.start_time, sc.end_time
+    `);
+
+    res.json(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 classesRouter.get("/students/teacher/:id", async (req, res) => {
   try {
     const teacherId = req.params.id;
 
     const classStudents = await db.query(
       `
-            SELECT 
+            SELECT
                 c.id AS class_id,
                 s.id as student_id,
                 c.level as class_level,
                 s.level as student_level,
-                c.*, s.*, u.* 
+                c.*, s.*, u.*
             FROM teachers t
             LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
             LEFT JOIN classes c ON c.id = ct.class_id
@@ -46,7 +66,7 @@ classesRouter.get("/students/", async (req, res) => {
       `
             SELECT * FROM classes c
             LEFT JOIN class_enrollments ce ON c.id = ce.class_id
-            LEFT JOIN students s ON s.id = ce.student_id 
+            LEFT JOIN students s ON s.id = ce.student_id
             INNER JOIN users u ON u.id = s.id
             `
     );
@@ -70,7 +90,7 @@ classesRouter.get("/students/:id", async (req, res) => {
       `
             SELECT * FROM classes c
             LEFT JOIN class_enrollments ce ON c.id = ce.class_id
-            LEFT JOIN students s ON s.id = ce.student_id 
+            LEFT JOIN students s ON s.id = ce.student_id
             INNER JOIN users u ON u.id = s.id
             WHERE c.id = $1
             `,

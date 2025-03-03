@@ -127,19 +127,6 @@ export const ViewModal = ({
               Cancel RSVP
             </Button>
           )}
-          {/* {isAttended && (
-            <Button
-              size="sm"
-              background="#757575"
-              color="white"
-              mr={3}
-              onClick={onCancel}
-              px={10}
-              py={6}
-            >
-              Cancel RSVP
-            </Button>
-          )} */}
         </ModalFooter>
       </ModalContent>
     </Modal>
