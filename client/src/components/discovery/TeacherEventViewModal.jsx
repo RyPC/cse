@@ -61,6 +61,9 @@ function EventInfoModal({
   // temp for image
   const [imageSrc, setImageSrc] = useState("");
 
+  const [isEditing, setIsEditing] = useState(false);
+
+
 
   const enrollInEvent = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
@@ -92,7 +95,6 @@ function EventInfoModal({
     setOpenSuccessModal(false);
     handleClose();
   };
-
   const handleDeleteEvent = async () => {
     try {
       const response = await backend.delete(`/events/${id}`);
@@ -104,6 +106,7 @@ function EventInfoModal({
           isClosable: true,
         });
         handleClose();
+        window.location.reload();
       }
     } catch (error) {
       toast({
@@ -136,7 +139,7 @@ function EventInfoModal({
         isOpen={isOpenProp}
         size="full"
         onClose={handleClose}
-      >``
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -146,7 +149,7 @@ function EventInfoModal({
                   <Menu>
                     <MenuButton as={IconButton} icon={<MdMoreHoriz />}/>
                     <MenuList>
-                      <MenuItem onClick={() => console.log("Edit clicked")}>Edit</MenuItem>
+                      <MenuItem onClick={console.log('editing')}>Edit</MenuItem>
                       <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
                     </MenuList>
                   </Menu>

@@ -146,6 +146,16 @@ export const EventCard = ({
           <TeacherEventViewModal
             isOpenProp={openTeacherModal}
             handleClose={closeTeacherModal}
+            id = {id}
+            location = {location}
+            title = {title}
+            description = {description}
+            level = {level}
+            date = {date}
+            startTime = {startTime}
+            endTime = {endTime}
+            callTime = {callTime}
+            costume = {costume}
           />
         </CardFooter>
       </Card>
