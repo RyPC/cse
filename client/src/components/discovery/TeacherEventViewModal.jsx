@@ -19,13 +19,21 @@ import {
   ModalOverlay,
   Text,
   VStack,
+  Menu,
+  MenuButton,
+  MenuList,
+  IconButton,
+  MenuItem,
+  useToast,
 } from "@chakra-ui/react";
 
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { useNavigate } from "react-router-dom";
 import SuccessSignupModal from "./SuccessSignupModal";
+import CreateEvent from "../forms/createEvent";
 
 function EventInfoModal({
   isOpenProp,
@@ -46,11 +54,13 @@ function EventInfoModal({
 }) {
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
+  const toast = useToast();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   // temp for image
   const [imageSrc, setImageSrc] = useState("");
+
 
   const enrollInEvent = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
@@ -104,14 +114,20 @@ function EventInfoModal({
         isOpen={isOpenProp}
         size="full"
         onClose={handleClose}
-      >
+      >``
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
               <HStack justify="space-between">
                   <MdArrowBackIosNew onClick={handleClose}/>
                   <Heading size="lg">{title ? title : "N/A"}</Heading> {/* Will add from prop */}
-                  <MdMoreHoriz/>
+                  <Menu>
+                    <MenuButton as={IconButton} icon={<MdMoreHoriz />}/>
+                    <MenuList>
+                      <MenuItem onClick={() => console.log("Edit clicked")}>Edit</MenuItem>
+                      <MenuItem onClick={() => console.log("Delete clicked")}>Delete</MenuItem>
+                    </MenuList>
+                  </Menu>
               </HStack>
           </ModalHeader>
           <ModalBody>

@@ -223,3 +223,5 @@ export const CreateEvent = () => {
     </VStack>
   );
 };
+
+export default CreateEvent;
