@@ -38,8 +38,9 @@ export const ClassCheckInHandler = () => {
         const today = new Date().toISOString().split("T")[0];
 
         // Class-specific endpoint
-        await backend.put(`/class-enrollments/${studentId}`, {
-          class_id: id,
+        await backend.post("/class-enrollments", {
+          studentId: studentId,
+          classId: id,
           attendance: today,
         });
 

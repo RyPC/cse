@@ -34,9 +34,10 @@ export const EventCheckInHandler = () => {
         );
         const studentId = studentResponse.data.id;
 
-        // Event-specific endpoint
-        await backend.put(`/event-enrollments/${studentId}`, {
+        await backend.post("/event-enrollments", {
+          student_id: studentId,
           event_id: id,
+          // this statement has no effect since attendance defaults to false in backend route (event_enrollments.ts)
           attendance: true,
         });
 
