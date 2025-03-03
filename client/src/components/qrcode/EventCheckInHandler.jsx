@@ -21,13 +21,10 @@ export const EventCheckInHandler = () => {
     const handleCheckIn = async () => {
       try {
         if (!currentUser?.uid) {
-          const baseURL = window.location.origin;
           const id = params.id;
 
-          localStorage.setItem(
-            "qrcode_redirect",
-            `${baseURL}/check-in/event/${id}`
-          );
+          // removed baseURL, was preventing the redirect to login from happening
+          localStorage.setItem("qrcode_redirect", `/check-in/event/${id}`);
           // throw new Error("No user ID found");
           navigate("/login");
         }

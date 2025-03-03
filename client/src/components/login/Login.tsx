@@ -80,7 +80,16 @@ export const Login = () => {
             }
         }
         else {
-            navigate('/discovery')
+          console.log("In else clause!")
+          const qrCodeRedirect = localStorage.getItem("qrcode_redirect");
+          console.log(qrCodeRedirect)
+          // return qrCodeRedirect ? navigate(qrCodeRedirect) : navigate('/discovery');
+          if(qrCodeRedirect) {
+            localStorage.removeItem("qrcode_redirect");
+            navigate(qrCodeRedirect);
+          } else {
+            navigate('/discovery');
+          }
         }
 
     } catch (err) {
