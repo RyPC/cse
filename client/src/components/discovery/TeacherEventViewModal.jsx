@@ -93,6 +93,28 @@ function EventInfoModal({
     handleClose();
   };
 
+  const handleDeleteEvent = async () => {
+    try {
+      const response = await backend.delete(`/events/${id}`);
+      if (response.status === 200) {
+        toast({
+          title: "Event deleted",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+        handleClose();
+      }
+    } catch (error) {
+      toast({
+        title: "Error deleting event",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
     if (isOpenProp && !imageSrc) {
       fetch("https://dog.ceo/api/breeds/image/random") // for fun
@@ -125,7 +147,7 @@ function EventInfoModal({
                     <MenuButton as={IconButton} icon={<MdMoreHoriz />}/>
                     <MenuList>
                       <MenuItem onClick={() => console.log("Edit clicked")}>Edit</MenuItem>
-                      <MenuItem onClick={() => console.log("Delete clicked")}>Delete</MenuItem>
+                      <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
                     </MenuList>
                   </Menu>
               </HStack>
