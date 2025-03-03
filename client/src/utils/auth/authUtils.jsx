@@ -1,5 +1,6 @@
 import { signOut } from "firebase/auth";
 
+import { clearCookies } from "./cookie";
 import { auth } from "./firebase";
 
 const logout = async (redirectPath, navigate, cookies) => {

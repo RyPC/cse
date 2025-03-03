@@ -15,12 +15,21 @@ export const EventCheckInHandler = () => {
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const params = useParams();
 
   useEffect(() => {
     const handleCheckIn = async () => {
       try {
         if (!currentUser?.uid) {
-          throw new Error("No user ID found");
+          const baseURL = window.location.origin;
+          const id = params.id;
+
+          localStorage.setItem(
+            "qrcode_redirect",
+            `${baseURL}/check-in/event/${id}`
+          );
+          // throw new Error("No user ID found");
+          navigate("/login");
         }
 
         const studentResponse = await backend.get(

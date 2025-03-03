@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { Button } from "@chakra-ui/react";
+
 import { instanceOf } from "prop-types";
 import { Cookies, withCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
@@ -24,13 +26,13 @@ const Logout = ({ cookies }) => {
   return (
     <div>
       {errorMessage && <p>{errorMessage}</p>}
-      <button
+      <Button
         type="submit"
         style={{ color: "white" }}
         onClick={handleLogout}
       >
         Log out
-      </button>
+      </Button>
     </div>
   );
 };
