@@ -47,16 +47,12 @@ const PublishedReviews = ({ classId }) => {
         Reviews
       </Text>
 
-      {!reviews.some((review) => review.studentId === user?.id) && (
-        <>
-          <StudentReview
-            displayName={user?.firstName}
-            class_id={classId}
-            onUpdate={onUpdate}
-          />
-          <Divider />
-        </>
-      )}
+      <StudentReview
+        displayName={user?.firstName}
+        class_id={classId}
+        onUpdate={onUpdate}
+      />
+      <Divider />
 
       <Stack height={"fit-content"}>
         {reviews.map((review) => (
