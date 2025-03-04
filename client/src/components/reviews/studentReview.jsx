@@ -15,6 +15,36 @@ import { FaPencilAlt } from "react-icons/fa";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
+const StudentReview = (
+    student_name,
+    id,
+    rating
+    ) => {
+    const [rating, setRating] = useState(rating)
+    const [hoverValue, setHoverValue] = useState(undefined)
+
+    const handleMouseOverStar = value => {
+        console.log(value)
+        setHoverValue(value)
+    };
+    
+    const handleMouseLeaveStar = () => {
+        console.log(value)
+        setHoverValue(undefined)
+    }
+
+    const handleClickStar = value => {
+        console.log(value)
+        setRating(value)
+    };
+
+    
+    return (
+        <VStack>
+            
+        </VStack>
+    )
+    
 const StudentReview = ({ id, starCount, description }) => {
   const { backend } = useBackendContext();
   const { currentUser } = useAuthContext();
