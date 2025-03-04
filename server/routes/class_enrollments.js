@@ -53,6 +53,29 @@ classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
   }
 });
 
+classEnrollmentsRouter.get("/teacher/:teacher_id/:class_id", async (req, res) => {
+  try {
+    const { teacher_id, class_id } = req.params;  // Ensure correct param names
+    const result = await db.query(
+      `
+      SELECT DISTINCT u.first_name, u.last_name, u.email, ce.attendance IS NOT NULL AS attendance 
+      FROM users u
+        JOIN students s ON s.id = u.id
+        JOIN class_enrollments ce ON ce.student_id = s.id
+        JOIN classes c ON c.id = ce.class_id
+        JOIN classes_taught ct ON ct.class_id = c.id
+        JOIN scheduled_classes sc ON sc.date = ce.attendance
+      WHERE ct.teacher_id = $1 AND c.id = $2;
+    `,
+      [teacher_id, class_id]
+    );
+
+    res.status(200).json(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 classEnrollmentsRouter.post("/", async (req, res) => {
   const { studentId, classId, attendance } = req.body;
   try {
