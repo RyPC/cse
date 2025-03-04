@@ -15,6 +15,7 @@ import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
+
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
 import ControllerModal from "../discovery/ControllerModal";

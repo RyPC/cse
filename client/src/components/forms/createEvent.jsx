@@ -242,7 +242,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
         colorScheme="blue"
         isLoading={isSubmitting}
       >
-        Create Event
+        {eventId  ? "Save Changes" : "Create Event"}
       </Button>
     </VStack>
   );

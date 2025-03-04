@@ -35,6 +35,8 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useNavigate } from "react-router-dom";
 import SuccessSignupModal from "./SuccessSignupModal";
 import { CreateEvent } from "../forms/createEvent";
+import { calcLength } from "framer-motion";
+import { BsChevronLeft } from "react-icons/bs";
 
 function EventInfoModal({
   isOpenProp,
@@ -43,6 +45,7 @@ function EventInfoModal({
   location,
   startTime,
   endTime,
+  callTime, 
   description,
   level,
   date,
@@ -104,6 +107,10 @@ function EventInfoModal({
   const handleEditClose = () => {
     setIsEditing(false);
     console.log("Set isEditing to false");
+  }
+  
+  const onBack = () => {
+    setIsEditing(false);
   }
 
   const handleEditEvent = async () => {
@@ -177,9 +184,27 @@ function EventInfoModal({
         </Box>)} */}
 
       {isEditing ? 
-        (<Box>
-          <CreateEvent/>
-        </Box>) :
+        (<Modal
+        
+        isOpen={isOpenProp}
+        size="full"
+        onClose={handleClose}
+        >
+          <ModalOverlay>
+          <ModalContent>
+          <Flex align="center" w="100%" position="relative">
+            <IconButton onClick={onBack} icon={<BsChevronLeft />} position="absolute" left={5} backgroundColor="white"/>
+          <ModalHeader flex={1} textAlign="center">{title}</ModalHeader>
+          </Flex>
+          <ModalBody>
+            <Box>
+              <CreateEvent eventId={id} event={{id: id, title: title, costume: costume, location: location, startTime: startTime, endTime: endTime, callTime: callTime, description: description, level: level, date: date}}/>
+            </Box>
+          </ModalBody>
+          </ModalContent>
+
+          </ModalOverlay>
+        </Modal>) :
        (<Modal
         isOpen={isOpenProp}
         size="full"
