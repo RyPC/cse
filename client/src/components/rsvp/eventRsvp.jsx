@@ -50,9 +50,9 @@ export const EventRSVP = ({ isOpen, onClose, card }) => {
                   <Th fontSize="xl" textTransform="none" fontWeight="semibold" textAlign="right">Checked In</Th>
                 </Tr>
               </Thead>
-              <Tbody> {/* TOOD: Dynamically load multiple rows based on backend response AND fix "whitespace" issue*/}
+              <Tbody>
                 {students && students.length > 0 ? students.map((user, index) => (
-                  <Tr borderBottom="1px solid #757575" key={index}> {/* key can eventually be user.id */}
+                  <Tr borderBottom="1px solid #757575" key={index}>
                     <Td px={0}>
                       <Flex align="center">
                         <Avatar mx={4} size="md" bg="gray.300"/>
