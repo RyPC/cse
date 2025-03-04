@@ -47,6 +47,28 @@ eventEnrollmentRouter.get("/:id", async (req, res) => {
   }
 });
 
+eventEnrollmentRouter.get("/event/:event_id", async (req, res) => {
+  try {
+    const { event_id } = req.params; // Extract event ID from request params
+
+    const result = await db.query(
+      `
+      SELECT DISTINCT u.first_name, u.last_name, u.email, ee.attendance AS attended
+      FROM users u
+        JOIN students s ON s.id = u.id
+        JOIN event_enrollments ee ON ee.student_id = s.id
+        JOIN events e ON e.id = ee.event_id
+      WHERE e.id = $1;
+      `, [event_id]
+    );
+
+    res.status(200).json(keysToCamel(result as EventEnrollment)); // Ensure .rows is used
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 eventEnrollmentRouter.get("/student/:student_id", async (req, res) => {
   try {
     const result = await db.query(
