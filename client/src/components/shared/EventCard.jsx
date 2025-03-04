@@ -172,7 +172,15 @@ export const EventCard = ({
             callTime = {callTime}
             costume = {costume}
           />
+          <DeleteConfirmModal
+            isOpen={openTeacherModal}
+            onClose={closeTeacherModal}
+            setCurrentModal={setCurrentModal}
+            title={title}
+            id={id}
+          />
 
+isOpen, onClose, setCurrentModal, card, handleEvent, type 
       </CardFooter>
     </Card>
     </>

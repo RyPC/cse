@@ -38,7 +38,7 @@ import { CreateEvent } from "../forms/createEvent";
 import { calcLength } from "framer-motion";
 import { BsChevronLeft } from "react-icons/bs";
 
-function EventInfoModal({
+function TeacherEventViewModal({
   isOpenProp,
   handleClose,
   title,
@@ -333,4 +333,4 @@ function EventInfoModal({
   );
 }
 
-export default EventInfoModal;
+export default TeacherEventViewModal;
