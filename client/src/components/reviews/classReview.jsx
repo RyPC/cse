@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 
-import { Box, VStack } from "@chakra-ui/react";
+import { Box, Divider, Stack, Text } from "@chakra-ui/react";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import ReviewCard from "./reviewCard";
 import StudentReview from "./studentReview";
 
 const PublishedReviews = ({ classId }) => {
@@ -22,16 +23,30 @@ const PublishedReviews = ({ classId }) => {
   }, [backend, currentUser.uid]);
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignContent={"center"}
-      justifyContent={"center"}
-      padding="2rem"
+    <Stack
+      padding="1rem"
+      spacing="2"
     >
+      <Text
+        fontSize="xl"
+        fontWeight="bold"
+      >
+        Reviews
+      </Text>
       <StudentReview id={classId} />
-      {JSON.stringify(reviews)}
-    </Box>
+
+      <Divider />
+      <Stack height={"fit-content"}>
+        {reviews.map((review) => (
+          <ReviewCard
+            reviewText={review.review}
+            rating={review.rating}
+            student_id={review.studentId}
+            class_id={review.classId}
+          />
+        ))}
+      </Stack>
+    </Stack>
   );
 };
 

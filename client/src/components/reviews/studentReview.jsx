@@ -21,8 +21,10 @@ const StudentReview = ({ id, starCount, description }) => {
   const [rating, setRating] = useState("");
   const [review, setReview] = useState("");
 
+  const isError = review === "";
   async function postReview() {
-    console.log("test");
+    if (isError) return;
+
     const users = await backend.get(`/users/${currentUser.uid}`);
 
     // console.log(users.data[0].id);
@@ -36,17 +38,24 @@ const StudentReview = ({ id, starCount, description }) => {
       console.log("Review");
     }
   }
+
   return (
-    <Box>
+    <>
       <FormControl>
-        <FormLabel>Review {id}</FormLabel>
         <Textarea
           placeholder="Type Here..."
           onChange={(e) => setReview(e.target.value)}
         />
-        <Button onClick={postReview}>Submit</Button>
+        <Button
+          onClick={postReview}
+          colorScheme={isError ? "gray" : "blue"}
+          disabled={true}
+          mt="1rem"
+        >
+          Post
+        </Button>
       </FormControl>
-    </Box>
+    </>
   );
 };
 
