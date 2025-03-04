@@ -19,10 +19,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { FaPencilAlt } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import PublishedReviews from "../reviews/classReview";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function ClassInfoModal({
@@ -196,6 +198,7 @@ function ClassInfoModal({
           <ModalFooter>
             <Button onClick={classSignUp}>Sign up</Button>
           </ModalFooter>
+          <PublishedReviews classId={id} />
         </ModalContent>
       </Modal>
     </>

@@ -1,22 +1,15 @@
-import React from 'react';
-import {
-    Box,
-    HStack,
-    Text,
-    VStack,
-    Avatar,
-    Flex
-} from '@chakra-ui/react';
+import React from "react";
+
+import { Avatar, Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+
 const ReviewCard = ({
-    rating,
-    reviewText,
-    authorName = 'Anonymous',
-    date,
-    isAnonymous = false
+  rating,
+  reviewText,
+  authorName = "Anonymous",
+  date,
+  isAnonymous = false,
 }) => {
-    return (
-        <VStack>
-        </VStack>
-    )
-}
-export {ReviewCard};
+  return <VStack></VStack>;
+};
+
+export default ReviewCard;
