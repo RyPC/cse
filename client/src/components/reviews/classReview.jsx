@@ -16,14 +16,14 @@ const PublishedReviews = ({ classId }) => {
   const [reviews, setReviews] = useState([]);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      const reviews = await backend
-        .get(`/reviews/class/${classId}`)
-        .then((res) => res.data);
-      setReviews(reviews);
-    };
+  const fetchReviews = async () => {
+    const reviews = await backend
+      .get(`/reviews/class/${classId}`)
+      .then((res) => res.data);
+    setReviews(reviews);
+  };
 
+  useEffect(() => {
     const fetchUser = async () => {
       const user = await backend.get(`/users/${currentUser.uid}`);
       setUser(user.data[0]);
@@ -32,6 +32,9 @@ const PublishedReviews = ({ classId }) => {
     fetchReviews();
   }, [backend, currentUser.uid]);
 
+  async function onUpdate() {
+    await fetchReviews();
+  }
   return (
     <Stack
       padding="1rem"
@@ -43,20 +46,28 @@ const PublishedReviews = ({ classId }) => {
       >
         Reviews
       </Text>
-      <StudentReview
-        displayName={user?.firstName}
-        class_id={classId}
-      />
-      <Divider />
+
+      {!reviews.some((review) => review.studentId === user?.id) && (
+        <>
+          <StudentReview
+            displayName={user?.firstName}
+            class_id={classId}
+            onUpdate={onUpdate}
+          />
+          <Divider />
+        </>
+      )}
 
       <Stack height={"fit-content"}>
         {reviews.map((review) => (
           <ReviewCardController
+            key={review.id}
             displayName={user?.firstName}
             reviewText={review.review}
             rating={review.rating}
             student_id={review.studentId}
             class_id={review.classId}
+            onUpdate={onUpdate}
           />
         ))}
       </Stack>

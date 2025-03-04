@@ -22,6 +22,7 @@ const ReviewCard = ({
   class_id,
   student_id,
   displayName,
+  onUpdate,
 }) => {
   const [student, setStudent] = useState(null);
   const { backend } = useBackendContext();

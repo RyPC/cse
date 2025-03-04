@@ -25,6 +25,7 @@ const StudentReview = ({
   class_id,
   student_id,
   displayName,
+  onUpdate,
 }) => {
   const { backend } = useBackendContext();
   const { currentUser } = useAuthContext();
@@ -71,6 +72,12 @@ const StudentReview = ({
         rating: starRating,
         review: review,
       });
+    }
+
+    if (response.status === 200 || response.status === 201) {
+      onUpdate();
+      setReview("");
+      setStarRating(0);
     }
   }
 

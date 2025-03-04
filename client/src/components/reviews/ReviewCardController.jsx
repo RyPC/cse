@@ -8,7 +8,7 @@ import ReviewCard from "./reviewCard";
 import StudentReview from "./studentReview";
 
 function ReviewCardController(props) {
-  const { rating, reviewText, class_id, student_id } = props;
+  const { rating, reviewText, class_id, student_id, onUpdate } = props;
 
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdition = () => setIsEditing(!isEditing);
