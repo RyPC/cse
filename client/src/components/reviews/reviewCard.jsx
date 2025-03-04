@@ -11,12 +11,27 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+import { FaStar } from "react-icons/fa6";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
-const ReviewCard = ({ rating, reviewText, class_id, student_id }) => {
+const ReviewCard = ({
+  rating,
+  reviewText,
+  class_id,
+  student_id,
+  displayName,
+}) => {
   const [student, setStudent] = useState(null);
   const { backend } = useBackendContext();
+  const [stars, setStars] = useState(Array(5).fill(0));
+
+  const colors = {
+    orange: "#F2C265",
+    grey: "a9a9a9",
+  };
+
   useEffect(() => {
     const fetchStudent = async () => {
       const user = await backend.get(`/students/${student_id}`);
@@ -26,22 +41,34 @@ const ReviewCard = ({ rating, reviewText, class_id, student_id }) => {
     fetchStudent();
   }, []);
   return (
-    <Card>
+    <>
       <CardHeader>
         <HStack>
           <Avatar
             name="Dan Abrahmov"
             src="https://bit.ly/dan-abramov"
           />
-          <Text>
-            {student?.firstName} {student?.lastName}
-          </Text>
+          <Text>{displayName}</Text>
+        </HStack>
+        <HStack>
+          {stars.map((_, index) => {
+            return (
+              <>
+                <FaStar
+                  key={index}
+                  size={24}
+                  value={rating}
+                  color={rating > index ? colors.orange : colors.grey}
+                />
+              </>
+            );
+          })}
         </HStack>
       </CardHeader>
       <CardBody>
         <Text>{reviewText}</Text>
       </CardBody>
-    </Card>
+    </>
   );
 };
 

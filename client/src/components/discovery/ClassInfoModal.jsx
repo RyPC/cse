@@ -26,7 +26,6 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import PublishedReviews from "../reviews/classReview";
 import SuccessSignupModal from "./SuccessSignupModal";
-import PublishedReviews from "../reviews/classreview";
 
 function ClassInfoModal({
   isOpenProp,
@@ -202,15 +201,13 @@ function ClassInfoModal({
           <PublishedReviews classId={id} />
         </ModalContent>
         <PublishedReviews
-        title = {title}
-        location = {location}
-        description = {description}
-        level = {level}
-        date = {date}
-        id = {id}
-        >
-          
-        </PublishedReviews>
+          title={title}
+          location={location}
+          description={description}
+          level={level}
+          date={date}
+          id={id}
+        ></PublishedReviews>
       </Modal>
     </>
   );
