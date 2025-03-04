@@ -1,21 +1,53 @@
 import { 
-    Box, Text, VStack, HStack, Heading, Flex, Avatar,
-    Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, 
-    Table, TableContainer, Thead, Tbody, Tr, Th, Td,
+  Box, Text, HStack, Heading, Flex, Avatar,
+  Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay, 
+  Table, TableContainer, Thead, Tbody, Tr, Th, Td,
 } from "@chakra-ui/react"
 
 import { MdArrowBackIosNew } from "react-icons/md";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+
+import { useEffect, useState } from "react";
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 export const ClassRSVP = ({ isOpen, onClose, card }) => {
   // TODO: Simulate class card clicking -> displaying information here
   //        might have to make a new endpoint to get all the information
-  // TOOD: Look around for an endpoint that gives me correct info, if not make a new one
-  const users = [
-    {name: "Joshua Sullivan", contact:"joshee.sullivan@gmail.com", checkedIn: true},
-    {name: "Raymond Yan", contact:"raymond.yan@gmail.com", checkedIn: false},
-    {name: "Ethan Ho", contact:"ethan.ho@gmail.com", checkedIn: false},
-    {name: "Steven Zhou", contact:"steven.zhou@gmail.com", checkedIn: true},
-  ];
+  const { currentUser } = useAuthContext();
+  const { backend } = useBackendContext();
+  const [users, setUsers] = useState([]);
+  const [teacherId, setTeacherId] = useState();
+
+  useEffect(() => {
+    const fetchTeacherId = async () => {
+      try {
+        const response = await backend.get(`/users/${currentUser.uid}`);
+        const userId = response.data[0].id;
+        setTeacherId(userId);
+      } catch (error) {
+        console.error("Error fetching user: ", error);
+      }
+    };
+  
+    fetchTeacherId();
+  }, [backend, currentUser.uid]); // Runs only when `currentUser.uid` changes
+  
+  useEffect(() => {
+    if (teacherId) {
+      const fetchClasses = async () => {
+        try {
+          const response = await backend.get(`/class-enrollments/teacher/${teacherId}/${card.id}`);
+          // console.log(response)
+          setUsers(response.data);
+        } catch (error) {
+          console.error("Error fetching classes:", error);
+        }
+      };
+  
+      fetchClasses();
+    }
+  }, [backend, teacherId, card.id]);
 
   return (
     <Modal
@@ -28,7 +60,7 @@ export const ClassRSVP = ({ isOpen, onClose, card }) => {
         <ModalHeader>
           <HStack justifyContent="center" position="relative">
             <Box position="absolute" left={0}><MdArrowBackIosNew onClick={onClose}/></Box>
-            <Heading size="lg">RSVP's for Ballet A</Heading>
+            <Heading size="lg">RSVP's for {card.name}</Heading>
           </HStack>
         </ModalHeader>
         <ModalBody px={0}>
@@ -47,12 +79,16 @@ export const ClassRSVP = ({ isOpen, onClose, card }) => {
                       <Flex align="center">
                         <Avatar mx={4} size="md" bg="gray.300"/>
                         <Box>
-                          <Text fontSize="sm" fontWeight="semibold">{user.name}</Text>
-                          <Text fontSize="xs">{user.contact}</Text>
+                          <Text fontSize="sm" fontWeight="semibold">{user.firstName} {user.lastName}</Text>
+                          <Text fontSize="xs">{user.email}</Text>
                         </Box>
                       </Flex>
                     </Td>
-                    <Td p={0} textAlign="center">{user.checkedIn ? "✅" : "❌"}</Td> {/* TODO: Proper centering, look into table stuff ig */}
+                    <Td p={0} textAlign="center">
+                      <Box display="flex" justifyContent="center" alignItems="center">
+                        {user.attendance ? <FaCheckCircle color="green"/> : <FaTimesCircle color="red"/>}
+                      </Box>
+                    </Td>
                   </Tr>
                 ))
                   : 
