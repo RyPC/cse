@@ -24,6 +24,7 @@ import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import SuccessSignupModal from "./SuccessSignupModal";
+import PublishedReviews from "../reviews/classreview";
 
 function ClassInfoModal({
   isOpenProp,
@@ -197,6 +198,16 @@ function ClassInfoModal({
             <Button onClick={classSignUp}>Sign up</Button>
           </ModalFooter>
         </ModalContent>
+        <PublishedReviews
+        title = {title}
+        location = {location}
+        description = {description}
+        level = {level}
+        date = {date}
+        id = {id}
+        >
+          
+        </PublishedReviews>
       </Modal>
     </>
   );

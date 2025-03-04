@@ -7,9 +7,29 @@ import {
     Text,
 } from '@chakra-ui/react';
 
-const StudentReview = () => {
-    const [rating, setRating] = useState("");
-    const [review, setReview] = useState("");
+const StudentReview = (
+    student_name,
+    id,
+    rating
+    ) => {
+    const [rating, setRating] = useState(rating)
+    const [hoverValue, setHoverValue] = useState(undefined)
+
+    const handleMouseOverStar = value => {
+        console.log(value)
+        setHoverValue(value)
+    };
+    
+    const handleMouseLeaveStar = () => {
+        console.log(value)
+        setHoverValue(undefined)
+    }
+
+    const handleClickStar = value => {
+        console.log(value)
+        setRating(value)
+    };
+
     
     return (
         <VStack>
