@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/react";
 
 import axios from "axios";
-import QRCodeReact from "react-qr-code";
+// import QRCodeReact from "react-qr-code";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import CreateClassForm from "../forms/createClasses";
@@ -109,11 +109,11 @@ export const Playground = () => {
             borderRadius="md"
             boxShadow="md"
           >
-            <QRCodeReact
+            {/* <QRCodeReact
               value={classCheckInUrl}
               size={256}
               level="H"
-            />
+            /> */}
           </Box>
           <Text
             fontSize="sm"
