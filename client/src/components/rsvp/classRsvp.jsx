@@ -12,11 +12,9 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 export const ClassRSVP = ({ isOpen, onClose, card }) => {
-  // TODO: Simulate class card clicking -> displaying information here
-  //        might have to make a new endpoint to get all the information
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
-  const [users, setUsers] = useState([]);
+  const [students, setStudents] = useState([]);
   const [teacherId, setTeacherId] = useState();
 
   useEffect(() => {
@@ -39,7 +37,7 @@ export const ClassRSVP = ({ isOpen, onClose, card }) => {
         try {
           const response = await backend.get(`/class-enrollments/teacher/${teacherId}/${card.id}`);
           // console.log(response)
-          setUsers(response.data);
+          setStudents(response.data);
         } catch (error) {
           console.error("Error fetching classes:", error);
         }
@@ -60,7 +58,7 @@ export const ClassRSVP = ({ isOpen, onClose, card }) => {
         <ModalHeader>
           <HStack justifyContent="center" position="relative">
             <Box position="absolute" left={0}><MdArrowBackIosNew onClick={onClose}/></Box>
-            <Heading size="lg">RSVP's for {card.name}</Heading>
+            <Heading size="lg" textAlign="center">RSVP's for {card.name}</Heading>
           </HStack>
         </ModalHeader>
         <ModalBody px={0}>
@@ -73,7 +71,7 @@ export const ClassRSVP = ({ isOpen, onClose, card }) => {
                 </Tr>
               </Thead>
               <Tbody> {/* TOOD: Dynamically load multiple rows based on backend response AND fix "whitespace" issue*/}
-                {users && users.length > 0 ? users.map((user, index) => (
+                {students && students.length > 0 ? students.map((user, index) => (
                   <Tr borderBottom="1px solid #757575" key={index}> {/* key can eventually be user.id */}
                     <Td px={0}>
                       <Flex align="center">
