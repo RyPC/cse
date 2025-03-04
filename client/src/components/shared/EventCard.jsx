@@ -17,6 +17,7 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
+import ControllerModal from "../discovery/ControllerModal";
 import TeacherEventViewModal from "../discovery/TeacherEventViewModal";
 import { useState } from "react";
 
@@ -66,10 +67,33 @@ export const EventCard = ({
     onClose();
   };
 
+  const handleClickModal = () => {
+      if (pathname === "/bookings") {
+        onClick();
+      } else if (role !== "student") {
+        if (currentModal === "view") {
+          setOpenTeacherModal(true);
+          console.log("Open teacher view modal!");
+        }
+        else if (currentModal === "delete") {
+          setOpenDeleteModal(true);
+          console.log("Open teacher delete modal!");
+        }
+        else if (currentModal === "edit") {
+          setOpenEditModal(true);
+          console.log("Open teacher edit modal!");
+        }
+      }
+      else {
+        setOpenRootModal(true);
+      }
+    };
+
+
 
   return (
     <>
-       <Card
+    <Card
       w={{ base: "90%", md: "30em" }}
       bg="gray.200"
     >
@@ -112,24 +136,14 @@ export const EventCard = ({
             color="black"
             _hover={{ bg: "gray.700" }}
             mt={2}
-            onClick={() => {
-              if (pathname === "/bookings") {
-                onClick();
-              } else if (role !== "student") {
-                console.log("ur not a student, open teacher view modal!");
-                setOpenTeacherModal(true);
-              }
-              else {
-                setOpenRootModal(true);
-              }
-            }}
+            onClick={handleClickModal}
           >
             View Details &gt;
           </Button>
         </VStack>
       </CardBody>
 
-        <CardFooter justifyContent="right" hidden>
+      <CardFooter justifyContent="right" hidden>
           {/* <Text>Required Class ID: {classId}</Text> */}
           <SignUpController
             event_id={id}
@@ -157,8 +171,9 @@ export const EventCard = ({
             callTime = {callTime}
             costume = {costume}
           />
-        </CardFooter>
-      </Card>
+
+      </CardFooter>
+    </Card>
     </>
   );
 };
