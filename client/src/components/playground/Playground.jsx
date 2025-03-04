@@ -1,30 +1,41 @@
-import { useState, useEffect } from "react";
 import { Box, useDisclosure, Button } from "@chakra-ui/react";
 
-import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { ClassRSVP } from "../rsvp/classRsvp";
 import { EventRSVP } from "../rsvp/eventRsvp";
-import { ViewModal } from "../bookings/ViewModal";
 
 export const Playground = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // const [currentModal, setCurrentModal] = useState();
-  
-  // const onCloseModal = () => {
-  //   setCurrentModal("view");
-  //   onClose();
-  // };
+  const flag = true;
 
   return (
     <Box>
-      <Button onClick={onOpen}>Click me</Button>
-      <ClassRSVP
+      <Button 
+        onClick={onOpen} 
+        variant="unstyled"
+        fontSize="lg" 
+        fontWeight="normal"
+        color="black"
+        textDecoration="underline"
+        _focus={{ boxShadow: "none" }}
+      >
+        View attendees &gt;
+      </Button>
+
+      { flag ? 
+        <ClassRSVP
         isOpen={isOpen}
         onClose={onClose}
-      />
-      {/* <ViewModal
-        isOpen={isOpen}
-      /> */}
+        card={{name: "Dance 101", id: 4}}
+        />
+      :
+        <EventRSVP
+          isOpen={isOpen}
+          onClose={onClose}
+          card={{name: "VIBE Dance Competition", id: 3}}
+        />
+      }
+      
+      
     </Box>
   );
 };
