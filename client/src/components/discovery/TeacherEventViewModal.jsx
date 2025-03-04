@@ -36,7 +36,7 @@ import { useNavigate } from "react-router-dom";
 import SuccessSignupModal from "./SuccessSignupModal";
 import { CreateEvent } from "../forms/createEvent";
 
-function EventInfoModal({
+function TeacherEventViewModal({
   isOpenProp,
   handleClose,
   title,
@@ -308,4 +308,4 @@ function EventInfoModal({
   );
 }
 
-export default EventInfoModal;
+export default TeacherEventViewModal;
