@@ -77,10 +77,11 @@ export const CreateClassForm = memo(
           .catch((error) => console.log(error));
         classId = modalData.classId;
       } else {
-        await backend
+        let response = await backend
           .post("/classes", body)
           .catch((error) => console.log(error));
-        classId = response?.data[0]?.classId;
+          console.log("response", response)
+        classId = response?.data[0]?.id;
       }
 
       if (classId && date && startTime && endTime) {
@@ -229,6 +230,7 @@ export const CreateClassForm = memo(
                 value={performance}
                 onChange={(e) => setPerformance(e.target.value)}
               >
+                <option key={null} value={null}>No Performance Required</option>
                 {events
                   ? events.map((evt, ind) => (
                       <option
