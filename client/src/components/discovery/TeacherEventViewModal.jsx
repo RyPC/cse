@@ -111,6 +111,12 @@ function TeacherEventViewModal({
 
   const handleEditClose = () => {
     setIsEditing(false);
+    toast({
+      title: "Changes saved successfully.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
     console.log("Set isEditing to false");
   }
   
@@ -211,7 +217,7 @@ function TeacherEventViewModal({
                 description: description, 
                 level: level, 
                 date: formFormattedDate}}
-                onClose={handleClose}/>
+                onClose={handleEditClose}/>
               {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
