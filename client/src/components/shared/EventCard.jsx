@@ -76,14 +76,6 @@ export const EventCard = ({
           setOpenTeacherModal(true);
           console.log("Open teacher view modal!");
         }
-        else if (currentModal === "delete") {
-          setOpenDeleteModal(true);
-          console.log("Open teacher delete modal!");
-        }
-        else if (currentModal === "edit") {
-          setOpenEditModal(true);
-          console.log("Open teacher edit modal!");
-        }
       }
       else {
         setOpenRootModal(true);
@@ -172,15 +164,14 @@ export const EventCard = ({
             callTime = {callTime}
             costume = {costume}
           />
-          <DeleteConfirmModal
+          {/* <DeleteConfirmModal
             isOpen={openTeacherModal}
             onClose={closeTeacherModal}
             setCurrentModal={setCurrentModal}
             title={title}
             id={id}
-          />
+          /> */}
 
-isOpen, onClose, setCurrentModal, card, handleEvent, type 
       </CardFooter>
     </Card>
     </>

@@ -29,11 +29,13 @@ import {
 
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
+import { formFormatDate } from "../../utils/formFormatDateTime";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useNavigate } from "react-router-dom";
 import SuccessSignupModal from "./SuccessSignupModal";
+import { DeleteConfirmModal } from "./DeleteConfirmModal";
 import { CreateEvent } from "../forms/createEvent";
 import { calcLength } from "framer-motion";
 import { BsChevronLeft } from "react-icons/bs";
@@ -62,6 +64,8 @@ function TeacherEventViewModal({
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
+  const formFormattedStartTime = formFormatTime(startTime);
+  const formFormattedEndTime = formFormatTime(endTime);
   const toast = useToast();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -70,6 +74,7 @@ function TeacherEventViewModal({
   const [imageSrc, setImageSrc] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
 
 
@@ -140,26 +145,27 @@ function TeacherEventViewModal({
   };
 
   const handleDeleteEvent = async () => {
-    try {
-      const response = await backend.delete(`/events/${id}`);
-      if (response.status === 200) {
-        toast({
-          title: "Event deleted",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-        handleClose();
-        window.location.reload();
-      }
-    } catch (error) {
-      toast({
-        title: "Error deleting event",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+    setIsDeleting(true);
+    // try {
+    //   const response = await backend.delete(`/events/${id}`);
+    //   if (response.status === 200) {
+    //     toast({
+    //       title: "Event deleted",
+    //       status: "success",
+    //       duration: 5000,
+    //       isClosable: true,
+    //     });
+    //     handleClose();
+    //     window.location.reload();
+    //   }
+    // } catch (error) {
+    //   toast({
+    //     title: "Error deleting event",
+    //     status: "error",
+    //     duration: 5000,
+    //     isClosable: true,
+    //   });
+    // }
   };
 
   useEffect(() => {
@@ -179,10 +185,6 @@ function TeacherEventViewModal({
         isCoreq={isCorequisiteSignUp}
       />
 
-      {/* {isEditing && (<Box>
-          <CreateEvent/>
-        </Box>)} */}
-
       {isEditing ? 
         (<Modal
         
@@ -198,14 +200,25 @@ function TeacherEventViewModal({
           </Flex>
           <ModalBody>
             <Box>
-              <CreateEvent eventId={id} event={{id: id, title: title, costume: costume, location: location, startTime: startTime, endTime: endTime, callTime: callTime, description: description, level: level, date: date}}/>
+              <CreateEvent eventId={id} event={{id: id, title: title, costume: costume, location: location, startTime: formFormattedStartTime, endTime: formFormattedEndTime, callTime: callTime, description: description, level: level, date: date}}/>
             </Box>
           </ModalBody>
           </ModalContent>
 
           </ModalOverlay>
-        </Modal>) :
-       (<Modal
+        </Modal>) : 
+        (isDeleting ? 
+        (
+          <DeleteConfirmModal
+            isOpen={isOpenProp}
+            setIsDeleting={setIsDeleting}
+            title={title}
+            id={id}
+          />
+        )
+          
+          :
+      (<Modal
         isOpen={isOpenProp}
         size="full"
         onClose={handleClose}
@@ -328,7 +341,7 @@ function TeacherEventViewModal({
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>)}
+      </Modal>))}
     </>
   );
 }
