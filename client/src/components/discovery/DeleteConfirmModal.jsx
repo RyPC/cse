@@ -1,33 +1,10 @@
-import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, Flex, Text } from "@chakra-ui/react";
+import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter, Flex, Text, useToast } from "@chakra-ui/react";
 
-export const DeleteConfirmModal = ({ isOpen, setIsDeleting, title, id }) => {
+export const DeleteConfirmModal = ({ isOpen, setIsDeleting, onConfirmDelete, title, id }) => {
+
     const onClose = () => {
         setIsDeleting(false);
     };
-
-    const onConfirm = async () => {
-        try {
-          const response = await backend.delete(`/events/${id}`);
-          if (response.status === 200) {
-            toast({
-              title: "Event deleted",
-              status: "success",
-              duration: 5000,
-              isClosable: true,
-            });
-            handleClose();
-            window.location.reload();
-          }
-        } catch (error) {
-          toast({
-            title: "Error deleting event",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
-        }
-      };
-
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -43,7 +20,7 @@ export const DeleteConfirmModal = ({ isOpen, setIsDeleting, title, id }) => {
                         <Button flex="1" bg="white" borderRight="1px solid black" onClick={onClose} borderRadius="0" borderBottomLeftRadius={6} py={6}>
                             Close
                         </Button>
-                        <Button flex="1" bg="white" fontWeight="bold" onClick={onConfirm} borderRadius="0" borderBottomRightRadius={6} py={6}>
+                        <Button flex="1" bg="white" fontWeight="bold" onClick={onConfirmDelete} borderRadius="0" borderBottomRightRadius={6} py={6}>
                             Confirm
                         </Button>
                     </Flex>

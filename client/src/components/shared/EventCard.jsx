@@ -18,7 +18,6 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
-import ControllerModal from "../discovery/ControllerModal";
 import TeacherEventViewModal from "../discovery/TeacherEventViewModal";
 import { useState } from "react";
 
@@ -36,6 +35,7 @@ export const EventCard = ({
   attendeeCount = 0, // Default to 0 if not provided
   onClick,
   id,
+  setRefresh,
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
@@ -46,10 +46,8 @@ export const EventCard = ({
   const [openTeacherModal, setOpenTeacherModal] = useState(false);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedCard, setSelectedCard] = useState();
-  const [coEvents, setCoEvents] = useState([]);
   const [currentModal, setCurrentModal] = useState("view");
-  const { currentUser, role } = useAuthContext();
+  const { role } = useAuthContext();
 
   const handleOpenModal = () => {
     setOpenModal(!openModal);
@@ -163,15 +161,8 @@ export const EventCard = ({
             endTime = {endTime}
             callTime = {callTime}
             costume = {costume}
+            setRefresh = {setRefresh}
           />
-          {/* <DeleteConfirmModal
-            isOpen={openTeacherModal}
-            onClose={closeTeacherModal}
-            setCurrentModal={setCurrentModal}
-            title={title}
-            id={id}
-          /> */}
-
       </CardFooter>
     </Card>
     </>

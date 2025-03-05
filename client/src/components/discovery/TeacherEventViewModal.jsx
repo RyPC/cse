@@ -36,6 +36,7 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useNavigate } from "react-router-dom";
 import SuccessSignupModal from "./SuccessSignupModal";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
+import { ConfirmationModal } from "./ConfirmationModal";
 import { CreateEvent } from "../forms/createEvent";
 import { calcLength } from "framer-motion";
 import { BsChevronLeft } from "react-icons/bs";
@@ -58,6 +59,7 @@ function TeacherEventViewModal({
   costume,
   isCorequisiteSignUp,
   corequisites,
+  setRefresh,
   handleResolveCoreq = () => {},
 }) {
   const { currentUser } = useAuthContext();
@@ -75,7 +77,7 @@ function TeacherEventViewModal({
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
 
   const enrollInEvent = async () => {
@@ -109,7 +111,7 @@ function TeacherEventViewModal({
     handleClose();
   };
 
-  const handleEditClose = () => {
+  const handleSaveChanges = () => {
     setIsEditing(false);
     toast({
       title: "Changes saved successfully.",
@@ -124,55 +126,41 @@ function TeacherEventViewModal({
     setIsEditing(false);
   }
 
-  const handleEditEvent = async () => {
-    // try {
-      // const response = await backend.delete(`/events/${id}`);
-      setIsEditing(true);
-      console.log("clicked edit");
-
-    //   if (response.status === 200) {
-    //     toast({
-    //       title: "Event edited",
-    //       status: "success",
-    //       duration: 5000,
-    //       isClosable: true,
-    //     });
-    //     handleClose();
-    //     window.location.reload();
-    //   }
-    // } catch (error) {
-    //   toast({
-    //     title: "Error editing event",
-    //     status: "error",
-    //     duration: 5000,
-    //     isClosable: true,
-    //   });
-    // }
+  const handleEditEvent = () => {
+    setIsEditing(true);
+    console.log("clicked edit");
   };
 
-  const handleDeleteEvent = async () => {
+  const handleDeleteEvent = () => {
     setIsDeleting(true);
-    // try {
-    //   const response = await backend.delete(`/events/${id}`);
-    //   if (response.status === 200) {
-    //     toast({
-    //       title: "Event deleted",
-    //       status: "success",
-    //       duration: 5000,
-    //       isClosable: true,
-    //     });
-    //     handleClose();
-    //     window.location.reload();
-    //   }
-    // } catch (error) {
-    //   toast({
-    //     title: "Error deleting event",
-    //     status: "error",
-    //     duration: 5000,
-    //     isClosable: true,
-    //   });
-    // }
+  }
+
+  const onConfirmDelete = async () => {
+    try {
+      const response = await backend.delete(`/events/${id}`);
+      if (response.status === 200) {
+        setIsDeleting(false);
+        setIsEditing(false);
+        setIsConfirmDelete(true);
+        // handleClose()
+        console.log("isDeleting", isDeleting);
+        console.log("isEditing", isEditing);
+        console.log("isConfirmDelete", isConfirmDelete);
+      }
+    } catch (error) {
+      toast({
+        title: "Error deleting event",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
+
+  const handleCloseConfirmation = () => {
+    setIsConfirmDelete(false);
+    handleClose();
+  }
 
   useEffect(() => {
     if (isOpenProp && !imageSrc) {
@@ -217,7 +205,7 @@ function TeacherEventViewModal({
                 description: description, 
                 level: level, 
                 date: formFormattedDate}}
-                onClose={handleEditClose}/>
+                onClose={handleSaveChanges}/>
               {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
@@ -230,12 +218,20 @@ function TeacherEventViewModal({
           <DeleteConfirmModal
             isOpen={isOpenProp}
             setIsDeleting={setIsDeleting}
+            onConfirmDelete={onConfirmDelete}
             title={title}
             id={id}
           />
         )
           
-          :
+          : (isConfirmDelete ? 
+            (
+            <ConfirmationModal
+              isOpen={isOpenProp}
+              title={title}
+              onClose={handleCloseConfirmation}
+            />
+          ) : 
       (<Modal
         isOpen={isOpenProp}
         size="full"
@@ -359,7 +355,7 @@ function TeacherEventViewModal({
             </Button>
           </ModalFooter>
         </ModalContent>
-      </Modal>))}
+      </Modal>)))}
     </>
   );
 }
