@@ -8,9 +8,10 @@ export const formFormatDate = (dateString: string) => {
   return `${year}-${month}-${day}`;
 };
 
-export const formFormatTime = (timeString: string) => {
-  return new Date(`1970-01-01T${timeString}`).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-};
+// doesn't have to be used as can just feed start/end/call time directly from prop, but just there in case this changes in the future
+// export const formFormatTime = (timeString: string) => {
+//   return new Date(`1970-01-01T${timeString}`).toLocaleTimeString("en-US", {
+//     hour: "numeric",
+//     minute: "2-digit",
+//   });
+// };

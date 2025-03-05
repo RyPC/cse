@@ -39,6 +39,7 @@ import { DeleteConfirmModal } from "./DeleteConfirmModal";
 import { CreateEvent } from "../forms/createEvent";
 import { calcLength } from "framer-motion";
 import { BsChevronLeft } from "react-icons/bs";
+import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
 
 function TeacherEventViewModal({
   isOpenProp,
@@ -64,8 +65,7 @@ function TeacherEventViewModal({
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
-  const formFormattedStartTime = formFormatTime(startTime);
-  const formFormattedEndTime = formFormatTime(endTime);
+  const formFormattedDate = formFormatDate(date)
   const toast = useToast();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -200,7 +200,18 @@ function TeacherEventViewModal({
           </Flex>
           <ModalBody>
             <Box>
-              <CreateEvent eventId={id} event={{id: id, title: title, costume: costume, location: location, startTime: formFormattedStartTime, endTime: formFormattedEndTime, callTime: callTime, description: description, level: level, date: date}}/>
+              <CreateEvent eventId={id} event={{
+                id: id, 
+                title: title, 
+                costume: costume, 
+                location: location, 
+                startTime: startTime, 
+                endTime: endTime, 
+                callTime: callTime, 
+                description: description, 
+                level: level, 
+                date: formFormattedDate}}/>
+              {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
           </ModalContent>

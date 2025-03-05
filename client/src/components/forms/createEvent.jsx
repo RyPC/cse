@@ -10,7 +10,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import axios from "axios";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 
@@ -32,15 +31,16 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
 
   useEffect(() => {
     if (event) {
+      console.log(event.startTime, event.endTime);
       setFormData({
         location: event.location || "",
         title: event.title || "",
         description: event.description || "",
         level: event.level || "",
         date: event.date || "",
-        startTime: event.start_time || "",
-        endTime: event.end_time || "",
-        callTime: event.call_time || "",
+        startTime: event.startTime || "",
+        endTime: event.endTime || "",
+        callTime: event.callTime || "",
         costume: event.costume || "",
       });
     }
@@ -89,7 +89,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
         response = await backend.post("/events/", eventData);
       }
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200) {
         // Reset form or handle success
         setFormData({
           location: "",
