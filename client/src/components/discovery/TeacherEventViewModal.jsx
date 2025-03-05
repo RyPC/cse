@@ -210,7 +210,8 @@ function TeacherEventViewModal({
                 callTime: callTime, 
                 description: description, 
                 level: level, 
-                date: formFormattedDate}}/>
+                date: formFormattedDate}}
+                onClose={handleClose}/>
               {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
