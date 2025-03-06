@@ -117,7 +117,6 @@ eventsRouter.put("/:id", async (req, res) => {
       start_time,
       end_time,
       call_time,
-      class_id,
       costume,
     } = req.body;
 
@@ -130,9 +129,8 @@ eventsRouter.put("/:id", async (req, res) => {
         start_time = COALESCE($6, start_time),
         end_time = COALESCE($7, end_time),
         call_time = COALESCE($8, call_time),
-        class_id = COALESCE($9, class_id),
-        costume = COALESCE($10, costume)
-        WHERE id = $11 RETURNING *;`;
+        costume = COALESCE($9, costume)
+        WHERE id = $10 RETURNING *;`;
 
     const updatedEvent = await db.query(query, [
       location,
@@ -143,7 +141,6 @@ eventsRouter.put("/:id", async (req, res) => {
       start_time,
       end_time,
       call_time,
-      class_id,
       costume,
       id,
     ]);
