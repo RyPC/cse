@@ -11,8 +11,8 @@ videoTagsRouter.get("/videos/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const tags = await db.query(
-            `SELECT * FROM video_tags 
-            JOIN tags ON video_tags(tag_id) = videos(id) 
+            `SELECT * FROM video_tags
+            JOIN tags ON video_tags(tag_id) = videos(id)
             WHERE video_tags.video_id = $1;` [id]);
         res.status(200).json(keysToCamel(tags));
     } catch (err) {
@@ -24,8 +24,8 @@ videoTagsRouter.get("/tags/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const tags = await db.query(
-            `SELECT * FROM video_tags 
-            JOIN tags ON video_tags(tag_id) = videos(id) 
+            `SELECT * FROM video_tags
+            JOIN tags ON video_tags(tag_id) = videos(id)
             WHERE video_tags.tag_id = $1;` [id]);
         res.status(200).json(keysToCamel(tags));
     } catch (err) {

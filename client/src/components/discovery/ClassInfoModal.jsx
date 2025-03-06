@@ -56,7 +56,7 @@ function ClassInfoModal({
       const req = await backend.post(`/class-enrollments`, {
         studentId: users.data[0].id,
         classId: id,
-        attendance: new Date(),
+        attendance: null,
       });
       if (req.status === 201) {
         setOpenSuccessModal(true);
