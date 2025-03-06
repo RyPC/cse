@@ -37,6 +37,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
 import Request from "./components/teacher-signup/requests/Request";
+import { L } from "./components/logout/Logout";
 
 const App = () => {
   return (
@@ -183,6 +184,11 @@ const App = () => {
                   path = "/teacher-signup/pending"
                   element = {<ProtectedRoute element = {<Request />} />}
                 />
+                <Route
+                  path = "/logout"
+                  element = {<L/>}
+                  >
+                </Route>
               </Routes>
             </Router>
           </RoleProvider>

@@ -41,8 +41,8 @@ export const Playground = () => {
   }, [currentUser]);
 
   // Generate the check-in URLs
-  const classId = "30";
-  const eventId = "5";
+  const classId = "25";
+  const eventId = "28";
   const classCheckInUrl = `${window.location.origin}/check-in/class/${classId}`;
   const eventCheckInUrl = `${window.location.origin}/check-in/event/${eventId}`;
   console.log("classCheckInUrl", classCheckInUrl);
