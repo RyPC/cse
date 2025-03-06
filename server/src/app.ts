@@ -20,6 +20,7 @@ import { s3Router } from "../routes/s3";
 import emailRouter from "../routes/nodeMailer";
 import { articleTagsRouter } from "../routes/article_tags";
 import { videoTagsRouter } from "../routes/video_tags";
+import { classTagsRouter } from "../routes/class_tags";
 
 import { verifyToken } from "./middleware";
 
@@ -67,6 +68,7 @@ app.use("/event-enrollments", eventEnrollmentRouter);
 app.use("/nodemailer", emailRouter);
 app.use("/s3", s3Router);
 app.use("/article-tags", articleTagsRouter);
+app.use("/class-tags", classTagsRouter);
 app.use("/video-tags", videoTagsRouter);
 app.listen(SERVER_PORT, () => {
   console.info(`Server listening on ${SERVER_PORT}`);
