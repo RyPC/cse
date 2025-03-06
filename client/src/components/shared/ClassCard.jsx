@@ -40,7 +40,19 @@ export const ClassCard = ({
   const [classDate, setClassDate] = useState(null);
   const { pathname } = useLocation();
   const [openRootModal, setOpenRootModal] = useState(false);
-  console.log({ formattedDate, formattedStartTime, formattedEndTime });
+  // console.log({formattedDate, formattedStartTime, formattedEndTime})
+  const fetchClassDate = async () => {
+    if (!classDate) {
+      // console.log("id", id);
+      const response = await backend.get(`/scheduled-classes/${id}`);
+      if (response?.data[0]?.date) {
+        const formattedDate = new Date(
+          response.data[0].date
+        ).toLocaleDateString("en-US");
+        setClassDate(formattedDate);
+      }
+    }
+  };
   useEffect(() => {
     const fetchClassDate = async () => {
       if (!classDate) {
