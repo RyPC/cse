@@ -1,9 +1,11 @@
 import { Box, Button, Center, Container, Flex, Menu, MenuItem, MenuList, MenuButton, Modal,
   ModalOverlay, ModalHeader, ModalContent, ModalBody, Text, 
   IconButton} from "@chakra-ui/react";
+  import { BsChevronLeft } from "react-icons/bs";
 import { useEffect } from "react";
 
-import { BsChevronLeft } from "react-icons/bs";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+
 
 const dateToString = (date) => {
   if ((typeof date) !== "object")
@@ -25,7 +27,9 @@ const timeToString = (time) => {
   });
 };
 
-export const TeacherViewModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
+export const TeacherViewModal = ({ isOpen, onClose, setCurrentModal, classData, performances, setPerformances }) => {
+  const { backend } = useBackendContext();
+
   const onCancel = () => {
     setCurrentModal("cancel");
   };
@@ -36,18 +40,20 @@ export const TeacherViewModal = ({ isOpen, onClose, setCurrentModal, classData }
 
   const fetchPerformances = async () => {
     try {
-      // Fetch scheduled classes
-      const classesResponse = await backend.get('/events');
+      // Fetch events (performances) corresponding to current class
+      const eventsResponse = await backend.get(`/classes/corequisites/${classData.classId}`);
+      // const eventsResponse = await backend.get(`/events`); // FOR TESTING WITH EVENT DATA
+      const performanceNames = eventsResponse.data.map((performance) => performance.title);
 
-      setClasses(formattedData);
+      setPerformances(performanceNames);
     } catch (error) {
-      console.error('Error fetching class data:', error);
+      console.error('Error fetching event data:', error);
     }
   };
 
+  // Fetch performances when modal opened
   useEffect(() => {
-
-
+    fetchPerformances();
   }, [classData]);
 
   return (
@@ -140,11 +146,11 @@ export const TeacherViewModal = ({ isOpen, onClose, setCurrentModal, classData }
             </div>
           </Flex>
           <Box>
-            <Text fontWeight='bold' mb='1rem'>
+            <Text fontWeight='bold' mb='0.5rem'>
               Performance(s)
             </Text>
+            { performances.map((performance) => <Text>{performance}</Text>) }
             <Text>
-              {/* {classData.description} */}
             </Text>
           </Box>
         </ModalBody>

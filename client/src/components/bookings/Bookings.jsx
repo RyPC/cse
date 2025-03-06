@@ -44,6 +44,7 @@ export const Bookings = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [currentModal, setCurrentModal] = useState("view");
   const [classData, setClassData] = useState({});  // data specific to class in current modal
+  const [performances, setPerformances] = useState([]);
   const [classes, setClasses] = useState([]);
   const [role, setRole] = useState("teacher");
 
@@ -124,13 +125,14 @@ export const Bookings = () => {
             <Button onClick={handleClickHistory}>History</Button>
           </div>
           { role === "teacher" &&
-            classes.map((cls) => (
+            classes.map((cls, index) => (
               <Box
                 p="16px"
                 width="90vw"
                 borderRadius="4px"
                 backgroundColor="#D9D9D9"
                 onClick={() => onOpenModal(cls)}
+                key={index}
               >
                 <Text fontWeight="bold" paddingBottom="8px" fontSize={18}> {cls.title} </Text>
 
@@ -168,7 +170,7 @@ export const Bookings = () => {
         </VStack>
         { role === "teacher" ? (
             currentModal === "view" ?
-              <TeacherViewModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData}/> :
+              <TeacherViewModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} performances={performances} setPerformances={setPerformances}/> :
             (currentModal === "confirmation" ?
               <TeacherConfirmationModal isOpen={isOpen} onClose={onCloseModal} /> :
               (currentModal === "edit" ?
