@@ -174,7 +174,7 @@ export const Bookings = () => {
             (currentModal === "confirmation" ?
               <TeacherConfirmationModal isOpen={isOpen} onClose={onCloseModal} /> :
               (currentModal === "edit" ?
-                <TeacherEditModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} setClassData={setClassData} /> :
+                <TeacherEditModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} setClassData={setClassData} performances={performances}/> :
                 
                 <TeacherCancelModal isOpen={isOpen} onClose={onCloseModal} setCurrentModal={setCurrentModal} classData={classData} />
             )

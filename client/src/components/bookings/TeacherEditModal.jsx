@@ -33,7 +33,7 @@ const stringToTime = (timeString) => {
   return d;
 };
 
-export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData }) => {
+export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData, performances }) => {
   const { backend } = useBackendContext();
 
   const onBack = () => {
@@ -124,14 +124,16 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           value={classTitle}
           onChange={onTitleChange}
           placeholder="Enter class title..."/>
+
           <Text mb='1rem'>
             Location (affects all classes with this title)
           </Text>
           <Select maxWidth="200px" value={location} placeholder='Select location...' onChange={handleLocationSelect}>
             <option value={classData.location}>{classData.location}</option>
-            <option value="Location 1">Location 1</option>
-            <option value="Location 2">Location 2</option>
+            {/* <option value="Location 1">Location 1</option>
+            <option value="Location 2">Location 2</option> */}
           </Select>
+
           <Text mb='1rem'>
             Date
           </Text>
@@ -142,6 +144,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           onChange={onDateChange}
           maxWidth="200px"
           placeholder="Enter date.."/>
+
           <Text mb='1rem'>
             Start Time (affects only this specific offering)
           </Text>
@@ -152,6 +155,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           value={startTime}
           onChange={onStartTimeChange}
           placeholder="Enter start time..."/>
+
           <Text mb='1rem'>
             End Time (affects only this specific offering)
           </Text>
@@ -162,6 +166,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           value={endTime}
           onChange={onEndTimeChange}
           placeholder="Enter end time..."/>
+
           <Text mb='1rem'>
             Description (affects all classes with this title)
           </Text>
@@ -170,6 +175,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           value={description}
           onChange={onDescriptionChange}
           placeholder="Enter description..."/>
+
           <Text mb='1rem'>
             Capacity (affects all classes with this title)
           </Text>
@@ -179,6 +185,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           value={capacity}
           onChange={onCapacityChange}
           placeholder="Enter time..."/>
+
           <Text mb='1rem'>
             Level (affects all classes with this title)
           </Text>
@@ -186,6 +193,15 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
             <option value='beginner'>Beginner</option>
             <option value='intermediate'>Intermediate</option>
             <option value='advanced'>Advanced</option>
+          </Select>
+
+          <Text mb='1rem'>
+            Performances
+          </Text>
+          <Select maxWidth="200px" value={location} onChange={handleLocationSelect}>
+            { performances.map((performance) => 
+              <option value={performance}>{performance}</option>
+            )}
           </Select>
         </ModalBody>
 
