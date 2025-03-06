@@ -15,16 +15,17 @@ export const EventRSVP = ({ isOpen, onClose, card }) => {
   const [students, setStudents] = useState([]);
   
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchEvents = async () => {
     try {
         const response = await backend.get(`/event-enrollments/event/${card.id}`);
         setStudents(response.data);
+        console.log(students);
     } catch (error) {
         console.error("Error fetching events:", error);
     }
     };
 
-    fetchClasses();
+    fetchEvents();
   }, [backend, card.id]);
 
   return (
@@ -64,7 +65,7 @@ export const EventRSVP = ({ isOpen, onClose, card }) => {
                     </Td>
                     <Td p={0} textAlign="center">
                       <Box display="flex" justifyContent="center" alignItems="center">
-                        {user.attendance ? <FaCheckCircle color="green"/> : <FaTimesCircle color="red"/>}
+                        {user.attended ? <FaCheckCircle color="green"/> : <FaTimesCircle color="red"/>}
                       </Box>
                     </Td>
                   </Tr>
