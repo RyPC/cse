@@ -35,6 +35,7 @@ export const Bookings = () => {
   const [cardType, setCardType] = useState();
   const [user_id, setUserId] = useState();
   const [coEvents, setCoEvents] = useState([]);
+  const [isAttendedItem, setIsAttendedItem] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -84,6 +85,10 @@ export const Bookings = () => {
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
+    const isAttended = attended.some(
+      (attendedItem) => attendedItem.id === item.id
+    );
+    setIsAttendedItem(isAttended);
     onOpen();
   };
 
@@ -281,6 +286,7 @@ export const Bookings = () => {
           card={selectedCard}
           coEvents={coEvents}
           type={cardType}
+          isAttended={isAttendedItem}
         />
       ) : currentModal === "confirmation" ? (
         <ConfirmationModal

@@ -54,6 +54,18 @@ export const ClassCard = ({
     }
   };
   useEffect(() => {
+    const fetchClassDate = async () => {
+      if (!classDate) {
+        console.log("id", id);
+        const response = await backend.get(`/scheduled-classes/${id}`);
+        if (response?.data[0]?.date) {
+          const formattedDate = new Date(
+            response.data[0].date
+          ).toLocaleDateString("en-US");
+          setClassDate(formattedDate);
+        }
+      }
+    };
     fetchClassDate();
   }, [backend, classDate, id]);
 
@@ -79,7 +91,9 @@ export const ClassCard = ({
             <HStack>
               <FaClock size={14} />
               <Text fontSize="sm">
-                {formattedDate} @ {formattedStartTime} - {formattedEndTime}
+                {formattedDate
+                  ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
+                  : "No date scheduled"}
               </Text>
             </HStack>
 
@@ -116,7 +130,10 @@ export const ClassCard = ({
           </VStack>
         </CardBody>
 
-        <CardFooter justifyContent="right" hidden>
+        <CardFooter
+          justifyContent="right"
+          hidden
+        >
           {/* <Text>0/{capacity} spots left</Text> */}
           <SignUpController
             class_id={id}

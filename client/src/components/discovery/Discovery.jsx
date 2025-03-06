@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Input,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Input, VStack } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
@@ -39,7 +31,7 @@ export const Discovery = () => {
     const fetchData = async () => {
       // Fetch and Store Classes Information
       try {
-        const response = await backend.get("/classes");
+        const response = await backend.get("/classes/scheduled");
         setClasses(response.data);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -87,7 +79,8 @@ export const Discovery = () => {
       }
     } else {
       try {
-        const response = await backend.get("/classes");
+        console.log("here");
+        const response = await backend.get("/classes/scheduled");
         setClasses(response.data);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -139,6 +132,10 @@ export const Discovery = () => {
                 capacity={classItem.capacity}
                 level={classItem.level}
                 costume={classItem.costume}
+                date={classItem.date}
+                startTime={classItem.startTime}
+                endTime={classItem.endTime}
+                attendeeCount={classItem.attendeeCount}
               />
             ))}
           </Flex>

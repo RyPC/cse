@@ -25,6 +25,7 @@ import {
   IconButton,
   MenuItem,
   useToast,
+  useDisclosure
 } from "@chakra-ui/react";
 
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
@@ -41,6 +42,7 @@ import { CreateEvent } from "../forms/createEvent";
 import { calcLength } from "framer-motion";
 import { BsChevronLeft } from "react-icons/bs";
 import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
+import { EventRSVP } from "../rsvp/eventRsvp";
 
 function TeacherEventViewModal({
   isOpenProp,
@@ -78,6 +80,10 @@ function TeacherEventViewModal({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+
+
+  // disclosure for rsvp
+  const {isOpen, onOpen, onClose} = useDisclosure();
 
 
   const enrollInEvent = async () => {
@@ -274,13 +280,27 @@ function TeacherEventViewModal({
                 width={"100%"}
                 alignContent={"center"}
                 justifyContent={"center"}
-                display="flex"
+                display="block"
+                p={5}
               >
                 <Image
                   src={imageSrc}
                   alt="Random Dog"
+                  height={"100%"}
                   width={"100%%"}
                 />
+                <Button 
+                  onClick={onOpen} 
+                  variant="unstyled"
+                  fontSize="lg" 
+                  fontWeight="normal"
+                  color="purple"
+                  textDecoration="underline"
+                  _focus={{ boxShadow: "none" }}
+                >
+                  View attendees &gt;
+                </Button>
+                <EventRSVP isOpen={isOpen} onClose={onClose} card={{id, name: title}}/>
               </Box>
 
               <Box width="100%" align="center">

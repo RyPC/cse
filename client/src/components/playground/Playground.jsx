@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import PublishedReviews from "../reviews/classreview";
+import PublishedReviews from "../reviews/classReview";
 
 import {
   Box,
@@ -26,6 +26,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { ClassRSVP } from "../rsvp/classRsvp";
+import { EventRSVP } from "../rsvp/eventRsvp";
 import axios from "axios";
 
 // import QRCodeReact from "react-qr-code";
@@ -82,13 +84,39 @@ export const Playground = () => {
   const [performances, setPerformances] = useState("");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [classes, setClasses] = useState([]);
-  const [events, setEvents] = useState([]);
+  const flag = true;
 
   return (
     <Box>
-      test
-      <PublishedReviews starRating={5}/>
+      {/* test
+      <PublishedReviews starRating={5}/> */}
+      <Button 
+        onClick={onOpen} 
+        variant="unstyled"
+        fontSize="lg" 
+        fontWeight="normal"
+        color="black"
+        textDecoration="underline"
+        _focus={{ boxShadow: "none" }}
+      >
+        View attendees &gt;
+      </Button>
+
+      { flag ? 
+        <ClassRSVP
+        isOpen={isOpen}
+        onClose={onClose}
+        card={{name: "Dance 101", id: 4}}
+        />
+      :
+        <EventRSVP
+          isOpen={isOpen}
+          onClose={onClose}
+          card={{name: "VIBE Dance Competition", id: 3}}
+        />
+      }
+      
+      
     </Box>
   )
 }

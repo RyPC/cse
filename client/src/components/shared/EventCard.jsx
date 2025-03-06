@@ -36,6 +36,7 @@ export const EventCard = ({
   onClick,
   id,
   setRefresh,
+  isAttended = false
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
