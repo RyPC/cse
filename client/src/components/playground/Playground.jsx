@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PublishedReviews from "../reviews/classreview";
 
 import {
   Box,
@@ -26,7 +27,7 @@ import {
 } from "@chakra-ui/react";
 
 import axios from "axios";
-import QRCodeReact from "react-qr-code";
+// import QRCodeReact from "react-qr-code";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import CreateClassForm from "../forms/createClasses";
@@ -84,76 +85,8 @@ export const Playground = () => {
 
   return (
     <Box>
-      <CreateClassForm />
-
-      {/* QR Code Section */}
-      <Box
-        justifyContent="center"
-        gap={8}
-        p={4}
-      >
-        {/* Class QR Code */}
-        <VStack
-          spacing={4}
-          align="center"
-        >
-          <Text
-            fontSize="xl"
-            fontWeight="bold"
-          >
-            Class Check-in QR Code
-          </Text>
-          <Box
-            bg="white"
-            p={4}
-            borderRadius="md"
-            boxShadow="md"
-          >
-            <QRCodeReact
-              value={classCheckInUrl}
-              size={256}
-              level="H"
-            />
-          </Box>
-          <Text
-            fontSize="sm"
-            color="gray.600"
-          >
-            Scan to check in for class
-          </Text>
-        </VStack>
-
-        {/* Event QR Code */}
-        <VStack
-          spacing={4}
-          align="center"
-        >
-          <Text
-            fontSize="xl"
-            fontWeight="bold"
-          >
-            Event Check-in QR Code
-          </Text>
-          <Box
-            bg="white"
-            p={4}
-            borderRadius="md"
-            boxShadow="md"
-          >
-            <QRCodeReact
-              value={eventCheckInUrl}
-              size={256}
-              level="H"
-            />
-          </Box>
-          <Text
-            fontSize="sm"
-            color="gray.600"
-          >
-            Scan to check in for event
-          </Text>
-        </VStack>
-      </Box>
+      test
+      <PublishedReviews starRating={5}/>
     </Box>
-  );
-};
+  )
+}
