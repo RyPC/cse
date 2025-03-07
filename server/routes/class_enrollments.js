@@ -32,17 +32,17 @@ classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
   try {
     const result = await db.query(
       `
-      SELECT
-        c.*,
-        sc.date,
-        sc.start_time,
-        sc.end_time,
-        ce.attendance,
-        (SELECT COUNT(*) FROM class_enrollments WHERE class_id = c.id) as attendee_count
+      SELECT DISTINCT ON (c.id)
+          c.*,
+          sc.date,
+          sc.start_time,
+          sc.end_time,
+          ce.attendance,
+          (SELECT COUNT(*) FROM class_enrollments WHERE class_id = c.id) AS attendee_count
       FROM classes c
       JOIN class_enrollments ce ON c.id = ce.class_id AND ce.student_id = $1
       LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
-      GROUP BY c.id, sc.date, sc.start_time, sc.end_time, ce.attendance
+      ORDER BY c.id, sc.date DESC;
     `,
       [req.params.student_id]
     );
@@ -53,12 +53,14 @@ classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
   }
 });
 
-classEnrollmentsRouter.get("/teacher/:teacher_id/:class_id", async (req, res) => {
-  try {
-    const { teacher_id, class_id } = req.params;  // Ensure correct param names
-    const result = await db.query(
-      `
-      SELECT DISTINCT u.first_name, u.last_name, u.email, ce.attendance IS NOT NULL AS attendance 
+classEnrollmentsRouter.get(
+  "/teacher/:teacher_id/:class_id",
+  async (req, res) => {
+    try {
+      const { teacher_id, class_id } = req.params; // Ensure correct param names
+      const result = await db.query(
+        `
+      SELECT DISTINCT u.first_name, u.last_name, u.email, ce.attendance IS NOT NULL AS attendance
       FROM users u
         JOIN students s ON s.id = u.id
         JOIN class_enrollments ce ON ce.student_id = s.id
@@ -67,14 +69,15 @@ classEnrollmentsRouter.get("/teacher/:teacher_id/:class_id", async (req, res) =>
         JOIN scheduled_classes sc ON sc.date = ce.attendance
       WHERE ct.teacher_id = $1 AND c.id = $2;
     `,
-      [teacher_id, class_id]
-    );
+        [teacher_id, class_id]
+      );
 
-    res.status(200).json(keysToCamel(result));
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+      res.status(200).json(keysToCamel(result));
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
-});
+);
 
 classEnrollmentsRouter.post("/", async (req, res) => {
   const { studentId, classId, attendance } = req.body;
