@@ -199,7 +199,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
             Performances
           </Text>
           <Select maxWidth="200px" value={location} onChange={handleLocationSelect}>
-            { performances.map((performance) => 
+            { performances.map((performance) =>
               <option value={performance}>{performance}</option>
             )}
           </Select>

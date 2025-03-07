@@ -168,7 +168,6 @@ classesRouter.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { title, description, location, capacity, level, costume, isDraft } =
       req.body;
-
     const query = `UPDATE CLASSES SET
     title = COALESCE($1, title),
     description = COALESCE($2, description),
@@ -176,7 +175,7 @@ classesRouter.put("/:id", async (req, res) => {
     capacity = COALESCE($4, capacity),
     level = COALESCE($5, level),
     costume = COALESCE($6, costume),
-    is_draft = COALESCE($7, isDraft)
+    is_draft = COALESCE($7, is_draft)
     WHERE id = $8 RETURNING *;`;
 
     const data = await db.query(query, [
