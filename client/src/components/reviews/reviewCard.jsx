@@ -52,18 +52,13 @@ const ReviewCard = ({
           <Text>{displayName}</Text>
         </HStack>
         <HStack>
-          {stars.map((_, index) => {
-            return (
-              <>
-                <FaStar
-                  key={index}
-                  size={24}
-                  value={rating}
-                  color={rating > index ? colors.orange : colors.grey}
-                />
-              </>
-            );
-          })}
+          {stars.map((_, index) => (
+            <FaStar
+              key={index}
+              size={24}
+              color={rating > index ? colors.orange : colors.grey}
+            />
+          ))}
         </HStack>
       </CardHeader>
       <CardBody>
