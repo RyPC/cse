@@ -5,14 +5,14 @@ import { db } from "../db/db-pgp";
 
 const articleTagsRouter = express.Router();
 
-articleTagsRouter.use(express.json);
+articleTagsRouter.use(express.json());
 
 articleTagsRouter.get("/articles/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const tags = await db.query(
             `SELECT * FROM article_tags
-            JOIN tags ON article_tags(tag_id) = articles(id)
+            JOIN tags ON article_tags.tag_id = tags.id
             WHERE article_tags.article_id = $1;` [id]);
         res.status(200).json(keysToCamel(tags));
     } catch (err) {
@@ -25,7 +25,7 @@ articleTagsRouter.get("/tags/:id", async (req, res) => {
         const { id } = req.params;
         const tags = await db.query(
             `SELECT * FROM article_tags
-            JOIN tags ON article_tags(tag_id) = articles(id)
+            JOIN tags ON article_tags.tag_id = tags.id
             WHERE article_tags.tag_id = $1;` [id]);
         res.status(200).json(keysToCamel(tags));
     } catch (err) {
