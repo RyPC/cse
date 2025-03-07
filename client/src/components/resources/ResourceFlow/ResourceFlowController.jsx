@@ -82,7 +82,7 @@ export const ControllerModal = ({ autoOpen = false }) => {
           for (const tagId of tags) {
             await backend.post("/article-tags", {
               article_id: resourceId,
-              tagIDd: tagID
+              tagID: tagID
             });
           }
         }
@@ -90,7 +90,7 @@ export const ControllerModal = ({ autoOpen = false }) => {
       
       // Redirect back to resources page
       window.location.href = "/resources";
-    } 
+    
   };
 
   const renderModal = () => {
