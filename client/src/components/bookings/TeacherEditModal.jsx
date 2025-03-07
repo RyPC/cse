@@ -33,6 +33,11 @@ const stringToTime = (timeString) => {
   return d;
 };
 
+const formatDate = (date) => {
+  if (!(date instanceof Date)) date = new Date(date); // Ensure it's a Date object
+  return date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
+};
+
 export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData, performances }) => {
   const { backend } = useBackendContext();
 
@@ -51,24 +56,23 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
         costume: null,
         isDraft: draft,
       };
-      await backend.put(`/classes/${classData.classId}`, updatedData);
+      await backend.put(`/classes/${classData.id}`, updatedData);
       await backend.put(`/scheduled-classes/`,
-        { class_id: classData.classId, date: date, start_time: startTime, end_time: endTime }
+        { class_id: classData.id, date: date, start_time: startTime, end_time: endTime }
       );
       // Update classData
-      setClassData({
-        classId: classData.classId,
-        date: stringToDate(date),
-        startTime: stringToTime(startTime),
-        endTime: stringToTime(endTime),
+      setClassData((prev) => ({
+        ...prev,
+        date,
+        startTime,
+        endTime,
         title: classTitle,
         description,
         location,
         capacity,
         level,
-        costume: classData.costume,
         isDraft: draft,
-      });
+      }));
 
       setCurrentModal("view");
     } catch (error) {
@@ -76,22 +80,21 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
     }
   };
   const onSaveAsDraft = async () => {
-    await onSave(false);
-  };
-  const onPublish = async () => {
     await onSave(true);
   };
-
+  const onPublish = async () => {
+    await onSave(false);
+  };
 
   // input values
-  const [classTitle, setClassTitle] = useState(classData.title);
-  const [location, setLocation] = useState(classData.location);
-  const [date, setDate] = useState(classData.date.toLocaleDateString("en-CA"));
-  const [startTime, setStartTime] = useState(classData.startTime.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
-  const [endTime, setEndTime] = useState(classData.endTime.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }));
-  const [description, setDescription] = useState(classData.description);
-  const [capacity, setCapacity] = useState(classData.capacity);
-  const [level, setLevel] = useState(classData.level);
+  const [classTitle, setClassTitle] = useState(classData?.title);
+  const [location, setLocation] = useState(classData?.location);
+  const [date, setDate] = useState(classData?.date ? formatDate(classData.date) : "");
+  const [startTime, setStartTime] = useState(classData?.startTime);
+  const [endTime, setEndTime] = useState(classData?.endTime);
+  const [description, setDescription] = useState(classData?.description);
+  const [capacity, setCapacity] = useState(classData?.capacity);
+  const [level, setLevel] = useState(classData?.level);
 
   const handleLocationSelect = (e) => {
     setLocation(e.target.value);
@@ -138,7 +141,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
             Date
           </Text>
           <Input
-          disabled // REMOVE LATER
+          // disabled // REMOVE LATER
           type="date"
           value={date}
           onChange={onDateChange}
@@ -200,16 +203,16 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           </Text>
           <Select maxWidth="200px" value={location} onChange={handleLocationSelect}>
             { performances.map((performance) =>
-              <option value={performance}>{performance}</option>
+              <option key={performance.id} value={performance.id}>{performance.title}</option>
             )}
           </Select>
         </ModalBody>
 
         <ModalFooter>
           <Flex justifyContent="center" w="100%">
-            {/* <Button backgroundColor="#D9D9D9" mr={3} onClick={onSaveAsDraft}>
+            <Button backgroundColor="#D9D9D9" mr={3} onClick={onSaveAsDraft}>
               Save as Draft
-            </Button> */}
+            </Button>
             <Button backgroundColor="#646363" mr={3} onClick={onPublish}>
               Publish
             </Button>

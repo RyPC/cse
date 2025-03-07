@@ -6,9 +6,12 @@ import profileImg from "./profile_img.png";
 import discoveryImg from "./discovery_img.png";
 import resourcesImg from "./resources_img.png";
 import { useState } from "react";
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+
 
 export const Navbar = () => {
-  const [role, setRole] = useState("teacher");
+  const { role } = useAuthContext();
+
 
   return (
     <Box
