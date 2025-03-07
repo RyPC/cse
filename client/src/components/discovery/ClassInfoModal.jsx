@@ -42,7 +42,7 @@ function ClassInfoModal({
   handleClose,
   handleResolveCoreq = () => {},
 }) {
-  const { currentUser } = useAuthContext();
+  const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -196,7 +196,7 @@ function ClassInfoModal({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={classSignUp}>Sign up</Button>
+            {role === "student" && <Button onClick={classSignUp}>Sign up</Button>}
           </ModalFooter>
           <PublishedReviews classId={id} />
         </ModalContent>

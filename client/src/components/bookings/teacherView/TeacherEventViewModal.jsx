@@ -29,20 +29,20 @@ import {
 } from "@chakra-ui/react";
 
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
-import { formatDate, formatTime } from "../../utils/formatDateTime";
-import { formFormatDate } from "../../utils/formFormatDateTime";
+import { formatDate, formatTime } from "../../../utils/formatDateTime";
+import { formFormatDate } from "../../../utils/formFormatDateTime";
 
-import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
+import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useNavigate } from "react-router-dom";
-import SuccessSignupModal from "./SuccessSignupModal";
+import SuccessSignupModal from "../../discovery/SuccessSignupModal";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
-import { ConfirmationModal } from "./ConfirmationModal";
-import { CreateEvent } from "../forms/createEvent";
+import { ConfirmationModal } from "../../discovery/ConfirmationModal";
+import { CreateEvent } from "../../forms/createEvent";
 import { calcLength } from "framer-motion";
 import { BsChevronLeft } from "react-icons/bs";
 import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
-import { EventRSVP } from "../rsvp/eventRsvp";
+import { EventRSVP } from "../../rsvp/eventRsvp";
 
 function TeacherEventViewModal({
   isOpenProp,
@@ -64,7 +64,7 @@ function TeacherEventViewModal({
   setRefresh,
   handleResolveCoreq = () => {},
 }) {
-  const { currentUser } = useAuthContext();
+  const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
@@ -289,6 +289,10 @@ function TeacherEventViewModal({
                   height={"100%"}
                   width={"100%%"}
                 />
+              </Box>
+
+              <Box width="100%" align="center">
+                <Text fontWeight="bold"> {rsvpnum ? rsvpnum : 0} RSVPs</Text>
                 <Button 
                   onClick={onOpen} 
                   variant="unstyled"
@@ -301,11 +305,6 @@ function TeacherEventViewModal({
                   View attendees &gt;
                 </Button>
                 <EventRSVP isOpen={isOpen} onClose={onClose} card={{id, name: title}}/>
-              </Box>
-
-              <Box width="100%" align="center">
-                <Text fontWeight="bold"> {rsvpnum ? rsvpnum : 0} RSVPs</Text>
-                <Text> View attendees &gt;</Text>
               </Box>
 
               <Box width="100%">
@@ -367,12 +366,12 @@ function TeacherEventViewModal({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            <Button
+            {role === "student" && <Button
               colorScheme="teal"
               onClick={eventSignUp}
             >
               Sign Up
-            </Button>
+            </Button>}
           </ModalFooter>
         </ModalContent>
       </Modal>)))}

@@ -23,12 +23,15 @@ import { ViewModal } from "./ViewModal";
 
 export const Bookings = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { currentUser } = useAuthContext();
+  const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
 
   const [currentModal, setCurrentModal] = useState("view");
   const [classes, setClasses] = useState([]);
   const [events, setEvents] = useState([]);
+  const [drafts, setDrafts] = useState([]);
+  const [draftClasses, setDraftClasses] = useState([]);
+  const [draftEvents, setDraftEvents] = useState([]);
   const [attended, setAttended] = useState([]);
 
   const [selectedCard, setSelectedCard] = useState();
@@ -38,7 +41,21 @@ export const Bookings = () => {
   const [isAttendedItem, setIsAttendedItem] = useState(false);
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && role !== "student") {
+        backend.get(`/events/published`).then(
+          (res) => setEvents(res.data)
+        );
+        backend.get(`/classes/published`).then(
+          (res) => setClasses(res.data)
+        );
+        backend.get(`/events/drafts`).then(
+          (res) => setDraftEvents(res.data)
+        );
+        backend.get(`/classes/drafts`).then(
+          (res) => setDraftClasses(res.data)
+        );
+    }
+    else if (currentUser) {
       backend
         .get(`/users/${currentUser.uid}`)
         .then((userRes) => {
@@ -73,6 +90,7 @@ export const Bookings = () => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
+    setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
 
   const onCloseModal = () => {
@@ -178,7 +196,7 @@ export const Bookings = () => {
                 fontWeight: "bold", // Add bold when selected
               }}
             >
-              Attended
+              {role !== "student" ? "Drafts" : "Attended"}
             </Tab>
           </TabList>
 
@@ -241,38 +259,72 @@ export const Bookings = () => {
                 spacing={4}
                 width="100%"
               >
-                {attended.length > 0 ? (
-                  attended.map((item) =>
-                    item.class_id ? (
+                {
+                  role !== "student" ? 
+                  (drafts.length > 0 ? (
+                    drafts.map((item) => 
+                    item.classId ? (
                       <ClassCard
-                        key={item.id}
-                        title={item.title}
-                        description={item.description}
-                        location={item.location}
-                        capacity={item.capacity}
-                        level={item.level}
-                        date={item.date}
-                        startTime={item.startTime}
-                        endTime={item.endTime}
-                        attendeeCount={item.attendeeCount}
-                        onClick={() => updateModal(item)}
+                      id={item.id}
+                      title={item.title}
+                      description={item.description}
+                      location={item.location}
+                      capacity={item.capacity}
+                      level={item.level}
+                      date={item.date}
+                      startTime={item.startTime}
+                      endTime={item.endTime}
+                      attendeeCount={item.attendeeCount}
+                      onClick={() => updateModal(item)}
+                      
                       />
                     ) : (
                       <EventCard
-                        key={item.id}
-                        title={item.title}
-                        location={item.location}
-                        date={item.date}
-                        startTime={item.startTime}
-                        endTime={item.endTime}
-                        attendeeCount={item.attendeeCount}
-                        onClick={() => updateModal(item)}
+                      id={item.id}
+                      title={item.title}
+                      location={item.location}
+                      date={item.date}
+                      startTime={item.startTime}
+                      endTime={item.endTime}
+                      callTime={item.callTime}
+                      attendeeCount={item.attendeeCount}
+                      onClick={() => updateModal(item)}
                       />
+                    ))
+                  ) : (<Text>No draft events or classes</Text>))
+                  : ((attended.length > 0) ? (
+                    attended.map((item) => 
+                      item.class_id ? (
+                        <ClassCard
+                          key={item.id}
+                          title={item.title}
+                          description={item.description}
+                          location={item.location}
+                          capacity={item.capacity}
+                          level={item.level}
+                          date={item.date}
+                          startTime={item.startTime}
+                          endTime={item.endTime}
+                          attendeeCount={item.attendeeCount}
+                          onClick={() => updateModal(item)}
+                        />
+                      ) : (
+                        <EventCard
+                          key={item.id}
+                          title={item.title}
+                          location={item.location}
+                          date={item.date}
+                          startTime={item.startTime}
+                          endTime={item.endTime}
+                          attendeeCount={item.attendeeCount}
+                          onClick={() => updateModal(item)}
+                        />
+                      )
                     )
-                  )
-                ) : (
-                  <Text>No attended classes or events.</Text>
-                )}
+                  ) : (
+                    <Text>No attended classes or events.</Text>
+                  ))
+                }
               </VStack>
             </TabPanel>
           </TabPanels>
