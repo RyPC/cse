@@ -18,7 +18,7 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
-import TeacherEventViewModal from "../discovery/TeacherEventViewModal";
+import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal";
 import { useState } from "react";
 
 export const EventCard = ({
@@ -68,13 +68,13 @@ export const EventCard = ({
   };
 
   const handleClickModal = () => {
-      if (pathname === "/bookings") {
-        onClick();
-      } else if (role !== "student") {
+      if (pathname === "/bookings" && role !== "student") {
         if (currentModal === "view") {
           setOpenTeacherModal(true);
           console.log("Open teacher view modal!");
         }
+      } else if (pathname === "/bookings") {
+        onClick();
       }
       else {
         setOpenRootModal(true);

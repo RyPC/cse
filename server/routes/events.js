@@ -6,26 +6,6 @@ import { db } from "../db/db-pgp";
 const eventsRouter = express.Router();
 eventsRouter.use(express.json());
 
-eventsRouter.get("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const eventID = await db.query("SELECT * FROM events WHERE id = $1", [id]);
-
-    res.status(200).json(keysToCamel(eventID));
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
-eventsRouter.get("/", async (req, res) => {
-  try {
-    const allEvents = await db.query("SELECT * FROM events;");
-    res.status(200).json(keysToCamel(allEvents));
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
 eventsRouter.get("/search/:name", async (req, res) => {
   try {
     const { name } = req.params;
@@ -70,6 +50,49 @@ eventsRouter.get('/corequisites/:class_id', async (req,res) => {
     res.status(500).send(err.message)
   }
 })
+
+
+eventsRouter.get(`/drafts`, async (req, res) => {
+  try {
+    const drafts = await db.query (
+      `select * from events where is_draft = true;`, []
+    );
+    res.status(200).json(keysToCamel(drafts));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+eventsRouter.get('/published', async (req, res) => {
+  try {
+    const drafts = await db.query (
+      `select * from events where is_draft = false;`, []
+    );
+    res.status(200).json(keysToCamel(drafts));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+eventsRouter.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const eventID = await db.query("SELECT * FROM events WHERE id = $1", [id]);
+
+    res.status(200).json(keysToCamel(eventID));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+eventsRouter.get("/", async (req, res) => {
+  try {
+    const allEvents = await db.query("SELECT * FROM events;");
+    res.status(200).json(keysToCamel(allEvents));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 eventsRouter.post("/", async (req, res) => {
   try {
