@@ -356,7 +356,7 @@ export const Bookings = () => {
           type={cardType}
         />
       )}
-      {/* <Navbar></Navbar> */}
+      <Navbar></Navbar>
     </Box>
   );
 };
