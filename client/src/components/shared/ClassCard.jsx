@@ -56,7 +56,7 @@ export const ClassCard = ({
   useEffect(() => {
     const fetchClassDate = async () => {
       if (!classDate) {
-        console.log("id", id);
+        // console.log("id", id);
         const response = await backend.get(`/scheduled-classes/${id}`);
         if (response?.data[0]?.date) {
           const formattedDate = new Date(

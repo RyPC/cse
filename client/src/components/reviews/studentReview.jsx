@@ -92,26 +92,20 @@ const StudentReview = ({
           <Text>{displayName}</Text>
         </HStack>
         <HStack>
-          {stars.map((_, index) => {
-            return (
-              <>
-                <FaStar
-                  key={index}
-                  size={24}
-                  value={starRating}
-                  onChange={(e) => setStarRating(e.target.value)}
-                  color={
-                    (hoverValue || starRating) > index
-                      ? colors.orange
-                      : colors.grey
-                  }
-                  onClick={() => handleClickStar(index + 1)}
-                  onMouseOver={() => handleMouseOverStar(index + 1)}
-                  onMouseLeave={() => handleMouseLeaveStar}
-                />
-              </>
-            );
-          })}
+          {stars.map((_, index) => (
+            <FaStar
+              key={index}
+              size={24}
+              value={starRating}
+              onChange={(e) => setStarRating(e.target.value)}
+              color={
+                (hoverValue || starRating) > index ? colors.orange : colors.grey
+              }
+              onClick={() => handleClickStar(index + 1)}
+              onMouseOver={() => handleMouseOverStar(index + 1)}
+              onMouseLeave={() => handleMouseLeaveStar}
+            />
+          ))}
         </HStack>
 
         <Textarea

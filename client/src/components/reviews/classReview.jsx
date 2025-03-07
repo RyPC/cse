@@ -29,9 +29,10 @@ const PublishedReviews = ({ classId }) => {
       setUser(user.data[0]);
     };
     fetchUser();
-    fetchReviews();
-  }, [backend, currentUser.uid]);
-
+    if (classId) {
+      fetchReviews();
+    }
+  }, []);
   async function onUpdate() {
     await fetchReviews();
   }
@@ -58,9 +59,9 @@ const PublishedReviews = ({ classId }) => {
         </>
       )}
       <Stack height={"fit-content"}>
-        {reviews.map((review) => (
+        {reviews.map((review, index) => (
           <ReviewCardController
-            key={review.id}
+            key={index}
             displayName={user?.firstName}
             reviewText={review.review}
             rating={review.rating}
