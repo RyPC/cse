@@ -68,29 +68,24 @@ export const ViewModal = ({
               <Text>{card ? card.description : "N/A"}</Text>
             </GridItem>
 
-            {type === "class" ? (
-              <GridItem>
-                <Text fontWeight="bold">Capacity</Text>
-                <Text>{card ? card.capacity : "N/A"}</Text>
-              </GridItem>
-            ) : (
-              <GridItem>
-                <Text fontWeight="bold">Start Time</Text>
-                <Text>{card ? card.startTime : "N/A"}</Text>
-              </GridItem>
-            )}
+            <GridItem>
+              <Text fontWeight="bold">Capacity</Text>
+              <Text>{card ? card.capacity : "N/A"}</Text>
+            </GridItem>
 
-            {type === "class" ? (
-              <GridItem>
-                <Text fontWeight="bold">Level</Text>
-                <Text>{card ? card.level : "N/A"}</Text>
-              </GridItem>
-            ) : (
-              <GridItem>
-                <Text fontWeight="bold">End Time</Text>
-                <Text>{card ? card.endTime : "N/A"}</Text>
-              </GridItem>
-            )}
+            <GridItem>
+              <Text fontWeight="bold">Start Time</Text>
+              <Text>{card ? card.startTime : "N/A"}</Text>
+            </GridItem>
+
+            <GridItem>
+              <Text fontWeight="bold">Level</Text>
+              <Text>{card ? card.level : "N/A"}</Text>
+            </GridItem>
+            <GridItem>
+              <Text fontWeight="bold">End Time</Text>
+              <Text>{card ? card.endTime : "N/A"}</Text>
+            </GridItem>
 
             {type === "class" ? (
               <GridItem colSpan={2}>

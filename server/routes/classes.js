@@ -142,7 +142,17 @@ classesRouter.get("/joined/:id", async (req, res) => {
 classesRouter.get("/published", async (req, res) => {
   try {
     const data = await db.query(
-      `SELECT * FROM classes WHERE is_draft = FALSE;`,
+      `
+      SELECT DISTINCT ON (c.id)
+          c.*,
+          sc.date,
+          sc.start_time,
+          sc.end_time
+      FROM classes c
+      LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+      WHERE c.is_draft = FALSE
+      ORDER BY c.id, sc.date DESC;
+      `,
       []
     );
 
@@ -247,7 +257,7 @@ classesRouter.put("/:id", async (req, res) => {
     capacity = COALESCE($4, capacity),
     level = COALESCE($5, level),
     costume = COALESCE($6, costume),
-    is_draft = COALESCE($7, isDraft)
+    is_draft = COALESCE($7, is_draft)
     WHERE id = $8 RETURNING *;`;
 
     const data = await db.query(query, [
