@@ -53,8 +53,11 @@ export const ControllerModal = ({ autoOpen = false }) => {
           classId: clsId
         });
         
-        resourceId = videoResponse.data.id;
+        console.log("Video Response:", videoResponse);
+        console.log("Video Response Data:", videoResponse.data);
+        resourceId = videoResponse.data[0].id;
         console.log("Created video with ID:", resourceId);
+        console.log("just checking class id", videoResponse.data.classId);
         
         if (tags.length > 0) {
           for (const ids of tags) {
@@ -84,7 +87,7 @@ export const ControllerModal = ({ autoOpen = false }) => {
             console.log("Resource ID:", resourceId);
             await backend.post("/article-tags", {
               articleId: resourceId,
-              tagID: ids
+              tagId: ids
             });
           }
         }
