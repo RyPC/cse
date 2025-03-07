@@ -57,11 +57,11 @@ export const ControllerModal = ({ autoOpen = false }) => {
         console.log("Created video with ID:", resourceId);
         
         if (tags.length > 0) {
-          for (const tagId of tags) {
+          for (const ids of tags) {
 
             await backend.post("/video-tags", {
-              video_id: resourceId,
-              tag_id: tags
+              videoId: resourceId,
+              tagId: ids
             });
           }
         }
@@ -79,10 +79,12 @@ export const ControllerModal = ({ autoOpen = false }) => {
         console.log("Created article with ID:", resourceId);
         
         if (tags.length > 0) {
-          for (const tagId of tags) {
+          for (const ids of tags) {
+            console.log("Tag ID:", ids);
+            console.log("Resource ID:", resourceId);
             await backend.post("/article-tags", {
-              article_id: resourceId,
-              tagID: tagID
+              articleId: resourceId,
+              tagID: ids
             });
           }
         }
