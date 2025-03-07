@@ -25,13 +25,19 @@ import { Login } from "./components/login/Login";
 import { Playground } from "./components/playground/Playground";
 import { Profile } from "./components/profile/Profile";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { CheckInHandler } from "./components/qrcode/CheckInHandler";
+import { ClassCheckInHandler } from "./components/qrcode/ClassCheckInHandler";
+import { EventCheckInHandler } from "./components/qrcode/EventCheckInHandler";
 import { Resources } from "./components/resources/Resources";
 import { Reviews } from "./components/reviews/Reviews";
+import { Settings } from "./components/profile/Settings";
 import { Signup } from "./components/signup/Signup";
 import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
+import Request from "./components/teacher-signup/requests/Request";
+import { L } from "./components/logout/Logout";
 
 const App = () => {
   return (
@@ -56,6 +62,10 @@ const App = () => {
                 <Route
                   path="/teacher-signup"
                   element={<TeacherSignup />}
+                />
+                <Route
+                  path="/settings"
+                  element={<Settings />}
                 />
                 <Route
                   path="/dashboard"
@@ -145,6 +155,15 @@ const App = () => {
                 />
 
                 <Route
+                  path="/check-in/class/:id"
+                  element={<ClassCheckInHandler />}
+                />
+                <Route
+                  path="/check-in/event/:id"
+                  element={<EventCheckInHandler />}
+                />
+
+                <Route
                   path="/"
                   element={
                     <Navigate
@@ -157,6 +176,19 @@ const App = () => {
                   path="*"
                   element={<ProtectedRoute element={<CatchAll />} />}
                 />
+                <Route
+                  path = "/teacher-signup/request"
+                  element = {<ProtectedRoute element = {<Request />} />}
+                />
+                <Route
+                  path = "/teacher-signup/pending"
+                  element = {<ProtectedRoute element = {<Request />} />}
+                />
+                <Route
+                  path = "/logout"
+                  element = {<L/>}
+                  >
+                </Route>
               </Routes>
             </Router>
           </RoleProvider>

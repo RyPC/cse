@@ -65,8 +65,33 @@ export const Login = () => {
         email: data.email,
         password: data.password,
       });
+      const response = await backend.get('/teachers');
+        const teachers = response.data;
+        const teacher = teachers.find(teach =>
+            teach.email === data.email
+        );
 
-      navigate("/dashboard");
+        if (teacher) {
+            if (teacher.isActivated) {
+                navigate('/discovery');
+            }
+            else {
+                navigate('/teacher-signup/pending');
+            }
+        }
+        else {
+          console.log("In else clause!")
+          const qrCodeRedirect = localStorage.getItem("qrcode_redirect");
+          console.log(qrCodeRedirect)
+          // return qrCodeRedirect ? navigate(qrCodeRedirect) : navigate('/discovery');
+          if(qrCodeRedirect) {
+            localStorage.removeItem("qrcode_redirect");
+            navigate(qrCodeRedirect);
+          } else {
+            navigate('/discovery');
+          }
+        }
+
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;

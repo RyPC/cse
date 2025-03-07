@@ -6,18 +6,38 @@ import { db } from "../db/db-pgp";
 const classesRouter = express.Router();
 classesRouter.use(express.json());
 
-classesRouter.get("/students/teacher/:id", async(req, res) => {
-    try {
-        const teacherId = req.params.id
+classesRouter.get("/scheduled", async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT
+        c.*,
+        sc.date,
+        sc.start_time,
+        sc.end_time,
+        (SELECT COUNT(*) FROM class_enrollments WHERE class_id = c.id) as attendee_count
+      FROM classes c
+      LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+      GROUP BY c.id, sc.date, sc.start_time, sc.end_time
+    `);
 
-        const classStudents = await db.query(
-            `
-            SELECT 
+    res.json(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+classesRouter.get("/students/teacher/:id", async (req, res) => {
+  try {
+    const teacherId = req.params.id;
+
+    const classStudents = await db.query(
+      `
+            SELECT
                 c.id AS class_id,
                 s.id as student_id,
                 c.level as class_level,
                 s.level as student_level,
-                c.*, s.*, u.* 
+                c.*, s.*, u.*
             FROM teachers t
             LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
             LEFT JOIN classes c ON c.id = ct.class_id
@@ -26,134 +46,79 @@ classesRouter.get("/students/teacher/:id", async(req, res) => {
             INNER JOIN users u ON u.id = s.id
             WHERE t.id = $1
             `,
-            [teacherId]
-        )
+      [teacherId]
+    );
 
-        res.status(200).json(keysToCamel(classStudents));
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            status: "Failed",
-            msg: err.message,
-        });
-    }
-})
+    res.status(200).json(keysToCamel(classStudents));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
 
 // UNUSED
-classesRouter.get("/students/", async(req, res) => {
-    try {
-        const classStudents = await db.query(
-            `
+classesRouter.get("/students/", async (req, res) => {
+  try {
+    const classStudents = await db.query(
+      `
             SELECT * FROM classes c
             LEFT JOIN class_enrollments ce ON c.id = ce.class_id
-            LEFT JOIN students s ON s.id = ce.student_id 
+            LEFT JOIN students s ON s.id = ce.student_id
             INNER JOIN users u ON u.id = s.id
             `
-        )
+    );
 
-        res.status(200).json(keysToCamel(classClasses));
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            status: "Failed",
-            msg: err.message,
-        });
-    }
-})
+    res.status(200).json(keysToCamel(classStudents));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
 
 // UNUSED
-classesRouter.get("/students/:id", async(req, res) => {
-    try {
-        const classId = req.params.id
+classesRouter.get("/students/:id", async (req, res) => {
+  try {
+    const classId = req.params.id;
 
-        const classStudents = await db.query(
-            `
+    const classStudents = await db.query(
+      `
             SELECT * FROM classes c
             LEFT JOIN class_enrollments ce ON c.id = ce.class_id
-            LEFT JOIN students s ON s.id = ce.student_id 
+            LEFT JOIN students s ON s.id = ce.student_id
             INNER JOIN users u ON u.id = s.id
             WHERE c.id = $1
             `,
-            [classId]
-        )
-
-        res.status(200).json(keysToCamel(classClasses));
-    } catch (err) {
-        console.log(err)
-        res.status(500).json({
-            status: "Failed",
-            msg: err.message,
-        });
-    }
-})
-
-classesRouter.get("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const data = await db.query(`SELECT * FROM classes WHERE id = $1;`, [id]);
-
-    res.status(200).json(keysToCamel(data));
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
-classesRouter.get("/", async (req, res) => {
-  try {
-    const data = await db.query(`SELECT * FROM classes;`);
-
-    res.status(200).json(keysToCamel(data));
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
-classesRouter.post("/", async (req, res) => {
-  try {
-    console.log(req.body);
-    const { title, description, location, capacity, level, costume, isDraft } =
-      req.body;
-    const data = await db.query(
-      `
-        INSERT INTO classes (title, description, location, capacity, level, costume, is_draft)
-        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
-      [title, description, location, capacity, level, costume, isDraft]
+      [classId]
     );
 
-    res.status(200).json(keysToCamel(data));
+    res.status(200).json(keysToCamel(classStudents));
   } catch (err) {
-    res.status(500).send(err.message);
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
   }
 });
 
-classesRouter.put("/:id", async (req, res) => {
+classesRouter.get("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, location, capacity, level, costume, isDraft } =
-      req.body;
+    const events = await db.query(
+      `SELECT e.*
+       FROM events e
+       JOIN corequisites co ON e.id = co.event_id
+       WHERE co.class_id = $1;`,
+      [id]
+    );
 
-    const query = `UPDATE CLASSES SET
-    title = COALESCE($1, title),
-    description = COALESCE($2, description),
-    location = COALESCE($3, location),
-    capacity = COALESCE($4, capacity),
-    level = COALESCE($5, level),
-    costume = COALESCE($6, costume),
-    is_draft = COALESCE($7, isDraft)
-    WHERE id = $8 RETURNING *;`;
-
-    const data = await db.query(query, [
-      title,
-      description,
-      location,
-      capacity,
-      level,
-      costume,
-      isDraft,
-      id,
-    ]);
-
-    res.status(200).json(keysToCamel(data));
+    res.status(200).json(keysToCamel(events));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -213,15 +178,95 @@ classesRouter.get("/search/:name", async (req, res) => {
   }
 });
 
-classesRouter.get('/search/:name', async (req,res) => {
-    try {
-        const { name } = req.params
-        const search = `%${name}%`
-        const allClasses = await db.query("SELECT * FROM classes WHERE title ILIKE $1;", [search]);
-      res.status(200).json(keysToCamel(allClasses))
-    } catch (err){
-      res.status(500).send(err.message)
-    }
-})
+classesRouter.get("/search/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const search = `%${name}%`;
+    const allClasses = await db.query(
+      "SELECT * FROM classes WHERE title ILIKE $1;",
+      [search]
+    );
+    res.status(200).json(keysToCamel(allClasses));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+classesRouter.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.query(`SELECT * FROM classes WHERE id = $1;`, [id]);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.get("/", async (req, res) => {
+  try {
+    const data = await db.query(`SELECT * FROM classes;`);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+
+classesRouter.post("/", async (req, res) => {
+  try {
+    console.log(req.body);
+    const { title, description, location, capacity, level, costume, isDraft } =
+      req.body;
+    const data = await db.query(
+      `
+        INSERT INTO classes (title, description, location, capacity, level, costume, is_draft)
+        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
+      [title, description, location, capacity, level, costume, isDraft]
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.put("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, location, capacity, level, costume, isDraft } =
+      req.body;
+
+    const query = `UPDATE CLASSES SET
+    title = COALESCE($1, title),
+    description = COALESCE($2, description),
+    location = COALESCE($3, location),
+    capacity = COALESCE($4, capacity),
+    level = COALESCE($5, level),
+    costume = COALESCE($6, costume),
+    is_draft = COALESCE($7, isDraft)
+    WHERE id = $8 RETURNING *;`;
+
+    const data = await db.query(query, [
+      title,
+      description,
+      location,
+      capacity,
+      level,
+      costume,
+      isDraft,
+      id,
+    ]);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
 
 export { classesRouter };
