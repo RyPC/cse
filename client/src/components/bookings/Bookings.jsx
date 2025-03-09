@@ -19,6 +19,10 @@ import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
+import { TeacherCancelModal } from "./TeacherCancelModal";
+import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
+import { TeacherEditModal } from "./TeacherEditModal";
+import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
 
 export const Bookings = () => {
@@ -41,21 +45,14 @@ export const Bookings = () => {
   const [isAttendedItem, setIsAttendedItem] = useState(false);
 
   useEffect(() => {
-    if (currentUser && role !== "student") {
-        backend.get(`/events/published`).then(
-          (res) => setEvents(res.data)
-        );
-        backend.get(`/classes/published`).then(
-          (res) => setClasses(res.data)
-        );
-        backend.get(`/events/drafts`).then(
-          (res) => setDraftEvents(res.data)
-        );
-        backend.get(`/classes/drafts`).then(
-          (res) => setDraftClasses(res.data)
-        );
-    }
-    else if (currentUser) {
+    if (currentUser && role === "teacher") {
+      backend.get(`/events/published`).then((res) => setEvents(res.data));
+      backend.get(`/classes/published`).then((res) => {
+        console.log("res", res)
+        setClasses(res.data)});
+      backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
+      backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
+    } else if (currentUser && role === "student") {
       backend
         .get(`/users/${currentUser.uid}`)
         .then((userRes) => {
@@ -65,6 +62,7 @@ export const Bookings = () => {
           backend
             .get(`/class-enrollments/student/${userId}`)
             .then((res) => {
+              console.log("res", res);
               setClasses(res.data);
             })
             .catch((err) => {
@@ -97,10 +95,16 @@ export const Bookings = () => {
     setCurrentModal("view");
     onClose();
   };
+  const onOpenModal = (data) => {
+    console.log(data);
+    setClassData(data);
+    onOpen();
+  };
 
   const updateModal = (item) => {
     const type = classes.includes(item) ? "class" : "event";
     if (type === "class") loadCorequisites(item.id);
+    console.log("coevetns", coEvents);
     setSelectedCard(item);
     setCardType(type);
     const isAttended = attended.some(
@@ -148,7 +152,7 @@ export const Bookings = () => {
 
   const loadCorequisites = async (classId) => {
     try {
-      const response = await backend.get(`events/corequisites/${classId}`);
+      const response = await backend.get(`classes/corequisites/${classId}`);
 
       if (response.status === 200) {
         setCoEvents(response.data);
@@ -158,6 +162,59 @@ export const Bookings = () => {
     }
   };
 
+  const fetchClassData = async () => {
+    try {
+      const [classesResponse, classDataResponse] = await Promise.all([
+        backend.get("/scheduled-classes"),
+        backend.get("/classes"),
+      ]);
+
+      const classDataDict = new Map();
+      classDataResponse.data.forEach((cls) => classDataDict.set(cls.id, cls));
+
+      const formattedData = classesResponse.data
+        .map((cls) => {
+          const fullData = classDataDict.get(cls.classId);
+          return fullData
+            ? {
+                classId: cls.classId,
+                date: stringToDate(cls.date),
+                startTime: stringToTime(cls.startTime),
+                endTime: stringToTime(cls.endTime),
+                title: fullData.title,
+                description: fullData.description,
+                location: fullData.location,
+                capacity: fullData.capacity,
+                level: fullData.level,
+                costume: fullData.costume,
+                isDraft: fullData.isDraft,
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      setClasses(formattedData);
+    } catch (error) {
+      console.error("Error fetching class data:", error);
+    }
+  };
+
+  const stringToDate = (date) => {
+    return new Date(date);
+  };
+
+  const stringToTime = (time) => {
+    const [hours, minutes] = time.split(":");
+    const d = new Date();
+    d.setHours(hours, minutes, 0);
+
+    return d;
+  };
+
+  console.log("classes", classes);
+  // console.log("events", events);
+  // console.log("attended", classes);
+  console.log("selected card", selectedCard);
   return (
     <Box>
       <VStack
@@ -259,44 +316,13 @@ export const Bookings = () => {
                 spacing={4}
                 width="100%"
               >
-                {
-                  role !== "student" ? 
-                  (drafts.length > 0 ? (
-                    drafts.map((item) => 
-                    item.classId ? (
-                      <ClassCard
-                      id={item.id}
-                      title={item.title}
-                      description={item.description}
-                      location={item.location}
-                      capacity={item.capacity}
-                      level={item.level}
-                      date={item.date}
-                      startTime={item.startTime}
-                      endTime={item.endTime}
-                      attendeeCount={item.attendeeCount}
-                      onClick={() => updateModal(item)}
-                      
-                      />
-                    ) : (
-                      <EventCard
-                      id={item.id}
-                      title={item.title}
-                      location={item.location}
-                      date={item.date}
-                      startTime={item.startTime}
-                      endTime={item.endTime}
-                      callTime={item.callTime}
-                      attendeeCount={item.attendeeCount}
-                      onClick={() => updateModal(item)}
-                      />
-                    ))
-                  ) : (<Text>No draft events or classes</Text>))
-                  : ((attended.length > 0) ? (
-                    attended.map((item) => 
-                      item.class_id ? (
+                {role === "teacher" ? (
+                  drafts.length > 0 ? (
+                    drafts.map((item) =>
+                      draftClasses.includes(item) ? (
                         <ClassCard
                           key={item.id}
+                          id={item.id}
                           title={item.title}
                           description={item.description}
                           location={item.location}
@@ -311,26 +337,118 @@ export const Bookings = () => {
                       ) : (
                         <EventCard
                           key={item.id}
+                          id={item.id}
                           title={item.title}
                           location={item.location}
                           date={item.date}
                           startTime={item.startTime}
                           endTime={item.endTime}
+                          callTime={item.callTime}
                           attendeeCount={item.attendeeCount}
                           onClick={() => updateModal(item)}
                         />
                       )
                     )
                   ) : (
-                    <Text>No attended classes or events.</Text>
-                  ))
-                }
+                    <Text>No draft events or classes</Text>
+                  )
+                ) : attended.length > 0 ? (
+                  attended.map((item) =>
+                    item.class_id ? (
+                      <ClassCard
+                        key={item.id}
+                        title={item.title}
+                        description={item.description}
+                        location={item.location}
+                        capacity={item.capacity}
+                        level={item.level}
+                        date={item.date}
+                        startTime={item.startTime}
+                        endTime={item.endTime}
+                        attendeeCount={item.attendeeCount}
+                        onClick={() => updateModal(item)}
+                      />
+                    ) : (
+                      <EventCard
+                        key={item.id}
+                        title={item.title}
+                        location={item.location}
+                        date={item.date}
+                        startTime={item.startTime}
+                        endTime={item.endTime}
+                        attendeeCount={item.attendeeCount}
+                        onClick={() => updateModal(item)}
+                      />
+                    )
+                  )
+                ) : (
+                  <Text>No attended classes or events.</Text>
+                )}
               </VStack>
             </TabPanel>
           </TabPanels>
         </Tabs>
       </VStack>
-      {currentModal === "view" ? (
+      {/* {currentModal === "view" ? (
+        <ViewModal
+          isOpen={isOpen}
+          onClose={onCloseModal}
+          setCurrentModal={setCurrentModal}
+          card={selectedCard}
+          coEvents={coEvents}
+          type={cardType}
+          isAttended={isAttendedItem}
+        />
+      ) : currentModal === "confirmation" ? (
+        <ConfirmationModal
+          isOpen={isOpen}
+          onClose={onCloseModal}
+          card={selectedCard}
+        />
+      ) : (
+        <CancelModal
+          isOpen={isOpen}
+          onClose={onCloseModal}
+          setCurrentModal={setCurrentModal}
+          card={selectedCard}
+          handleEvent={() => handleCancelEnrollment(selectedCard.id)}
+          type={cardType}
+        />
+      )} */}
+      {role === "teacher" ? (
+        currentModal === "view" ? (
+          <TeacherViewModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+            setCurrentModal={setCurrentModal}
+            classData={selectedCard}
+            performances={coEvents}
+            setPerformances={setCoEvents}
+          />
+        ) : currentModal === "confirmation" ? (
+          <TeacherConfirmationModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+          />
+        ) : currentModal === "edit" ? (
+          <TeacherEditModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+            setCurrentModal={setCurrentModal}
+            classData={selectedCard}
+            setClassData={setSelectedCard}
+            performances={coEvents}
+          />
+        ) : (
+          <TeacherCancelModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+            setCurrentModal={setCurrentModal}
+            classData={selectedCard}
+          />
+        )
+      ) : // STUDENT VIEW HERE
+      currentModal === "view" ? (
         <ViewModal
           isOpen={isOpen}
           onClose={onCloseModal}

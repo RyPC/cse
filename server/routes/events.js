@@ -24,7 +24,7 @@ eventsRouter.get("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const corequisites = await db.query(
-      `SELECT c.* 
+      `SELECT c.*
        FROM classes c
        JOIN corequisites co ON c.id = co.class_id
        WHERE co.event_id = $1;`,
@@ -36,21 +36,6 @@ eventsRouter.get("/corequisites/:id", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
-eventsRouter.get('/corequisites/:class_id', async (req,res) => {
-    try {
-        const { class_id } = req.params
-        const result = await db.query(
-            `SELECT DISTINCT e.title
-             FROM events AS e
-              JOIN corequisites AS co ON e.id = co.event_id
-             WHERE co.class_id = $1;`, [class_id]);
-    res.status(200).json(keysToCamel(result))
-  } catch (err){
-    res.status(500).send(err.message)
-  }
-})
-
 
 eventsRouter.get(`/drafts`, async (req, res) => {
   try {
