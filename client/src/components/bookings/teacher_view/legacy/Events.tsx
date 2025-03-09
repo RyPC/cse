@@ -15,20 +15,20 @@ import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
-import { Class } from "../../../types/class";
+import { Event } from "../../../types/event";
 
-export const Classes = () => {
-  const [classes, setClasses] = useState<Class[]>([]);
+export const Events = () => {
+  const [events, setEvents] = useState<Event[]>([]);
   const { backend } = useBackendContext();
   const navigate = useNavigate();
   useEffect(() => {
     backend
-      .get("/classes")
-      .then((classes) => {
-        const filteredClasses = classes.data.filter(
-          (currentClass: Class) => currentClass.isDraft === false
+      .get("/events")
+      .then((events) => {
+        const filteredEvents = events.data.filter(
+          (currentEvent: Event) => currentEvent.is_draft === false
         );
-        setClasses(filteredClasses as Class[]);
+        setEvents(filteredEvents as Event[]);
       })
       .catch((err) => {
         console.error(err);
@@ -37,15 +37,14 @@ export const Classes = () => {
 
   return (
     <VStack>
-      {classes.map((currentClass) => {
-        return ClassTeacherCard(currentClass, navigate);
+      {events.map((currentEvent) => {
+        return EventTeacherCard(currentEvent, navigate);
       })}
     </VStack>
   );
 };
 
-// class is a keyword in js :(
-function ClassTeacherCard(currentClass: Class, navigate: NavigateFunction) {
+function EventTeacherCard(event: Event, navigate: NavigateFunction) {
   return (
     <Card
       w={{ base: "90%", md: "30em" }}
@@ -56,7 +55,7 @@ function ClassTeacherCard(currentClass: Class, navigate: NavigateFunction) {
           size="md"
           fontWeight="bold"
         >
-          {currentClass.title}
+          {currentEvent.title}
         </Heading>
       </CardHeader>
       <CardBody>
@@ -66,18 +65,18 @@ function ClassTeacherCard(currentClass: Class, navigate: NavigateFunction) {
         >
           <HStack>
             <FaClock size={14} />
-            <Text fontSize="sm">{currentClass.date} </Text>
+            <Text fontSize="sm">{currentEvent.date} </Text>
           </HStack>
 
           <HStack>
             <FaMapMarkerAlt size={14} />
-            <Text fontSize="sm">{currentClass.location}</Text>
+            <Text fontSize="sm">{currentEvent.location}</Text>
           </HStack>
 
           <HStack>
             <FaUser size={14} />
             <Text fontSize="sm">
-              {/* * rsvp count placeholder here, but not in sql table so nothing here for now */}
+              {/* rsvp count placeholder here, but not in sql table so nothing here for now */}
             </Text>
           </HStack>
           <Button
@@ -88,7 +87,7 @@ function ClassTeacherCard(currentClass: Class, navigate: NavigateFunction) {
             color="black"
             _hover={{ bg: "gray.700" }}
             mt={2}
-            onClick={() => navigate(`/dashboard/classes/${currentClass.id}`)}
+            onClick={() => navigate(`/dashboard/events/${currentEvent.id}`)}
           >
             View Details
           </Button>

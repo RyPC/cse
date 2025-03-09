@@ -11,22 +11,24 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { FaClock, FaMapMarkerAlt } from "react-icons/fa";
+import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { Class } from "../../../types/class";
-// * Drafts need to have placholders and their cards should open the modal, so the functions sent down to them are different
-export const Drafts = () => {
-  const [drafts, setDrafts] = useState<Class[]>([]);
+
+export const Classes = () => {
+  const [classes, setClasses] = useState<Class[]>([]);
   const { backend } = useBackendContext();
+  const navigate = useNavigate();
   useEffect(() => {
     backend
       .get("/classes")
       .then((classes) => {
         const filteredClasses = classes.data.filter(
-          (currentClass: Class) => currentClass.isDraft === true
+          (currentClass: Class) => currentClass.is_draft === false
         );
-        setDrafts(filteredClasses as Class[]);
+        setClasses(filteredClasses as Class[]);
       })
       .catch((err) => {
         console.error(err);
@@ -35,14 +37,15 @@ export const Drafts = () => {
 
   return (
     <VStack>
-      {drafts.map((currentClass) => {
-        return DraftTeacherCard(currentClass);
+      {classes.map((currentClass) => {
+        return ClassTeacherCard(currentClass, navigate);
       })}
     </VStack>
   );
 };
 
-function DraftTeacherCard(currentDraft: Class) {
+// class is a keyword in js :(
+function ClassTeacherCard(currentClass: Class, navigate: NavigateFunction) {
   return (
     <Card
       w={{ base: "90%", md: "30em" }}
@@ -53,7 +56,7 @@ function DraftTeacherCard(currentDraft: Class) {
           size="md"
           fontWeight="bold"
         >
-          {currentDraft.title || "Untitled Draft"}
+          {currentClass.title}
         </Heading>
       </CardHeader>
       <CardBody>
@@ -63,13 +66,18 @@ function DraftTeacherCard(currentDraft: Class) {
         >
           <HStack>
             <FaClock size={14} />
-            <Text fontSize="sm">{currentDraft.date || "Unknown Date"} </Text>
+            <Text fontSize="sm">{currentClass.date} </Text>
           </HStack>
 
           <HStack>
             <FaMapMarkerAlt size={14} />
+            <Text fontSize="sm">{currentClass.location}</Text>
+          </HStack>
+
+          <HStack>
+            <FaUser size={14} />
             <Text fontSize="sm">
-              {currentDraft.location || "Unknown Location"}
+              {/* rsvp count placeholder here, but not in sql table so nothing here for now */}
             </Text>
           </HStack>
           <Button
@@ -80,10 +88,9 @@ function DraftTeacherCard(currentDraft: Class) {
             color="black"
             _hover={{ bg: "gray.700" }}
             mt={2}
-            // TODO: navigate to edit draft page
-            onClick={() => {}}
+            onClick={() => navigate(`/dashboard/classes/${currentClass.id}`)}
           >
-            Edit Draft
+            View Details
           </Button>
         </VStack>
       </CardBody>

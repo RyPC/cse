@@ -4,7 +4,7 @@ export type Class = {
   description: string;
   capacity: number;
   location: string;
-  isDraft: boolean;
+  is_draft: boolean;
   date: string;
   startTime: string;
   endTime: string;
