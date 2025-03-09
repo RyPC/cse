@@ -32,7 +32,7 @@ classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
   try {
     const result = await db.query(
       `
-      SELECT DISTINCT ON (c.id)
+      SELECT DISTINCT ON (c.id, sc.date)
           c.*,
           sc.date,
           sc.start_time,
