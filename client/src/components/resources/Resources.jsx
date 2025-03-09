@@ -4,10 +4,10 @@ import { NewsCard } from "./NewsCard";
 import { UploadComponent } from "./UploadComponent";
 import { Button, Flex, Text, Box , IconButton} from "@chakra-ui/react";
 import { ControllerModal } from "./ResourceFlow/ResourceFlowController";
-
-
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+
 
 export const Resources = () => {
 
@@ -15,7 +15,7 @@ export const Resources = () => {
   const [videos, setVideos] = useState([]);
   const [news, setNews] = useState([]);
   const [showModal, setShowModal] = useState(false);
-
+  const {role} = useAuthContext();
 
 
   const handleVideoButton = () => {
@@ -29,14 +29,14 @@ export const Resources = () => {
   };
   const handleAddButtonClick = () => {
     console.log('Add button clicked!');
-    
+
     setShowModal(false);
     setTimeout(() => {
       setShowModal(true);
     }, 0);
   };
 
-  
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -65,7 +65,7 @@ export const Resources = () => {
   }, []);
 
   return (
-    <Box position="relative" pb="70px" minHeight="100vh"> 
+    <Box position="relative" pb="70px" minHeight="100vh">
     <Flex direction="column" p={4} gap={4}>
       <Text textStyle="xl" mb={4}>Resources</Text>
       <Flex gap={4}>
@@ -101,11 +101,11 @@ export const Resources = () => {
             />
           ))}
         </Flex>
-        
+
       </Box>
       <UploadComponent />
     </Flex>
-    <IconButton
+    {role === "teacher" && <IconButton
         icon={<span style={{ fontSize: "24px" }}>+</span>}
         colorScheme="purple"
         size="lg"
@@ -117,7 +117,7 @@ export const Resources = () => {
         boxShadow="lg"
         aria-label="Add new item"
         onClick={handleAddButtonClick}
-      />
+      />}
       {showModal && <ControllerModal autoOpen={true}/> }
 
 
