@@ -3,7 +3,12 @@ export type Class = {
   title: string;
   description: string;
   capacity: number;
-  costume: string;
-  level: string;
   location: string;
+  isDraft: boolean;
+  date: string;
+  startTime: string;
+  endTime: string;
+  level: string;
+  classType: string;
+  performance: number;
 };
