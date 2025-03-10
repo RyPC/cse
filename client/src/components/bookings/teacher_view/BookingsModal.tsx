@@ -1,31 +1,29 @@
-import { useEffect, useState, useDisclosure } from "react";
+import { useEffect, useState } from "react";
 
-import { FormControl, FormLabel, Input, Switch, Button, Box, VStack, HStack } from '@chakra-ui/react';
+import { Modal, ModalOverlay, ModalHeader, ModalBody, ModalCloseButton, ModalContent, ModalFooter, FormControl, FormLabel, Input, Switch, Button, Box, VStack, HStack, useDisclosure } from '@chakra-ui/react';
 
 import {} from "react-icons/fa";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { Booking, isClass } from "../../../types/booking";
 
-import { BookingsForm, ClassForm, EventForm }
+import { BookingForm, ClassForm, EventForm } from "./BookingsForm"
 
-function EditBookingModal(isOpen, onClose, booking: Booking) {
+export const EditBookingModal = ({ isOpen, onClose, booking, is_class}: {isOpen, onClose, booking: Booking, is_class: boolean }) => {
+    console.log(booking, is_class)
     const { 
         isOpen: isConfOpen,
         onOpen: onConfOpen,
         onClose: onConfClose 
     } = useDisclosure();
 
-    const { saveDraft, setSaveDraft } = useState(false)
-
     const { backend } = useBackendContext()
-    
+
     const is_new = booking === null
-    const is_class = isClass(booking)
+    const modal_title = `${booking ? "New " : "Draft "} ${is_class ? "Class" : "Event"}` 
 
-    const title = `${booking ? "New " : "Draft "} ${is_class ? "Class" : "Event"}` 
 
-    const  = useState({
+    const [bookingData, setBookingData] = useState({
       title: booking?.title ?? '',
       description: booking?.description ?? '',
       location: booking?.location ?? '',
@@ -33,20 +31,20 @@ function EditBookingModal(isOpen, onClose, booking: Booking) {
       date: booking?.date ?? '',
       start_time: booking?.start_time ?? '',
       end_time: booking?.end_time ?? '',
-    });
+    })
+    const [saveDraft, setSaveDraft] = useState(false)
 
     const [classData, setClassData] = useState(is_class ? {
-      capacity: bookings?.capacity ?? 0,
-      classType: bookings?.classType ?? "",
-      performance: bookings?.performance ?? 0
-    } : null)
+      capacity: booking?.capacity ?? 0,
+      class_type: booking?.classType ?? "",
+    } : {})
+    const [eventCoreq, setEventCoreq] = useState(-1)
 
     const [eventData, setEventData] = useState(!is_class ? {
-      call_time: bookings?.call_time ?? "",
-      costume: bookings?.costume ?? "",
-    } : null)
+      call_time: booking?.call_time ?? "",
+    } : {})
 
-    const openConfirmation(saveAsDraft) => {
+    const openConfirmation = (saveAsDraft) => {
         setSaveDraft(saveAsDraft)
         onConfOpen()
     }
@@ -54,16 +52,24 @@ function EditBookingModal(isOpen, onClose, booking: Booking) {
     // TODO: Add logic for scheduled-classes post req
     const saveChanges = (saveAsDraft) => {
         () => {
+            const mergedData = {
+                ...bookingData,
+                ...classData,
+                ...eventData,
+                is_draft: saveAsDraft
+            }
+
             if (is_new)
-                backend.post(`/${is_class ? "classes": "events"}/${booking.id}}`, {
-                    ...bookingData,
-                    is_draft: saveAsDraft
-                })
+                backend.post(`/${is_class ? "classes": "events"}/${booking.id}`, mergedData)
             else if (!is_new)
-                backend.put(`/${is_class ? "classes": "events"}/${booking.id}}`, {
-                    ...bookingData,
-                    is_draft: saveAsDraft
-                })
+                backend.put(`/${is_class ? "classes": "events"}/${booking.id}`, mergedData)
+  
+            // TODO
+            // if (!saveAsDraft && is_class && eventCoreq != -1)
+                // class_id = booking.id
+                // event_id = eventCoreq
+                // POST
+
             onClose()
         }
     }
@@ -73,12 +79,14 @@ function EditBookingModal(isOpen, onClose, booking: Booking) {
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay />
                 <ModalContent>
-                  <ModalHeader>{title}</ModalHeader>
+                  <ModalHeader>{modal_title}</ModalHeader>
                   <ModalBody>
-                      <BookingForm updateCallback={setBookingData}/>
+                      <BookingForm updateCallback={setBookingData} formData={bookingData}/>
                       {
-                          is_class ? <ClassForm updateCallback={setClassData}/> :
-                                     <EventForm updateCallback={setEventData}/> 
+                          is_class ? <ClassForm updateCallback={setClassData} 
+                                                performanceCallback={setEventCoreq}
+                                                formData={classData}/> :
+                                     <EventForm updateCallback={setEventData} formData={eventData}/> 
                       }
                   </ModalBody>
 

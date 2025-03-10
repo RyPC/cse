@@ -1,4 +1,4 @@
-enum Level = {
+export enum Level {
     beginner = "beginner",
     intermediate = "intermediate",
     advanced = "advanced"
@@ -18,13 +18,11 @@ export type Booking = {
 
 export type Class = Booking & {
   capacity: number;
-  classType: string;
-  performance: number;
+  classType: string; // "just a normal string"
 };
 
 export type Event = Booking & {
   call_time: string;
-  costume: string;
 };
 
 export type Booking = Class | Event;

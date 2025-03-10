@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 
 import {
   Button,
+  Tabs,
+  TabPanels,
+  TabPanel,
+  TabList,
+  Tab,
+  Box,
   Card,
   CardBody,
   CardHeader,
@@ -9,19 +15,67 @@ import {
   HStack,
   Text,
   VStack,
+  useDisclosure
 } from "@chakra-ui/react";
 
-import { Navbar } from "../navbar/Navbar";
+import { Navbar } from "../../navbar/Navbar";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
-import { Booking, isClass } from "../../../types/booking";
+import { Booking, Class, Event, isClass } from "../../../types/booking";
+
+import { EditBookingModal } from './BookingsModal'
 
 // 4 Tab implementation, class, events, class_drafts, class_events
 
+const scheduledClasses = (classes, scheduleData) => {
+    const mergedClasses = scheduleData.map(scheduledClass => {
+        const classData = classes.find(c => c.id === scheduledClass.classId);
+        return {
+            ...classData, 
+            date: scheduledClass.date,
+            startTime: scheduledClass.startTime,
+            endTime: scheduledClass.endTime,
+        };
+    });
+    return mergedClasses as Class[];
+};
+
+
 export const Bookings = () => {
+
+  const { backend } = useBackendContext();
+
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [scheduled, setScheduled] = useState([]);
+
+  // TODO: reload callback passed down if want reload on tab load
+  // const reloadCallback = (is_class) => {
+  // }
+
+  useEffect(() => {
+    backend.get("/scheduled-classes/")
+          .then(scheduledData => setScheduled(scheduledData.data))
+
+    const requestData = (is_c) => {
+        backend
+        .get(is_c ? "/classes" : "/events")
+          .then((bookings) => {
+            if (is_c && scheduled) setClasses(scheduledClasses(bookings.data, scheduled))
+            else if (!is_c) setEvents(bookings.data as Event[])
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+    }
+
+    requestData(true)
+    requestData(false)
+  }, [backend, scheduled]);    
+
   return (
       <Box>
           <Tabs>
@@ -33,16 +87,16 @@ export const Bookings = () => {
               </TabList>
               <TabPanels>
                   <TabPanel>
-                      <BookingsTab is_class={true} is_drafts={false} />
+                      <BookingsTab bookings={classes} is_drafts={false} />
                   </TabPanel>
                   <TabPanel>
-                      <BookingsTab is_class={false} is_drafts={false} />
+                      <BookingsTab bookings={events} is_drafts={false} />
                   </TabPanel>
                   <TabPanel>
-                      <BookingsTab is_class={true} is_drafts={true} />
+                      <BookingsTab bookings={classes} is_drafts={true} />
                   </TabPanel>
                   <TabPanel>
-                      <BookingsTab is_class={false} is_drafts={true} />
+                      <BookingsTab bookings={events} is_drafts={true} />
                   </TabPanel>
               </TabPanels>
           </Tabs>
@@ -51,41 +105,30 @@ export const Bookings = () => {
   )
 }
 
-export const BookingsTab = (is_class: boolean, is_drafts: boolean) => {
+export const BookingsTab = ({ bookings, is_drafts } : { bookings: Booking[], is_draft: boolean }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
-  const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking>(null);
 
-  const { backend } = useBackendContext();
+  const filteredBookings = bookings.filter(booking => booking.isDraft === is_drafts)
+  if (filteredBookings.length == 0)
+      return (<Box>Empty</Box>)
+
+  const is_class = isClass(filteredBookings[0])
 
   const newBooking = () => {
     setSelectedBooking(null)
     onOpen()
   }
 
-  useEffect(() => {
-    backend
-    .get(is_class ? "/classes" : "/events")
-      .then((bookings) => {
-        const filteredBookings = bookings.data.filter(
-          (booking: Booking) => booking.is_draft === is_drafts
-        );
-        setBookings(filteredBookings as Booking[]);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [backend]);
-
   return (
     <VStack>
-      {bookings.map((booking) => {
-        if (is_drafts) return BookingTeacherCard(booking, navigate);
-        else return BookingDraftTeacherCard(booking, onOpen);
+      {filteredBookings.map((booking, ind) => {
+        if (is_drafts) return (<BookingTeacherCard key={ind} booking={booking} navigate={navigate} />)
+        else return (<BookingDraftTeacherCard key={ind} booking={booking} onOpen={onOpen} />)
       })}
-      <BookingModal booking={selectedBooking} isOpen={isOpen} onClose={onClose} />
+      <EditBookingModal booking={selectedBooking} isOpen={isOpen} onClose={onClose} is_class={is_class} />
       <Button
           onClick={newBooking}
           position="fixed"
@@ -106,8 +149,8 @@ export const BookingsTab = (is_class: boolean, is_drafts: boolean) => {
 
 function BookingTeacherCard(booking: Booking, navigate: NavigateFunction) {
   const navigateOnClick = () => {
-    if (isClass(booking)) navigate(`/dashboard/classes/${booking.id}`)}
-    else navigate(`/dashboard/events/${booking.id}`)}
+    if (isClass(booking)) navigate(`/dashboard/classes/${booking.id}`)
+    else navigate(`/dashboard/events/${booking.id}`)
   }
 
   return (
