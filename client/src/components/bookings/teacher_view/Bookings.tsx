@@ -57,15 +57,16 @@ export const Bookings = () => {
   // }
 
   useEffect(() => {
-    backend.get("/scheduled-classes/")
-          .then(scheduledData => setScheduled(scheduledData.data))
+    if (scheduled.length == 0)
+        backend.get("/scheduled-classes/")
+              .then(scheduledData => setScheduled(scheduledData.data))
 
     const requestData = (is_c) => {
         backend
         .get(is_c ? "/classes" : "/events")
           .then((bookings) => {
-            if (is_c && scheduled) setClasses(scheduledClasses(bookings.data, scheduled))
-            else if (!is_c) setEvents(bookings.data as Event[])
+            if (is_c && !scheduled.length == 0) setClasses(scheduledClasses(bookings.data, scheduled))
+            else if (!is_c && events.length == 0) setEvents(bookings.data)
           })
           .catch((err) => {
             console.error(err);
@@ -74,6 +75,7 @@ export const Bookings = () => {
 
     requestData(true)
     requestData(false)
+    console.log(events)
   }, [backend, scheduled]);    
 
   return (
@@ -87,16 +89,16 @@ export const Bookings = () => {
               </TabList>
               <TabPanels>
                   <TabPanel>
-                      <BookingsTab bookings={classes} is_drafts={false} />
+                      <BookingsTab bookings={classes} is_drafts={false} events={events} />
                   </TabPanel>
                   <TabPanel>
-                      <BookingsTab bookings={events} is_drafts={false} />
+                      <BookingsTab bookings={events} is_drafts={false} events={events}/>
                   </TabPanel>
                   <TabPanel>
-                      <BookingsTab bookings={classes} is_drafts={true} />
+                      <BookingsTab bookings={classes} is_drafts={true} events={events}/>
                   </TabPanel>
                   <TabPanel>
-                      <BookingsTab bookings={events} is_drafts={true} />
+                      <BookingsTab bookings={events} is_drafts={true} events={events}/>
                   </TabPanel>
               </TabPanels>
           </Tabs>
@@ -105,7 +107,7 @@ export const Bookings = () => {
   )
 }
 
-export const BookingsTab = ({ bookings, is_drafts } : { bookings: Booking[], is_draft: boolean }) => {
+export const BookingsTab = ({ bookings, is_drafts, events } : { bookings: Booking[], is_draft: boolean, events: Event[] }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
@@ -125,10 +127,10 @@ export const BookingsTab = ({ bookings, is_drafts } : { bookings: Booking[], is_
   return (
     <VStack>
       {filteredBookings.map((booking, ind) => {
-        if (is_drafts) return (<BookingTeacherCard key={ind} booking={booking} navigate={navigate} />)
-        else return (<BookingDraftTeacherCard key={ind} booking={booking} onOpen={onOpen} />)
+        if (is_drafts) return (<BookingDraftTeacherCard key={ind} draft={booking} onOpen={onOpen} setBooking={setSelectedBooking} />)
+        else return (<BookingTeacherCard key={ind} booking={booking} navigate={navigate} />)
       })}
-      <EditBookingModal booking={selectedBooking} isOpen={isOpen} onClose={onClose} is_class={is_class} />
+      <EditBookingModal booking={selectedBooking} isOpen={isOpen} onClose={onClose} is_class={is_class} events={events} />
       <Button
           onClick={newBooking}
           position="fixed"
@@ -147,7 +149,7 @@ export const BookingsTab = ({ bookings, is_drafts } : { bookings: Booking[], is_
   );
 };
 
-function BookingTeacherCard(booking: Booking, navigate: NavigateFunction) {
+const BookingTeacherCard = ({ booking, navigate }) => {
   const navigateOnClick = () => {
     if (isClass(booking)) navigate(`/dashboard/classes/${booking.id}`)
     else navigate(`/dashboard/events/${booking.id}`)
@@ -204,10 +206,9 @@ function BookingTeacherCard(booking: Booking, navigate: NavigateFunction) {
     </Card>);
 }
 
-function BookingDraftTeacherCard(draft: Booking, onOpen) {
-
+export const BookingDraftTeacherCard = ({ draft, onOpen, setBooking }) => {
   const modalOnClick = () => {
-      setSelectedBooking(draft)
+      setBooking(draft)
       onOpen()
   }
 

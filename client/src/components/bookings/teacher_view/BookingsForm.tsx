@@ -1,8 +1,8 @@
-import { Box, VStack, HStack, FormControl, FormLabel, Input, NumberInput, NumberInputField, NumberInputStepped, NumberIncrementStepper, NumberDecrementStepper, useDisclosure } from "@chakra-ui/react";
+import { Box, VStack, HStack, Select, FormControl, FormLabel, Input, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, useDisclosure } from "@chakra-ui/react";
 import { Booking, IsClass, Level } from '../../../types/booking'
 
 const handleFormChange = (updateCallback) => {
-  (e: React.ChangeEvent<HTMLInputElement>) => {
+  return (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     updateCallback((prevData) => ({
       ...prevData,
@@ -11,8 +11,7 @@ const handleFormChange = (updateCallback) => {
   }
 }
 
-// TODO: Figure out validation with required
-export const BookingForm = (booking: Booking, updateCallback, formData) => {
+export const BookingForm = ({ booking, updateCallback, formData }) => {
   const handleChange = handleFormChange(updateCallback)
   return (
     <Box maxWidth="600px" margin="auto" padding="4" borderRadius="md" boxShadow="lg" bg="white">
@@ -55,6 +54,7 @@ export const BookingForm = (booking: Booking, updateCallback, formData) => {
             <FormLabel>Level</FormLabel>
             <Select
                 required
+                name="level"
                 value={formData.level}
                 onChange={handleChange}
             >
@@ -101,8 +101,12 @@ export const BookingForm = (booking: Booking, updateCallback, formData) => {
   );
 };
 
-export const ClassForm = (updateCallback, performanceCallback, events, formData) => {
+export const ClassForm = ({ updateCallback, performanceCallback, events, formData }) => {
   const handleChange = handleFormChange(updateCallback)
+  // ChakraUI being inconsistent...
+  const handleCapacity = (e) => {
+      handleChange({ target: { name: "capacity", value: e, type: "number", checked: null } })
+  }
   const handlePerformance = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     performanceCallback(value)
@@ -111,9 +115,13 @@ export const ClassForm = (updateCallback, performanceCallback, events, formData)
     <Box maxWidth="600px" margin="auto" padding="4" borderRadius="md" boxShadow="lg" bg="white">
         <VStack spacing="4" align="stretch">
           {/* Capacity */}
-          <FormControl id="classType">
+          <FormControl id="capacity">
             <FormLabel>Capacity</FormLabel>
-            <NumberInput value={formData.capacity} onChange={handleChange} min={0} max={100} step={1}>
+            <NumberInput name="capacity"
+                         value={formData.capacity} 
+                         onChange={handleCapacity} 
+                         min={0}
+                         step={1}>
                <NumberInputField />
                <NumberInputStepper>
                  <NumberIncrementStepper />
@@ -138,15 +146,15 @@ export const ClassForm = (updateCallback, performanceCallback, events, formData)
             <FormLabel>Performance</FormLabel>
             <Select
                 required
-                value={-1}
                 name="performance"
+                value={-1}
                 onChange={handlePerformance}
             >
                 <option value={-1}>No Event Corequisite</option>
                 {
                     events.map(
                         (evt, ind) => 
-                        ( <option key={ind} value={evt.id}>evt.title</option> )
+                        ( <option key={ind} value={evt.id}>{evt.title}</option> )
                     )
                 }
             </Select>
@@ -156,14 +164,14 @@ export const ClassForm = (updateCallback, performanceCallback, events, formData)
   )
 }
 
-export const EventForm = (updateCallback, formData) => {
+export const EventForm = ({ updateCallback, formData }) => {
   const handleChange = handleFormChange(updateCallback)
   return (
     <Box maxWidth="600px" margin="auto" padding="4" borderRadius="md" boxShadow="lg" bg="white">
         <VStack spacing="4" align="stretch">
           {/* Call Time */}
           <FormControl id="call_time">
-            <FormLabel>Class Time</FormLabel>
+            <FormLabel>Call Time</FormLabel>
             <Input
               type="text"
               name="call_time"
@@ -175,17 +183,3 @@ export const EventForm = (updateCallback, formData) => {
     </Box>
   )
 }
-
-/* 
- * <modal>
- *      <common_shit>
- *          <input type="date"... />
- *          ...
- *      </common_shit>
- *      <subbooking_specific_shit>
- *      <>
- * </modal>
- *
- * is_draft => edit shit
- *
- * submit_function(is_draft, save_as_draft), how to PUT it */
