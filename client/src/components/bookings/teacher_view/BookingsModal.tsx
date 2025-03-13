@@ -98,8 +98,12 @@ export const EditBookingModal = ({ isOpen, onClose, booking, is_class, events}: 
             else
                 backend.put(`/${is_class ? "classes": "events"}/${booking.id}`, mergedData)
   
+            // NOTE: Corequisites route doesn't exist yet
             // TODO
+            // const coreqPayload = {
+            // }
             // if (!saveAsDraft && is_class && eventCoreq != -1)
+                // backend.post('/corequisites', {})
                 // class_id = booking.id
                 // event_id = eventCoreq
                 // POST

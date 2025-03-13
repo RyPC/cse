@@ -28,8 +28,6 @@ import { Booking, Class, Event, isClass } from "../../../types/booking";
 
 import { EditBookingModal } from './BookingsModal'
 
-// 4 Tab implementation, class, events, class_drafts, class_events
-
 const scheduledClasses = (classes, scheduleData) => {
     const mergedClasses = scheduleData.map(scheduledClass => {
         const classData = classes.find(c => c.id === scheduledClass.classId);
@@ -44,8 +42,8 @@ const scheduledClasses = (classes, scheduleData) => {
 };
 
 
+// 4 Tab implementation, class, events, class_drafts, class_events
 export const Bookings = () => {
-
   const { backend } = useBackendContext();
 
   const [classes, setClasses] = useState<Class[]>([]);
@@ -53,6 +51,7 @@ export const Bookings = () => {
   const [scheduled, setScheduled] = useState([]);
 
   // TODO: reload callback passed down if want reload on tab load
+  // NOTE: better solution is to give callback to update local data to avoid uncessary calls
   // const reloadCallback = (is_class) => {
   // }
 
