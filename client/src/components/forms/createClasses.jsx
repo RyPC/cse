@@ -261,7 +261,7 @@ export const CreateClassForm = memo(
               mt={4}
             >
               {/* wasnt a draft then show the button to save as draft */}
-              {!isEditingDraft && (
+              {((!isSubmitted && !modalData ) || modalData?.isDraft) && (
                 <Button
                   onClick={() => {
                     onOpen();

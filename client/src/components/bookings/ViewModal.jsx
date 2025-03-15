@@ -108,9 +108,9 @@ export const ViewModal = ({
         <ModalHeader>
           <HStack justify="space-between">
             <MdArrowBackIosNew onClick={onClose} />
-            <Heading size="lg">{role === "student" ? card.title : "Create a Class/Draft"}</Heading>{" "}
+            <Heading size="lg">{role === "student" ? card?.title : "Create a Class/Draft"}</Heading>{" "}
             {/* Will add from prop */}
-            <MdMoreHoriz />
+            <MdMoreHoriz opacity={role !== "student" ? 100 : 0}/>
           </HStack>
         </ModalHeader>
         <ModalBody>{children}</ModalBody>

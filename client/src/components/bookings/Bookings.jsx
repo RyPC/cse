@@ -23,7 +23,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { CreateClassForm } from "../forms/CreateClasses";
+import { CreateClassForm } from "../forms/createClasses";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
@@ -51,7 +51,7 @@ export const Bookings = () => {
   const isTeacher = role === "teacher";
   useEffect(() => {
     if (currentUser) {
-      if (isTeacher) {
+      if (role !== "student") {
         backend
           .get("/classes")
           .then((res) => {
@@ -489,7 +489,23 @@ const ClassTeacherCard = memo(
                       setSelectedCard(modalData);
                       onOpen();
                     }
-                  : () => navigate(`/dashboard/classes/${classId}`)
+                  : () => {
+                      const modalData = {
+                        classId,
+                        title,
+                        location,
+                        date,
+                        description,
+                        capacity,
+                        level,
+                        costume,
+                        performance,
+                        isDraft,
+                      };
+                      setSelectedCard(modalData);
+                      onOpen();
+                  }
+                  // : () => navigate(`/dashboard/classes/${classId}`)
               }
             >
               {isDraft ? "Edit" : "View Details >"}
