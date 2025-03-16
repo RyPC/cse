@@ -13,7 +13,7 @@ import {
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 
-export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
+export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallback }) => {
   const [formData, setFormData] = useState({
     location: "",
     title: "",
@@ -110,6 +110,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
       console.error("Failed to create/save event:", error);
     } finally {
       setIsSubmitting(false);
+      reloadCallback();
     }
   };
 

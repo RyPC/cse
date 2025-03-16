@@ -110,6 +110,7 @@ function TeacherEventViewModal({
     } else {
       enrollInEvent();
     }
+    setRefresh();
   };
 
   const handleSuccess = () => {

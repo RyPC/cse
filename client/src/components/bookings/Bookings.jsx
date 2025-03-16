@@ -40,6 +40,7 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
+import CreateEvent from "../forms/createEvent";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ export const Bookings = () => {
   const [user_id, setUserId] = useState();
   const [coEvents, setCoEvents] = useState([]);
   const [isAttendedItem, setIsAttendedItem] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const isTeacher = role === "teacher";
   useEffect(() => {
@@ -273,6 +275,7 @@ export const Bookings = () => {
           variant="line"
           colorScheme="blackAlpha"
           pt={8}
+          onChange={(index) => setTabIndex(index)}
         >
           <TabList justifyContent="center">
             <Tab
@@ -310,7 +313,7 @@ export const Bookings = () => {
                 spacing={4}
                 width="100%"
               >
-                {isTeacher ? (
+                {role !== "student" ? (
                   classes.length > 0 ? (
                     classes.map((classItem, index) => (
                       <ClassTeacherCard
@@ -349,6 +352,7 @@ export const Bookings = () => {
                       key={eventItem.id}
                       {...eventItem}
                       onClick={() => updateModal(eventItem)}
+                      setRefresh={reloadClassesAndDrafts}
                     />
                   ))
                 ) : (
@@ -455,17 +459,21 @@ export const Bookings = () => {
               <ModalHeader>
                 <HStack justify="space-between">
                   <MdArrowBackIosNew onClick={onClose} />
-                  <Heading size="lg">{role === "student" ? selectedCard?.title : "Create a Class/Draft"}</Heading>{" "}
+                  <Heading size="lg">{tabIndex === 0 ? "Create a Class" : "Create an Event"}</Heading>{" "}
                   {/* Will add from prop */}
                   <MdMoreHoriz opacity={0}/>
                 </HStack>
               </ModalHeader>
               <ModalBody>
-                <CreateClassForm
-                  closeModal={onCloseModal}
-                  modalData={selectedCard}
-                  reloadCallback={reloadClassesAndDrafts}
-                />
+                {(tabIndex === 0 ? 
+                  <CreateClassForm
+                    closeModal={onCloseModal}
+                    modalData={selectedCard}
+                    reloadCallback={reloadClassesAndDrafts}
+                  />
+                :
+                  <CreateEvent onClose={onCloseModal} reloadCallback={reloadClassesAndDrafts}/>
+                )}
               </ModalBody>
             </ModalContent>
           </Modal>
@@ -504,7 +512,7 @@ export const Bookings = () => {
           type={cardType}
         />
       )}
-      {isTeacher && (
+      {isTeacher && tabIndex !== 2 && (
         <Button
           onClick={() => {
             setSelectedCard(null);
