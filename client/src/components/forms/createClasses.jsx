@@ -77,7 +77,7 @@ export const CreateClassForm = memo(
           .catch((error) => console.log(error));
         classId = modalData.classId;
       } else {
-        let response = await backend
+        const response = await backend
           .post("/classes", body)
           .catch((error) => console.log(error));
           console.log("response", response)
@@ -100,10 +100,10 @@ export const CreateClassForm = memo(
           );
       }
 
-      reloadCallback();
       setIsSubmitted(true);
       onConfirmationClose();
       onClose();
+      reloadCallback();
     };
 
     useMemo(() => {

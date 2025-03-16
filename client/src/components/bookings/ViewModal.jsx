@@ -26,12 +26,14 @@ export const ViewModal = ({
   card,
   coEvents,
   type,
-  role
+  role,
+  isAttended = false,
 }) => {
   const onCancel = () => {
     setCurrentModal("cancel");
   };
 
+  console.log("viewmodal", card);
   const viewInfo = (
     <>
       <Grid
@@ -108,14 +110,14 @@ export const ViewModal = ({
         <ModalHeader>
           <HStack justify="space-between">
             <MdArrowBackIosNew onClick={onClose} />
-            <Heading size="lg">{role === "student" ? card?.title : "Create a Class/Draft"}</Heading>{" "}
+            <Heading size="lg">{card?.title ?? "Create a Class/Draft"}</Heading>{" "}
             {/* Will add from prop */}
-            <MdMoreHoriz opacity={role !== "student" ? 100 : 0}/>
+            <MdMoreHoriz opacity={0}/>
           </HStack>
         </ModalHeader>
-        <ModalBody>{children}</ModalBody>
+        <ModalBody>{children ?? viewInfo}</ModalBody>
 
-        {role === "student" && <ModalFooter justifyContent="center">
+        {!isAttended && <ModalFooter justifyContent="center">
           <Button
             size="sm"
             background="#757575"

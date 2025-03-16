@@ -1,7 +1,14 @@
-import { Bookings } from '../bookings/teacher_view/Bookings'
+import { ControllerModal } from "../resources/ResourceFlow/ResourceFlowController";
 
 export const Playground = () => {
+  const userRole = "teacher"
+  if (userRole === "teacher") {
     return (
-        <Bookings />
+      <ControllerModal />
     )
-}
+  } else {
+    return (
+      <></>
+    )
+  }
+};

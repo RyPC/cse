@@ -13,11 +13,14 @@ import { usersRouter } from "../routes/users";
 import { studentsRouter } from "../routes/students";
 import { classesTaughtRouter } from "../routes/classes_taught";
 import { eventEnrollmentRouter } from "../routes/event_enrollments";
-import { reviewsRouter } from "../routes/reviews"
-import { teachersRouter } from "../routes/teachers"
+import { reviewsRouter } from "../routes/reviews";
+import { teachersRouter } from "../routes/teachers";
 import { eventsRouter } from "../routes/events";
 import { s3Router } from "../routes/s3";
 import emailRouter from "../routes/nodeMailer";
+import { articleTagsRouter } from "../routes/article_tags";
+import { videoTagsRouter } from "../routes/video_tags";
+import { classTagsRouter } from "../routes/class_tags";
 
 import { verifyToken } from "./middleware";
 
@@ -64,6 +67,9 @@ app.use("/articles", articlesRouter);
 app.use("/event-enrollments", eventEnrollmentRouter);
 app.use("/nodemailer", emailRouter);
 app.use("/s3", s3Router);
+app.use("/article-tags", articleTagsRouter);
+app.use("/class-tags", classTagsRouter);
+app.use("/video-tags", videoTagsRouter);
 app.listen(SERVER_PORT, () => {
   console.info(`Server listening on ${SERVER_PORT}`);
 });

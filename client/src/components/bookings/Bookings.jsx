@@ -8,6 +8,11 @@ import {
   CardHeader,
   Heading,
   HStack,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Tab,
   TabList,
   TabPanel,
@@ -20,7 +25,7 @@ import {
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
+import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { CreateClassForm } from "../forms/createClasses";
@@ -30,6 +35,10 @@ import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { InfoModal } from "./InfoModal";
+import { TeacherCancelModal } from "./TeacherCancelModal";
+import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
+import { TeacherEditModal } from "./TeacherEditModal";
+import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
 
 export const Bookings = () => {
@@ -41,56 +50,41 @@ export const Bookings = () => {
   const [currentModal, setCurrentModal] = useState("view");
   const [classes, setClasses] = useState([]);
   const [events, setEvents] = useState([]);
-  const [attended, setAttended] = useState([]);
   const [drafts, setDrafts] = useState([]);
+  const [draftClasses, setDraftClasses] = useState([]);
+  const [draftEvents, setDraftEvents] = useState([]);
+  const [attended, setAttended] = useState([]);
   const [selectedCard, setSelectedCard] = useState();
   const [cardType, setCardType] = useState();
   const [user_id, setUserId] = useState();
   const [coEvents, setCoEvents] = useState([]);
+  const [isAttendedItem, setIsAttendedItem] = useState(false);
 
   const isTeacher = role === "teacher";
   useEffect(() => {
-    if (currentUser) {
-      if (role !== "student") {
-        backend
-          .get("/classes")
-          .then((res) => {
-            const allClasses = res.data;
-            const published = allClasses
-              .filter((cls) => !cls.isDraft)
-              .map((cls) => {
-                cls.classId = cls.id;
-                return cls;
-              });
-            const drafts = allClasses
-              .filter((cls) => cls.isDraft)
-              .map((cls) => {
-                cls.classId = cls.id;
-                return cls;
-              });
-            console.log("published", published);
-            console.log("drafts", drafts);
-            setClasses(published);
-            setDrafts(drafts);
-          })
-          .catch((err) => {
-            console.log("Error fetching teacher classes:", err);
-          });
+    if (currentUser && role === "teacher") {
+      backend.get(`/events/published`).then((res) => setEvents(res.data));
+      backend.get(`/classes/published`).then((res) => {
+        console.log("res", res)
+        setClasses(res.data)});
+      backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
+      backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
+    } else if (currentUser && role === "student") {
+      backend
+        .get(`/users/${currentUser.uid}`)
+        .then((userRes) => {
+          const userId = userRes.data[0].id;
+          setUserId(userId);
 
-        backend
-          .get("/events")
-          .then((res) => {
-            setEvents(res.data);
-          })
-          .catch((err) => {
-            console.log("Error fetching teacher events:", err);
-          });
-      } else {
-        backend
-          .get(`/users/${currentUser.uid}`)
-          .then((userRes) => {
-            const userId = userRes.data[0].id;
-            setUserId(userId);
+          backend
+            .get(`/class-enrollments/student/${userId}`)
+            .then((res) => {
+              console.log("res", res);
+              setClasses(res.data);
+            })
+            .catch((err) => {
+              console.log("Error fetching class enrollments:", err);
+            });
 
             backend
               .get(`/class-enrollments/student/${userId}`)
@@ -114,26 +108,37 @@ export const Bookings = () => {
             console.log("Error fetching user:", err);
           });
       }
-    }
-  }, [backend, currentUser, isTeacher]);
+    }, [backend, currentUser, isTeacher]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
+    setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
 
   const onCloseModal = () => {
     setCurrentModal("view");
     onClose();
   };
+  const onOpenModal = (data) => {
+    console.log(data);
+    setClassData(data);
+    onOpen();
+  };
 
   const updateModal = (item) => {
     const type =
-      classes.includes(item) || drafts.includes(item) ? "class" : "event";
+      classes.includes(item) || draftClasses.includes(item) ? "class" : "event";
     if (type === "class") loadCorequisites(item.id);
+    console.log("coevents", coEvents);
+    console.log("item", item, "type", type);
     setSelectedCard(item);
     setCardType(type);
+    const isAttended = attended.some(
+      (attendedItem) => attendedItem.id === item.id
+    );
+    setIsAttendedItem(isAttended);
     onOpen();
   };
 
@@ -173,7 +178,8 @@ export const Bookings = () => {
 
   const loadCorequisites = async (classId) => {
     try {
-      const response = await backend.get(`/events/corequisites/${classId}`);
+      const response = await backend.get(`classes/corequisites/${classId}`);
+
       if (response.status === 200) {
         setCoEvents(response.data);
       }
@@ -184,23 +190,16 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-      const response = await backend.get("/classes");
-      const allClasses = response.data;
-      const published = allClasses
-        .filter((cls) => !cls.isDraft)
-        .map((cls) => {
-          cls.classId = cls.id;
-          return cls;
-        });
-      const updatedDrafts = allClasses
-        .filter((cls) => cls.isDraft)
-        .map((cls) => {
-          cls.classId = cls.id;
-          return cls;
-        });
 
-      setClasses(published);
-      setDrafts(updatedDrafts);
+      backend.get(`/events/published`).then((res) => setEvents(res.data));
+      backend.get(`/classes/published`).then((res) => {setClasses(res.data)});
+      backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
+      backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
+
+      const attendedClasses = classes.filter((c) => c.attendance !== null);
+      const attendedEvents = events.filter((e) => e.attendance !== null);
+      setAttended([...attendedClasses, ...attendedEvents]);
+      setDrafts([...draftClasses, ...draftEvents]);
     } catch (error) {
       console.error("Error reloading classes:", error);
     }
@@ -210,6 +209,59 @@ export const Bookings = () => {
     console.log("selectedCard", selectedCard);
   }, [selectedCard]);
 
+  const fetchClassData = async () => {
+    try {
+      const [classesResponse, classDataResponse] = await Promise.all([
+        backend.get("/scheduled-classes"),
+        backend.get("/classes"),
+      ]);
+
+      const classDataDict = new Map();
+      classDataResponse.data.forEach((cls) => classDataDict.set(cls.id, cls));
+
+      const formattedData = classesResponse.data
+        .map((cls) => {
+          const fullData = classDataDict.get(cls.classId);
+          return fullData
+            ? {
+                classId: cls.classId,
+                date: stringToDate(cls.date),
+                startTime: stringToTime(cls.startTime),
+                endTime: stringToTime(cls.endTime),
+                title: fullData.title,
+                description: fullData.description,
+                location: fullData.location,
+                capacity: fullData.capacity,
+                level: fullData.level,
+                costume: fullData.costume,
+                isDraft: fullData.isDraft,
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      setClasses(formattedData);
+    } catch (error) {
+      console.error("Error fetching class data:", error);
+    }
+  };
+
+  const stringToDate = (date) => {
+    return new Date(date);
+  };
+
+  const stringToTime = (time) => {
+    const [hours, minutes] = time.split(":");
+    const d = new Date();
+    d.setHours(hours, minutes, 0);
+
+    return d;
+  };
+
+  console.log("classes", classes);
+  // console.log("events", events);
+  // console.log("attended", classes);
+  console.log("selected card", selectedCard);
   return (
     <Box>
       <VStack
@@ -248,7 +300,7 @@ export const Bookings = () => {
                 fontWeight: "bold",
               }}
             >
-              {isTeacher ? "Drafts" : "Attended"}
+              {role !== "student" ? "Drafts" : "Attended"}
             </Tab>
           </TabList>
 
@@ -310,19 +362,41 @@ export const Bookings = () => {
                 spacing={4}
                 width="100%"
               >
-                {isTeacher ? (
+                {role === "teacher" ? (
                   drafts.length > 0 ? (
-                    drafts.map((draft, index) => (
-                      <ClassTeacherCard
-                        key={index}
-                        setSelectedCard={setSelectedCard}
-                        onOpen={onOpen}
-                        classId={draft.id}
-                        {...draft}
-                      />
-                    ))
+                    drafts.map((item) =>
+                      draftClasses.includes(item) ? (
+                        <ClassCard
+                          key={item.id}
+                          id={item.id}
+                          title={item.title}
+                          description={item.description}
+                          location={item.location}
+                          capacity={item.capacity}
+                          level={item.level}
+                          date={item.date}
+                          startTime={item.startTime}
+                          endTime={item.endTime}
+                          attendeeCount={item.attendeeCount}
+                          onClick={() => updateModal(item)}
+                        />
+                      ) : (
+                        <EventCard
+                          key={item.id}
+                          id={item.id}
+                          title={item.title}
+                          location={item.location}
+                          date={item.date}
+                          startTime={item.startTime}
+                          endTime={item.endTime}
+                          callTime={item.callTime}
+                          attendeeCount={item.attendeeCount}
+                          onClick={() => updateModal(item)}
+                        />
+                      )
+                    )
                   ) : (
-                    <Text>No drafts available.</Text>
+                    <Text>No draft events or classes</Text>
                   )
                 ) : attended.length > 0 ? (
                   attended.map((item) =>
@@ -348,7 +422,63 @@ export const Bookings = () => {
           </TabPanels>
         </Tabs>
       </VStack>
-      {currentModal === "view" ? (
+      {role !== "student" ? (
+        currentModal === "view" ? (
+          <TeacherViewModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+            setCurrentModal={setCurrentModal}
+            classData={selectedCard}
+            performances={coEvents}
+            setPerformances={setCoEvents}
+          />
+        ) : currentModal === "confirmation" ? (
+          <TeacherConfirmationModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+          />
+        ) : currentModal === "edit" ? (
+          <TeacherEditModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+            setCurrentModal={setCurrentModal}
+            classData={selectedCard}
+            setClassData={setSelectedCard}
+            performances={coEvents}
+          />
+        ) : currentModal === "create" ? (
+          <Modal
+            isOpen={isOpen}
+            onClose={onCloseModal}>
+            <ModalOverlay/>
+            <ModalContent>
+              <ModalHeader>
+                <HStack justify="space-between">
+                  <MdArrowBackIosNew onClick={onClose} />
+                  <Heading size="lg">{role === "student" ? selectedCard?.title : "Create a Class/Draft"}</Heading>{" "}
+                  {/* Will add from prop */}
+                  <MdMoreHoriz opacity={0}/>
+                </HStack>
+              </ModalHeader>
+              <ModalBody>
+                <CreateClassForm
+                  closeModal={onCloseModal}
+                  modalData={selectedCard}
+                  reloadCallback={reloadClassesAndDrafts}
+                />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
+        ) : (
+          <TeacherCancelModal
+            isOpen={isOpen}
+            onClose={onCloseModal}
+            setCurrentModal={setCurrentModal}
+            classData={selectedCard}
+          />
+        )
+      ) : // STUDENT VIEW HERE
+      currentModal === "view" ? (
         <ViewModal
           isOpen={isOpen}
           onClose={onCloseModal}
@@ -356,18 +486,8 @@ export const Bookings = () => {
           card={selectedCard}
           coEvents={coEvents}
           type={cardType}
-          role={role}
-        >
-          {role === "student" ? (
-            <InfoModal card={selectedCard} />
-          ) : (
-            <CreateClassForm
-              closeModal={onCloseModal}
-              modalData={selectedCard}
-              reloadCallback={reloadClassesAndDrafts}
-            />
-          )}
-        </ViewModal>
+          isAttended={isAttendedItem}
+        />
       ) : currentModal === "confirmation" ? (
         <ConfirmationModal
           isOpen={isOpen}
@@ -388,6 +508,7 @@ export const Bookings = () => {
         <Button
           onClick={() => {
             setSelectedCard(null);
+            setCurrentModal("create");
             onOpen();
           }}
           position="fixed"
