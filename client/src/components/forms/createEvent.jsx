@@ -110,7 +110,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
       console.error("Failed to create/save event:", error);
     } finally {
       setIsSubmitting(false);
-      reloadCallback();
+      if (reloadCallback) reloadCallback();
     }
   };
 

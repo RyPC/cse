@@ -64,7 +64,7 @@ export const Bookings = () => {
 
   const isTeacher = role === "teacher";
   useEffect(() => {
-    if (currentUser && role === "teacher") {
+    if (currentUser && role !== "student") {
       backend.get(`/events/published`).then((res) => setEvents(res.data));
       backend.get(`/classes/published`).then((res) => {
         console.log("res", res)
@@ -122,6 +122,7 @@ export const Bookings = () => {
   const onCloseModal = () => {
     setCurrentModal("view");
     onClose();
+    reloadClassesAndDrafts();
   };
   const onOpenModal = (data) => {
     console.log(data);
@@ -353,6 +354,7 @@ export const Bookings = () => {
                       {...eventItem}
                       onClick={() => updateModal(eventItem)}
                       setRefresh={reloadClassesAndDrafts}
+                      onCloseModal={onCloseModal}
                     />
                   ))
                 ) : (
@@ -366,7 +368,7 @@ export const Bookings = () => {
                 spacing={4}
                 width="100%"
               >
-                {role === "teacher" ? (
+                {role !== "student" ? (
                   drafts.length > 0 ? (
                     drafts.map((item) =>
                       draftClasses.includes(item) ? (
@@ -396,6 +398,8 @@ export const Bookings = () => {
                           callTime={item.callTime}
                           attendeeCount={item.attendeeCount}
                           onClick={() => updateModal(item)}
+                          onCloseModal={onCloseModal}
+                          setRefresh={reloadClassesAndDrafts}
                         />
                       )
                     )
@@ -449,6 +453,7 @@ export const Bookings = () => {
             classData={selectedCard}
             setClassData={setSelectedCard}
             performances={coEvents}
+            setRefresh={reloadClassesAndDrafts}
           />
         ) : currentModal === "create" ? (
           <Modal
@@ -458,7 +463,7 @@ export const Bookings = () => {
             <ModalContent>
               <ModalHeader>
                 <HStack justify="space-between">
-                  <MdArrowBackIosNew onClick={onClose} />
+                  <MdArrowBackIosNew onClick={onCloseModal} />
                   <Heading size="lg">{tabIndex === 0 ? "Create a Class" : "Create an Event"}</Heading>{" "}
                   {/* Will add from prop */}
                   <MdMoreHoriz opacity={0}/>
@@ -540,7 +545,7 @@ export const Bookings = () => {
 
 const ClassTeacherCard = memo(
   ({
-    classId,
+    id,
     title,
     location,
     date,
@@ -604,7 +609,7 @@ const ClassTeacherCard = memo(
                 isDraft
                   ? () => {
                       const modalData = {
-                        classId,
+                        id,
                         title,
                         location,
                         date,
@@ -620,7 +625,7 @@ const ClassTeacherCard = memo(
                     }
                   : () => {
                       const modalData = {
-                        classId,
+                        id,
                         title,
                         location,
                         date,

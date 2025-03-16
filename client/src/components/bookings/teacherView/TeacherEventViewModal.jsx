@@ -212,7 +212,9 @@ function TeacherEventViewModal({
                 description: description, 
                 level: level, 
                 date: formFormattedDate}}
-                onClose={handleSaveChanges}/>
+                onClose={handleSaveChanges}
+                reloadCallback={setRefresh}
+              />
               {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
