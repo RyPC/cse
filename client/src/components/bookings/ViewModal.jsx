@@ -16,7 +16,6 @@ import {
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 
 import { formatDate } from "../../utils/formatDateTime";
-import { TeacherViewModal } from "./TeacherViewModal";
 
 export const ViewModal = ({
   isOpen,
@@ -116,17 +115,9 @@ export const ViewModal = ({
             <MdMoreHoriz opacity={0}/>
           </HStack>
         </ModalHeader>
-        <ModalBody>{
-          <TeacherViewModal
-          isOpen={isOpen}
-          onClose={onClose}
-          setCurrentModal={setCurrentModal}
-          classData={card}
-          performances={coEvents}
+        <ModalBody>{viewInfo}</ModalBody>
 
-        />}</ModalBody>
-
-        {!isAttended && <ModalFooter justifyContent="center">
+        {(!isAttended && !card?.attendance) && <ModalFooter justifyContent="center">
           <Button
             size="sm"
             background="#757575"

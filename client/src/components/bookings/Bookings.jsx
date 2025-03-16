@@ -139,10 +139,11 @@ export const Bookings = () => {
     setSelectedCard(item);
     setCardType(type);
     const isAttended = attended.some(
-      (attendedItem) => attendedItem.id === item.id
+      (attendedItem) => attendedItem === item
     );
     setIsAttendedItem(isAttended);
     onOpen();
+    console.log(refresh);
   };
 
   const handleCancelEnrollment = async (itemId) => {
@@ -494,7 +495,7 @@ export const Bookings = () => {
       currentModal === "view" ? (
         <ViewModal
           isOpen={isOpen}
-          onClose={onCloseModal}
+          onClose={onClose}
           setCurrentModal={setCurrentModal}
           card={selectedCard}
           coEvents={coEvents}

@@ -28,7 +28,6 @@ const Logout = ({ cookies }) => {
       {errorMessage && <p>{errorMessage}</p>}
       <Button
         type="submit"
-        style={{ color: "white" }}
         onClick={handleLogout}
       >
         Log out
