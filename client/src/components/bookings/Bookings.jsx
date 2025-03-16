@@ -314,6 +314,7 @@ export const Bookings = () => {
                       costume={eventEnrollment.costume}
                       capacity={eventEnrollment.capacity}
                       onClick={() => updateModal(eventEnrollment)}
+                      triggerRefresh={() => triggerRefresh()}
                     />
                   ))
                 ) : (
@@ -443,7 +444,6 @@ export const Bookings = () => {
             classData={selectedCard}
             performances={coEvents}
             setPerformances={setCoEvents}
-            triggerRefresh = {triggerRefresh}
           />
         ) : currentModal === "confirmation" ? (
           <TeacherConfirmationModal
@@ -458,7 +458,6 @@ export const Bookings = () => {
             classData={selectedCard}
             setClassData={setSelectedCard}
             performances={coEvents}
-            triggerRefresh = {triggerRefresh}
           />
         ) : (
           <TeacherCancelModal

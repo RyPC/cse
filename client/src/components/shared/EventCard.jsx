@@ -22,6 +22,7 @@ import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal
 import { useState } from "react";
 
 export const EventCard = ({
+  id,
   title,
   location,
   description,
@@ -35,9 +36,8 @@ export const EventCard = ({
   capacity,
   attendeeCount = 0, // Default to 0 if not provided
   onClick,
-  id,
-  setRefresh,
-  isAttended = false
+  isAttended = false,
+  triggerRefresh
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
@@ -163,8 +163,8 @@ export const EventCard = ({
             endTime = {endTime}
             callTime = {callTime}
             costume = {costume}
-            setRefresh = {setRefresh}
             capacity = {capacity}
+            triggerRefresh = {triggerRefresh}
           />
       </CardFooter>
     </Card>
