@@ -69,6 +69,7 @@ function TeacherEventViewModal({
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
+  const formattedCallTime = formatTime(callTime);
   const formFormattedDate = formFormatDate(date)
   const toast = useToast();
 
@@ -210,6 +211,7 @@ function TeacherEventViewModal({
                 callTime: callTime, 
                 description: description, 
                 level: level, 
+                capacity: capacity,
                 date: formFormattedDate}}
                 onClose={handleSaveChanges}/>
               {console.log(startTime, endTime)}
@@ -308,8 +310,13 @@ function TeacherEventViewModal({
               </Box>
 
               <Box width="100%">
-                <Text fontWeight="bold">Time:</Text>
+                <Text fontWeight="bold">Event Time:</Text>
                 <Text>{formattedStartTime ? formattedStartTime : "TBD"} to {formattedEndTime ? formattedEndTime : "TBD"}</Text>
+              </Box>
+
+              <Box width="100%">
+                <Text fontWeight="bold">Call Time:</Text>
+                <Text>{formattedCallTime ? formattedCallTime : "TBD"}</Text>
               </Box>
 
               <Box width="100%">

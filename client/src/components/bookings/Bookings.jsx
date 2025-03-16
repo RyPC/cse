@@ -44,6 +44,8 @@ export const Bookings = () => {
   const [coEvents, setCoEvents] = useState([]);
   const [isAttendedItem, setIsAttendedItem] = useState(false);
 
+  const [refresh, setRefresh] = useState(0)
+
   useEffect(() => {
     if (currentUser && role === "teacher") {
       backend.get(`/events/published`).then((res) => setEvents(res.data));
@@ -100,6 +102,10 @@ export const Bookings = () => {
     setClassData(data);
     onOpen();
   };
+
+  const triggerRefresh = () => {
+    setRefresh((prev) => prev + 1)
+  }
 
   const updateModal = (item) => {
     const type = classes.includes(item) ? "class" : "event";
@@ -297,11 +303,16 @@ export const Bookings = () => {
                       id={eventEnrollment.id}
                       key={eventEnrollment.id}
                       title={eventEnrollment.title}
+                      level={eventEnrollment.level}
                       location={eventEnrollment.location}
                       date={eventEnrollment.date}
                       startTime={eventEnrollment.startTime}
                       endTime={eventEnrollment.endTime}
+                      callTime={eventEnrollment.callTime}
                       attendeeCount={eventEnrollment.attendeeCount}
+                      description={eventEnrollment.description}
+                      costume={eventEnrollment.costume}
+                      capacity={eventEnrollment.capacity}
                       onClick={() => updateModal(eventEnrollment)}
                     />
                   ))
@@ -345,6 +356,9 @@ export const Bookings = () => {
                           endTime={item.endTime}
                           callTime={item.callTime}
                           attendeeCount={item.attendeeCount}
+                          description={item.description}
+                          capacity={item.capacity}
+                          level={item.level}
                           onClick={() => updateModal(item)}
                         />
                       )
@@ -376,7 +390,12 @@ export const Bookings = () => {
                         date={item.date}
                         startTime={item.startTime}
                         endTime={item.endTime}
+                        callTime={item.callTime}
                         attendeeCount={item.attendeeCount}
+                        description={item.description}
+                        costume={item.costume}
+                        capacity={item.capacity}
+                        level={item.level}
                         onClick={() => updateModal(item)}
                       />
                     )
@@ -424,6 +443,7 @@ export const Bookings = () => {
             classData={selectedCard}
             performances={coEvents}
             setPerformances={setCoEvents}
+            triggerRefresh = {triggerRefresh}
           />
         ) : currentModal === "confirmation" ? (
           <TeacherConfirmationModal
@@ -438,6 +458,7 @@ export const Bookings = () => {
             classData={selectedCard}
             setClassData={setSelectedCard}
             performances={coEvents}
+            triggerRefresh = {triggerRefresh}
           />
         ) : (
           <TeacherCancelModal

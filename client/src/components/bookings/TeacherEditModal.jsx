@@ -38,7 +38,14 @@ const formatDate = (date) => {
   return date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
 };
 
-export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData, performances }) => {
+export const TeacherEditModal = ({ 
+  isOpen, 
+  onClose, 
+  setCurrentModal, 
+  classData, setClassData, 
+  performances, 
+  triggerRefresh 
+}) => {
   const { backend } = useBackendContext();
 
   const onBack = () => {
@@ -72,8 +79,9 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
         capacity,
         level,
         isDraft: draft,
-      }));
-
+      }
+      ));
+      triggerRefresh();
       setCurrentModal("view");
     } catch (error) {
       console.error('Error updating class data:', error);

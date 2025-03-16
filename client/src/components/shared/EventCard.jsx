@@ -32,6 +32,7 @@ export const EventCard = ({
   callTime,
   classId,
   costume,
+  capacity,
   attendeeCount = 0, // Default to 0 if not provided
   onClick,
   id,
@@ -163,6 +164,7 @@ export const EventCard = ({
             callTime = {callTime}
             costume = {costume}
             setRefresh = {setRefresh}
+            capacity = {capacity}
           />
       </CardFooter>
     </Card>

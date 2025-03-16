@@ -24,6 +24,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
     endTime: "",
     callTime: "",
     costume: "",
+    capacity: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +32,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
 
   useEffect(() => {
     if (event) {
-      console.log(event.startTime, event.endTime);
+      console.log(event.capacity);
       setFormData({
         location: event.location || "",
         title: event.title || "",
@@ -42,6 +43,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
         endTime: event.endTime || "",
         callTime: event.callTime || "",
         costume: event.costume || "",
+        capacity: ((event.capacity || (event.capacity === 0)) ? event.capacity : "")
       });
     }
   }, [event]);
@@ -67,6 +69,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
+    console.log("Submitted formdata is:");
     console.log(formData);
 
     setIsSubmitting(true);
@@ -83,6 +86,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
       let response;
       if (eventId) {
         // Edit event (PUT request)
+        console.log("making backend edit call rn");
+        console.log(eventData);
         response = await backend.put(`/events/${eventId}/`, eventData);
       } else {
         // Create new event (POST request)
@@ -90,6 +95,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
       }
 
       if (response.status === 201 || response.status === 200) {
+        console.log("Response status from backend:");
+        console.log(response.status);
         // Reset form or handle success
         setFormData({
           location: "",
@@ -101,6 +108,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
           endTime: "",
           callTime: "",
           costume: "",
+          capacity: "",
         });
         if (onClose) onClose();
       } else {
@@ -211,6 +219,16 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
           isInvalid={errors.callTime}
         />
         {errors.callTime && <Text color="red.500">{errors.callTime}</Text>}
+      </Box>
+
+      <Box>
+        <Text>Capacity</Text>
+        <Input
+          type="number"
+          name="capacity"
+          value={formData.capacity}
+          onChange={handleChange}
+        />
       </Box>
 
       <Box>
