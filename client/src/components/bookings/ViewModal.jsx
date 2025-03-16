@@ -33,7 +33,7 @@ export const ViewModal = ({
     setCurrentModal("cancel");
   };
 
-  console.log("viewmodal", card);
+  // console.log("viewmodal", card);
   const viewInfo = (
     <>
       <Grid

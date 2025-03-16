@@ -26,7 +26,7 @@ import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 export const CreateClassForm = memo(
   ({ closeModal, modalData, reloadCallback }) => {
     const { backend } = useBackendContext();
-    console.log(modalData);
+    // console.log(modalData);
     const [events, setEvents] = useState([]);
 
     const [title, setTitle] = useState(modalData?.title ?? "");
@@ -113,11 +113,11 @@ export const CreateClassForm = memo(
         });
       }
     }, [backend]);
-    useEffect(() => {
-      if (modalData) {
-        console.log(modalData, modalData.isDraft);
-      }
-    }, [modalData]);
+    // useEffect(() => {
+    //   if (modalData) {
+    //     // console.log(modalData, modalData.isDraft);
+    //   }
+    // }, [modalData]);
 
     const isEditingDraft = modalData && modalData.isDraft;
     return (

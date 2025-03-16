@@ -66,9 +66,7 @@ export const Bookings = () => {
   useEffect(() => {
     if (currentUser && role !== "student") {
       backend.get(`/events/published`).then((res) => setEvents(res.data));
-      backend.get(`/classes/published`).then((res) => {
-        console.log("res", res)
-        setClasses(res.data)});
+      backend.get(`/classes/published`).then((res) => setClasses(res.data));
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
     } else if (currentUser && role === "student") {
@@ -81,7 +79,6 @@ export const Bookings = () => {
           backend
             .get(`/class-enrollments/student/${userId}`)
             .then((res) => {
-              console.log("res", res);
               setClasses(res.data);
             })
             .catch((err) => {
@@ -125,7 +122,6 @@ export const Bookings = () => {
     reloadClassesAndDrafts();
   };
   const onOpenModal = (data) => {
-    console.log(data);
     setClassData(data);
     onOpen();
   };
@@ -134,8 +130,6 @@ export const Bookings = () => {
     const type =
       classes.includes(item) || draftClasses.includes(item) ? "class" : "event";
     if (type === "class") loadCorequisites(item.id);
-    console.log("coevents", coEvents);
-    console.log("item", item, "type", type);
     setSelectedCard(item);
     setCardType(type);
     const isAttended = attended.some(
@@ -143,7 +137,6 @@ export const Bookings = () => {
     );
     setIsAttendedItem(isAttended);
     onOpen();
-    console.log(refresh);
   };
 
   const handleCancelEnrollment = async (itemId) => {
@@ -209,9 +202,9 @@ export const Bookings = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("selectedCard", selectedCard);
-  }, [selectedCard]);
+  // useEffect(() => {
+  //   console.log("selectedCard", selectedCard);
+  // }, [selectedCard]);
 
   const fetchClassData = async () => {
     try {
@@ -262,10 +255,10 @@ export const Bookings = () => {
     return d;
   };
 
-  console.log("classes", classes);
+  // console.log("classes", classes);
   // console.log("events", events);
   // console.log("attended", classes);
-  console.log("selected card", selectedCard);
+  // console.log("selected card", selectedCard);
   return (
     <Box>
       <VStack

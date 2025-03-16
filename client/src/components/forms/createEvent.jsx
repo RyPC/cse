@@ -31,7 +31,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
 
   useEffect(() => {
     if (event) {
-      console.log(event.startTime, event.endTime);
+      // console.log(event.startTime, event.endTime);
       setFormData({
         location: event.location || "",
         title: event.title || "",
@@ -67,7 +67,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    console.log(formData);
+    // console.log(formData);
 
     setIsSubmitting(true);
     try {
