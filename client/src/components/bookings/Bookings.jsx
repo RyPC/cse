@@ -84,7 +84,7 @@ export const Bookings = () => {
           console.log("Error fetching user:", err);
         });
     }
-  }, [backend, currentUser]);
+  }, [backend, currentUser, refresh]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -104,7 +104,8 @@ export const Bookings = () => {
   };
 
   const triggerRefresh = () => {
-    setRefresh((prev) => prev + 1)
+    setRefresh(refresh+1);
+    console.log("Refresh triggered");
   }
 
   const updateModal = (item) => {
@@ -217,10 +218,10 @@ export const Bookings = () => {
     return d;
   };
 
-  console.log("classes", classes);
+  // console.log("classes", classes);
   // console.log("events", events);
   // console.log("attended", classes);
-  console.log("selected card", selectedCard);
+  // console.log("selected card", selectedCard);
   return (
     <Box>
       <VStack
@@ -314,7 +315,7 @@ export const Bookings = () => {
                       costume={eventEnrollment.costume}
                       capacity={eventEnrollment.capacity}
                       onClick={() => updateModal(eventEnrollment)}
-                      triggerRefresh={() => triggerRefresh()}
+                      triggerRefresh={triggerRefresh}
                     />
                   ))
                 ) : (
@@ -361,6 +362,7 @@ export const Bookings = () => {
                           capacity={item.capacity}
                           level={item.level}
                           onClick={() => updateModal(item)}
+                          triggerRefresh={triggerRefresh}
                         />
                       )
                     )
@@ -398,6 +400,7 @@ export const Bookings = () => {
                         capacity={item.capacity}
                         level={item.level}
                         onClick={() => updateModal(item)}
+                        triggerRefresh={triggerRefresh}
                       />
                     )
                   )

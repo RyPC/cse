@@ -13,7 +13,7 @@ import {
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 
-export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
+export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefresh }) => {
   const [formData, setFormData] = useState({
     location: "",
     title: "",
@@ -32,7 +32,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
 
   useEffect(() => {
     if (event) {
-      console.log(event.capacity);
       setFormData({
         location: event.location || "",
         title: event.title || "",
@@ -68,9 +67,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    triggerRefresh();
     if (!validateForm()) return;
-    console.log("Submitted formdata is:");
-    console.log(formData);
 
     setIsSubmitting(true);
     try {
@@ -86,8 +84,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
       let response;
       if (eventId) {
         // Edit event (PUT request)
-        console.log("making backend edit call rn");
-        console.log(eventData);
         response = await backend.put(`/events/${eventId}/`, eventData);
       } else {
         // Create new event (POST request)
@@ -95,8 +91,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
       }
 
       if (response.status === 201 || response.status === 200) {
-        console.log("Response status from backend:");
-        console.log(response.status);
         // Reset form or handle success
         setFormData({
           location: "",
@@ -134,7 +128,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose }) => {
       spacing={4}
       align="stretch"
     >
-      <Text>New Event</Text>
+      {!eventId ? (<Text> "New Event"</Text>) : ""}
       <Box>
         <Text>Title</Text>
         <Input

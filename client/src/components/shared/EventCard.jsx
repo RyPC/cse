@@ -37,7 +37,7 @@ export const EventCard = ({
   attendeeCount = 0, // Default to 0 if not provided
   onClick,
   isAttended = false,
-  triggerRefresh
+  triggerRefresh,
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);

@@ -61,7 +61,7 @@ function TeacherEventViewModal({
   costume,
   isCorequisiteSignUp,
   corequisites,
-  setRefresh,
+  triggerRefresh,
   handleResolveCoreq = () => {},
 }) {
   const { currentUser, role } = useAuthContext();
@@ -149,10 +149,6 @@ function TeacherEventViewModal({
         setIsDeleting(false);
         setIsEditing(false);
         setIsConfirmDelete(true);
-        // handleClose()
-        console.log("isDeleting", isDeleting);
-        console.log("isEditing", isEditing);
-        console.log("isConfirmDelete", isConfirmDelete);
       }
     } catch (error) {
       toast({
@@ -166,6 +162,7 @@ function TeacherEventViewModal({
 
   const handleCloseConfirmation = () => {
     setIsConfirmDelete(false);
+    triggerRefresh();
     handleClose();
   }
 
@@ -213,7 +210,8 @@ function TeacherEventViewModal({
                 level: level, 
                 capacity: capacity,
                 date: formFormattedDate}}
-                onClose={handleSaveChanges}/>
+                onClose={handleSaveChanges}
+                triggerRefresh={triggerRefresh}/>
               {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
