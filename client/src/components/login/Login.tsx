@@ -196,7 +196,7 @@ export const Login = () => {
         </Stack>
       </form>
 
-      <Button
+      {/* <Button
         leftIcon={<FaGoogle />}
         variant={"solid"}
         size={"lg"}
@@ -204,7 +204,7 @@ export const Login = () => {
         sx={{ width: "100%" }}
       >
         Login with Google
-      </Button>
+      </Button> */}
     </VStack>
   );
 };

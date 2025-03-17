@@ -12,12 +12,10 @@ import {
   ModalOverlay,
   Text,
 } from "@chakra-ui/react";
-
-import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
-
 import { formatDate } from "../../utils/formatDateTime";
 
-export const ViewModal = ({
+
+export const InfoModal = ({
   isOpen,
   onClose,
   setCurrentModal,
@@ -26,15 +24,8 @@ export const ViewModal = ({
   card,
   coEvents,
   type,
-  role,
-  isAttended = false,
 }) => {
-  const onCancel = () => {
-    setCurrentModal("cancel");
-  };
-
-  // console.log("viewmodal", card);
-  const viewInfo = (
+  return (
     <>
       <Grid
         templateColumns="repeat(2, 1fr)"
@@ -99,38 +90,5 @@ export const ViewModal = ({
         )}
       </Grid>
     </>
-  );
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-    >
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          <HStack justify="space-between">
-            <MdArrowBackIosNew onClick={onClose} />
-            <Heading size="lg">{card?.title ?? "Create a Class/Draft"}</Heading>{" "}
-            {/* Will add from prop */}
-            <MdMoreHoriz opacity={0}/>
-          </HStack>
-        </ModalHeader>
-        <ModalBody>{viewInfo}</ModalBody>
-
-        {(!isAttended && !card?.attendance) && <ModalFooter justifyContent="center">
-          <Button
-            size="sm"
-            background="#757575"
-            color="white"
-            mr={3}
-            onClick={onCancel}
-            px={10}
-            py={6}
-          >
-            Cancel RSVP
-          </Button>
-        </ModalFooter>}
-      </ModalContent>
-    </Modal>
   );
 };

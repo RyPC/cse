@@ -19,7 +19,7 @@ export const EventRSVP = ({ isOpen, onClose, card }) => {
     try {
         const response = await backend.get(`/event-enrollments/event/${card.id}`);
         setStudents(response.data);
-        console.log(students);
+        // console.log(students);
     } catch (error) {
         console.error("Error fetching events:", error);
     }

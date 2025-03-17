@@ -36,7 +36,8 @@ export const EventCard = ({
   onClick,
   id,
   setRefresh,
-  isAttended = false
+  isAttended = false,
+  onCloseModal
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
@@ -57,14 +58,14 @@ export const EventCard = ({
     setOpenModal(false);
   };
 
-  const onCloseModal = () => {
-    setCurrentModal("view");
-    onClose();
-  };
+  // const onCloseModal = () => {
+  //   setCurrentModal("view");
+  //   onClose();
+  // };
 
   const closeTeacherModal = () => {
     setOpenTeacherModal(false);
-    onClose();
+    onCloseModal();
   };
 
   const handleClickModal = () => {

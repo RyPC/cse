@@ -110,6 +110,7 @@ function TeacherEventViewModal({
     } else {
       enrollInEvent();
     }
+    setRefresh();
   };
 
   const handleSuccess = () => {
@@ -125,7 +126,7 @@ function TeacherEventViewModal({
       duration: 5000,
       isClosable: true,
     });
-    console.log("Set isEditing to false");
+    // console.log("Set isEditing to false");
   }
   
   const onBack = () => {
@@ -134,7 +135,7 @@ function TeacherEventViewModal({
 
   const handleEditEvent = () => {
     setIsEditing(true);
-    console.log("clicked edit");
+    // console.log("clicked edit");
   };
 
   const handleDeleteEvent = () => {
@@ -149,9 +150,9 @@ function TeacherEventViewModal({
         setIsEditing(false);
         setIsConfirmDelete(true);
         // handleClose()
-        console.log("isDeleting", isDeleting);
-        console.log("isEditing", isEditing);
-        console.log("isConfirmDelete", isConfirmDelete);
+        // console.log("isDeleting", isDeleting);
+        // console.log("isEditing", isEditing);
+        // console.log("isConfirmDelete", isConfirmDelete);
       }
     } catch (error) {
       toast({
@@ -211,7 +212,9 @@ function TeacherEventViewModal({
                 description: description, 
                 level: level, 
                 date: formFormattedDate}}
-                onClose={handleSaveChanges}/>
+                onClose={handleSaveChanges}
+                reloadCallback={setRefresh}
+              />
               {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
