@@ -68,6 +68,7 @@ export const ControllerModal = ({ autoOpen = false }) => {
             });
           }
         }
+        
       } 
       // if is not a youtube video
       else {
