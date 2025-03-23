@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
   Select, Text, IconButton } from "@chakra-ui/react";
@@ -40,6 +40,8 @@ const formatDate = (date) => {
 
 export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData, performances, setRefresh }) => {
   const { backend } = useBackendContext();
+  const [isPublishing, setIsPublishing] = useState(false);
+  const formRef = useRef(null);
 
   const onBack = () => {
     setCurrentModal("view");
@@ -57,9 +59,17 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
         isDraft: draft,
       };
       await backend.put(`/classes/${classData.id}`, updatedData);
-      await backend.put(`/scheduled-classes/`,
-        { class_id: classData.id, date: date, start_time: startTime, end_time: endTime }
-      );
+      console.log("Updating class", classData.id, updatedData);
+
+      if (date)
+        await backend.put(`/scheduled-classes/`,
+            { 
+                class_id: classData.id, 
+                date: date, 
+                start_time: startTime, 
+                end_time: endTime 
+            }
+        );
       // Update classData
       setClassData((prev) => ({
         ...prev,
@@ -84,8 +94,19 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
     await onSave(true);
   };
   const onPublish = async () => {
-    await onSave(false);
+    setIsPublishing(true);
+    
+    // defer validation for isPublishing to update
+    setTimeout(() => {
+        if (formRef.current && !formRef.current.checkValidity()) {
+          formRef.current.reportValidity(); // native popup
+          return;
+        }
+    
+        onSave(false); // publish for real
+      }, 0);
   };
+  
 
   // input values
   const [classTitle, setClassTitle] = useState(classData?.title);
@@ -121,6 +142,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           <ModalHeader flex={1} textAlign="center">{classData.title}</ModalHeader>
         </Flex>
         <ModalBody>
+          <form ref={formRef} onSubmit={(e) => e.preventDefault()}>
           <Text mb='1rem'>
             Class Title (affects all classes with this title)
           </Text>
@@ -142,23 +164,25 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
             Date
           </Text>
           <Input
-          // disabled // REMOVE LATER
-          type="date"
-          value={date}
-          onChange={onDateChange}
-          maxWidth="200px"
-          placeholder="Enter date.."/>
+            type="date"
+            value={date}
+            onChange={onDateChange}
+            maxWidth="200px"
+            placeholder="Enter date.."
+            required={isPublishing}
+          />
 
           <Text mb='1rem'>
             Start Time (affects only this specific offering)
           </Text>
           <Input
-          // disabled // REMOVE LATER
-          type="time"
-          maxWidth="200px"
-          value={startTime}
-          onChange={onStartTimeChange}
-          placeholder="Enter start time..."/>
+            // disabled // REMOVE LATER
+            type="time"
+            maxWidth="200px"
+            value={startTime}
+            onChange={onStartTimeChange}
+            placeholder="Enter start time..."
+          />
 
           <Text mb='1rem'>
             End Time (affects only this specific offering)
@@ -207,6 +231,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
               <option key={performance.id} value={performance.id}>{performance.title}</option>
             )}
           </Select>
+          </form>
         </ModalBody>
 
         <ModalFooter>
