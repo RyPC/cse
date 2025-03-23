@@ -19,7 +19,8 @@ import {
 
 import { BsChevronLeft } from "react-icons/bs";
 import { formatDate } from "../../utils/formatDateTime";
-
+import { useState, useEffect } from "react";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 export const TeacherViewModal = ({
   isOpen,
@@ -28,6 +29,41 @@ export const TeacherViewModal = ({
   classData,
   performances,
 }) => {
+  const { backend } = useBackendContext();
+  const [tagData, setTagData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const fetchTags = async () => {
+      if (!classData?.id) {
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await backend.get(`/class-tags/tags/${classData.id}`);
+        console.log("Raw tag data:", response.data);
+        
+        if (response.data && response.data.length > 0) {
+          // Extract tags from the response
+          const processedTags = response.data.map(item => ({
+            id: item.tagId,
+            name: item.tag
+          }));
+          
+          setTagData(processedTags);
+        } else {
+          setTagData([]);
+        }
+      } catch (error) {
+        console.error('Error fetching tags for class:', error);
+        setTagData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTags();
+  }, [backend, classData?.id]);
 
   const onCancel = () => {
     setCurrentModal("cancel");
@@ -36,6 +72,7 @@ export const TeacherViewModal = ({
   const enterEditMode = () => {
     setCurrentModal("edit");
   };
+  
 
 
   return (
@@ -163,6 +200,21 @@ export const TeacherViewModal = ({
               {classData?.startTime} -{" "}
               {classData?.endTime}
             </Text>
+          </Box>
+          <Text
+              fontWeight="bold"
+              mb="1rem"
+            >
+              Type
+            </Text>
+            <Text>
+            {tagData.length > 0 
+              ? tagData.map(tag => tag.name).join(", ")
+              : "No tags available"}
+              
+          </Text>
+          <Box>
+            
           </Box>
           <Box>
             <Text

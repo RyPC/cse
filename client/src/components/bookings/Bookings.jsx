@@ -211,14 +211,21 @@ export const Bookings = () => {
       const [classesResponse, classDataResponse] = await Promise.all([
         backend.get("/scheduled-classes"),
         backend.get("/classes"),
+        
       ]);
 
       const classDataDict = new Map();
       classDataResponse.data.forEach((cls) => classDataDict.set(cls.id, cls));
 
+      console.log("Fetching tags for class:", clsId);
+      const response = await backend.get(`/class-tags/tags/${clsId}`);
+      console.log("Raw tag data:", response.data);
+      
       const formattedData = classesResponse.data
         .map((cls) => {
           const fullData = classDataDict.get(cls.classId);
+
+          
           return fullData
             ? {
                 classId: cls.classId,
