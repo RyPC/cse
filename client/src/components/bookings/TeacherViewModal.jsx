@@ -19,7 +19,7 @@ import {
 
 import { BsChevronLeft } from "react-icons/bs";
 import { formatDate } from "../../utils/formatDateTime";
-
+import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 
 export const TeacherViewModal = ({
   isOpen,
@@ -123,6 +123,8 @@ export const TeacherViewModal = ({
               bg="gray.200"
               h="100%"
               w="100%"
+              mt="4"
+              mb="4"
               p="4"
             >
               <Box
@@ -130,15 +132,15 @@ export const TeacherViewModal = ({
                 h="100%"
                 w="100%"
                 p="4"
+                mt="4"
                 color="white"
               >
                 <Center>
-                  <Text
-                    fontWeight="bold"
-                    mb="60"
+                  <QRCode
+                    id={classData?.id}
+                    type="Class"
                   >
-                    QR
-                  </Text>
+                  </QRCode>
                 </Center>
                 <Center>
                   <Button
@@ -149,7 +151,12 @@ export const TeacherViewModal = ({
                   </Button>
                 </Center>
               </Box>
-              <Text fontWeight="bold">19 people RSVP'd</Text>
+              <Center>
+                <Text fontWeight="bold" mt="3">people RSVP'd</Text>
+              </Center>
+              <Center>
+                <Button background="transparent" textDecoration="underline">View attendees {">"}</Button>
+              </Center>
             </Box>
           </Container>
           <Box>

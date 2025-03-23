@@ -4,10 +4,10 @@ import { Box, Button, Center, Spinner, Text, VStack } from "@chakra-ui/react";
 
 import { useNavigate, useParams } from "react-router-dom";
 
-import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { useAuthContext } from "../../../../contexts/hooks/useAuthContext";
+import { useBackendContext } from "../../../../contexts/hooks/useBackendContext";
 
-export const CheckInHandler = () => {
+export const EventCheckInHandler = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { backend } = useBackendContext();
@@ -15,47 +15,34 @@ export const CheckInHandler = () => {
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // console.log("studentId", currentUser);
-
-  // Print all localStorage data
-  // console.log(
-  //   "LocalStorage contents:",
-  //   Object.entries(localStorage).reduce((obj, [key, value]) => {
-  //     try {
-  //       obj[key] = JSON.parse(value);
-  //     } catch {
-  //       obj[key] = value;
-  //     }
-  //     return obj;
-  //   }, {})
-  // );
+  const params = useParams();
 
   useEffect(() => {
     const handleCheckIn = async () => {
       try {
         if (!currentUser?.uid) {
-          throw new Error("No user ID found");
+          const id = params.id;
+
+          // removed baseURL, was preventing the redirect to login from happening
+          localStorage.setItem("qrcode_redirect", `/check-in/event/${id}`);
+          // throw new Error("No user ID found");
+          navigate("/login");
         }
 
-        // Get student ID using Firebase UID
         const studentResponse = await backend.get(
           `/students/firebase/${currentUser.uid}`
         );
         const studentId = studentResponse.data.id;
 
-        // Format current date as YYYY-MM-DD
-        const today = new Date().toISOString().split("T")[0];
-
-        // Update class enrollment using student ID instead of Firebase UID
-        await backend.put(`/class-enrollments/${studentId}`, {
-          class_id: id,
-          attendance: today,
+        await backend.post("/event-enrollments", {
+          student_id: studentId,
+          event_id: id,
+          // this statement has no effect since attendance defaults to false in backend route (event_enrollments.ts)
+          attendance: true,
         });
 
-        // Get class details
-        const classResponse = await backend.get(`/classes/${id}`);
-        setTitle(classResponse.data[0].title);
+        const eventResponse = await backend.get(`/events/${id}`);
+        setTitle(eventResponse.data[0].title);
 
         setLoading(false);
       } catch (err) {
@@ -65,7 +52,7 @@ export const CheckInHandler = () => {
     };
 
     handleCheckIn();
-  }, [id, backend, navigate, currentUser]);
+  }, [id, backend, currentUser]);
 
   if (loading) {
     return (
@@ -82,8 +69,6 @@ export const CheckInHandler = () => {
       </Center>
     );
   }
-
-  console.log("title", title);
 
   return (
     <Box

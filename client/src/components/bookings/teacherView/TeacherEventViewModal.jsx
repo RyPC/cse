@@ -43,6 +43,7 @@ import { calcLength } from "framer-motion";
 import { BsChevronLeft } from "react-icons/bs";
 import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
 import { EventRSVP } from "../../rsvp/eventRsvp";
+import { QRCode } from "./qrcode/QRCode.jsx";
 
 function TeacherEventViewModal({
   isOpenProp,
@@ -279,19 +280,24 @@ function TeacherEventViewModal({
             >
               <Box
                 boxSize="sm"
-                height="15rem"
+                // height="15rem"
                 width={"100%"}
                 alignContent={"center"}
                 justifyContent={"center"}
-                display="block"
-                p={5}
+                // display="block"
+                // p={5}
               >
-                <Image
+                {/* <Image
                   src={imageSrc}
                   alt="Random Dog"
                   height={"100%"}
                   width={"100%%"}
-                />
+                /> */}
+                <QRCode
+                  id={id}
+                  type="Event"
+                  >
+                </QRCode>
               </Box>
 
               <Box width="100%" align="center">
