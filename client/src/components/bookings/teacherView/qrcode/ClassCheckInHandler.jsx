@@ -45,11 +45,18 @@ export const ClassCheckInHandler = () => {
         const today = new Date().toISOString().split("T")[0];
 
         // Class-specific endpoint
-        // await backend.post("/class-enrollments", {
-        //   studentId: studentId,
-        //   classId: id,
-        //   attendance: today,
-        // });
+
+        const currentCheckIn = await backend.get(
+          `/class-enrollments/test?student_id=${studentId}&class_id=${id}&attendance=${today}`
+        );
+
+        if (!currentCheckIn.data.exists) {
+          await backend.post("/class-enrollments", {
+            studentId: studentId,
+            classId: id,
+            attendance: today,
+          });
+        }
 
         const classResponse = await backend.get(`/classes/${id}`);
         setTitle(classResponse.data[0].title);

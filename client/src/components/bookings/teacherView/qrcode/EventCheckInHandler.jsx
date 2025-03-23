@@ -19,6 +19,12 @@ export const EventCheckInHandler = () => {
 
   useEffect(() => {
     const handleCheckIn = async () => {
+      // AW - idk if this works
+      if (hasCheckedIn.currentUser) {
+        return;
+      }
+      hasCheckedIn.currentUser = true;
+
       try {
         if (!currentUser?.uid) {
           const id = params.id;
@@ -34,7 +40,7 @@ export const EventCheckInHandler = () => {
         );
         const studentId = studentResponse.data.id;
 
-        await backend.post("/event-enrollments", {
+        await backend.put("/event-enrollments", { // switched post to put?
           student_id: studentId,
           event_id: id,
           // this statement has no effect since attendance defaults to false in backend route (event_enrollments.ts)

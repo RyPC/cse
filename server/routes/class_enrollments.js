@@ -128,4 +128,21 @@ classEnrollmentsRouter.delete("/:student_id/:class_id", async (req, res) => {
   }
 });
 
+// test
+classEnrollmentsRouter.get("/test", async (req, res) => {
+  const { student_id, class_id, attendance } = req.query;
+
+  try {
+    const result = await db.query(
+      'SELECT * FROM class_enrollments WHERE student_id = $1 AND class_id = $2 AND attendance = $3',
+      [student_id, class_id, attendance]
+    )
+
+    const exists = result.length > 0;
+    res.status(200).send({exists});
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+})
+
 export { classEnrollmentsRouter };
