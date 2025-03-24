@@ -99,11 +99,11 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
     // defer validation for isPublishing to update
     setTimeout(() => {
         if (formRef.current && !formRef.current.checkValidity()) {
-          formRef.current.reportValidity(); // native popup
+          formRef.current.reportValidity(); // stops user from submitting if date is empty
           return;
         }
     
-        onSave(false); // publish for real
+        onSave(false); // publishes, swithes is_draft to false
       }, 0);
   };
   
@@ -143,21 +143,18 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
         </Flex>
         <ModalBody>
           <form ref={formRef} onSubmit={(e) => e.preventDefault()}>
-          <Text mb='1rem'>
-            Class Title (affects all classes with this title)
-          </Text>
+          <Text mb='1rem'>Class Title (affects all classes with this title)</Text>
           <Input
-          value={classTitle}
-          onChange={onTitleChange}
-          placeholder="Enter class title..."/>
+            value={classTitle}
+            onChange={onTitleChange}
+            placeholder="Enter class title..."
+          />
 
           <Text mb='1rem'>
             Location (affects all classes with this title)
           </Text>
           <Select maxWidth="200px" value={location} placeholder='Select location...' onChange={handleLocationSelect}>
             <option value={classData.location}>{classData.location}</option>
-            {/* <option value="Location 1">Location 1</option>
-            <option value="Location 2">Location 2</option> */}
           </Select>
 
           <Text mb='1rem'>
@@ -184,48 +181,41 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
             placeholder="Enter start time..."
           />
 
-          <Text mb='1rem'>
-            End Time (affects only this specific offering)
-          </Text>
+          <Text mb='1rem'>End Time (affects only this specific offering)</Text>
           <Input
-          // disabled // REMOVE LATER
-          type="time"
-          maxWidth="200px"
-          value={endTime}
-          onChange={onEndTimeChange}
-          placeholder="Enter end time..."/>
+            type="time"
+            maxWidth="200px"
+            value={endTime}
+            onChange={onEndTimeChange}
+            placeholder="Enter end time..."
+          />
 
-          <Text mb='1rem'>
-            Description (affects all classes with this title)
-          </Text>
+          <Text mb='1rem'>Description (affects all classes with this title) </Text>
+
           <Input
-          height="100px"
-          value={description}
-          onChange={onDescriptionChange}
-          placeholder="Enter description..."/>
+            height="100px"
+            value={description}
+            onChange={onDescriptionChange}
+            placeholder="Enter description..."
+          />
 
-          <Text mb='1rem'>
-            Capacity (affects all classes with this title)
-          </Text>
+          <Text mb='1rem'>Capacity (affects all classes with this title) </Text>
           <Input
-          type="number"
-          maxWidth="200px"
-          value={capacity}
-          onChange={onCapacityChange}
-          placeholder="Enter time..."/>
+            type="number"
+            maxWidth="200px"
+            value={capacity}
+            onChange={onCapacityChange}
+            placeholder="Enter time..."
+          />
 
-          <Text mb='1rem'>
-            Level (affects all classes with this title)
-          </Text>
+          <Text mb='1rem'>Level (affects all classes with this title)</Text>
           <Select maxWidth="200px" value={level} placeholder='Select level...' onChange={handleLevelSelect}>
             <option value='beginner'>Beginner</option>
             <option value='intermediate'>Intermediate</option>
             <option value='advanced'>Advanced</option>
           </Select>
 
-          <Text mb='1rem'>
-            Performances
-          </Text>
+          <Text mb='1rem'>Performances</Text>
           <Select maxWidth="200px" value={location} onChange={handleLocationSelect}>
             { performances.map((performance) =>
               <option key={performance.id} value={performance.id}>{performance.title}</option>
