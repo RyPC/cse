@@ -8,6 +8,7 @@ import {
   Text,
   Textarea,
   VStack,
+  Flex
 } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -31,7 +32,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
 
   useEffect(() => {
     if (event) {
-      // console.log(event.startTime, event.endTime);
+      console.log("Incoming event data:", event);
       setFormData({
         location: event.location || "",
         title: event.title || "",
@@ -64,11 +65,10 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (isDraft) => {
     if (!validateForm()) return;
     // console.log(formData);
-
+    console.log("isDraft:", isDraft)
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
@@ -77,6 +77,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
         start_time: formData.startTime,
         end_time: formData.endTime,
         call_time: formData.callTime,
+        is_draft: isDraft,
       };
 
       // Using axios instead of fetch
@@ -103,6 +104,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
           costume: "",
         });
         if (onClose) onClose();
+        if (reloadCallback) reloadCallback();
       } else {
         console.error("Failed to create/save event:", response.statusText);
       }
@@ -110,7 +112,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
       console.error("Failed to create/save event:", error);
     } finally {
       setIsSubmitting(false);
-      if (reloadCallback) reloadCallback();
     }
   };
 
@@ -127,7 +128,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
       spacing={4}
       align="stretch"
     >
-      <Text>New Event</Text>
+      {!formData.title && <Text>New Event</Text>}
       <Box>
         <Text>Title</Text>
         <Input
@@ -237,14 +238,25 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
         />
         {errors.costume && <Text color="red.500">{errors.costume}</Text>}
       </Box>
+      <Flex justifyContent="center" w="100%" gap={3}>
+        <Button
+            onClick={() => handleSubmit(true)} // true = save draft
+            isLoading={isSubmitting}
+            flex="1"
+        >
+            Save Draft
+        </Button>
+        <Button
+            onClick={() => handleSubmit(false)} // false = publish
+            isLoading={isSubmitting}
+            colorScheme="blue"
+            flex="1"
+        >
+            Publish
+        </Button>
+      </Flex>
 
-      <Button
-        onClick={handleSubmit}
-        colorScheme="blue"
-        isLoading={isSubmitting}
-      >
-        {eventId  ? "Save Changes" : "Create Event"}
-      </Button>
+      
     </VStack>
   );
 };
