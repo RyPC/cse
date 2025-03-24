@@ -248,11 +248,11 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
         </ModalBody>
 
         <ModalFooter>
-          <Flex justifyContent="center" w="100%">
-            <Button backgroundColor="#D9D9D9" mr={3} onClick={onSaveAsDraft}>
+          <Flex justifyContent="center" w="100%" gap={3}>
+            <Button flex="1" onClick={onSaveAsDraft}>
               Save as Draft
             </Button>
-            <Button backgroundColor="#646363" mr={3} onClick={onPublish}>
+            <Button colorScheme="blue" flex="1" onClick={onPublish}>
               Publish
             </Button>
           </Flex>
