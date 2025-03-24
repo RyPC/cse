@@ -117,6 +117,7 @@ export const Bookings = () => {
   }, [classes, events]);
 
   const onCloseModal = () => {
+    setSelectedCard(null);
     setCurrentModal("view");
     onClose();
     reloadClassesAndDrafts();
