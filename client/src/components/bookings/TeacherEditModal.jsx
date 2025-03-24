@@ -60,6 +60,14 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
       await backend.put(`/scheduled-classes/`,
         { class_id: classData.id, date: date, start_time: startTime, end_time: endTime }
       );
+
+      console.log(performance)
+
+      if (performance == "None" || performance == undefined) {
+        await backend.delete(`/classes/corequisites/${classData.id}`)
+        console.log("coreqs deleted")
+      }
+
       // Update classData
       setClassData((prev) => ({
         ...prev,
@@ -96,6 +104,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
   const [description, setDescription] = useState(classData?.description);
   const [capacity, setCapacity] = useState(classData?.capacity);
   const [level, setLevel] = useState(classData?.level);
+  const [performance, setPerformance] = useState(classData?.performance)
 
   const handleLocationSelect = (e) => {
     setLocation(e.target.value);
@@ -103,6 +112,10 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
 
   const handleLevelSelect = (e) => {
     setLevel(e.target.value);
+  }
+
+  const handlePerformanceSelect = (e) => {
+    setPerformance(e.target.value)
   }
 
   const onTitleChange = (e) => setClassTitle(e.target.value);
@@ -202,9 +215,10 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
           <Text mb='1rem'>
             Performances
           </Text>
-          <Select maxWidth="200px" value={location} onChange={handleLocationSelect}>
-            { performances.map((performance) =>
-              <option key={performance.id} value={performance.id}>{performance.title}</option>
+          <Select maxWidth="200px" value={performance} onChange={handlePerformanceSelect}>
+            <option value="None">No Performance</option>
+            { performances.map((p) =>
+              <option key={p.id} value={p.id}>{p.title}</option>
             )}
           </Select>
         </ModalBody>
