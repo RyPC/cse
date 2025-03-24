@@ -50,14 +50,22 @@ function EventInfoModal({
 
   const enrollInEvent = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
-    if (users.data[0]) {
+    // Check if already checked into event
+    const currentCheckIn = await backend.get(
+      `/event-enrollments/test/${users.data[0].id}/${id}`
+    );
+    if (users.data[0] && !currentCheckIn.data.exists) {
       const req = await backend.post(`/event-enrollments/`, {
         student_id: users.data[0].id,
         event_id: id,
+        attendance: null
       });
       if (req.status === 201) {
         setOpenSuccessModal(true);
       }
+    }
+    else {
+      console.log("Already signed up for this event!");
     }
   };
 
