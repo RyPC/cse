@@ -369,29 +369,13 @@ export const Bookings = () => {
                       draftClasses.includes(item) ? (
                         <ClassCard
                           key={item.id}
-                          id={item.id}
-                          title={item.title}
-                          description={item.description}
-                          location={item.location}
-                          capacity={item.capacity}
-                          level={item.level}
-                          date={item.date}
-                          startTime={item.startTime}
-                          endTime={item.endTime}
-                          attendeeCount={item.attendeeCount}
+                          {...item}
                           onClick={() => updateModal(item)}
-                        />
+                          />
                       ) : (
                         <EventCard
                           key={item.id}
-                          id={item.id}
-                          title={item.title}
-                          location={item.location}
-                          date={item.date}
-                          startTime={item.startTime}
-                          endTime={item.endTime}
-                          callTime={item.callTime}
-                          attendeeCount={item.attendeeCount}
+                          {...item}
                           onClick={() => updateModal(item)}
                           onCloseModal={onCloseModal}
                           setRefresh={reloadClassesAndDrafts}
