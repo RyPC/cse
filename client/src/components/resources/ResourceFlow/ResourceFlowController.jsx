@@ -16,7 +16,7 @@ export const ControllerModal = ({ autoOpen = true }) => {
   const { backend } = useBackendContext();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [currentModal, setCurrentModal] = useState("card");
+  const [currentModal, setCurrentModal] = useState("select-class");
   const [tags, setTags] = useState([]);
   const [link, setLink] = useState("");
   const [title, setTitle] = useState("");
