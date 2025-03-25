@@ -26,6 +26,7 @@ const StudentReview = ({
   student_id,
   displayName,
   onUpdate,
+  editMode = false,
 }) => {
   const { backend } = useBackendContext();
   const { currentUser } = useAuthContext();
@@ -118,7 +119,7 @@ const StudentReview = ({
           colorScheme={isError ? "gray" : "blue"}
           disabled={isError}
         >
-          Post
+          {editMode ? "Save" : "Post"}
         </Button>
       </FormControl>
     </CardBody>

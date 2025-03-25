@@ -12,6 +12,10 @@ function ReviewCardController(props) {
 
   const [isEditing, setIsEditing] = useState(false);
   const toggleEdition = () => setIsEditing(!isEditing);
+  const update = async () => {
+    await onUpdate();
+    toggleEdition();
+  };
 
   return (
     <Card position="relative">
@@ -25,7 +29,15 @@ function ReviewCardController(props) {
       >
         <FaPencilAlt />
       </Button>
-      {!isEditing ? <ReviewCard {...props} /> : <StudentReview {...props} />}
+      {!isEditing ? (
+        <ReviewCard {...props} />
+      ) : (
+        <StudentReview
+          {...props}
+          onUpdate={update}
+          editMode={isEditing}
+        />
+      )}
     </Card>
   );
 }
