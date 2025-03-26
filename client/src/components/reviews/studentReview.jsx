@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Avatar,
@@ -32,6 +32,8 @@ const StudentReview = ({
   const { currentUser } = useAuthContext();
   const [starRating, setStarRating] = useState(rating ?? 0);
   const [review, setReview] = useState(reviewText ?? "");
+  const [attended, setAttended] = useState(null);
+
   const [stars, setStars] = useState(Array(5).fill(0));
 
   const [hoverValue, setHoverValue] = useState(undefined);
@@ -82,8 +84,18 @@ const StudentReview = ({
     }
   }
 
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      const attendance = await backend.get(
+        `/class-enrollments/student/${student_id}`
+      );
+      setAttended(attendance.data.find((a) => a.id === class_id));
+    };
+    fetchAttendance();
+  }, [attended, backend, class_id, student_id]);
+
   return (
-    <CardBody>
+    <CardBody hidden={attended}>
       <FormControl>
         <HStack>
           <Avatar
