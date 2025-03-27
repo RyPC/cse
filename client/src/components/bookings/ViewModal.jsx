@@ -17,6 +17,11 @@ import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 
 import { formatDate } from "../../utils/formatDateTime";
 
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import PublishedReviews from "../reviews/classReview";
+
+
 export const ViewModal = ({
   isOpen,
   onClose,
@@ -117,6 +122,8 @@ export const ViewModal = ({
         </ModalHeader>
         <ModalBody>{viewInfo}</ModalBody>
 
+        <PublishedReviews classId={id} />
+        
         {(!isAttended && !card?.attendance) && <ModalFooter justifyContent="center">
           <Button
             size="sm"
@@ -131,6 +138,14 @@ export const ViewModal = ({
           </Button>
         </ModalFooter>}
       </ModalContent>
+      <PublishedReviews
+        title={title}
+        location={location}
+        description={description}
+        level={level}
+        date={date}
+        id={id}
+      ></PublishedReviews>
     </Modal>
   );
 };

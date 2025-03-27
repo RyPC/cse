@@ -52,6 +52,12 @@ const StudentReview = ({
     grey: "a9a9a9",
   };
 
+  async function getClassEnrollment(classId) {
+    const enrollments = await backend.get(`/class-enrollments/${classId}`);
+    const isEnrolled = enrollments.some(enrollment => enrollment.student_id === currentUser.student_id);
+    return isEnrolled
+  }
+
   const isError = review === "" || starRating === 0;
   async function postReview() {
     if (isError) return;
@@ -80,49 +86,51 @@ const StudentReview = ({
       setStarRating(0);
     }
   }
-
-  return (
-    <CardBody>
-      <FormControl>
-        <HStack>
-          <Avatar
-            name="Dan Abrahmov"
-            src="https://bit.ly/dan-abramov"
-          />
-          <Text>{displayName}</Text>
-        </HStack>
-        <HStack>
-          {stars.map((_, index) => (
-            <FaStar
-              key={index}
-              size={24}
-              value={starRating}
-              onChange={(e) => setStarRating(e.target.value)}
-              color={
-                (hoverValue || starRating) > index ? colors.orange : colors.grey
-              }
-              onClick={() => handleClickStar(index + 1)}
-              onMouseOver={() => handleMouseOverStar(index + 1)}
-              onMouseLeave={() => handleMouseLeaveStar}
+  
+  if (!getClassEnrollment(class_id)) {
+    return (
+      <CardBody>
+        <FormControl>
+          <HStack>
+            <Avatar
+              name="Dan Abrahmov"
+              src="https://bit.ly/dan-abramov"
             />
-          ))}
-        </HStack>
+            <Text>{displayName}</Text>
+          </HStack>
+          <HStack>
+            {stars.map((_, index) => (
+              <FaStar
+                key={index}
+                size={24}
+                value={starRating}
+                onChange={(e) => setStarRating(e.target.value)}
+                color={
+                  (hoverValue || starRating) > index ? colors.orange : colors.grey
+                }
+                onClick={() => handleClickStar(index + 1)}
+                onMouseOver={() => handleMouseOverStar(index + 1)}
+                onMouseLeave={() => handleMouseLeaveStar}
+              />
+            ))}
+          </HStack>
 
-        <Textarea
-          placeholder="Type Here..."
-          value={review}
-          onChange={(e) => setReview(e.target.value)}
-        />
-        <Button
-          onClick={postReview}
-          colorScheme={isError ? "gray" : "blue"}
-          disabled={isError}
-        >
-          Post
-        </Button>
-      </FormControl>
-    </CardBody>
-  );
+          <Textarea
+            placeholder="Type Here..."
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+          />
+          <Button
+            onClick={postReview}
+            colorScheme={isError ? "gray" : "blue"}
+            disabled={isError}
+          >
+            Post
+          </Button>
+        </FormControl>
+      </CardBody>
+    );
+  };
 };
 
 export default StudentReview;
