@@ -57,8 +57,10 @@ const StudentReview = ({
 
   async function getClassEnrollment(classId) {
     const enrollments = await backend.get(`/class-enrollments/${classId}`);
-    const isEnrolled = enrollments.some(enrollment => enrollment.student_id === currentUser.student_id);
-    return isEnrolled
+    const isEnrolled = enrollments.some(
+      (enrollment) => enrollment.student_id === currentUser.student_id
+    );
+    return isEnrolled;
   }
 
   const isError = review === "" || starRating === 0;
@@ -127,22 +129,6 @@ const StudentReview = ({
           ))}
         </HStack>
 
-          <Textarea
-            placeholder="Type Here..."
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-          />
-          <Button
-            onClick={postReview}
-            colorScheme={isError ? "gray" : "blue"}
-            disabled={isError}
-          >
-            Post
-          </Button>
-        </FormControl>
-      </CardBody>
-    );
-  };
         <Textarea
           placeholder="Type Here..."
           value={review}
