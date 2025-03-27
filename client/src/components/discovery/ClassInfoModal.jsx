@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Card,
   HStack,
   Image,
   List,
@@ -196,18 +197,20 @@ function ClassInfoModal({
             </VStack>
           </ModalBody>
           <ModalFooter>
-            {role === "student" && <Button onClick={classSignUp}>Sign up</Button>}
+            {role === "student" && (
+              <Button onClick={classSignUp}>Sign up</Button>
+            )}
           </ModalFooter>
           <PublishedReviews classId={id} />
         </ModalContent>
-        <PublishedReviews
+        {/* <PublishedReviews
           title={title}
           location={location}
           description={description}
           level={level}
           date={date}
           id={id}
-        ></PublishedReviews>
+        ></PublishedReviews> */}
       </Modal>
     </>
   );

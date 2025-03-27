@@ -15,12 +15,10 @@ import {
 
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 
-import { formatDate } from "../../utils/formatDateTime";
-
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { formatDate } from "../../utils/formatDateTime";
 import PublishedReviews from "../reviews/classReview";
-
 
 export const ViewModal = ({
   isOpen,
@@ -38,7 +36,7 @@ export const ViewModal = ({
     setCurrentModal("cancel");
   };
 
-  // console.log("viewmodal", card);
+  console.log("viewmodal", card);
   const viewInfo = (
     <>
       <Grid
@@ -115,37 +113,32 @@ export const ViewModal = ({
         <ModalHeader>
           <HStack justify="space-between">
             <MdArrowBackIosNew onClick={onClose} />
-            <Heading size="lg">{card?.title ?? "Create a Class/Draft"}</Heading>{" "}
+            <Heading size="lg">
+              {card?.title ?? "Create a Class/Draft"}
+            </Heading>{" "}
             {/* Will add from prop */}
-            <MdMoreHoriz opacity={0}/>
+            <MdMoreHoriz opacity={0} />
           </HStack>
         </ModalHeader>
-        <ModalBody>{viewInfo}</ModalBody>
 
-        <PublishedReviews classId={id} />
-        
-        {(!isAttended && !card?.attendance) && <ModalFooter justifyContent="center">
-          <Button
-            size="sm"
-            background="#757575"
-            color="white"
-            mr={3}
-            onClick={onCancel}
-            px={10}
-            py={6}
-          >
-            Cancel RSVP
-          </Button>
-        </ModalFooter>}
+        <ModalBody>{viewInfo}</ModalBody>
+        {!isAttended && !card?.attendance && (
+          <ModalFooter justifyContent="center">
+            <Button
+              size="sm"
+              background="#757575"
+              color="white"
+              mr={3}
+              onClick={onCancel}
+              px={10}
+              py={6}
+            >
+              Cancel RSVP
+            </Button>
+          </ModalFooter>
+        )}
+        <PublishedReviews classId={card?.id} />
       </ModalContent>
-      <PublishedReviews
-        title={title}
-        location={location}
-        description={description}
-        level={level}
-        date={date}
-        id={id}
-      ></PublishedReviews>
     </Modal>
   );
 };
