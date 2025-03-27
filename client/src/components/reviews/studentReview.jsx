@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Avatar,
@@ -26,11 +26,14 @@ const StudentReview = ({
   student_id,
   displayName,
   onUpdate,
+  editMode = false,
 }) => {
   const { backend } = useBackendContext();
   const { currentUser } = useAuthContext();
   const [starRating, setStarRating] = useState(rating ?? 0);
   const [review, setReview] = useState(reviewText ?? "");
+  const [attended, setAttended] = useState(null);
+
   const [stars, setStars] = useState(Array(5).fill(0));
 
   const [hoverValue, setHoverValue] = useState(undefined);
@@ -86,34 +89,43 @@ const StudentReview = ({
       setStarRating(0);
     }
   }
-  
-  if (!getClassEnrollment(class_id)) {
-    return (
-      <CardBody>
-        <FormControl>
-          <HStack>
-            <Avatar
-              name="Dan Abrahmov"
-              src="https://bit.ly/dan-abramov"
+
+  useEffect(() => {
+    const fetchAttendance = async () => {
+      const attendance = await backend.get(
+        `/class-enrollments/student/${student_id}`
+      );
+      setAttended(attendance.data.find((a) => a.id === class_id));
+    };
+    fetchAttendance();
+  }, [attended, backend, class_id, student_id]);
+
+  return (
+    <CardBody hidden={attended}>
+      <FormControl>
+        <HStack>
+          <Avatar
+            name="Dan Abrahmov"
+            src="https://bit.ly/dan-abramov"
+          />
+          <Text>{displayName}</Text>
+        </HStack>
+        <HStack>
+          {stars.map((_, index) => (
+            <FaStar
+              key={index}
+              size={24}
+              value={starRating}
+              onChange={(e) => setStarRating(e.target.value)}
+              color={
+                (hoverValue || starRating) > index ? colors.orange : colors.grey
+              }
+              onClick={() => handleClickStar(index + 1)}
+              onMouseOver={() => handleMouseOverStar(index + 1)}
+              onMouseLeave={() => handleMouseLeaveStar}
             />
-            <Text>{displayName}</Text>
-          </HStack>
-          <HStack>
-            {stars.map((_, index) => (
-              <FaStar
-                key={index}
-                size={24}
-                value={starRating}
-                onChange={(e) => setStarRating(e.target.value)}
-                color={
-                  (hoverValue || starRating) > index ? colors.orange : colors.grey
-                }
-                onClick={() => handleClickStar(index + 1)}
-                onMouseOver={() => handleMouseOverStar(index + 1)}
-                onMouseLeave={() => handleMouseLeaveStar}
-              />
-            ))}
-          </HStack>
+          ))}
+        </HStack>
 
           <Textarea
             placeholder="Type Here..."
@@ -131,6 +143,21 @@ const StudentReview = ({
       </CardBody>
     );
   };
+        <Textarea
+          placeholder="Type Here..."
+          value={review}
+          onChange={(e) => setReview(e.target.value)}
+        />
+        <Button
+          onClick={postReview}
+          colorScheme={isError ? "gray" : "blue"}
+          disabled={isError}
+        >
+          {editMode ? "Save" : "Post"}
+        </Button>
+      </FormControl>
+    </CardBody>
+  );
 };
 
 export default StudentReview;
