@@ -15,11 +15,14 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
 import { formatDate } from "../../utils/formatDateTime";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
+import { ClassRSVP } from "../rsvp/classRsvp.jsx"
 
 export const TeacherViewModal = ({
   isOpen,
@@ -37,9 +40,11 @@ export const TeacherViewModal = ({
     setCurrentModal("edit");
   };
 
+  const { isOpen: isRSVPOpen, onOpen: onRSVPOpen, onClose: onRSVPClose } = useDisclosure();
 
   return (
     <Modal
+      size="full"
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -118,7 +123,7 @@ export const TeacherViewModal = ({
               <Text>{formatDate(classData?.date)}</Text>
             </div>
           </Flex>
-          <Container centerContent>
+          <VStack>
             <Box
               bg="gray.200"
               h="100%"
@@ -139,6 +144,7 @@ export const TeacherViewModal = ({
                   <QRCode
                     id={classData?.id}
                     type="Class"
+                    date={classData?.date}
                   >
                   </QRCode>
                 </Center>
@@ -151,14 +157,23 @@ export const TeacherViewModal = ({
                   </Button>
                 </Center>
               </Box>
-              <Center>
-                <Text fontWeight="bold" mt="3">people RSVP'd</Text>
-              </Center>
-              <Center>
-                <Button background="transparent" textDecoration="underline">View attendees {">"}</Button>
-              </Center>
+              <Box width="100%" align="center">
+                <Text fontWeight="bold"> {classData?.rsvpCount ? classData?.rsvpCount : 0} RSVPs</Text>
+                <Button
+                  onClick={onRSVPOpen}
+                  variant="unstyled"
+                  fontSize="lg"
+                  fontWeight="normal"
+                  color="purple"
+                  textDecoration="underline"
+                  _focus={{ boxShadow: "none" }}
+                >
+                  View attendees &gt;
+                </Button>
+                <ClassRSVP isOpen={isRSVPOpen} onClose={onRSVPClose} card={{id: classData?.id, name: classData?.title, date: classData?.date}}/>
+              </Box>
             </Box>
-          </Container>
+          </VStack>
           <Box>
             <Text
               fontWeight="bold"

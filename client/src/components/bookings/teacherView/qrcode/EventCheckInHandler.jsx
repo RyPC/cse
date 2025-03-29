@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Box, Button, Center, Spinner, Text, VStack } from "@chakra-ui/react";
 
@@ -16,6 +16,7 @@ export const EventCheckInHandler = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const params = useParams();
+  const hasCheckedIn = useRef(false);
 
   useEffect(() => {
     const handleCheckIn = async () => {
@@ -40,7 +41,7 @@ export const EventCheckInHandler = () => {
         );
         const studentId = studentResponse.data.id;
 
-        await backend.put("/event-enrollments", { // switched post to put?
+        await backend.put(`/event-enrollments/${studentId}`, { // switched post to put?
           student_id: studentId,
           event_id: id,
           // this statement has no effect since attendance defaults to false in backend route (event_enrollments.ts)
@@ -79,7 +80,7 @@ export const EventCheckInHandler = () => {
   return (
     <Box
       h="100vh"
-      bg="black"
+      bg="grey"
     >
       <VStack
         spacing={4}

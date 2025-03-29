@@ -155,7 +155,7 @@ const App = () => {
                 />
 
                 <Route
-                  path="/check-in/class/:id"
+                  path="/check-in/class/:id/:date"
                   element={<ClassCheckInHandler />}
                 />
                 <Route
