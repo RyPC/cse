@@ -21,10 +21,10 @@ export const EventCheckInHandler = () => {
   useEffect(() => {
     const handleCheckIn = async () => {
       // AW - idk if this works
-      if (hasCheckedIn.currentUser) {
+      if (hasCheckedIn.current) {
         return;
       }
-      hasCheckedIn.currentUser = true;
+      hasCheckedIn.current = true;
 
       try {
         if (!currentUser?.uid) {

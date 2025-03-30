@@ -21,10 +21,10 @@ export const ClassCheckInHandler = () => {
   useEffect(() => {
     const handleCheckIn = async () => {
       // check if user has checked in previously
-      if (hasCheckedIn.currentUser) {
+      if (hasCheckedIn.current) {
         return;
       }
-      hasCheckedIn.currentUser = true;
+      hasCheckedIn.current = true;
 
       try {
         if (!currentUser?.uid) {
