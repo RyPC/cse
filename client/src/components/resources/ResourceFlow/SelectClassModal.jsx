@@ -35,7 +35,7 @@ export const SelectClassModal = ({ isOpen, onClose, setCurrentModal, setClsId })
   
         for (let i=0; i<classEnrollmentRespData.length; i++) {
            const classEnrollment = classEnrollmentRespData[i]
-           console.log(classEnrollment)
+          //  console.log(classEnrollment)
            for (let j=0; j<formattedClasses.length; j++) {
             if (formattedClasses[j].id == classEnrollment.classId) {
               formattedClasses[j].rsvp++
@@ -48,7 +48,7 @@ export const SelectClassModal = ({ isOpen, onClose, setCurrentModal, setClsId })
   
         setClasses(formattedClasses); 
         setOriginalClasses(formattedClasses);
-        console.log(formattedClasses);
+        // console.log(formattedClasses);
       } catch (error) {
         console.error("Error fetching classes:", error);
       }

@@ -83,6 +83,7 @@ export const TeacherEditModal = ({
       ));
       triggerRefresh();
       setCurrentModal("view");
+      setRefresh();
     } catch (error) {
       console.error('Error updating class data:', error);
     }

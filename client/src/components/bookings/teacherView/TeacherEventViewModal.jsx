@@ -111,6 +111,7 @@ function TeacherEventViewModal({
     } else {
       enrollInEvent();
     }
+    setRefresh();
   };
 
   const handleSuccess = () => {
@@ -126,7 +127,7 @@ function TeacherEventViewModal({
       duration: 5000,
       isClosable: true,
     });
-    console.log("Set isEditing to false");
+    // console.log("Set isEditing to false");
   }
   
   const onBack = () => {
@@ -135,7 +136,7 @@ function TeacherEventViewModal({
 
   const handleEditEvent = () => {
     setIsEditing(true);
-    console.log("clicked edit");
+    // console.log("clicked edit");
   };
 
   const handleDeleteEvent = () => {

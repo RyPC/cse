@@ -36,7 +36,7 @@ const ReviewCard = ({
   useEffect(() => {
     const fetchStudent = async () => {
       const user = await backend.get(`/students/${student_id}`);
-      console.log(user.data);
+      // console.log(user.data);
       setStudent(user.data);
     };
     fetchStudent();

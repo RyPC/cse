@@ -112,6 +112,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
       console.error("Failed to create/save event:", error);
     } finally {
       setIsSubmitting(false);
+      // if (reloadCallback) reloadCallback();
     }
   };
 

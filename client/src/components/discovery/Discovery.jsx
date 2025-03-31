@@ -79,7 +79,6 @@ export const Discovery = () => {
       }
     } else {
       try {
-        console.log("here");
         const response = await backend.get("/classes/scheduled");
         setClasses(response.data);
       } catch (error) {

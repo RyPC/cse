@@ -58,14 +58,14 @@ export const EventCard = ({
     setOpenModal(false);
   };
 
-  const onCloseModal = () => {
-    setCurrentModal("view");
-    onClose();
-  };
+  // const onCloseModal = () => {
+  //   setCurrentModal("view");
+  //   onClose();
+  // };
 
   const closeTeacherModal = () => {
     setOpenTeacherModal(false);
-    onClose();
+    // onCloseModal();
   };
 
   const handleClickModal = () => {
