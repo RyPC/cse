@@ -24,11 +24,13 @@ import {
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { CreateClassForm } from "../forms/createClasses";
+import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
@@ -40,7 +42,6 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
-import CreateEvent from "../forms/createEvent";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -87,14 +88,14 @@ export const Bookings = () => {
               console.log("Error fetching class enrollments:", err);
             });
 
-            backend
-              .get(`/class-enrollments/student/${userId}`)
-              .then((res) => {
-                setClasses(res.data);
-              })
-              .catch((err) => {
-                console.log("Error fetching class enrollments:", err);
-              });
+          backend
+            .get(`/class-enrollments/student/${userId}`)
+            .then((res) => {
+              setClasses(res.data);
+            })
+            .catch((err) => {
+              console.log("Error fetching class enrollments:", err);
+            });
 
             backend
               .get(`/event-enrollments/student/${userId}`)
@@ -139,9 +140,7 @@ export const Bookings = () => {
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
-    const isAttended = attended.some(
-      (attendedItem) => attendedItem === item
-    );
+    const isAttended = attended.some((attendedItem) => attendedItem === item);
     setIsAttendedItem(isAttended);
     onOpen();
   };
@@ -194,9 +193,10 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-
       backend.get(`/events/published`).then((res) => setEvents(res.data));
-      backend.get(`/classes/published`).then((res) => {setClasses(res.data)});
+      backend.get(`/classes/published`).then((res) => {
+        setClasses(res.data);
+      });
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
 
@@ -314,6 +314,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {role !== "student" ? (
                   classes.length > 0 ? (
@@ -347,6 +349,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {events.length > 0 ? (
                   events.map((eventItem) => (
@@ -369,6 +373,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {role !== "student" ? (
                   drafts.length > 0 ? (
@@ -466,26 +472,32 @@ export const Bookings = () => {
           <Modal
             size="full"
             isOpen={isOpen}
-            onClose={onCloseModal}>
-            <ModalOverlay/>
+            onClose={onCloseModal}
+          >
+            <ModalOverlay />
             <ModalContent>
               <ModalHeader>
                 <HStack justify="space-between">
                   <MdArrowBackIosNew onClick={onCloseModal} />
-                  <Heading size="lg">{tabIndex === 0 ? "Create a Class" : "Create an Event"}</Heading>{" "}
+                  <Heading size="lg">
+                    {tabIndex === 0 ? "Create a Class" : "Create an Event"}
+                  </Heading>{" "}
                   {/* Will add from prop */}
-                  <MdMoreHoriz opacity={0}/>
+                  <MdMoreHoriz opacity={0} />
                 </HStack>
               </ModalHeader>
               <ModalBody>
-                {(tabIndex === 0 ?
+                {tabIndex === 0 ? (
                   <CreateClassForm
                     closeModal={onCloseModal}
                     modalData={selectedCard}
                     reloadCallback={reloadClassesAndDrafts}
                   />
-                :
-                  <CreateEvent onClose={onCloseModal} reloadCallback={reloadClassesAndDrafts}/>
+                ) : (
+                  <CreateEvent
+                    onClose={onCloseModal}
+                    reloadCallback={reloadClassesAndDrafts}
+                  />
                 )}
               </ModalBody>
             </ModalContent>
@@ -648,8 +660,8 @@ const ClassTeacherCard = memo(
                       };
                       setSelectedCard(modalData);
                       onOpen();
-                  }
-                  // : () => navigate(`/dashboard/classes/${classId}`)
+                    }
+                // : () => navigate(`/dashboard/classes/${classId}`)
               }
             >
               {isDraft ? "Edit" : "View Details >"}
@@ -660,5 +672,3 @@ const ClassTeacherCard = memo(
     );
   }
 );
-
-
