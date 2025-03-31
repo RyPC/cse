@@ -464,6 +464,7 @@ export const Bookings = () => {
           />
         ) : currentModal === "create" ? (
           <Modal
+            size="full"
             isOpen={isOpen}
             onClose={onCloseModal}>
             <ModalOverlay/>
@@ -477,7 +478,7 @@ export const Bookings = () => {
                 </HStack>
               </ModalHeader>
               <ModalBody>
-                {(tabIndex === 0 ? 
+                {(tabIndex === 0 ?
                   <CreateClassForm
                     closeModal={onCloseModal}
                     modalData={selectedCard}
@@ -626,6 +627,7 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
+                        rsvpCount
                       };
                       setSelectedCard(modalData);
                       onOpen();
@@ -642,6 +644,7 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
+                        rsvpCount
                       };
                       setSelectedCard(modalData);
                       onOpen();

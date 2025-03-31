@@ -38,6 +38,9 @@ export const EventCard = ({
   onClick,
   isAttended = false,
   triggerRefresh,
+  onCloseModal,
+  user = null,
+
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
@@ -83,7 +86,7 @@ export const EventCard = ({
     };
 
 
-
+  // console.log(user);
   return (
     <>
     <Card
@@ -149,6 +152,7 @@ export const EventCard = ({
             date={date}
             setOpenRootModal={setOpenRootModal}
             openRootModal={openRootModal}
+            user={user}
           />
           <TeacherEventViewModal
             isOpenProp={openTeacherModal}
