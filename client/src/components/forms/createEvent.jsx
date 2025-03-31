@@ -67,7 +67,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    triggerRefresh();
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -111,6 +110,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
     } catch (error) {
       console.error("Failed to create/save event:", error);
     } finally {
+      triggerRefresh();
       setIsSubmitting(false);
       // if (reloadCallback) reloadCallback();
     }
@@ -129,7 +129,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
       spacing={4}
       align="stretch"
     >
-      {!eventId ? (<Text> "New Event"</Text>) : ""}
+      {!eventId ? (<Text>New Event</Text>) : ""}
       <Box>
         <Text>Title</Text>
         <Input
