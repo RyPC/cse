@@ -93,7 +93,7 @@ export const Discovery = () => {
     }
   };
 
-// console.log(classes)
+  // console.log(classes)
   return (
     <Box>
       <VStack
