@@ -26,7 +26,7 @@ export const UploadFileModal = ({ isOpen, onClose, setCurrentModal, s3URL, setS3
               sx={{ maxWidth: "100%", marginX: "auto" }}
             >
             <Button colorScheme='gray' mr={3} onClick={() => {
-              if (s3URL == "") {
+              if (s3URL === "") {
                 alert("You must upload a file first!")
               } else {
                 setCurrentModal("card")
