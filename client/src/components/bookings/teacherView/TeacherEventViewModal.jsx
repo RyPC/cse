@@ -63,7 +63,7 @@ function TeacherEventViewModal({
   costume,
   isCorequisiteSignUp,
   corequisites,
-  setRefresh,
+  triggerRefresh,
   handleResolveCoreq = () => {},
 }) {
   const { currentUser, role } = useAuthContext();
@@ -71,6 +71,7 @@ function TeacherEventViewModal({
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
+  const formattedCallTime = formatTime(callTime);
   const formFormattedDate = formFormatDate(date)
   const toast = useToast();
 
@@ -151,10 +152,6 @@ function TeacherEventViewModal({
         setIsDeleting(false);
         setIsEditing(false);
         setIsConfirmDelete(true);
-        // handleClose()
-        // console.log("isDeleting", isDeleting);
-        // console.log("isEditing", isEditing);
-        // console.log("isConfirmDelete", isConfirmDelete);
       }
     } catch (error) {
       toast({
@@ -168,6 +165,7 @@ function TeacherEventViewModal({
 
   const handleCloseConfirmation = () => {
     setIsConfirmDelete(false);
+    triggerRefresh();
     handleClose();
   }
 
@@ -213,10 +211,10 @@ function TeacherEventViewModal({
                 callTime: callTime, 
                 description: description, 
                 level: level, 
+                capacity: capacity,
                 date: formFormattedDate}}
                 onClose={handleSaveChanges}
-                reloadCallback={setRefresh}
-              />
+                triggerRefresh={triggerRefresh}/>
               {console.log(startTime, endTime)}
             </Box>
           </ModalBody>
@@ -333,8 +331,13 @@ function TeacherEventViewModal({
             >
 
               <Box width="100%">
-                <Text fontWeight="bold">Time:</Text>
+                <Text fontWeight="bold">Event Time:</Text>
                 <Text>{formattedStartTime ? formattedStartTime : "TBD"} to {formattedEndTime ? formattedEndTime : "TBD"}</Text>
+              </Box>
+
+              <Box width="100%">
+                <Text fontWeight="bold">Call Time:</Text>
+                <Text>{formattedCallTime ? formattedCallTime : "TBD"}</Text>
               </Box>
 
               <Box width="100%">
