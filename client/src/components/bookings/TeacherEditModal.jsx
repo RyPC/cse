@@ -113,7 +113,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
   const onEndTimeChange = (e) => setEndTime(e.target.value);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal size="full" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <Flex align="center" w="100%" position="relative">
