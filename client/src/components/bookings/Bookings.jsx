@@ -62,6 +62,8 @@ export const Bookings = () => {
   const [isAttendedItem, setIsAttendedItem] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
 
+  const [refresh, setRefresh] = useState(0)
+
   const isTeacher = role === "teacher";
   useEffect(() => {
     if (currentUser && role !== "student") {
@@ -107,7 +109,7 @@ export const Bookings = () => {
             console.log("Error fetching user:", err);
           });
       }
-    }, [backend, currentUser, isTeacher]);
+    }, [backend, currentUser, isTeacher, refresh]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -125,6 +127,11 @@ export const Bookings = () => {
     setClassData(data);
     onOpen();
   };
+
+  const triggerRefresh = () => {
+    setRefresh(refresh+1);
+    console.log("Refresh triggered");
+  }
 
   const updateModal = (item) => {
     const type =
@@ -354,7 +361,8 @@ export const Bookings = () => {
                       key={eventItem.id}
                       {...eventItem}
                       onClick={() => updateModal(eventItem)}
-                      setRefresh={reloadClassesAndDrafts}
+                      // setRefresh={reloadClassesAndDrafts}
+                      triggerRefresh={triggerRefresh}
                       onCloseModal={onCloseModal}
                     />
                   ))
@@ -398,9 +406,13 @@ export const Bookings = () => {
                           endTime={item.endTime}
                           callTime={item.callTime}
                           attendeeCount={item.attendeeCount}
+                          description={item.description}
+                          capacity={item.capacity}
+                          level={item.level}
                           onClick={() => updateModal(item)}
+                          triggerRefresh={triggerRefresh}
                           onCloseModal={onCloseModal}
-                          setRefresh={reloadClassesAndDrafts}
+                          // setRefresh={reloadClassesAndDrafts}
                         />
                       )
                     )
@@ -420,6 +432,7 @@ export const Bookings = () => {
                         key={item.id}
                         {...item}
                         onClick={() => updateModal(item)}
+                        triggerRefresh={triggerRefresh}
                       />
                     )
                   )
@@ -458,6 +471,7 @@ export const Bookings = () => {
           />
         ) : currentModal === "create" ? (
           <Modal
+            size="full"
             isOpen={isOpen}
             onClose={onCloseModal}>
             <ModalOverlay/>
@@ -471,7 +485,7 @@ export const Bookings = () => {
                 </HStack>
               </ModalHeader>
               <ModalBody>
-                {(tabIndex === 0 ? 
+                {(tabIndex === 0 ?
                   <CreateClassForm
                     closeModal={onCloseModal}
                     modalData={selectedCard}
@@ -620,6 +634,7 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
+                        rsvpCount
                       };
                       setSelectedCard(modalData);
                       onOpen();
@@ -636,6 +651,7 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
+                        rsvpCount
                       };
                       setSelectedCard(modalData);
                       onOpen();
