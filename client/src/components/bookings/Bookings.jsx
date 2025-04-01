@@ -61,6 +61,8 @@ export const Bookings = () => {
   const [coEvents, setCoEvents] = useState([]);
   const [isAttendedItem, setIsAttendedItem] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+  const [allEvents, setAllEvents] = useState([]);
+  const [coreqId, setCoreqId] = useState();
 
   const isTeacher = role === "teacher";
   useEffect(() => {
@@ -69,6 +71,7 @@ export const Bookings = () => {
       backend.get(`/classes/published`).then((res) => setClasses(res.data));
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
+      backend.get('/events').then((res) => setAllEvents(res.data));
     } else if (currentUser && role === "student") {
       backend
         .get(`/users/${currentUser.uid}`)
@@ -115,6 +118,32 @@ export const Bookings = () => {
     setAttended([...attendedClasses, ...attendedEvents]);
     setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
+
+  useEffect(() => {
+    const fetchCoreqId = async () => {
+      if (!selectedCard?.id || !isOpen) return;
+  
+      try {
+        const res = await backend.get(`/corequisites/${selectedCard.id}`);
+        const data = res.data;
+  
+        if (data.length > 0) {
+          const eventId = data[0].eventId;
+          console.log("Fetched coreqId:", eventId);
+          setCoreqId(eventId);
+        } else {
+          console.log("No corequisite found for class:", selectedCard.id);
+          setCoreqId(null);
+        }
+      } catch (err) {
+        console.error("Failed to fetch coreqId:", err);
+        setCoreqId(null);
+      }
+    };
+  
+    fetchCoreqId();
+  }, [backend, selectedCard, isOpen]);
+  
 
   const onCloseModal = () => {
     setSelectedCard(null);
@@ -431,8 +460,9 @@ export const Bookings = () => {
             setCurrentModal={setCurrentModal}
             classData={selectedCard}
             setClassData={setSelectedCard}
-            performances={coEvents}
+            performances={allEvents}
             setRefresh={reloadClassesAndDrafts}
+            coreqId={coreqId}
           />
         ) : currentModal === "create" ? (
           <Modal

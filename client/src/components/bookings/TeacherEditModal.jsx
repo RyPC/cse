@@ -38,7 +38,7 @@ const formatDate = (date) => {
   return date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
 };
 
-export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData, performances, setRefresh }) => {
+export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData, performances, setRefresh, coreqId }) => {
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
   const formRef = useRef(null);
@@ -60,15 +60,17 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
       };
       await backend.put(`/classes/${classData.id}`, updatedData);
       console.log("Updating class", classData.id, updatedData);
+      await backend.put(`/corequisites/${classData.id}/${performanceId}`, updatedData);
+      console.log("Updating corequisites", classData.id, performanceId, updatedData);
 
       if (date)
         await backend.put(`/scheduled-classes/`,
-            { 
-                class_id: classData.id, 
-                date: date, 
-                start_time: startTime, 
-                end_time: endTime 
-            }
+          { 
+            class_id: classData.id, 
+            date: date, 
+            start_time: startTime, 
+            end_time: endTime 
+          }
         );
       // Update classData
       setClassData((prev) => ({
@@ -117,6 +119,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
   const [description, setDescription] = useState(classData?.description);
   const [capacity, setCapacity] = useState(classData?.capacity);
   const [level, setLevel] = useState(classData?.level);
+  const [performanceId, setPerformanceId] = useState(coreqId)
 
   const handleLocationSelect = (e) => {
     setLocation(e.target.value);
@@ -124,6 +127,10 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
 
   const handleLevelSelect = (e) => {
     setLevel(e.target.value);
+  }
+
+  const handlePerformanceSelect = (e) => {
+    setPerformanceId(e.target.value);
   }
 
   const onTitleChange = (e) => setClassTitle(e.target.value);
@@ -146,101 +153,102 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
             <FormControl mb={4}>
               <FormLabel>Class Title</FormLabel>
               <Input
-                  value={classTitle}
-                  onChange={onTitleChange}
-                  placeholder="Enter class title..."
+                value={classTitle}
+                onChange={onTitleChange}
+                placeholder="Enter class title..."
               />
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>Location</FormLabel>
               <Input
-                  value={location}
-                  onChange={handleLocationSelect}
-                  placeholder="Enter location..."
+                value={location}
+                onChange={handleLocationSelect}
+                placeholder="Enter location..."
               />
             </FormControl>
 
             <FormControl mb={4} isRequired={isPublishing}>
               <FormLabel>Date</FormLabel>
               <Input
-                  type="date"
-                  value={date}
-                  onChange={onDateChange}
-                  maxWidth="200px"
-                  placeholder="Enter date..."
+                type="date"
+                value={date}
+                onChange={onDateChange}
+                maxWidth="200px"
+                placeholder="Enter date..."
               />
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>Start Time</FormLabel>
               <Input
-                  type="time"
-                  maxWidth="200px"
-                  value={startTime}
-                  onChange={onStartTimeChange}
-                  placeholder="Enter start time..."
+                type="time"
+                maxWidth="200px"
+                value={startTime}
+                onChange={onStartTimeChange}
+                placeholder="Enter start time..."
               />
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>End Time</FormLabel>
               <Input
-                  type="time"
-                  maxWidth="200px"
-                  value={endTime}
-                  onChange={onEndTimeChange}
-                  placeholder="Enter end time..."
+                type="time"
+                maxWidth="200px"
+                value={endTime}
+                onChange={onEndTimeChange}
+                placeholder="Enter end time..."
               />
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>Description</FormLabel>
               <Textarea 
-                  height="100px"
-                  value={description}
-                  onChange={onDescriptionChange}
-                  placeholder="Enter description..."
+                height="100px"
+                value={description}
+                onChange={onDescriptionChange}
+                placeholder="Enter description..."
               />
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>Capacity</FormLabel>
               <Input
-                  type="number"
-                  maxWidth="200px"
-                  value={capacity}
-                  onChange={onCapacityChange}
-                  placeholder="Enter capacity..."
+                type="number"
+                maxWidth="200px"
+                value={capacity}
+                onChange={onCapacityChange}
+                placeholder="Enter capacity..."
               />
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>Level</FormLabel>
               <Select
-                  maxWidth="200px"
-                  value={level}
-                  placeholder="Select level..."
-                  onChange={handleLevelSelect}
+                maxWidth="200px"
+                value={level}
+                placeholder="Select level..."
+                onChange={handleLevelSelect}
               >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
               </Select>
             </FormControl>
 
             <FormControl mb={4}>
               <FormLabel>Performances</FormLabel>
               <Select
-                  maxWidth="200px"
-                  value={location}
-                  onChange={handleLocationSelect}
+                maxWidth="200px"
+                value={performanceId}
+                placeholder="Select a performance..."
+                onChange={handlePerformanceSelect}
               >
-                  {performances.map((performance) => (
+                {performances.map((performance) => (
                   <option key={performance.id} value={performance.id}>
-                      {performance.title}
+                    {performance.title}
                   </option>
-                  ))}
+                ))}
               </Select>
             </FormControl>
 
