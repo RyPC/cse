@@ -41,7 +41,7 @@ export const CreateClassForm = memo(
     const [capacity, setCapacity] = useState(modalData?.capacity ?? 0);
     const [level, setLevel] = useState(modalData?.level ?? "beginner");
     const [classType, setClassType] = useState(
-      modalData?.classType ?? "classical"
+      modalData?.classType ?? "1"
     );
     const [performance, setPerformance] = useState(
       modalData?.performance ?? -1
@@ -103,7 +103,14 @@ export const CreateClassForm = memo(
 
       if (classType != "") {
         await backend
-          .post("/tags")
+          .post("/class-tags", {
+            classId: classId,
+            tagId: classType
+          })
+          .then(response => console.log(response))
+          .catch(err => {
+            console.error(err)
+          })
       }
 
       setIsSubmitted(true);
