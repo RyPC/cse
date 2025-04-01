@@ -103,8 +103,9 @@ export const TeacherViewModal = ({
           <ModalHeader
             flex={1}
             textAlign="center"
+            marginTop="10px"
           >
-            {classData?.title}
+            {classData?.title ? classData.title : " "}
           </ModalHeader>
           <Menu>
             <MenuButton

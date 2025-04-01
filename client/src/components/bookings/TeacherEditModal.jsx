@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
-  Select, Text, IconButton } from "@chakra-ui/react";
+  Select, Text, IconButton, FormControl, FormLabel } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -47,7 +47,18 @@ export const TeacherEditModal = ({
   triggerRefresh 
 }) => {
   const { backend } = useBackendContext();
+  const [tags, setTags] = useState([]);
+  const [classType, setClassType] = useState(
+    classData?.classType ?? "1"
+  );
 
+  useMemo(() => {
+    if (backend) {
+      backend.get("/tags").then((response) => {
+        setTags(response.data)
+      })
+    }
+  }, [backend]);
   const onBack = () => {
     setCurrentModal("view");
   };
@@ -70,7 +81,7 @@ export const TeacherEditModal = ({
 
       console.log(performance)
 
-      if (performance == "None" || performance == undefined) {
+      if (performance === "None" || performance === undefined) {
         await backend.delete(`/classes/corequisites/${classData.id}`)
         console.log("coreqs deleted")
       }
@@ -89,6 +100,19 @@ export const TeacherEditModal = ({
         isDraft: draft,
       }
       ));
+
+      if (classType !== "") {
+        await backend
+          .post("/class-tags", {
+            classId: classData.id,
+            tagId: classType
+          })
+          .then(response => console.log(response))
+          .catch(err => {
+            console.error(err)
+          })
+      }
+
       triggerRefresh();
       setCurrentModal("view");
       setRefresh();
@@ -112,7 +136,7 @@ export const TeacherEditModal = ({
   const [description, setDescription] = useState(classData?.description);
   const [capacity, setCapacity] = useState(classData?.capacity);
   const [level, setLevel] = useState(classData?.level);
-  const [performance, setPerformance] = useState(classData?.performance)
+  const [performance, setPerformance] = useState(classData?.performance);
 
   const handleLocationSelect = (e) => {
     setLocation(e.target.value);
@@ -229,6 +253,28 @@ export const TeacherEditModal = ({
               <option key={p.id} value={p.id}>{p.title}</option>
             )}
           </Select>
+
+          <FormControl>
+            <FormLabel>Class Type</FormLabel>
+            <Select
+              required
+              value={classType}
+              onChange={(e) => setClassType(e.target.value)}
+            >
+              {tags
+                ? tags.map((tag, ind) => (
+                    <option
+                      key={ind}
+                      value={tag.id}
+                    >
+                      {tag.tag}
+                    </option>
+                  ))
+                : null}
+            </Select>
+          </FormControl>
+
+
         </ModalBody>
 
         <ModalFooter>

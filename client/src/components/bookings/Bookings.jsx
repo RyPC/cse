@@ -269,7 +269,7 @@ export const Bookings = () => {
     return d;
   };
 
-  // console.log("classes", classes);
+  // console.log("draft classes", draftClasses);
   // console.log("events", events);
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
@@ -386,7 +386,7 @@ export const Bookings = () => {
                 {role !== "student" ? (
                   drafts.length > 0 ? (
                     drafts.map((item) =>
-                      draftClasses.includes(item) ? (
+                      !item.callTime ? (
                         <ClassCard
                           key={item.id}
                           id={item.id}
@@ -473,7 +473,7 @@ export const Bookings = () => {
             classData={selectedCard}
             setClassData={setSelectedCard}
             performances={coEvents}
-            setRefresh={reloadClassesAndDrafts}
+            triggerRefresh={reloadClassesAndDrafts}
           />
         ) : currentModal === "create" ? (
           <Modal

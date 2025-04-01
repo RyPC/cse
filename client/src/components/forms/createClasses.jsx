@@ -101,7 +101,7 @@ export const CreateClassForm = memo(
           );
       }
 
-      if (classType != "") {
+      if (classType !== "") {
         await backend
           .post("/class-tags", {
             classId: classId,
