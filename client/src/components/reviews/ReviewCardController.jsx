@@ -28,7 +28,7 @@ function ReviewCardController(props) {
     };
 
     fetchStudent();
-  }, [backend, student, student_id]);
+  }, [backend, student_id]);
   return (
     <Card position="relative">
       {currentUser.uid === student?.firebaseUid && (

@@ -93,7 +93,7 @@ const StudentReview = ({
       setAttended(attendance.data.find((a) => a.id === class_id));
     };
     fetchAttendance();
-  }, [attended, backend, class_id, student_id]);
+  }, [backend, class_id, student_id]);
 
   return (
     <Card>
