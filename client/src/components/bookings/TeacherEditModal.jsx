@@ -44,7 +44,7 @@ export const TeacherEditModal = ({
   setCurrentModal, 
   classData, setClassData, 
   performances, 
-  triggerRefresh,
+  setRefresh,
   coreqId
 }) => {
   const { backend } = useBackendContext();
@@ -94,7 +94,6 @@ export const TeacherEditModal = ({
         isDraft: draft,
       }
       ));
-      triggerRefresh();
       setCurrentModal("view");
       setRefresh();
     } catch (error) {
