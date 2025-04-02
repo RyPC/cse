@@ -154,10 +154,34 @@ export const Bookings = () => {
     setRefresh(refresh+1);
     console.log("Refresh triggered");
   }
+  // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
+  const deepEquality = (object1, object2) => {
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+  
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+  
+    for (const key of keys1) {
+      const val1 = object1[key];
+      const val2 = object2[key];
+      const areObjects = typeof val1 === "object" && typeof val2 === "object";
+      if (
+        areObjects && !deepEquality(val1, val2) ||
+        !areObjects && val1 !== val2
+      ) {
+        return false;
+      }
+    }
+  
+    return true;
+  }
 
   const updateModal = (item) => {
     const type =
-      classes.includes(item) || draftClasses.includes(item) ? "class" : "event";
+      classes.some(e => deepEquality(e, item)) || draftClasses.some(e => deepEquality(e, item)) ? "class" : "event";
+    console.log("update", item, classes, draftClasses, type, deepEquality(classes[0], item));
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
@@ -206,6 +230,7 @@ export const Bookings = () => {
 
       if (response.status === 200) {
         setCoEvents(response.data);
+        console.log(coEvents);
       }
     } catch (error) {
       console.error("Error fetching corequisite enrollment:", error);
@@ -345,8 +370,9 @@ export const Bookings = () => {
                         key={index}
                         setSelectedCard={setSelectedCard}
                         {...classItem}
+                        performance={coEvents}
                         navigate={navigate}
-                        onOpen={onOpen}
+                        onOpen={updateModal}
                       />
                     ))
                   ) : (
@@ -652,14 +678,26 @@ const ClassTeacherCard = memo(
                         capacity,
                         level,
                         costume,
-                        performance,
+                        performances: performance,
                         isDraft,
                         rsvpCount,
                         startTime,
                         endTime
                       };
                       setSelectedCard(modalData);
-                      onOpen();
+                      onOpen({
+                        id,
+                        title,
+                        location,
+                        date,
+                        description,
+                        capacity,
+                        level,
+                        costume,
+                        isDraft,
+                        startTime,
+                        endTime
+                      });
                     }
                   : () => {
                       const modalData = {
@@ -671,14 +709,26 @@ const ClassTeacherCard = memo(
                         capacity,
                         level,
                         costume,
-                        performance,
+                        performances: performance,
                         isDraft,
                         rsvpCount,
                         startTime,
                         endTime
                       };
                       setSelectedCard(modalData);
-                      onOpen();
+                      onOpen({
+                        id,
+                        title,
+                        location,
+                        date,
+                        description,
+                        capacity,
+                        level,
+                        costume,
+                        isDraft,
+                        startTime,
+                        endTime
+                      });
                     }
                 // : () => navigate(`/dashboard/classes/${classId}`)
               }
