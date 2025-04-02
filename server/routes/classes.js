@@ -143,7 +143,7 @@ classesRouter.get("/published", async (req, res) => {
   try {
     const data = await db.query(
       `
-      SELECT DISTINCT ON (c.id)
+      SELECT DISTINCT ON (c.id, sc.date)
           c.*,
           sc.date,
           sc.start_time,

@@ -92,22 +92,13 @@ export const Bookings = () => {
             });
 
           backend
-            .get(`/class-enrollments/student/${userId}`)
+            .get(`/event-enrollments/student/${userId}`)
             .then((res) => {
-              setClasses(res.data);
+              setEvents(res.data);
             })
             .catch((err) => {
-              console.log("Error fetching class enrollments:", err);
+              console.log("Error fetching event enrollments:", err);
             });
-
-            backend
-              .get(`/event-enrollments/student/${userId}`)
-              .then((res) => {
-                setEvents(res.data);
-              })
-              .catch((err) => {
-                console.log("Error fetching event enrollments:", err);
-              });
           })
           .catch((err) => {
             console.log("Error fetching user:", err);
@@ -598,6 +589,8 @@ const ClassTeacherCard = memo(
     performance,
     rsvpCount,
     isDraft,
+    startTime,
+    endTime,
     navigate,
     setSelectedCard,
     onOpen,
@@ -661,7 +654,9 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
-                        rsvpCount
+                        rsvpCount,
+                        startTime,
+                        endTime
                       };
                       setSelectedCard(modalData);
                       onOpen();
@@ -678,7 +673,9 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
-                        rsvpCount
+                        rsvpCount,
+                        startTime,
+                        endTime
                       };
                       setSelectedCard(modalData);
                       onOpen();
