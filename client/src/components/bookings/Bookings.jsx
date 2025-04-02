@@ -156,6 +156,7 @@ export const Bookings = () => {
   }
   // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
   const deepEquality = (object1, object2) => {
+    if (object1 === null || object2 === null) return object1 === object2;
     const keys1 = Object.keys(object1);
     const keys2 = Object.keys(object2);
   
