@@ -24,11 +24,13 @@ import {
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { CreateClassForm } from "../forms/createClasses";
+import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
@@ -40,7 +42,6 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
-import CreateEvent from "../forms/createEvent";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -63,6 +64,8 @@ export const Bookings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
+
+  const [refresh, setRefresh] = useState(0)
 
   const isTeacher = role === "teacher";
   useEffect(() => {
@@ -88,14 +91,14 @@ export const Bookings = () => {
               console.log("Error fetching class enrollments:", err);
             });
 
-            backend
-              .get(`/class-enrollments/student/${userId}`)
-              .then((res) => {
-                setClasses(res.data);
-              })
-              .catch((err) => {
-                console.log("Error fetching class enrollments:", err);
-              });
+          backend
+            .get(`/class-enrollments/student/${userId}`)
+            .then((res) => {
+              setClasses(res.data);
+            })
+            .catch((err) => {
+              console.log("Error fetching class enrollments:", err);
+            });
 
             backend
               .get(`/event-enrollments/student/${userId}`)
@@ -110,7 +113,7 @@ export const Bookings = () => {
             console.log("Error fetching user:", err);
           });
       }
-    }, [backend, currentUser, isTeacher]);
+    }, [backend, currentUser, isTeacher, refresh]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -156,15 +159,18 @@ export const Bookings = () => {
     onOpen();
   };
 
+  const triggerRefresh = () => {
+    setRefresh(refresh+1);
+    console.log("Refresh triggered");
+  }
+
   const updateModal = (item) => {
     const type =
       classes.includes(item) || draftClasses.includes(item) ? "class" : "event";
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
-    const isAttended = attended.some(
-      (attendedItem) => attendedItem === item
-    );
+    const isAttended = attended.some((attendedItem) => attendedItem === item);
     setIsAttendedItem(isAttended);
     onOpen();
   };
@@ -217,9 +223,10 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-
       backend.get(`/events/published`).then((res) => setEvents(res.data));
-      backend.get(`/classes/published`).then((res) => {setClasses(res.data)});
+      backend.get(`/classes/published`).then((res) => {
+        setClasses(res.data);
+      });
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
 
@@ -337,6 +344,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {role !== "student" ? (
                   classes.length > 0 ? (
@@ -370,6 +379,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {events.length > 0 ? (
                   events.map((eventItem) => (
@@ -377,7 +388,8 @@ export const Bookings = () => {
                       key={eventItem.id}
                       {...eventItem}
                       onClick={() => updateModal(eventItem)}
-                      setRefresh={reloadClassesAndDrafts}
+                      // setRefresh={reloadClassesAndDrafts}
+                      triggerRefresh={triggerRefresh}
                       onCloseModal={onCloseModal}
                     />
                   ))
@@ -391,6 +403,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {role !== "student" ? (
                   drafts.length > 0 ? (
@@ -404,10 +418,21 @@ export const Bookings = () => {
                       ) : (
                         <EventCard
                           key={item.id}
-                          {...item}
+                          id={item.id}
+                          title={item.title}
+                          location={item.location}
+                          date={item.date}
+                          startTime={item.startTime}
+                          endTime={item.endTime}
+                          callTime={item.callTime}
+                          attendeeCount={item.attendeeCount}
+                          description={item.description}
+                          capacity={item.capacity}
+                          level={item.level}
                           onClick={() => updateModal(item)}
+                          triggerRefresh={triggerRefresh}
                           onCloseModal={onCloseModal}
-                          setRefresh={reloadClassesAndDrafts}
+                          // setRefresh={reloadClassesAndDrafts}
                         />
                       )
                     )
@@ -427,6 +452,7 @@ export const Bookings = () => {
                         key={item.id}
                         {...item}
                         onClick={() => updateModal(item)}
+                        triggerRefresh={triggerRefresh}
                       />
                     )
                   )
@@ -466,27 +492,34 @@ export const Bookings = () => {
           />
         ) : currentModal === "create" ? (
           <Modal
+            size="full"
             isOpen={isOpen}
-            onClose={onCloseModal}>
-            <ModalOverlay/>
+            onClose={onCloseModal}
+          >
+            <ModalOverlay />
             <ModalContent>
               <ModalHeader>
                 <HStack justify="space-between">
                   <MdArrowBackIosNew onClick={onCloseModal} />
-                  <Heading size="lg">{tabIndex === 0 ? "Create a Class" : "Create an Event"}</Heading>{" "}
+                  <Heading size="lg">
+                    {tabIndex === 0 ? "Create a Class" : "Create an Event"}
+                  </Heading>{" "}
                   {/* Will add from prop */}
-                  <MdMoreHoriz opacity={0}/>
+                  <MdMoreHoriz opacity={0} />
                 </HStack>
               </ModalHeader>
               <ModalBody>
-                {(tabIndex === 0 ? 
+                {tabIndex === 0 ? (
                   <CreateClassForm
                     closeModal={onCloseModal}
                     modalData={selectedCard}
                     reloadCallback={reloadClassesAndDrafts}
                   />
-                :
-                  <CreateEvent onClose={onCloseModal} reloadCallback={reloadClassesAndDrafts}/>
+                ) : (
+                  <CreateEvent
+                    onClose={onCloseModal}
+                    reloadCallback={reloadClassesAndDrafts}
+                  />
                 )}
               </ModalBody>
             </ModalContent>
@@ -628,6 +661,7 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
+                        rsvpCount
                       };
                       setSelectedCard(modalData);
                       onOpen();
@@ -644,11 +678,12 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
+                        rsvpCount
                       };
                       setSelectedCard(modalData);
                       onOpen();
-                  }
-                  // : () => navigate(`/dashboard/classes/${classId}`)
+                    }
+                // : () => navigate(`/dashboard/classes/${classId}`)
               }
             >
               {isDraft ? "Edit" : "View Details >"}
@@ -659,5 +694,3 @@ const ClassTeacherCard = memo(
     );
   }
 );
-
-

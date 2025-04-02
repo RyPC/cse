@@ -1,15 +1,39 @@
-import { useState, useEffect } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, ModalFooter, IconButton, VStack, Wrap, WrapItem, Text, Spinner } from "@chakra-ui/react"
-import { IoIosArrowBack } from "react-icons/io";
-import { ProgressBar } from "./ProgressBar";
-import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
+import { useEffect, useState } from "react";
 
-export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags, clsId }) => {
+import {
+  Button,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Text,
+  VStack,
+  Wrap,
+  WrapItem,
+} from "@chakra-ui/react";
+
+import { IoIosArrowBack } from "react-icons/io";
+
+import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
+import { ProgressBar } from "./ProgressBar";
+
+export const SelectTagModal = ({
+  isOpen,
+  onClose,
+  setCurrentModal,
+  tags,
+  setTags,
+  clsId,
+}) => {
   const { backend } = useBackendContext();
   const [loading, setLoading] = useState(false);
   const [availableTags, setAvailableTags] = useState([]);
 
-  // Fetch tags for the selected class
   useEffect(() => {
     const fetchTags = async () => {
       if (!clsId) {
@@ -22,14 +46,13 @@ export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags
         console.log("Fetching tags for class:", clsId);
         const response = await backend.get(`/class-tags/tags/${clsId}`);
         console.log("Raw tag data:", response.data);
-        
+
         if (response.data && response.data.length > 0) {
-          // Extract tags from the response based on the structure shown
-          const processedTags = response.data.map(item => ({
+          const processedTags = response.data.map((item) => ({
             id: item.tagId,
-            name: item.tag
+            name: item.tag,
           }));
-          
+
           console.log("Processed tags:", processedTags);
           setAvailableTags(processedTags);
         } else {
@@ -37,8 +60,7 @@ export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags
           setAvailableTags([]);
         }
       } catch (error) {
-        console.error('Error fetching tags for class:', error);
-        // Fallback if needed
+        console.error("Error fetching tags for class:", error);
         setAvailableTags([]);
       } finally {
         setLoading(false);
@@ -56,24 +78,31 @@ export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags
     setCurrentModal("upload-photo");
   };
 
-  const toggleTag = (tagId) => {
-    if (tags.includes(tagId)) {
-      setTags(tags.filter(id => id !== tagId));
+  const toggleTag = (tag) => {
+    if (tags.some((t) => t.id === tag.id)) {
+      setTags(tags.filter((t) => t.id !== tag.id));
     } else {
-      setTags([...tags, tagId]);
+      setTags([...tags, tag]);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <IconButton aria-label="Go back" variant='ghost' onClick={onGoBack}>
+          <IconButton
+            aria-label="Go back"
+            variant="ghost"
+            onClick={onGoBack}
+          >
             <IoIosArrowBack />
           </IconButton>
           Select Tags
-          <ProgressBar currStep={3}/>
+          <ProgressBar currStep={3} />
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -87,12 +116,17 @@ export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags
               {availableTags.length > 0 ? (
                 <>
                   <Text mb={3}>Select tags for this resource:</Text>
-                  <Wrap spacing={3} py={2}>
+                  <Wrap
+                    spacing={3}
+                    py={2}
+                  >
                     {availableTags.map((tag) => (
                       <WrapItem key={tag.id}>
-                        <Button 
-                          colorScheme={tags.includes(tag.id) ? "teal" : "blue"}
-                          onClick={() => toggleTag(tag.id)}
+                        <Button
+                          colorScheme={
+                            tags.some((t) => t.id === tag.id) ? "teal" : "blue"
+                          }
+                          onClick={() => toggleTag(tag)}
                           mb={2}
                         >
                           {tag.name}
@@ -102,13 +136,14 @@ export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags
                   </Wrap>
                 </>
               ) : (
-                <Text>No tags available for this class. Please contact your administrator to add tags.</Text>
-              )}
-              
-              {tags.length > 0 && (
-                <Text mt={4}>
-                  Selected Tags: {tags.length}
+                <Text>
+                  No tags available for this class. Please contact your
+                  administrator to add tags.
                 </Text>
+              )}
+
+              {tags.length > 0 && (
+                <Text mt={4}>Selected Tags: {tags.length}</Text>
               )}
             </>
           )}
@@ -118,7 +153,11 @@ export const SelectTagModal = ({ isOpen, onClose, setCurrentModal, tags, setTags
             spacing={8}
             sx={{ maxWidth: "100%", marginX: "auto" }}
           >
-            <Button colorScheme='gray' mr={3} onClick={onConfirm}>
+            <Button
+              colorScheme="gray"
+              mr={3}
+              onClick={onConfirm}
+            >
               Next
             </Button>
           </VStack>

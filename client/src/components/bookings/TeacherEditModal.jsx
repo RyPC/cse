@@ -38,7 +38,15 @@ const formatDate = (date) => {
   return date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
 };
 
-export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, setClassData, performances, setRefresh, coreqId }) => {
+export const TeacherEditModal = ({ 
+  isOpen, 
+  onClose, 
+  setCurrentModal, 
+  classData, setClassData, 
+  performances, 
+  triggerRefresh,
+  coreqId
+}) => {
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
   const formRef = useRef(null);
@@ -84,8 +92,9 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
         capacity,
         level,
         isDraft: draft,
-      }));
-
+      }
+      ));
+      triggerRefresh();
       setCurrentModal("view");
       setRefresh();
     } catch (error) {
@@ -141,7 +150,7 @@ export const TeacherEditModal = ({ isOpen, onClose, setCurrentModal, classData, 
   const onEndTimeChange = (e) => setEndTime(e.target.value);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal size="full" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
         <Flex align="center" w="100%" position="relative">

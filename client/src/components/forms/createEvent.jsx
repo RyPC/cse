@@ -14,7 +14,7 @@ import {
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 
-export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallback }) => {
+export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefresh }) => {
   const [formData, setFormData] = useState({
     location: "",
     title: "",
@@ -25,6 +25,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
     endTime: "",
     callTime: "",
     costume: "",
+    capacity: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +33,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
 
   useEffect(() => {
     if (event) {
-      console.log("Incoming event data:", event);
       setFormData({
         location: event.location || "",
         title: event.title || "",
@@ -43,6 +43,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
         endTime: event.endTime || "",
         callTime: event.callTime || "",
         costume: event.costume || "",
+        capacity: ((event.capacity || (event.capacity === 0)) ? event.capacity : "")
       });
     }
   }, [event]);
@@ -67,8 +68,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
 
   const handleSubmit = async (isDraft) => {
     if (!validateForm()) return;
-    // console.log(formData);
-    console.log("isDraft:", isDraft)
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
@@ -102,6 +101,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
           endTime: "",
           callTime: "",
           costume: "",
+          capacity: "",
         });
         if (onClose) onClose();
         if (reloadCallback) reloadCallback();
@@ -111,6 +111,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
     } catch (error) {
       console.error("Failed to create/save event:", error);
     } finally {
+      triggerRefresh();
       setIsSubmitting(false);
     }
   };
@@ -128,7 +129,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
       spacing={4}
       align="stretch"
     >
-      {!formData.title && <Text>New Event</Text>}
+      {!eventId ? (<Text>New Event</Text>) : ""}
       <Box>
         <Text>Title</Text>
         <Input
@@ -213,6 +214,16 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
           isInvalid={errors.callTime}
         />
         {errors.callTime && <Text color="red.500">{errors.callTime}</Text>}
+      </Box>
+
+      <Box>
+        <Text>Capacity</Text>
+        <Input
+          type="number"
+          name="capacity"
+          value={formData.capacity}
+          onChange={handleChange}
+        />
       </Box>
 
       <Box>
