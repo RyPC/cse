@@ -52,7 +52,7 @@ scheduledClassesRouter.put("/", async (req, res) => {
         const { class_id, date, start_time, end_time } = req.body;
 
         if (!class_id || !date)
-            res.status(500).send("Invalid PUT request, please enter required `class_id` and `date` parameters");
+            return res.status(400).send("Invalid PUT request, please enter required `class_id` and `date` parameters");
 
         const query = `UPDATE scheduled_classes SET
         start_time = COALESCE($1, start_time),
@@ -61,6 +61,9 @@ scheduledClassesRouter.put("/", async (req, res) => {
         RETURNING *;`;
 
         const data = await db.query(query, [start_time, end_time, class_id, date]);
+
+        if (data.rowCount === 0)
+            return res.status(404).send("Scheduled class not found");
 
         res.status(200).json(keysToCamel(data));
     } catch (err) {

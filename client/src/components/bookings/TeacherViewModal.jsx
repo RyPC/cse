@@ -31,6 +31,7 @@ export const TeacherViewModal = ({
   classData,
   performances,
 }) => {
+  console.log(performances);
 
   const onCancel = () => {
     setCurrentModal("cancel");
