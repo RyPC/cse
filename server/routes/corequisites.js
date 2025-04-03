@@ -51,4 +51,17 @@ corequisitesRouter.put("/:class_id/:event_id", async (req, res) => {
     }
 });
 
+corequisitesRouter.delete("/class/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await db.query(
+            `DELETE FROM corequisites WHERE class_id = $1 RETURNING *;`, [id]
+        );
+        res.json(keysToCamel(result));
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+
+});
+
 export { corequisitesRouter };

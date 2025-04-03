@@ -28,6 +28,7 @@ export const CreateClassForm = memo(
     const { backend } = useBackendContext();
     // console.log(modalData);
     const [events, setEvents] = useState([]);
+    const [tags, setTags] = useState([]);
 
     const [title, setTitle] = useState(modalData?.title ?? "");
     const [location, setLocation] = useState(modalData?.location ?? "");
@@ -40,7 +41,7 @@ export const CreateClassForm = memo(
     const [capacity, setCapacity] = useState(modalData?.capacity ?? 0);
     const [level, setLevel] = useState(modalData?.level ?? "beginner");
     const [classType, setClassType] = useState(
-      modalData?.classType ?? "classical"
+      modalData?.classType ?? "1"
     );
     const [performance, setPerformance] = useState(
       modalData?.performance ?? -1
@@ -100,6 +101,18 @@ export const CreateClassForm = memo(
           );
       }
 
+      if (classType !== "") {
+        await backend
+          .post("/class-tags", {
+            classId: classId,
+            tagId: classType
+          })
+          .then(response => console.log(response))
+          .catch(err => {
+            console.error(err)
+          })
+      }
+
       setIsSubmitted(true);
       onConfirmationClose();
       onClose();
@@ -111,6 +124,9 @@ export const CreateClassForm = memo(
         backend.get("/events").then((response) => {
           setEvents(response.data);
         });
+        backend.get("/tags").then((response) => {
+          setTags(response.data)
+        })
       }
     }, [backend]);
     // useEffect(() => {
@@ -250,8 +266,16 @@ export const CreateClassForm = memo(
                 value={classType}
                 onChange={(e) => setClassType(e.target.value)}
               >
-                <option value="classical">Classical</option>
-                <option value="ballet">Ballet</option>
+                {tags
+                  ? tags.map((tag, ind) => (
+                      <option
+                        key={ind}
+                        value={tag.id}
+                      >
+                        {tag.tag}
+                      </option>
+                    ))
+                  : null}
               </Select>
             </FormControl>
 

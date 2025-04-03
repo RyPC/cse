@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 
 import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
   Select, Text, IconButton, FormControl, FormLabel, Textarea } from "@chakra-ui/react";
@@ -50,7 +50,18 @@ export const TeacherEditModal = ({
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
   const formRef = useRef(null);
+  const [tags, setTags] = useState([]);
+  const [classType, setClassType] = useState(
+    classData?.classType ?? "1"
+  );
 
+  useMemo(() => {
+    if (backend) {
+      backend.get("/tags").then((response) => {
+        setTags(response.data)
+      })
+    }
+  }, [backend]);
   const onBack = () => {
     setCurrentModal("view");
   };
@@ -68,6 +79,7 @@ export const TeacherEditModal = ({
       };
       await backend.put(`/classes/${classData.id}`, updatedData);
       console.log("Updating class", classData.id, updatedData);
+      await backend.delete(`/corequisites/class/${classData.id}`);
       await backend.put(`/corequisites/${classData.id}/${performanceId}`, updatedData);
       console.log("Updating corequisites", classData.id, performanceId, updatedData);
 
@@ -94,6 +106,19 @@ export const TeacherEditModal = ({
         isDraft: draft,
       }
       ));
+
+      if (classType !== "") {
+        await backend
+          .post("/class-tags", {
+            classId: classData.id,
+            tagId: classType
+          })
+          .then(response => console.log(response))
+          .catch(err => {
+            console.error(err)
+          })
+      }
+
       setCurrentModal("view");
       setRefresh();
     } catch (error) {

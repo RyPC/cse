@@ -251,6 +251,7 @@ export const Bookings = () => {
       const attendedEvents = events.filter((e) => e.attendance !== null);
       setAttended([...attendedClasses, ...attendedEvents]);
       setDrafts([...draftClasses, ...draftEvents]);
+      loadCorequisites(selectedCard.id);
     } catch (error) {
       console.error("Error reloading classes:", error);
     }
@@ -265,14 +266,21 @@ export const Bookings = () => {
       const [classesResponse, classDataResponse] = await Promise.all([
         backend.get("/scheduled-classes"),
         backend.get("/classes"),
+        
       ]);
 
       const classDataDict = new Map();
       classDataResponse.data.forEach((cls) => classDataDict.set(cls.id, cls));
 
+      console.log("Fetching tags for class:", clsId);
+      const response = await backend.get(`/class-tags/tags/${clsId}`);
+      console.log("Raw tag data:", response.data);
+      
       const formattedData = classesResponse.data
         .map((cls) => {
           const fullData = classDataDict.get(cls.classId);
+
+          
           return fullData
             ? {
                 classId: cls.classId,
@@ -309,7 +317,7 @@ export const Bookings = () => {
     return d;
   };
 
-  // console.log("classes", classes);
+  // console.log("draft classes", draftClasses);
   // console.log("events", events);
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
@@ -427,7 +435,7 @@ export const Bookings = () => {
                 {role !== "student" ? (
                   drafts.length > 0 ? (
                     drafts.map((item) =>
-                      draftClasses.includes(item) ? (
+                      !item.callTime ? (
                         <ClassCard
                           key={item.id}
                           {...item}
