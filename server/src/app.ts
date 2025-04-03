@@ -22,6 +22,7 @@ import { articleTagsRouter } from "../routes/article_tags";
 import { videoTagsRouter } from "../routes/video_tags";
 import { classTagsRouter } from "../routes/class_tags";
 import { tagsRouter } from "../routes/tags";
+import { corequisitesRouter } from "../routes/corequisites";
 
 import { verifyToken } from "./middleware";
 
@@ -72,6 +73,7 @@ app.use("/article-tags", articleTagsRouter);
 app.use("/class-tags", classTagsRouter);
 app.use("/video-tags", videoTagsRouter);
 app.use("/tags", tagsRouter);
+app.use("/corequisites", corequisitesRouter);
 app.listen(SERVER_PORT, () => {
   console.info(`Server listening on ${SERVER_PORT}`);
 });

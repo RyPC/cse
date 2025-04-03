@@ -8,6 +8,7 @@ import {
   Text,
   Textarea,
   VStack,
+  Flex
 } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -65,10 +66,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (isDraft) => {
     if (!validateForm()) return;
-
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
@@ -77,6 +76,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         start_time: formData.startTime,
         end_time: formData.endTime,
         call_time: formData.callTime,
+        is_draft: isDraft,
       };
 
       // Using axios instead of fetch
@@ -104,6 +104,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
           capacity: "",
         });
         if (onClose) onClose();
+        if (reloadCallback) reloadCallback();
       } else {
         console.error("Failed to create/save event:", response.statusText);
       }
@@ -112,7 +113,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
     } finally {
       triggerRefresh();
       setIsSubmitting(false);
-      // if (reloadCallback) reloadCallback();
     }
   };
 
@@ -249,14 +249,25 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         />
         {errors.costume && <Text color="red.500">{errors.costume}</Text>}
       </Box>
+      <Flex justifyContent="center" w="100%" gap={3}>
+        <Button
+            onClick={() => handleSubmit(true)} // true = save draft
+            isLoading={isSubmitting}
+            flex="1"
+        >
+            Save Draft
+        </Button>
+        <Button
+            onClick={() => handleSubmit(false)} // false = publish
+            isLoading={isSubmitting}
+            colorScheme="blue"
+            flex="1"
+        >
+            Publish
+        </Button>
+      </Flex>
 
-      <Button
-        onClick={handleSubmit}
-        colorScheme="blue"
-        isLoading={isSubmitting}
-      >
-        {eventId  ? "Save Changes" : "Create Event"}
-      </Button>
+      
     </VStack>
   );
 };
