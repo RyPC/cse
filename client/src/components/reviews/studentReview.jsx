@@ -59,7 +59,6 @@ const StudentReview = ({
   const isError = review === "" || starRating === 0;
   async function postReview() {
     if (isError) return;
-
     let response;
     if (student_id) {
       response = await backend.put("/reviews", {
@@ -87,17 +86,21 @@ const StudentReview = ({
 
   useEffect(() => {
     const fetchAttendance = async () => {
+      if (!student_id || !class_id) return;
+
       const attendance = await backend.get(
         `/class-enrollments/student/${student_id}`
       );
-      setAttended(attendance.data.find((a) => a.id === class_id));
+
+      const attendanceObject = attendance.data.find((a) => a.id === class_id)
+
+      setAttended(attendanceObject.attendance);
     };
     fetchAttendance();
   }, [backend, class_id, student_id]);
-
   return (
     <Card>
-      <CardBody hidden={attended}>
+      <CardBody hidden={attended === null}>
         <FormControl>
           <HStack>
             <Avatar
