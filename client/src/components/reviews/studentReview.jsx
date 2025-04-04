@@ -60,7 +60,7 @@ const StudentReview = ({
   async function postReview() {
     if (isError) return;
     let response;
-    if (student_id) {
+    if (editMode) {
       response = await backend.put("/reviews", {
         class_id: class_id,
         student_id: student_id,
@@ -68,10 +68,9 @@ const StudentReview = ({
         review: review,
       });
     } else {
-      const users = await backend.get(`/users/${currentUser.uid}`);
       response = await backend.post("/reviews", {
         class_id: class_id,
-        student_id: users.data[0].id,
+        student_id: student_id,
         rating: starRating,
         review: review,
       });
