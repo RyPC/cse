@@ -8,12 +8,13 @@ import {
   Text,
   Textarea,
   VStack,
+  Flex
 } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
 
-export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallback }) => {
+export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefresh }) => {
   const [formData, setFormData] = useState({
     location: "",
     title: "",
@@ -24,6 +25,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
     endTime: "",
     callTime: "",
     costume: "",
+    capacity: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -31,7 +33,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
 
   useEffect(() => {
     if (event) {
-      // console.log(event.startTime, event.endTime);
       setFormData({
         location: event.location || "",
         title: event.title || "",
@@ -42,6 +43,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
         endTime: event.endTime || "",
         callTime: event.callTime || "",
         costume: event.costume || "",
+        capacity: ((event.capacity || (event.capacity === 0)) ? event.capacity : "")
       });
     }
   }, [event]);
@@ -64,11 +66,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (isDraft) => {
     if (!validateForm()) return;
-    // console.log(formData);
-
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
@@ -77,6 +76,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
         start_time: formData.startTime,
         end_time: formData.endTime,
         call_time: formData.callTime,
+        is_draft: isDraft,
       };
 
       // Using axios instead of fetch
@@ -101,16 +101,18 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
           endTime: "",
           callTime: "",
           costume: "",
+          capacity: "",
         });
         if (onClose) onClose();
+        if (reloadCallback) reloadCallback();
       } else {
         console.error("Failed to create/save event:", response.statusText);
       }
     } catch (error) {
       console.error("Failed to create/save event:", error);
     } finally {
+      triggerRefresh();
       setIsSubmitting(false);
-      if (reloadCallback) reloadCallback();
     }
   };
 
@@ -127,7 +129,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
       spacing={4}
       align="stretch"
     >
-      <Text>New Event</Text>
+      {!eventId ? (<Text>New Event</Text>) : ""}
       <Box>
         <Text>Title</Text>
         <Input
@@ -215,6 +217,16 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
       </Box>
 
       <Box>
+        <Text>Capacity</Text>
+        <Input
+          type="number"
+          name="capacity"
+          value={formData.capacity}
+          onChange={handleChange}
+        />
+      </Box>
+
+      <Box>
         <Text>Description</Text>
         <Textarea
           name="description"
@@ -237,14 +249,25 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, reloadCallb
         />
         {errors.costume && <Text color="red.500">{errors.costume}</Text>}
       </Box>
+      <Flex justifyContent="center" w="100%" gap={3}>
+        <Button
+            onClick={() => handleSubmit(true)} // true = save draft
+            isLoading={isSubmitting}
+            flex="1"
+        >
+            Save Draft
+        </Button>
+        <Button
+            onClick={() => handleSubmit(false)} // false = publish
+            isLoading={isSubmitting}
+            colorScheme="blue"
+            flex="1"
+        >
+            Publish
+        </Button>
+      </Flex>
 
-      <Button
-        onClick={handleSubmit}
-        colorScheme="blue"
-        isLoading={isSubmitting}
-      >
-        {eventId  ? "Save Changes" : "Create Event"}
-      </Button>
+      
     </VStack>
   );
 };

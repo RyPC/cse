@@ -62,6 +62,10 @@ export const Bookings = () => {
   const [coEvents, setCoEvents] = useState([]);
   const [isAttendedItem, setIsAttendedItem] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+  const [allEvents, setAllEvents] = useState([]);
+  const [coreqId, setCoreqId] = useState();
+
+  const [refresh, setRefresh] = useState(0)
 
   const isTeacher = role === "teacher";
   useEffect(() => {
@@ -70,21 +74,13 @@ export const Bookings = () => {
       backend.get(`/classes/published`).then((res) => setClasses(res.data));
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
+      backend.get('/events').then((res) => setAllEvents(res.data));
     } else if (currentUser && role === "student") {
       backend
         .get(`/users/${currentUser.uid}`)
         .then((userRes) => {
           const userId = userRes.data[0].id;
           setUserId(userId);
-
-          backend
-            .get(`/class-enrollments/student/${userId}`)
-            .then((res) => {
-              setClasses(res.data);
-            })
-            .catch((err) => {
-              console.log("Error fetching class enrollments:", err);
-            });
 
           backend
             .get(`/class-enrollments/student/${userId}`)
@@ -103,12 +99,12 @@ export const Bookings = () => {
             .catch((err) => {
               console.log("Error fetching event enrollments:", err);
             });
-        })
-        .catch((err) => {
-          console.log("Error fetching user:", err);
-        });
-    }
-  }, [backend, currentUser, isTeacher]);
+          })
+          .catch((err) => {
+            console.log("Error fetching user:", err);
+          });
+      }
+    }, [backend, currentUser, isTeacher, refresh]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -117,7 +113,34 @@ export const Bookings = () => {
     setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
 
+  useEffect(() => {
+    const fetchCoreqId = async () => {
+      if (!selectedCard?.id || !isOpen) return;
+  
+      try {
+        const res = await backend.get(`/corequisites/${selectedCard.id}`);
+        const data = res.data;
+  
+        if (data.length > 0) {
+          const eventId = data[0].eventId;
+          console.log("Fetched coreqId:", eventId);
+          setCoreqId(eventId);
+        } else {
+          console.log("No corequisite found for class:", selectedCard.id);
+          setCoreqId(null);
+        }
+      } catch (err) {
+        console.error("Failed to fetch coreqId:", err);
+        setCoreqId(null);
+      }
+    };
+  
+    fetchCoreqId();
+  }, [backend, selectedCard, isOpen]);
+  
+
   const onCloseModal = () => {
+    setSelectedCard(null);
     setCurrentModal("view");
     onClose();
     reloadClassesAndDrafts();
@@ -127,10 +150,40 @@ export const Bookings = () => {
     onOpen();
   };
 
+  const triggerRefresh = () => {
+    setRefresh(refresh+1);
+    console.log("Refresh triggered");
+  }
+  // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
+  const deepEquality = (object1, object2) => {
+    if (object1 === null || object2 === null) return object1 === object2;
+    const keys1 = Object.keys(object1);
+    const keys2 = Object.keys(object2);
+  
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+  
+    for (const key of keys1) {
+      const val1 = object1[key];
+      const val2 = object2[key];
+      const areObjects = typeof val1 === "object" && typeof val2 === "object";
+      if (
+        areObjects && !deepEquality(val1, val2) ||
+        !areObjects && val1 !== val2
+      ) {
+        return false;
+      }
+    }
+  
+    return true;
+  }
+
   const updateModal = (item) => {
     const type =
-      classes.includes(item) || draftClasses.includes(item) ? "class" : "event";
-    if (type === "class") loadCorequisites(item?.id);
+      classes.some(e => deepEquality(e, item)) || draftClasses.some(e => deepEquality(e, item)) ? "class" : "event";
+    console.log("update", item, classes, draftClasses, type, deepEquality(classes[0], item));
+    if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
     const isAttended = attended.some((attendedItem) => attendedItem === item);
@@ -178,6 +231,7 @@ export const Bookings = () => {
 
       if (response.status === 200) {
         setCoEvents(response.data);
+        console.log(coEvents);
       }
     } catch (error) {
       console.error("Error fetching corequisite enrollment:", error);
@@ -197,6 +251,7 @@ export const Bookings = () => {
       const attendedEvents = events.filter((e) => e.attendance !== null);
       setAttended([...attendedClasses, ...attendedEvents]);
       setDrafts([...draftClasses, ...draftEvents]);
+      loadCorequisites(selectedCard.id);
     } catch (error) {
       console.error("Error reloading classes:", error);
     }
@@ -211,14 +266,21 @@ export const Bookings = () => {
       const [classesResponse, classDataResponse] = await Promise.all([
         backend.get("/scheduled-classes"),
         backend.get("/classes"),
+        
       ]);
 
       const classDataDict = new Map();
       classDataResponse.data.forEach((cls) => classDataDict.set(cls.id, cls));
 
+      console.log("Fetching tags for class:", clsId);
+      const response = await backend.get(`/class-tags/tags/${clsId}`);
+      console.log("Raw tag data:", response.data);
+      
       const formattedData = classesResponse.data
         .map((cls) => {
           const fullData = classDataDict.get(cls.classId);
+
+          
           return fullData
             ? {
                 classId: cls.classId,
@@ -255,7 +317,7 @@ export const Bookings = () => {
     return d;
   };
 
-  // console.log("classes", classes);
+  // console.log("draft classes", draftClasses);
   // console.log("events", events);
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
@@ -307,6 +369,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {role !== "student" ? (
                   classes.length > 0 ? (
@@ -315,8 +379,9 @@ export const Bookings = () => {
                         key={index}
                         setSelectedCard={setSelectedCard}
                         {...classItem}
+                        performance={coEvents}
                         navigate={navigate}
-                        onOpen={onOpen}
+                        onOpen={updateModal}
                       />
                     ))
                   ) : (
@@ -340,6 +405,8 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {events.length > 0 ? (
                   events.map((eventItem) => (
@@ -347,7 +414,8 @@ export const Bookings = () => {
                       key={eventItem.id}
                       {...eventItem}
                       onClick={() => updateModal(eventItem)}
-                      setRefresh={reloadClassesAndDrafts}
+                      // setRefresh={reloadClassesAndDrafts}
+                      triggerRefresh={triggerRefresh}
                       onCloseModal={onCloseModal}
                     />
                   ))
@@ -361,25 +429,18 @@ export const Bookings = () => {
               <VStack
                 spacing={4}
                 width="100%"
+                my={5}
+                mb={20}
               >
                 {role !== "student" ? (
                   drafts.length > 0 ? (
                     drafts.map((item) =>
-                      draftClasses.includes(item) ? (
+                      !item.callTime ? (
                         <ClassCard
                           key={item.id}
-                          id={item.id}
-                          title={item.title}
-                          description={item.description}
-                          location={item.location}
-                          capacity={item.capacity}
-                          level={item.level}
-                          date={item.date}
-                          startTime={item.startTime}
-                          endTime={item.endTime}
-                          attendeeCount={item.attendeeCount}
+                          {...item}
                           onClick={() => updateModal(item)}
-                        />
+                          />
                       ) : (
                         <EventCard
                           key={item.id}
@@ -391,9 +452,13 @@ export const Bookings = () => {
                           endTime={item.endTime}
                           callTime={item.callTime}
                           attendeeCount={item.attendeeCount}
+                          description={item.description}
+                          capacity={item.capacity}
+                          level={item.level}
                           onClick={() => updateModal(item)}
+                          triggerRefresh={triggerRefresh}
                           onCloseModal={onCloseModal}
-                          setRefresh={reloadClassesAndDrafts}
+                          // setRefresh={reloadClassesAndDrafts}
                         />
                       )
                     )
@@ -413,6 +478,7 @@ export const Bookings = () => {
                         key={item.id}
                         {...item}
                         onClick={() => updateModal(item)}
+                        triggerRefresh={triggerRefresh}
                       />
                     )
                   )
@@ -446,11 +512,13 @@ export const Bookings = () => {
             setCurrentModal={setCurrentModal}
             classData={selectedCard}
             setClassData={setSelectedCard}
-            performances={coEvents}
+            performances={allEvents}
             setRefresh={reloadClassesAndDrafts}
+            coreqId={coreqId}
           />
         ) : currentModal === "create" ? (
           <Modal
+            size="full"
             isOpen={isOpen}
             onClose={onCloseModal}
           >
@@ -556,6 +624,8 @@ const ClassTeacherCard = memo(
     performance,
     rsvpCount,
     isDraft,
+    startTime,
+    endTime,
     navigate,
     setSelectedCard,
     onOpen,
@@ -617,11 +687,26 @@ const ClassTeacherCard = memo(
                         capacity,
                         level,
                         costume,
-                        performance,
+                        performances: performance,
                         isDraft,
+                        rsvpCount,
+                        startTime,
+                        endTime
                       };
                       setSelectedCard(modalData);
-                      onOpen();
+                      onOpen({
+                        id,
+                        title,
+                        location,
+                        date,
+                        description,
+                        capacity,
+                        level,
+                        costume,
+                        isDraft,
+                        startTime,
+                        endTime
+                      });
                     }
                   : () => {
                       const modalData = {
@@ -633,11 +718,26 @@ const ClassTeacherCard = memo(
                         capacity,
                         level,
                         costume,
-                        performance,
+                        performances: performance,
                         isDraft,
+                        rsvpCount,
+                        startTime,
+                        endTime
                       };
                       setSelectedCard(modalData);
-                      onOpen();
+                      onOpen({
+                        id,
+                        title,
+                        location,
+                        date,
+                        description,
+                        capacity,
+                        level,
+                        costume,
+                        isDraft,
+                        startTime,
+                        endTime
+                      });
                     }
                 // : () => navigate(`/dashboard/classes/${classId}`)
               }

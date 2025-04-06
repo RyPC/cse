@@ -124,6 +124,34 @@ classesRouter.get("/corequisites/:id", async (req, res) => {
   }
 });
 
+classesRouter.delete("/corequisites/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query(
+      `DELETE FROM corequisites WHERE class_id = $1`,
+      [id]
+    );
+
+    res.status(200).json(keysToCamel({"success": true}));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.delete("/corequisites/event/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query(
+      `DELETE FROM corequisites WHERE event_id = $1`,
+      [id]
+    );
+
+    res.status(200).json(keysToCamel({"success": true}));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 classesRouter.get("/joined/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -143,7 +171,7 @@ classesRouter.get("/published", async (req, res) => {
   try {
     const data = await db.query(
       `
-      SELECT DISTINCT ON (c.id)
+      SELECT DISTINCT ON (c.id, sc.date)
           c.*,
           sc.date,
           sc.start_time,

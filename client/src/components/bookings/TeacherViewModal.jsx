@@ -15,11 +15,16 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
 import { formatDate } from "../../utils/formatDateTime";
-
+import { useState, useEffect } from "react";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
+import { ClassRSVP } from "../rsvp/classRsvp.jsx"
 
 export const TeacherViewModal = ({
   isOpen,
@@ -28,6 +33,41 @@ export const TeacherViewModal = ({
   classData,
   performances,
 }) => {
+  const { backend } = useBackendContext();
+  const [tagData, setTagData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const fetchTags = async () => {
+      if (!classData?.id) {
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await backend.get(`/class-tags/tags/${classData.id}`);
+        console.log("Raw tag data:", response.data);
+        
+        if (response.data && response.data.length > 0) {
+          // Extract tags from the response
+          const processedTags = response.data.map(item => ({
+            id: item.tagId,
+            name: item.tag
+          }));
+          
+          setTagData(processedTags);
+        } else {
+          setTagData([]);
+        }
+      } catch (error) {
+        console.error('Error fetching tags for class:', error);
+        setTagData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTags();
+  }, [backend, classData?.id]);
 
   const onCancel = () => {
     setCurrentModal("cancel");
@@ -36,10 +76,13 @@ export const TeacherViewModal = ({
   const enterEditMode = () => {
     setCurrentModal("edit");
   };
+  
 
+  const { isOpen: isRSVPOpen, onOpen: onRSVPOpen, onClose: onRSVPClose } = useDisclosure();
 
   return (
     <Modal
+      size="full"
       isOpen={isOpen}
       onClose={onClose}
     >
@@ -60,8 +103,9 @@ export const TeacherViewModal = ({
           <ModalHeader
             flex={1}
             textAlign="center"
+            marginTop="10px"
           >
-            {classData?.title}
+            {classData?.title ? classData.title : " "}
           </ModalHeader>
           <Menu>
             <MenuButton
@@ -118,11 +162,13 @@ export const TeacherViewModal = ({
               <Text>{formatDate(classData?.date)}</Text>
             </div>
           </Flex>
-          <Container centerContent>
+          <VStack>
             <Box
               bg="gray.200"
               h="100%"
               w="100%"
+              mt="4"
+              mb="4"
               p="4"
             >
               <Box
@@ -130,15 +176,16 @@ export const TeacherViewModal = ({
                 h="100%"
                 w="100%"
                 p="4"
+                mt="4"
                 color="white"
               >
                 <Center>
-                  <Text
-                    fontWeight="bold"
-                    mb="60"
+                  <QRCode
+                    id={classData?.id}
+                    type="Class"
+                    date={classData?.date}
                   >
-                    QR
-                  </Text>
+                  </QRCode>
                 </Center>
                 <Center>
                   <Button
@@ -149,9 +196,23 @@ export const TeacherViewModal = ({
                   </Button>
                 </Center>
               </Box>
-              <Text fontWeight="bold">19 people RSVP'd</Text>
+              <Box width="100%" align="center">
+                <Text fontWeight="bold"> {classData?.rsvpCount ? classData?.rsvpCount : 0} RSVPs</Text>
+                <Button
+                  onClick={onRSVPOpen}
+                  variant="unstyled"
+                  fontSize="lg"
+                  fontWeight="normal"
+                  color="purple"
+                  textDecoration="underline"
+                  _focus={{ boxShadow: "none" }}
+                >
+                  View attendees &gt;
+                </Button>
+                <ClassRSVP isOpen={isRSVPOpen} onClose={onRSVPClose} card={{id: classData?.id, name: classData?.title, date: classData?.date}}/>
+              </Box>
             </Box>
-          </Container>
+          </VStack>
           <Box>
             <Text
               fontWeight="bold"
@@ -163,6 +224,21 @@ export const TeacherViewModal = ({
               {classData?.startTime} -{" "}
               {classData?.endTime}
             </Text>
+          </Box>
+          <Text
+              fontWeight="bold"
+              mb="1rem"
+            >
+              Type
+            </Text>
+            <Text>
+            {tagData.length > 0 
+              ? tagData.map(tag => tag.name).join(", ")
+              : "No tags available"}
+              
+          </Text>
+          <Box>
+            
           </Box>
           <Box>
             <Text
