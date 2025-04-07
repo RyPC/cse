@@ -10,7 +10,7 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
 export const Discovery = () => {
   // Active Tab Logic
-  const [activeTab, setActiveTab] = useState("both"); // Default to showing both
+  const [activeTab, setActiveTab] = useState("classes"); // Default to showing both
   const [searchInput, setSearchInput] = useState("");
   const [refresh, setRefresh] = useState(0);
   const { currentUser } = useAuthContext();
@@ -120,8 +120,8 @@ export const Discovery = () => {
           onKeyDown={handleKeyDown}
         ></Input>
         <Flex gap="5">
-          <Button onClick={toggleClasses}>Classes</Button>
-          <Button onClick={toggleEvents}>Events</Button>
+          <Button onClick={toggleClasses} colorScheme={activeTab === "classes" ? "purple" : "gray"}>Classes</Button>
+          <Button onClick={toggleEvents} colorScheme={activeTab === "events" ? "purple" : "gray"}>Events</Button>
         </Flex>
 
         <Box my="14px">

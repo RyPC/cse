@@ -73,7 +73,7 @@ export const Login = () => {
 
         if (teacher) {
             if (teacher.isActivated) {
-                navigate('/discovery');
+                navigate('/bookings');
             }
             else {
                 navigate('/teacher-signup/pending');
@@ -88,7 +88,7 @@ export const Login = () => {
             localStorage.removeItem("qrcode_redirect");
             navigate(qrCodeRedirect);
           } else {
-            navigate('/discovery');
+            navigate('/bookings');
           }
         }
 
