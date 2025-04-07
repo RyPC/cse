@@ -22,6 +22,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  Input,
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -323,16 +324,29 @@ export const Bookings = () => {
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
   return (
-    <Box>
+    <Box  pt={2}>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
+        <Box px={4} width="100%" pt={4}>
+        <Input
+
+          placeholder="Search"
+          variant="filled"
+          borderRadius="full"
+          borderColor={"gray.300"}
+          bg="white.100"
+          _hover={{ bg: "gray.200" }}
+          _focus={{ bg: "white", borderColor: "gray.300" }}
+        />
+        </Box>
+
         <Tabs
           width="100%"
           variant="line"
           colorScheme="blackAlpha"
-          pt={8}
+          
           onChange={(index) => setTabIndex(index)}
         >
           <TabList justifyContent="center">
