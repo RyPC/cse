@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+import { MdAdd } from "react-icons/md";
 
 import {
   Box,
@@ -593,17 +594,21 @@ export const Bookings = () => {
             onOpen();
           }}
           position="fixed"
-          bottom="160px"
-          right="50px"
+          bottom="90px"
+          right="20px"
           borderRadius="50%"
-          width="60px"
-          height="60px"
-          bg="blue.500"
+          width="66px"
+          height="66px"
+          bg="#422E8D"
           color="white"
           _hover={{ bg: "blue.700" }}
-          fontSize="2xl"
+          fontSize="4xl"
+          zIndex={999}
+          
         >
-          +
+          <MdAdd size={40} />
+
+          
         </Button>
       )}
       <Navbar />
