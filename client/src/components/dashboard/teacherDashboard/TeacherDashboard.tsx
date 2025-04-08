@@ -26,7 +26,6 @@ import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { StatusCard } from "../../resources/StatusCard";
-import { NavigationSidebar } from "../NavigationSidebar";
 import { NotificationPanel } from "../NotificationPanel";
 import { RoleSelect } from "../RoleSelect";
 
@@ -85,7 +84,11 @@ export const TeacherDashboard = () => {
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto", marginTop: "30px" }}
       >
-        <Flex direction="row" w={"100%"} justify={"space-between"}>
+        <Flex
+          direction="row"
+          w={"100%"}
+          justify={"space-between"}
+        >
           <Heading alignSelf={"flex-start"}>Teachers</Heading>
           <Image
             alignSelf={"flex-end"}
