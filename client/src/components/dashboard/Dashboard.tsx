@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 
 import {
   Box,
@@ -27,6 +28,12 @@ interface StatCardProps {
   label: string;
   value: string | number;
 }
+
+const data = [{month: 'Jan', count: 15},{month: 'Feb', count: 10},{month: 'Mar', count: 12},
+              {month: 'Apr', count: 21},{month: 'May', count: 8},{month: 'June', count: 10},
+              {month: 'July', count: 12},{month: 'Aug', count: 11},{month: 'Sep', count: 19},
+              {month: 'Oct', count: 10},{month: 'Nov', count: 20},{month: 'Dec', count: 18}];
+
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
@@ -151,19 +158,24 @@ export const DashboardHome = () => {
           />
         </Flex>
 
-        {/* Graph Placeholder */}
         <Box
           bg="gray.100"
           w="100%"
-          h="200px"
+          h="400px"
           borderRadius="md"
           display="flex"
           position={"relative"}
           alignItems="center"
           justifyContent="center"
+          paddingRight="20px"
         >
-          <Text color="gray.500">Graph Placeholder</Text>
-          <Box
+          <LineChart width={950} height={350} data={data}>
+            <Line type="linear" dataKey="count" stroke="#8884d8" />
+            <XAxis dataKey="month" />
+            <YAxis />
+          </LineChart>
+
+          {/* <Box
             position="absolute"
             top="4"
             right="4"
@@ -194,7 +206,7 @@ export const DashboardHome = () => {
                 </Box>
               ))}
             </Flex>
-          </Box>
+          </Box> */}
         </Box>
 
         {/* Signed-in User Info */}
