@@ -89,6 +89,7 @@ export const DashboardHome = () => {
 
   const [users, setUsers] = useState<User[] | undefined>();
   const [classes, setClasses] = useState<Class[] | undefined>();
+  const [attendance, setAttendance] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
 
@@ -100,6 +101,10 @@ export const DashboardHome = () => {
 
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
+
+        const attendanceResponse = await backend.get(`/class-enrollments/attendance/1`); //need to make it call all 12 months
+        setAttendance(attendanceResponse.data);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -148,7 +153,7 @@ export const DashboardHome = () => {
             icon="email"
             iconColor="green.500"
             label="Attendance Rate"
-            value={"15%"}
+            value={"15%"} //to be changed
           />
           <StatCard
             icon="email"
@@ -170,7 +175,13 @@ export const DashboardHome = () => {
           paddingRight="20px"
         >
           <LineChart width={950} height={350} data={data}>
-            <Line type="linear" dataKey="count" stroke="#8884d8" />
+            <Line 
+             type="linear" 
+             dataKey="count" 
+             stroke="#422E8D" 
+             dot={false} 
+             strokeWidth={3}
+            />
             <XAxis dataKey="month" />
             <YAxis />
           </LineChart>
