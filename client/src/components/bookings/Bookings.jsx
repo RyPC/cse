@@ -259,6 +259,39 @@ export const Bookings = () => {
     }
   };
 
+  const reloadClasses = async () => {
+    if (searchInput) {
+      backend.get(`/classes/search/${searchInput}`).then((res) => {
+        setClasses(res.data);
+      });
+    } else {
+      backend.get(`/classes/published`).then((res) => {
+        setClasses(res.data);
+      });
+    }
+
+    const attendedClasses = classes.filter((c) => c.attendance !== null);
+    const attendedEvents = events.filter((e) => e.attendance !== null);
+    setAttended([...attendedClasses, ...attendedEvents]);
+    loadCorequisites(selectedCard.id);
+  }
+
+  const reloadEvents = async () => {
+    if (searchInput) {
+      backend.get(`/events/search/${searchInput}`).then((res) => {
+        setEvents(res.data);
+      });
+    } else {
+      backend.get(`/events/published`).then((res) => {
+        setEvents(res.data);
+      });
+    }
+    const attendedClasses = classes.filter((c) => c.attendance !== null);
+    const attendedEvents = events.filter((e) => e.attendance !== null);
+    setAttended([...attendedClasses, ...attendedEvents]);
+    loadCorequisites(selectedCard.id);
+  }
+
   // useEffect(() => {
   //   console.log("selectedCard", selectedCard);
   // }, [selectedCard]);
@@ -321,7 +354,11 @@ export const Bookings = () => {
 
   const handleKeyDown = async (e) => {
     if (e.key === "Enter") {
-      await reloadClassesAndDrafts();
+      if (tabIndex === 0) {
+        await reloadClasses();
+      } else if (tabIndex === 1) {
+        await reloadEvents();
+      }
     }
   };
 
