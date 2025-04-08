@@ -10,7 +10,7 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
 export const Discovery = () => {
   // Active Tab Logic
-  const [activeTab, setActiveTab] = useState("classes"); // Default to showing both
+  const [activeTab, setActiveTab] = useState("classes"); // Default to showing classes
   const [searchInput, setSearchInput] = useState("");
   const [refresh, setRefresh] = useState(0);
   const { currentUser } = useAuthContext();

@@ -21,6 +21,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  Input
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -64,6 +65,7 @@ export const Bookings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
+  const [searchInput, setSearchInput] = useState("");
 
   const [refresh, setRefresh] = useState(0)
 
@@ -240,8 +242,8 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-      backend.get(`/events/published`).then((res) => setEvents(res.data));
-      backend.get(`/classes/published`).then((res) => {
+      backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
+      backend.get(`/classes/search/${searchInput}`).then((res) => {
         setClasses(res.data);
       });
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
@@ -317,12 +319,27 @@ export const Bookings = () => {
     return d;
   };
 
+  const handleKeyDown = async (e) => {
+    if (e.key === "Enter") {
+      await reloadClassesAndDrafts();
+    }
+  };
+
   // console.log("draft classes", draftClasses);
   // console.log("events", events);
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
   return (
     <Box>
+      <VStack
+        spacing={8}>
+        <Input
+              placeholder="Search bar"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+          />
+      </VStack>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
