@@ -67,7 +67,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
   };
 
   const handleSubmit = async (isDraft) => {
-    if (!validateForm()) return;
+    
+    if (!isDraft && !validateForm()) return;
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
