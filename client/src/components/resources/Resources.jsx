@@ -43,8 +43,9 @@ export const Resources = () => {
 
   const fetchVideos = async () => {
     try {
-      const videoResponse = await backend.get('/classes-videos');
+      const videoResponse = await backend.get(`/classes-videos/with-tags`);
       setVideos(videoResponse.data);
+
     } catch (error) {
       console.error('Error fetching videos:', error);
     }
@@ -84,6 +85,7 @@ export const Resources = () => {
               S3Url={video.S3Url}
               classId={video.classId}
               mediaUrl={video.mediaUrl}
+              tags={video.tags}
             />
           ))}
         </Flex>
@@ -105,23 +107,23 @@ export const Resources = () => {
       </Box>
       <UploadComponent />
     </Flex>
-    {role === "teacher" && <IconButton
-        icon={<span style={{ fontSize: "24px" }}>+</span>}
-        colorScheme="purple"
-        size="lg"
-        isRound
-        position="fixed"
-        bottom="95px"
-        right="24px"
-        zIndex={5}
-        boxShadow="lg"
-        aria-label="Add new item"
-        onClick={handleAddButtonClick}
-      />}
+      {role === "teacher" && 
+        <IconButton
+          icon={<span style={{ fontSize: "24px" }}>+</span>}
+          colorScheme="purple"
+          size="lg"
+          isRound
+          position="fixed"
+          bottom="95px"
+          right="24px"
+          zIndex={5}
+          boxShadow="lg"
+          aria-label="Add new item"
+          onClick={handleAddButtonClick}
+        />
+      }
       {showModal && <ControllerModal autoOpen={true}/> }
-
-
-    <Navbar></Navbar>
+    <Navbar/>
     </Box>
   );
 };
