@@ -25,8 +25,9 @@ import teachersIcon from "../../components/dashboard/sidebarImgs/teachers.svg";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
-import { Class } from "../../types/class";
+import { Class } from "../../types/legacy/class";
 import { User } from "../../types/user";
+import { Attendance } from "../../types/attendance";
 import { NotificationPanel } from "./NotificationPanel";
 
 interface StatCardProps {
@@ -50,6 +51,9 @@ const data = [
   { month: "Nov", count: 20 },
   { month: "Dec", count: 18 },
 ];
+
+const monthLabels = ["Jan","Feb", "Mar", "Apr", "May", "June", 
+                     "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
@@ -105,9 +109,10 @@ export const DashboardHome = () => {
 
   const [users, setUsers] = useState<User[] | undefined>();
   const [classes, setClasses] = useState<Class[] | undefined>();
-  const [attendance, setAttendance] = useState();
+  const [attendance, setAttendance] = useState<Attendance[] | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -118,16 +123,11 @@ export const DashboardHome = () => {
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
 
-        const attendanceArray = []
-        for(let i = 1; i <= 12; i++) 
-        {
-          const attendanceResponse = await backend.get(`/class-enrollments/attendance/${i}`); 
-          attendanceArray.push(attendanceResponse.data);
-        }
-        setAttendance(attendanceArray);
-        print(attendanceArray);
+        const attendanceResponse = await backend.get("/class-enrollments/attendance"); 
+        setAttendance(attendanceResponse.data);
 
       } catch (error) {
+        alert(error);
         console.error("Error fetching data:", error);
       }
     };
