@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
+  Box,
   Button,
   Link as ChakraLink,
   Flex,
@@ -20,7 +21,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { Link } from "react-router-dom";
+import { FiTrash2 } from "react-icons/fi";
+import { SlArrowLeft } from "react-icons/sl";
+import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
@@ -30,9 +33,10 @@ import { NotificationPanel } from "../NotificationPanel";
 import { RoleSelect } from "../RoleSelect";
 
 export const TeacherDashboard = () => {
-  const { logout, currentUser } = useAuthContext();
+  const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
+  const navigate = useNavigate();
 
   const [teacherClasses, setTeacherClasses] = useState(new Map());
   const notifRef = useRef();
@@ -79,95 +83,141 @@ export const TeacherDashboard = () => {
   }, [backend]);
 
   return (
-    <HStack alignItems={"flex-start"}>
-      <VStack
-        spacing={8}
-        sx={{ maxWidth: "100%", marginX: "auto", marginTop: "30px" }}
+    <VStack>
+      <Flex
+        w={"100%"}
+        justify={"space-between"}
       >
-        <Flex
-          direction="row"
-          w={"100%"}
-          justify={"space-between"}
+        <Heading
+          as="h1"
+          size="lg"
+          mb={4}
+          alignSelf={"flex-start"}
+          alignContent="center"
+          fontWeight={700}
+          fontSize={36}
         >
-          <Heading alignSelf={"flex-start"}>Teachers</Heading>
-          <Image
-            alignSelf={"flex-end"}
-            cursor="pointer"
-            onClick={onOpen}
-            ref={notifRef}
-            src="../bell.png"
-          />
-        </Flex>
+          <Button
+            backgroundColor="transparent"
+            fontSize={25}
+            mb={1}
+            onClick={() => navigate("/dashboard")}
+          >
+            <SlArrowLeft />
+          </Button>
+          Teachers
+        </Heading>
+        <Image
+          alignSelf={"flex-end"}
+          cursor="pointer"
+          onClick={onOpen}
+          ref={notifRef}
+          src="../bell.png"
+        />
         <NotificationPanel
           isOpen={isOpen}
           onClose={onClose}
         />
-
-        <VStack>
-          <Text>
-            Signed in as {currentUser?.email} (
-            {role === "admin" ? "Admin" : "Teacher"})
-          </Text>
-
-          {role === "admin" ? (
-            <ChakraLink
-              as={Link}
-              to={"/admin"}
-            >
-              Go to Admin Page
-            </ChakraLink>
-          ) : null}
-          <Button onClick={logout}>Sign out</Button>
-        </VStack>
-
-        <TableContainer
-          sx={{
-            overflowX: "auto",
-          }}
-        >
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>Name</Th>
-                <Th>Email</Th>
-                <Th>Classes</Th>
-                <Th>Status</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {teacherClasses
-                ? [...teacherClasses].map(([teacherString, classes], i) => {
-                    const teacher = JSON.parse(teacherString);
-                    return (
-                      <Tr
-                        key={i}
-                        onClick={() => {
-                          window.location.href =
-                            "/dashboard/teachers/" + teacher.id;
-                        }}
-                      >
-                        <Td>
-                          {teacher.firstName} {teacher.lastName}
-                        </Td>
-                        <Td>{teacher.email}</Td>
-                        <Td>
-                          <VStack>
-                            {classes.map((cls, j) => (
-                              <Text key={j}>{cls.title}</Text>
-                            ))}
-                          </VStack>
-                        </Td>
-                        <Td>
-                          <StatusCard status={teacher.isActivated} />
-                        </Td>
-                      </Tr>
-                    );
-                  })
-                : null}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </VStack>
-    </HStack>
+      </Flex>
+      <Box
+        w="100%"
+        pl={20}
+      >
+        SEARCH BAR HERE
+      </Box>
+      <TableContainer
+        w="100%"
+        sx={{
+          overflowX: "auto",
+        }}
+        pl={20}
+      >
+        <Table colorScheme="gray">
+          <Thead>
+            <Tr>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Teacher
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Email
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Status
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Classes
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {teacherClasses
+              ? [...teacherClasses].map(([teacherString, classes], index) => {
+                  const teacher = JSON.parse(teacherString);
+                  return (
+                    <Tr
+                      key={teacher.id}
+                      onClick={() =>
+                        navigate(`/dashboard/teachers/${teacher.id}`)
+                      }
+                      backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
+                      _hover={{ bg: "gray.300", cursor: "pointer" }}
+                      color="gray.700"
+                    >
+                      <Td>
+                        {teacher.firstName} {teacher.lastName}
+                      </Td>
+                      <Td>{teacher.email}</Td>
+                      <Td>
+                        <StatusCard status={teacher.isActivated} />
+                      </Td>
+                      <Td>{classes.length}</Td>
+                      <Td>
+                        <Button
+                          backgroundColor="transparent"
+                          onClick={(e) => {
+                            e.stopPropagation(); // prevents earlier onclick
+                          }}
+                          m={-8} // overrides bounds of row
+                          fontSize="28px"
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  );
+                })
+              : null}
+          </Tbody>
+        </Table>
+      </TableContainer>
+    </VStack>
   );
 };

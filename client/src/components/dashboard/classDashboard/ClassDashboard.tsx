@@ -160,6 +160,7 @@ export function OverallClassDashboard() {
                     onClick={() => navigate(`/dashboard/classes/${cls.id}`)}
                     backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
                     _hover={{ bg: "gray.300", cursor: "pointer" }}
+                    color="gray.700"
                   >
                     <Td fontFamily="Inter">{cls.title}</Td>
                     <Td fontFamily="Inter">{cls.teacher}</Td>
