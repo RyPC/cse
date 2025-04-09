@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 
 import {
   Box,
@@ -15,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { Outlet, useNavigate } from "react-router-dom";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import cseLogo from "../../components/dashboard/cseLogo.png";
 import classesIcon from "../../components/dashboard/sidebarImgs/classes.svg";
@@ -36,11 +36,20 @@ interface StatCardProps {
   value: string | number;
 }
 
-const data = [{month: 'Jan', count: 15},{month: 'Feb', count: 10},{month: 'Mar', count: 12},
-              {month: 'Apr', count: 21},{month: 'May', count: 8},{month: 'June', count: 10},
-              {month: 'July', count: 12},{month: 'Aug', count: 11},{month: 'Sep', count: 19},
-              {month: 'Oct', count: 10},{month: 'Nov', count: 20},{month: 'Dec', count: 18}];
-
+const data = [
+  { month: "Jan", count: 15 },
+  { month: "Feb", count: 10 },
+  { month: "Mar", count: 12 },
+  { month: "Apr", count: 21 },
+  { month: "May", count: 8 },
+  { month: "June", count: 10 },
+  { month: "July", count: 12 },
+  { month: "Aug", count: 11 },
+  { month: "Sep", count: 19 },
+  { month: "Oct", count: 10 },
+  { month: "Nov", count: 20 },
+  { month: "Dec", count: 18 },
+];
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
@@ -179,8 +188,16 @@ export const DashboardHome = () => {
           justifyContent="center"
           paddingRight="20px"
         >
-          <LineChart width={950} height={350} data={data}>
-            <Line type="linear" dataKey="count" stroke="#8884d8" />
+          <LineChart
+            width={950}
+            height={350}
+            data={data}
+          >
+            <Line
+              type="linear"
+              dataKey="count"
+              stroke="#8884d8"
+            />
             <XAxis dataKey="month" />
             <YAxis />
           </LineChart>
