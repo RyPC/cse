@@ -25,7 +25,8 @@ import teachersIcon from "../../components/dashboard/sidebarImgs/teachers.svg";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
-import { Class } from "../../types/class";
+import { Attendance } from "../../types/attendance";
+import { Class } from "../../types/legacy/class";
 import { User } from "../../types/user";
 import { NotificationPanel } from "./NotificationPanel";
 
@@ -49,6 +50,21 @@ const data = [
   { month: "Oct", count: 10 },
   { month: "Nov", count: 20 },
   { month: "Dec", count: 18 },
+];
+
+const monthLabels = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "June",
+  "July",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
@@ -105,7 +121,7 @@ export const DashboardHome = () => {
 
   const [users, setUsers] = useState<User[] | undefined>();
   const [classes, setClasses] = useState<Class[] | undefined>();
-  const [attendance, setAttendance] = useState([]);
+  const [attendance, setAttendance] = useState<Attendance[] | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
 
@@ -123,6 +139,7 @@ export const DashboardHome = () => {
         ); //need to make it call all 12 months
         setAttendance(attendanceResponse.data);
       } catch (error) {
+        alert(error);
         console.error("Error fetching data:", error);
       }
     };

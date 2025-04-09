@@ -102,13 +102,12 @@ classEnrollmentsRouter.get(
 
 );
 
-classEnrollmentsRouter.get("/attendance/:month_number", async (req, res) => {
+classEnrollmentsRouter.get("/attendance", async (req, res) => {
   try {
     const result = await db.query(
-      ` SELECT COUNT(*) FROM class_enrollments WHERE EXTRACT(MONTH FROM attendance) = $1;
-      `,
-      [req.params.month_number]
-    );
+      ` SELECT EXTRACT(MONTH FROM attendance) AS month, COUNT(*) FROM class_enrollments GROUP BY month;
+      `);
+    res.status(200).send(keysToCamel(result));
   } catch (err) {
       res.status(500).json({ error: err.message });
   }
