@@ -262,7 +262,9 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         <Button
             onClick={() => handleSubmit(false)} // false = publish
             isLoading={isSubmitting}
-            colorScheme="blue"
+            bg="#422E8D"
+            color="white"
+
             flex="1"
         >
             Publish

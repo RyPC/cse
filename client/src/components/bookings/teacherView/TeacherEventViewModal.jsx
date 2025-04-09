@@ -131,6 +131,9 @@ function TeacherEventViewModal({
       status: "success",
       duration: 5000,
       isClosable: true,
+      position: "top",
+      colorScheme: "purple",
+
     });
     // console.log("Set isEditing to false");
   }
