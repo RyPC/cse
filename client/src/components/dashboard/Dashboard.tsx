@@ -118,9 +118,10 @@ export const DashboardHome = () => {
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
 
-        const attendanceResponse = await backend.get(`/class-enrollments/attendance/1`); //need to make it call all 12 months
+        const attendanceResponse = await backend.get(
+          `/class-enrollments/attendance/1`
+        ); //need to make it call all 12 months
         setAttendance(attendanceResponse.data);
-
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -193,13 +194,17 @@ export const DashboardHome = () => {
           justifyContent="center"
           paddingRight="20px"
         >
-          <LineChart width={950} height={350} data={data}>
-            <Line 
-             type="linear" 
-             dataKey="count" 
-             stroke="#422E8D" 
-             dot={false} 
-             strokeWidth={3}
+          <LineChart
+            width={950}
+            height={350}
+            data={data}
+          >
+            <Line
+              type="linear"
+              dataKey="count"
+              stroke="#422E8D"
+              dot={false}
+              strokeWidth={3}
             />
             <XAxis dataKey="month" />
             <YAxis />
@@ -298,7 +303,7 @@ export const Sidebar = () => {
         >
           <HStack>
             <Image src={classesIcon} />
-            <Text>Classes</Text>
+            <Text>Classes / Events</Text>
           </HStack>
         </Box>
         <Box
