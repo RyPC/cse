@@ -27,7 +27,6 @@ import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { LevelCard } from "../../resources/LevelCard";
 import { StatusCard } from "../../resources/StatusCard";
-import { NavigationSidebar } from "../NavigationSidebar";
 import { NotificationPanel } from "../NotificationPanel";
 import { RoleSelect } from "../RoleSelect";
 

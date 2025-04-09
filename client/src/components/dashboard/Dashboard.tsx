@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 
 import {
   Box,
   Button,
   Flex,
   Heading,
+  HStack,
   Icon,
   Image,
   Text,
@@ -14,7 +14,14 @@ import {
 } from "@chakra-ui/react";
 
 import { Outlet, useNavigate } from "react-router-dom";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
+import cseLogo from "../../components/dashboard/cseLogo.png";
+import classesIcon from "../../components/dashboard/sidebarImgs/classes.svg";
+import dashboardIcon from "../../components/dashboard/sidebarImgs/dashboard.svg";
+import settingsIcon from "../../components/dashboard/sidebarImgs/settings.svg";
+import studentsIcon from "../../components/dashboard/sidebarImgs/students.svg";
+import teachersIcon from "../../components/dashboard/sidebarImgs/teachers.svg";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
@@ -29,11 +36,20 @@ interface StatCardProps {
   value: string | number;
 }
 
-const data = [{month: 'Jan', count: 15},{month: 'Feb', count: 10},{month: 'Mar', count: 12},
-              {month: 'Apr', count: 21},{month: 'May', count: 8},{month: 'June', count: 10},
-              {month: 'July', count: 12},{month: 'Aug', count: 11},{month: 'Sep', count: 19},
-              {month: 'Oct', count: 10},{month: 'Nov', count: 20},{month: 'Dec', count: 18}];
-
+const data = [
+  { month: "Jan", count: 15 },
+  { month: "Feb", count: 10 },
+  { month: "Mar", count: 12 },
+  { month: "Apr", count: 21 },
+  { month: "May", count: 8 },
+  { month: "June", count: 10 },
+  { month: "July", count: 12 },
+  { month: "Aug", count: 11 },
+  { month: "Sep", count: 19 },
+  { month: "Oct", count: 10 },
+  { month: "Nov", count: 20 },
+  { month: "Dec", count: 18 },
+];
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
@@ -72,7 +88,7 @@ export const Dashboard = () => {
     <Flex>
       <Sidebar />
       <Box
-        ml="200px"
+        ml="250px"
         p={5}
         w="100%"
       >
@@ -126,7 +142,10 @@ export const DashboardHome = () => {
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto", padding: 4 }}
       >
-        <Flex w={"100%"} justify={"space-between"}>
+        <Flex
+          w={"100%"}
+          justify={"space-between"}
+        >
           <Heading alignSelf="flex-start">Dashboard</Heading>
           <Image
             alignSelf={"flex-end"}
@@ -247,65 +266,97 @@ export const Sidebar = () => {
       pos="fixed"
       left={0}
       h="100vh"
-      bg="gray.800"
-      w="200px"
+      bg="#FEF7FF"
+      w="250px"
       p={5}
+      fontFamily="Inter"
+      fontWeight={400}
+      fontSize="16px"
     >
-      <VStack
-        spacing={4}
-        align="stretch"
+      <Flex
+        flexDirection="column"
+        gap={4}
+        height="100%"
+        marginTop="40px"
       >
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard")}
+          textAlign="left"
         >
-          Dashboard
+          <HStack>
+            <Image src={dashboardIcon} />
+            <Text>Dashboard</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/classes")}
+          textAlign="left"
         >
-          Classes
+          <HStack>
+            <Image src={classesIcon} />
+            <Text>Classes</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/teachers")}
+          textAlign="left"
         >
-          Teachers
+          <HStack>
+            <Image src={teachersIcon} />
+            <Text>Teachers</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/students")}
+          textAlign="left"
         >
-          Students
+          <HStack>
+            <Image src={studentsIcon} />
+            <Text>Students</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/settings")}
+          textAlign="left"
         >
-          Settings
+          <HStack>
+            <Image src={settingsIcon} />
+            <Text>Settings</Text>
+          </HStack>
         </Box>
-      </VStack>
+        <Box
+          flex={1}
+          alignContent="center"
+          textAlign="center"
+        >
+          <Image src={cseLogo} />
+        </Box>
+      </Flex>
     </Box>
   );
 };
