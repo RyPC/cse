@@ -63,7 +63,7 @@ export const Bookings = () => {
   const [isAttendedItem, setIsAttendedItem] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
 
-  const [refresh, setRefresh] = useState(0)
+  const [refresh, setRefresh] = useState(0);
 
   const isTeacher = role === "teacher";
   useEffect(() => {
@@ -97,20 +97,20 @@ export const Bookings = () => {
               console.log("Error fetching class enrollments:", err);
             });
 
-            backend
-              .get(`/event-enrollments/student/${userId}`)
-              .then((res) => {
-                setEvents(res.data);
-              })
-              .catch((err) => {
-                console.log("Error fetching event enrollments:", err);
-              });
-          })
-          .catch((err) => {
-            console.log("Error fetching user:", err);
-          });
-      }
-    }, [backend, currentUser, isTeacher, refresh]);
+          backend
+            .get(`/event-enrollments/student/${userId}`)
+            .then((res) => {
+              setEvents(res.data);
+            })
+            .catch((err) => {
+              console.log("Error fetching event enrollments:", err);
+            });
+        })
+        .catch((err) => {
+          console.log("Error fetching user:", err);
+        });
+    }
+  }, [backend, currentUser, isTeacher, refresh]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -130,9 +130,9 @@ export const Bookings = () => {
   };
 
   const triggerRefresh = () => {
-    setRefresh(refresh+1);
+    setRefresh(refresh + 1);
     console.log("Refresh triggered");
-  }
+  };
 
   const updateModal = (item) => {
     const type =
@@ -639,7 +639,7 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
-                        rsvpCount
+                        rsvpCount,
                       };
                       setSelectedCard(modalData);
                       onOpen();
@@ -656,7 +656,7 @@ const ClassTeacherCard = memo(
                         costume,
                         performance,
                         isDraft,
-                        rsvpCount
+                        rsvpCount,
                       };
                       setSelectedCard(modalData);
                       onOpen();

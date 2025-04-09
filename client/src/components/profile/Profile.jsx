@@ -1,7 +1,16 @@
-import { Button, Flex, Heading, Image, Text, VStack, Box } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-import { Navbar } from "../navbar/Navbar";
 import { L } from "../logout/Logout";
+import { Navbar } from "../navbar/Navbar";
 
 export const Profile = () => {
   const { currentUser } = useAuthContext();
@@ -15,47 +24,62 @@ export const Profile = () => {
 
   return (
     <Box>
-    <Flex
-      direction="column"
-      align="center"
-      justify="center"
-      height="100vh"
-      padding={4}
-    >
-      <Image
-        borderRadius="full"
-        boxSize="150px"
-        src={hardcodedProfilePic}
-        alt="Profile"
-        mb={4}
-      />
-      <Heading size="lg">{hardcodedName}</Heading>
-      <Text>Email: {currentUser?.email || "Not available"}</Text>
-      <Text>Role: {currentUser?.user_role || "Not available"}</Text>
-
-      <VStack
-        spacing={4}
-        mt={6}
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        height="100vh"
+        padding={4}
       >
-        <Button
-          onClick={() => console.log("Redirect to GoFundMe to be implemented")}
-          as="a"
-          href="https://ctc-uci.com/"
-          target="_blank"
-          colorScheme="blue"
+        <Image
+          borderRadius="full"
+          boxSize="150px"
+          src={hardcodedProfilePic}
+          fit="cover"
+          mb={4}
+          alt="Profile"
+        />
+        <Heading fontSize="20px">{hardcodedName}</Heading>
+        <Text>{currentUser?.email || "Not available"}</Text>
+        <Text>Role: {currentUser?.user_role || "Not available"}</Text>
+
+        <VStack
+          spacing={4}
+          mt={10}
+          // w={"80"}
         >
-          Donation
-        </Button>
-        <Button
-          onClick={() => console.log("Settings opened!")}
-          colorScheme="gray"
-        >
-          <a href="/settings">Settings</a>
-        </Button>
-        <L/>
-      </VStack>
-    </Flex>
-    <Navbar></Navbar>
+          <Button
+            onClick={() =>
+              console.log("Redirect to GoFundMe to be implemented")
+            }
+            as="a"
+            href="https://ctc-uci.com/"
+            target="_blank"
+            borderRadius="5px"
+            color="white"
+            bg="#422E8D"
+            height="6.407vh"
+            // width calculated from figma hi-fi
+            w="82.33vw"
+          >
+            <Text fontSize="16px">Donations</Text>
+          </Button>
+          <Button
+            onClick={() => console.log("Settings opened!")}
+            colorScheme="gray"
+            borderRadius="5px"
+            color="white"
+            bg="#422E8D"
+            height="6.407vh"
+            // width calculated from figma hi-fi
+            w="82.33vw"
+          >
+            <a href="/settings">Settings</a>
+          </Button>
+          <L />
+        </VStack>
+      </Flex>
+      <Navbar></Navbar>
     </Box>
   );
 };
