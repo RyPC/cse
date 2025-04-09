@@ -102,6 +102,18 @@ classEnrollmentsRouter.get(
 
 );
 
+classEnrollmentsRouter.get("/attendance/:month_number", async (req, res) => {
+  try {
+    const result = await db.query(
+      ` SELECT COUNT(*) FROM class_enrollments WHERE EXTRACT(MONTH FROM attendance) = $1;
+      `,
+      [req.params.month_number]
+    );
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
+
 classEnrollmentsRouter.get(
   "/teacher/:teacher_id/:class_id",
   async (req, res) => {
