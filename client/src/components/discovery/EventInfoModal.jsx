@@ -5,6 +5,7 @@ import {
   Button,
   HStack,
   Image,
+  Flex,
   List,
   ListIcon,
   ListItem,
@@ -18,7 +19,8 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-
+import { FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -140,7 +142,9 @@ function EventInfoModal({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {title}
+            <Flex justifyContent="center">
+              {title}
+            </Flex>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -150,8 +154,10 @@ function EventInfoModal({
             >
               <HStack width="100%">
                 {!isCorequisiteSignUp && (
-                  <Box>
-                    <Text as="b">Corequisites</Text>
+                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
+                    <Text as="b">
+                      Recommended
+                    </Text>
                     {!corequisites || corequisites.length === 0 ? (
                       <Text>No corequisites for this class</Text>
                     ) : (
@@ -162,7 +168,7 @@ function EventInfoModal({
                               as={
                                 coreq.enrolled
                                   ? FaCircleCheck
-                                  : FaCircleExclamation
+                                  : FaTimesCircle
                               }
                             />
                             {coreq.title}
@@ -230,14 +236,21 @@ function EventInfoModal({
               </HStack>
             </VStack>
           </ModalBody>
-          <ModalFooter>
-            <Button
-              colorScheme="teal"
-              onClick={eventSignUp}
-            >
-              Sign Up
-            </Button>
-          </ModalFooter>
+          <Flex justifyContent="center" width = "100%">
+            <ModalFooter>
+              <Flex justify = "center">
+                <Button
+                  width = "100%"
+                  p = {7}
+                  bg = "#422E8D" 
+                  color = "white"
+                  onClick={eventSignUp}
+                >
+                  Sign Up
+                </Button>
+              </Flex>
+            </ModalFooter>
+          </Flex>
         </ModalContent>
       </Modal>
     </>

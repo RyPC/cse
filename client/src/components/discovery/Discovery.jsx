@@ -10,7 +10,7 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
 export const Discovery = () => {
   // Active Tab Logic
-  const [activeTab, setActiveTab] = useState("both"); // Default to showing both
+  const [activeTab, setActiveTab] = useState("classes"); // Default to showing both
   const [searchInput, setSearchInput] = useState("");
   const [refresh, setRefresh] = useState(0);
   const { currentUser } = useAuthContext();
@@ -119,9 +119,37 @@ export const Discovery = () => {
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={handleKeyDown}
         ></Input>
-        <Flex gap="5">
-          <Button onClick={toggleClasses}>Classes</Button>
-          <Button onClick={toggleEvents}>Events</Button>
+        <Flex gap="5"
+          justify="center"
+          borderBottom = "1px solid"
+          borderColor = "gray.200"
+        >
+          <Button
+            variant="unstyled" 
+            borderBottom="2px solid"
+            borderColor={activeTab === "classes" ? "black" : "transparent"}
+            fontWeight={activeTab === "classes" ? "bold" : "normal"}
+            color={activeTab === "classes" ? "black" : "gray.500"}
+            borderRadius="0"
+            onClick={() => {
+              setActiveTab("classes");
+              toggleClasses();
+            }}
+          >
+            Classes</Button>
+          <Button
+            variant="unstyled" 
+            borderBottom="2px solid"
+            borderColor={activeTab === "events" ? "black" : "transparent"}
+            fontWeight={activeTab === "events" ? "bold" : "normal"}
+            color={activeTab === "events" ? "black" : "gray.500"}
+            borderRadius="0"
+            onClick={() => {
+              setActiveTab("events");
+              toggleEvents();
+            }}
+          >
+            Events</Button>
         </Flex>
 
         <Box my="14px">

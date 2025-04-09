@@ -283,6 +283,7 @@ export const Bookings = () => {
             <Tab
               _selected={{
                 color: "black",
+                borderBottom: "2px solid black",
                 borderColor: "black",
                 fontWeight: "bold",
               }}
@@ -292,6 +293,7 @@ export const Bookings = () => {
             <Tab
               _selected={{
                 color: "black",
+                borderBottom: "2px solid black",
                 borderColor: "black",
                 fontWeight: "bold",
               }}
@@ -301,6 +303,7 @@ export const Bookings = () => {
             <Tab
               _selected={{
                 color: "black",
+                borderBottom: "2px solid black",
                 borderColor: "black",
                 fontWeight: "bold",
               }}
@@ -590,7 +593,7 @@ const ClassTeacherCard = memo(
             size="md"
             fontWeight="bold"
           >
-            {title ? title : "Placeholder Title"}
+            {title ? test : "Placeholder Title"}
           </Heading>
         </CardHeader>
         <CardBody>

@@ -74,7 +74,7 @@ export const ClassCard = ({
     <>
       <Card
         w={{ base: "90%", md: "30em" }}
-        bg="gray.200"
+        bg="##FFFFFF"
       >
         <CardHeader pb={0}>
           <Heading
@@ -114,8 +114,8 @@ export const ClassCard = ({
               alignSelf="flex-end"
               variant="solid"
               size="sm"
-              bg="gray.500"
-              color="black"
+              bg="#422E8D"
+              color="#FFFFFF"
               _hover={{ bg: "gray.700" }}
               mt={2}
               onClick={() => {

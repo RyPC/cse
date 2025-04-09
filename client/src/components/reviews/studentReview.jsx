@@ -18,6 +18,7 @@ import { FaStar } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { color } from "framer-motion";
 
 const StudentReview = ({
   rating,
@@ -48,7 +49,7 @@ const StudentReview = ({
     setStarRating(value);
   };
   const colors = {
-    orange: "#F2C265",
+    purple: "#422E8D",
     grey: "a9a9a9",
   };
 
@@ -99,7 +100,7 @@ const StudentReview = ({
               value={starRating}
               onChange={(e) => setStarRating(e.target.value)}
               color={
-                (hoverValue || starRating) > index ? colors.orange : colors.grey
+                (hoverValue || starRating) > index ? colors.purple : colors.grey
               }
               onClick={() => handleClickStar(index + 1)}
               onMouseOver={() => handleMouseOverStar(index + 1)}
@@ -115,10 +116,10 @@ const StudentReview = ({
         />
         <Button
           onClick={postReview}
-          colorScheme={isError ? "gray" : "blue"}
+          colorScheme={isError ? colors.purple : "blue"}
           disabled={isError}
         >
-          Post
+          Review
         </Button>
       </FormControl>
     </CardBody>
