@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md"
+import { MdArrowBackIosNew, MdMoreHoriz , BiSolidEdit} from "react-icons/md"
 import {
   Box,
   Button,
@@ -255,14 +255,14 @@ function TeacherEventViewModal({
                   <Menu>
                     <MenuButton as={IconButton} icon={<MdMoreHoriz />}/>
                     <MenuList>
-                      <MenuItem onClick={handleEditEvent}>Edit</MenuItem>
+                      <MenuItem onClick={handleEditEvent}> Edit</MenuItem>
                       <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
                     </MenuList>
                   </Menu>
               </HStack>
           </ModalHeader>
           <ModalBody>
-            <HStack padding={3}>
+          {/* <HStack padding={3}>
               <Box width="60%">
                 <Text fontWeight="bold">Location:</Text>
                 <Text>{location ? location : "N/A"}</Text>
@@ -271,7 +271,7 @@ function TeacherEventViewModal({
                   <Text fontWeight="bold">Date:</Text>
                   <Text>{formattedDate ? formattedDate : "N/A"}</Text>
                 </Box>
-            </HStack>
+            </HStack> */}
 
             <VStack>
               <Box
@@ -323,25 +323,38 @@ function TeacherEventViewModal({
                 </Box>
               </Box>
             </VStack> 
-
+            
+            
 
             <VStack
               spacing={4}
               align="center"
             >
+              <HStack spacing={4}
+                width={"100%"}
+                justifyContent={"space-around"}>
+              <Box width="60%">
+                <Text fontWeight="bold" fontSize={20}>Location</Text>
+                <Text>{location ? location : "N/A"}</Text>
+              </Box>
+              <Box width="40%" >
+                  <Text fontWeight="bold" fontSize={20}>Date</Text>
+                  <Text>{formattedDate ? formattedDate : "N/A"}</Text>
+                </Box>
+              </HStack>
 
               <Box width="100%">
-                <Text fontWeight="bold">Event Time:</Text>
+                <Text fontWeight="bold" fontSize={20}>Event Time</Text>
                 <Text>{formattedStartTime ? formattedStartTime : "TBD"} to {formattedEndTime ? formattedEndTime : "TBD"}</Text>
               </Box>
 
               <Box width="100%">
-                <Text fontWeight="bold">Call Time:</Text>
+                <Text fontWeight="bold" fontSize={20}>Call Time</Text>
                 <Text>{formattedCallTime ? formattedCallTime : "TBD"}</Text>
               </Box>
 
               <Box width="100%">
-                <Text fontWeight="bold">Description:</Text>
+                <Text fontWeight="bold" fontSize={20}>Description</Text>
                 <Text>{description ? description: "TBD"}</Text>
               </Box>
 
@@ -351,25 +364,25 @@ function TeacherEventViewModal({
                 justifyContent={"space-around"}
               >
                 <Box width="50%">
-                  <Text fontWeight="bold">Capacity:</Text>
+                  <Text fontWeight="bold" fontSize={20}>Capacity</Text>
                   <Text>{capacity ? capacity : 0}</Text>
                 </Box>
                 <Box width="50%">
-                  <Text fontWeight="bold">Level:</Text>
+                  <Text fontWeight="bold" fontSize={20}>Level</Text>
                   <Text>{level ? level : "TBD"}</Text>
                 </Box>
               </HStack>
 
               <HStack width={"100%"}>
                 <Box>
-                  <Text fontWeight="bold">Costume:</Text>
+                  <Text fontWeight="bold" fontSize={20}>Costume</Text>
                   <Text>{costume}</Text>
                 </Box>
               </HStack>
               <HStack width="100%">
                 {!isCorequisiteSignUp && (
                   <Box>
-                    <Text as="b">Class Corequisites</Text>
+                    <Text as="b" fontSize={20}>Class Corequisites</Text>
                     {!corequisites || corequisites.length === 0 ? (
                       <Text>No corequisites for this class</Text>
                     ) : (
