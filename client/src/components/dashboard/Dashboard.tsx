@@ -89,7 +89,7 @@ export const DashboardHome = () => {
 
   const [users, setUsers] = useState<User[] | undefined>();
   const [classes, setClasses] = useState<Class[] | undefined>();
-  const [attendance, setAttendance] = useState([]);
+  const [attendance, setAttendance] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
 
@@ -102,8 +102,14 @@ export const DashboardHome = () => {
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
 
-        const attendanceResponse = await backend.get(`/class-enrollments/attendance/1`); //need to make it call all 12 months
-        setAttendance(attendanceResponse.data);
+        const attendanceArray = []
+        for(let i = 1; i <= 12; i++) 
+        {
+          const attendanceResponse = await backend.get(`/class-enrollments/attendance/${i}`); 
+          attendanceArray.push(attendanceResponse.data);
+        }
+        setAttendance(attendanceArray);
+        print(attendanceArray);
 
       } catch (error) {
         console.error("Error fetching data:", error);
