@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { MdArrowBackIosNew, MdMoreHoriz , BiSolidEdit} from "react-icons/md"
+import { MdArrowBackIosNew, MdMoreHoriz, } from "react-icons/md"
+import { BiSolidEdit } from "react-icons/bi";
+import { FaRegTrashCan } from "react-icons/fa6";
+
 import {
   Box,
   Button,
@@ -255,8 +258,10 @@ function TeacherEventViewModal({
                   <Menu>
                     <MenuButton as={IconButton} icon={<MdMoreHoriz />}/>
                     <MenuList>
-                      <MenuItem onClick={handleEditEvent}> Edit</MenuItem>
-                      <MenuItem onClick={handleDeleteEvent}>Delete</MenuItem>
+                      <MenuItem onClick={handleEditEvent}> <BiSolidEdit />
+                        Edit</MenuItem>
+                      <MenuItem onClick={handleDeleteEvent}><FaRegTrashCan />
+                      Delete</MenuItem>
                     </MenuList>
                   </Menu>
               </HStack>
