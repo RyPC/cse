@@ -12,7 +12,8 @@ export const VideoCard = ({ id, title, description, S3Url, classId, mediaUrl, ta
           <Text fontSize="md">{description ?? "No description"}</Text>
           <Text fontSize="sm">Posted by "instructor name" for "Class Name"</Text>
           <Text>Media URL: {mediaUrl}</Text>
-          <Text>Tags: {tags?.length ? tags.join(', ') : 'None'}</Text>
+          {tags?.length && <Text>Tags: {tags.join(', ')}</Text>}
+          {/* <Text>Tags: {tags?.length ? tags.join(', ') : 'No tags!'}</Text> */}
         </Stack>
       </CardBody>
     </Card>
