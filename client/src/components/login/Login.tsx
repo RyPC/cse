@@ -5,6 +5,7 @@ import {
   Center,
   Link as ChakraLink,
   FormControl,
+  FormLabel,
   FormErrorMessage,
   FormHelperText,
   Heading,
@@ -12,6 +13,9 @@ import {
   Stack,
   useToast,
   VStack,
+  Text,
+  Box,
+  Image
 } from "@chakra-ui/react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +27,8 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
+
+import logo from "./logo.png";
 
 const signinSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -132,79 +138,106 @@ export const Login = () => {
   }, [backend, handleRedirectResult, navigate, toast]);
 
   return (
-    <VStack
-      spacing={8}
-      sx={{ width: 300, marginX: "auto" }}
-    >
-      <Heading>Login</Heading>
 
-      <form
-        onSubmit={handleSubmit(handleLogin)}
-        style={{ width: "100%" }}
-      >
-        <Stack spacing={2}>
-          <FormControl
-            isInvalid={!!errors.email}
-            w={"100%"}
+    <Box mt={"15.10vh"}>
+
+      <Center w="100vw">
+        <VStack>
+          <Image src={logo} w="24.286vw" h="11.670vh" fit="contain"></Image>
+          <Text fontSize="20px" sx={{fontWeight: "500" }}>Account created! Continue to log in.</Text> 
+        </VStack>
+      </Center>
+
+      <Center mt={6} w="100vw">
+        <VStack
+          spacing={8}
+          sx={{ width: 300, marginX: "auto" }}
+        >
+
+          <form
+            onSubmit={handleSubmit(handleLogin)}
+            style={{ width: "100%" }}
           >
-            <Center>
-              <Input
-                placeholder="Email"
-                type="email"
-                size={"lg"}
-                {...register("email")}
-                name="email"
-                isRequired
-                autoComplete="email"
-              />
-            </Center>
-            <FormErrorMessage>
-              {errors.email?.message?.toString()}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.password}>
-            <Center>
-              <Input
-                placeholder="Password"
-                type="password"
-                size={"lg"}
-                {...register("password")}
-                name="password"
-                isRequired
-                autoComplete="current-password"
-              />
-            </Center>
-            <FormErrorMessage>
-              {errors.password?.message?.toString()}
-            </FormErrorMessage>
-            <ChakraLink
-              as={Link}
-              to="/signup"
-            >
-              <FormHelperText>Click here to sign up</FormHelperText>
-            </ChakraLink>
-          </FormControl>
+            <Stack spacing={2}>
 
-          <Button
-            type="submit"
+              <Box mb={7}>
+                <FormControl
+                  isInvalid={!!errors.email}
+                  w={"100%"}
+                >
+                  <Center>
+                    <FormControl>
+                      <FormLabel>Email Address</FormLabel>
+                      <Input
+                        // placeholder="Email"
+                        type="email"
+                        size={"lg"}
+                        {...register("email")}
+                        name="email"
+                        isRequired
+                        autoComplete="email"
+                        borderRadius="4px"
+                        h="3.661vh"
+                      />
+                    </FormControl>
+                  </Center>
+                  <FormErrorMessage>
+                    {errors.email?.message?.toString()}
+                  </FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={!!errors.password}>
+                  <FormLabel>Password</FormLabel>
+                  <Center>
+                    <Input
+                      // placeholder="Password"
+                      type="password"
+                      size={"lg"}
+                      {...register("password")}
+                      name="password"
+                      isRequired
+                      autoComplete="current-password"
+                      h="3.661vh"
+                    />
+                  </Center>
+                  <FormErrorMessage>
+                    {errors.password?.message?.toString()}
+                  </FormErrorMessage>
+                  <ChakraLink
+                    as={Link}
+                    to="/signup"
+                  >
+                  </ChakraLink>
+                </FormControl>
+              </Box>
+
+              <Center>
+                <Button
+                  type="submit"
+                  size={"lg"}
+                  bg="#422E8D"
+                  w="48.25vw"
+                  color="white"
+                  // sx={{ width: "100%" }}
+                  borderRadius="4px"
+                  isDisabled={Object.keys(errors).length > 0}
+                >
+                  <Text>Submit</Text>
+                </Button>
+              </Center>
+            </Stack>
+          </form>
+
+          {/* <Button
+            leftIcon={<FaGoogle />}
+            variant={"solid"}
             size={"lg"}
+            onClick={handleGoogleLogin}
             sx={{ width: "100%" }}
-            isDisabled={Object.keys(errors).length > 0}
           >
-            Login
-          </Button>
-        </Stack>
-      </form>
-
-      {/* <Button
-        leftIcon={<FaGoogle />}
-        variant={"solid"}
-        size={"lg"}
-        onClick={handleGoogleLogin}
-        sx={{ width: "100%" }}
-      >
-        Login with Google
-      </Button> */}
-    </VStack>
+            Login with Google
+          </Button> */}
+        </VStack>
+      </Center>
+    </Box>
   );
 };

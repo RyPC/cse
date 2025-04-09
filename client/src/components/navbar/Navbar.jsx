@@ -5,10 +5,10 @@ import { Box, Flex, Image } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-import bookingsImg from "./bookings_img.png";
-import discoveryImg from "./discovery_img.png";
-import profileImg from "./profile_img.png";
-import resourcesImg from "./resources_img.png";
+import bookingsImg from "./bookings_img.svg";
+import discoveryImg from "./discovery_img.svg";
+import profileImg from "./profile_img.svg";
+import resourcesImg from "./resources_img.svg";
 
 export const Navbar = () => {
   const { role } = useAuthContext();
@@ -20,7 +20,7 @@ export const Navbar = () => {
       bottom="0"
       left="0"
       right="0"
-      bg="#DBDBDB"
+      bg="#E8E7EF"
       p={3}
       padding={5}
     >
@@ -34,13 +34,6 @@ export const Navbar = () => {
             maxWidth="2rem"
             style={{ userSelect: "none" }}
             src={profileImg}
-          ></Image>
-        </Link>
-        <Link to="/resources">
-          <Image
-            maxWidth="2rem"
-            style={{ userSelect: "none" }}
-            src={resourcesImg}
           ></Image>
         </Link>
         {role !== "teacher" && (
@@ -57,6 +50,13 @@ export const Navbar = () => {
             maxWidth="2rem"
             style={{ userSelect: "none" }}
             src={bookingsImg}
+          ></Image>
+        </Link>
+        <Link to="/resources">
+          <Image
+            maxWidth="2rem"
+            style={{ userSelect: "none" }}
+            src={resourcesImg}
           ></Image>
         </Link>
       </Flex>
