@@ -10,7 +10,7 @@ import {
     Stack,
 } from "@chakra-ui/react";
 
-const SaveClassAsDraftModal = ({ isOpen, onClose, postClass }) => {
+const SaveClass = ({ isOpen, onClose, postClass }) => {
     return (
         <Modal
             isOpen={isOpen}
@@ -46,4 +46,4 @@ const SaveClassAsDraftModal = ({ isOpen, onClose, postClass }) => {
     );
 };
 
-export default SaveClassAsDraftModal;
+export default SaveClass;

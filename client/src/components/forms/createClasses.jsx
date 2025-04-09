@@ -4,11 +4,15 @@ import {
   Button,
   Container,
   FormControl,
+  FormHelperText,
   FormLabel,
   Heading,
+  HStack,
   Input,
   NumberInput,
   NumberInputField,
+  Radio,
+  RadioGroup,
   Select,
   Stack,
   Text,
@@ -26,13 +30,14 @@ import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 export const CreateClassForm = memo(
   ({ closeModal, modalData, reloadCallback }) => {
     const { backend } = useBackendContext();
-    // console.log(modalData);
     const [events, setEvents] = useState([]);
     const [tags, setTags] = useState([]);
 
     const [title, setTitle] = useState(modalData?.title ?? "");
     const [location, setLocation] = useState(modalData?.location ?? "");
     const [date, setDate] = useState(modalData?.date ?? "");
+    const [endDate, setEndDate] = useState(""); // End date for recurring classes
+    const [recurrencePattern, setRecurrencePattern] = useState("none"); // none or weekly
     const [startTime, setStartTime] = useState(modalData?.startTime ?? "");
     const [endTime, setEndTime] = useState(modalData?.endTime ?? "");
     const [description, setDescription] = useState(
@@ -40,9 +45,7 @@ export const CreateClassForm = memo(
     );
     const [capacity, setCapacity] = useState(modalData?.capacity ?? 0);
     const [level, setLevel] = useState(modalData?.level ?? "beginner");
-    const [classType, setClassType] = useState(
-      modalData?.classType ?? "1"
-    );
+    const [classType, setClassType] = useState(modalData?.classType ?? "1");
     const [performance, setPerformance] = useState(
       modalData?.performance ?? -1
     );
@@ -56,12 +59,37 @@ export const CreateClassForm = memo(
 
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isDraft, setIsDraft] = useState(false);
+
+    // Function to calculate dates for recurring classes
+    const calculateRecurringDates = (startDate, endDate, pattern) => {
+      if (pattern !== "weekly" || !startDate || !endDate) {
+        return [startDate]; // Return only start date if not recurring
+      }
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const dates = [];
+
+      const currentDate = new Date(start);
+      while (currentDate <= end) {
+        dates.push(new Date(currentDate).toISOString().split("T")[0]);
+        // Add 7 days for weekly pattern
+        currentDate.setDate(currentDate.getDate() + 7);
+      }
+
+      return dates;
+    };
+
     const postClass = async () => {
-      const body = {
+      // Calculate recurring dates if weekly is selected
+      const classDates = calculateRecurringDates(
+        date,
+        endDate,
+        recurrencePattern
+      );
+
+      const baseClassBody = {
         location: location ?? "",
-        date: date ?? new Date(),
-        startTime: startTime ?? "",
-        endTime: endTime ?? "",
         description: description ?? "",
         level: level ?? "",
         capacity: capacity === "" ? 0 : capacity,
@@ -69,48 +97,95 @@ export const CreateClassForm = memo(
         performance: performance ?? "",
         isDraft,
         title: title ?? "",
+        isRecurring: recurrencePattern !== "none",
+        recurrencePattern: recurrencePattern,
       };
 
-      let classId;
+      // Handle editing a single class
       if (modalData) {
         await backend
-          .put("/classes/" + modalData.classId, body)
+          .put("/classes/" + modalData.classId, {
+            ...baseClassBody,
+            date: date ?? new Date(),
+            startTime: startTime ?? "",
+            endTime: endTime ?? "",
+          })
           .catch((error) => console.log(error));
-        classId = modalData.classId;
+
+        if (date && startTime && endTime) {
+          const scheduledClassBody = {
+            class_id: modalData.classId,
+            date,
+            start_time: startTime,
+            end_time: endTime,
+          };
+          await backend
+            .post("/scheduled-classes", scheduledClassBody)
+            .then((response) =>
+              console.log("Scheduled class updated:", response)
+            )
+            .catch((error) =>
+              console.log("Error updating scheduled class:", error)
+            );
+        }
+
+        if (classType !== "") {
+          await backend
+            .post("/class-tags", {
+              classId: modalData.classId,
+              tagId: classType,
+            })
+            .then((response) => console.log(response))
+            .catch((err) => {
+              console.error(err);
+            });
+        }
       } else {
-        const response = await backend
-          .post("/classes", body)
-          .catch((error) => console.log(error));
-          console.log("response", response)
-        classId = response?.data[0]?.id;
-      }
+        // Creating new class(es)
+        const createdClassIds = [];
 
-      if (classId && date && startTime && endTime) {
-        const scheduledClassBody = {
-          class_id: classId,
-          date,
-          start_time: startTime,
-          end_time: endTime,
-        };
-        // Add scheduled class as well
-        await backend
-          .post("/scheduled-classes", scheduledClassBody)
-          .then((response) => console.log("Scheduled class added:", response))
-          .catch((error) =>
-            console.log("Error adding scheduled class:", error)
-          );
-      }
+        // Create a class for each date in the recurring series
+        for (const classDate of classDates) {
+          const classBody = {
+            ...baseClassBody,
+            date: classDate,
+            startTime: startTime ?? "",
+            endTime: endTime ?? "",
+          };
 
-      if (classType !== "") {
-        await backend
-          .post("/class-tags", {
-            classId: classId,
-            tagId: classType
-          })
-          .then(response => console.log(response))
-          .catch(err => {
-            console.error(err)
-          })
+          try {
+            const response = await backend.post("/classes", classBody);
+            console.log("Class created:", response);
+            const classId = response?.data[0]?.id;
+
+            if (classId) {
+              createdClassIds.push(classId);
+
+              // Add scheduled class
+              if (classDate && startTime && endTime) {
+                const scheduledClassBody = {
+                  class_id: classId,
+                  date: classDate,
+                  start_time: startTime,
+                  end_time: endTime,
+                };
+                await backend.post("/scheduled-classes", scheduledClassBody);
+              }
+
+              // Add class tag
+              if (classType !== "") {
+                await backend.post("/class-tags", {
+                  classId: classId,
+                  tagId: classType,
+                });
+              }
+            }
+          } catch (error) {
+            console.error("Error creating class:", error);
+          }
+        }
+
+        console.log(`Created ${createdClassIds.length} classes for the series`);
       }
 
       setIsSubmitted(true);
@@ -125,17 +200,23 @@ export const CreateClassForm = memo(
           setEvents(response.data);
         });
         backend.get("/tags").then((response) => {
-          setTags(response.data)
-        })
+          setTags(response.data);
+        });
       }
     }, [backend]);
-    // useEffect(() => {
-    //   if (modalData) {
-    //     // console.log(modalData, modalData.isDraft);
-    //   }
-    // }, [modalData]);
 
     const isEditingDraft = modalData && modalData.isDraft;
+
+    // Handle date change validation
+    useEffect(() => {
+      if (recurrencePattern !== "none" && endDate && date) {
+        // Check if end date is after start date
+        if (new Date(endDate) < new Date(date)) {
+          setEndDate(date);
+        }
+      }
+    }, [date, endDate, recurrencePattern]);
+
     return (
       <Container>
         <Text
@@ -178,7 +259,7 @@ export const CreateClassForm = memo(
             </FormControl>
 
             <FormControl>
-              <FormLabel>Date</FormLabel>
+              <FormLabel>Start Date</FormLabel>
               <Input
                 type="date"
                 required
@@ -186,6 +267,37 @@ export const CreateClassForm = memo(
                 onChange={(e) => setDate(e.target.value)}
               />
             </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Recurrence Pattern</FormLabel>
+              <RadioGroup
+                value={recurrencePattern}
+                onChange={setRecurrencePattern}
+              >
+                <HStack spacing={4}>
+                  <Radio value="none">None</Radio>
+                  <Radio value="weekly">Weekly</Radio>
+                </HStack>
+              </RadioGroup>
+              <FormHelperText>
+                {recurrencePattern === "weekly"
+                  ? "Classes will be created weekly starting from the Start Date"
+                  : "A single class will be created on the Start Date"}
+              </FormHelperText>
+            </FormControl>
+
+            {recurrencePattern !== "none" && (
+              <FormControl mt={4}>
+                <FormLabel>End Date</FormLabel>
+                <Input
+                  type="date"
+                  required
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  min={date} // Can't be before start date
+                />
+              </FormControl>
+            )}
 
             <FormControl>
               <FormLabel>Start Time</FormLabel>
@@ -246,7 +358,12 @@ export const CreateClassForm = memo(
                 value={performance}
                 onChange={(e) => setPerformance(e.target.value)}
               >
-                <option key={null} value={null}>No Performance Required</option>
+                <option
+                  key={null}
+                  value={null}
+                >
+                  No Performance Required
+                </option>
                 {events
                   ? events.map((evt, ind) => (
                       <option
@@ -285,7 +402,7 @@ export const CreateClassForm = memo(
               mt={4}
             >
               {/* wasnt a draft then show the button to save as draft */}
-              {((!isSubmitted && !modalData ) || modalData?.isDraft) && (
+              {((!isSubmitted && !modalData) || modalData?.isDraft) && (
                 <Button
                   onClick={() => {
                     onOpen();

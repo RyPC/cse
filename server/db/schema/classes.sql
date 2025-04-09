@@ -1,4 +1,5 @@
 CREATE TYPE LEVEL AS ENUM ("beginner", "intermediate", "advanced")
+CREATE TYPE RECURRENCE_PATTERN AS ENUM ("none", "weekly")
 
 CREATE TABLE IF NOT EXISTS classes
 (
@@ -10,6 +11,9 @@ CREATE TABLE IF NOT EXISTS classes
     level LEVEL NOT NULL,
     costume TEXT NOT NULL,
     is_draft BOOLEAN NOT NULL,
+    is_recurring BOOLEAN DEFAULT FALSE,
+    recurrence_pattern RECURRENCE_PATTERN DEFAULT 'none',
+    series_id INTEGER,
     CONSTRAINT class_pkey PRIMARY KEY (id)
 )
 

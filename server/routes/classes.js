@@ -127,12 +127,9 @@ classesRouter.get("/corequisites/:id", async (req, res) => {
 classesRouter.delete("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query(
-      `DELETE FROM corequisites WHERE class_id = $1`,
-      [id]
-    );
+    await db.query(`DELETE FROM corequisites WHERE class_id = $1`, [id]);
 
-    res.status(200).json(keysToCamel({"success": true}));
+    res.status(200).json(keysToCamel({ success: true }));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -141,12 +138,9 @@ classesRouter.delete("/corequisites/:id", async (req, res) => {
 classesRouter.delete("/corequisites/event/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query(
-      `DELETE FROM corequisites WHERE event_id = $1`,
-      [id]
-    );
+    await db.query(`DELETE FROM corequisites WHERE event_id = $1`, [id]);
 
-    res.status(200).json(keysToCamel({"success": true}));
+    res.status(200).json(keysToCamel({ success: true }));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -230,6 +224,23 @@ classesRouter.get("/search/:name", async (req, res) => {
   }
 });
 
+classesRouter.get("/series/:seriesId", async (req, res) => {
+  try {
+    const { seriesId } = req.params;
+    const data = await db.query(
+      `SELECT c.*, sc.date, sc.start_time, sc.end_time
+       FROM classes c
+       LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+       WHERE c.series_id = $1
+       ORDER BY sc.date ASC;`,
+      [seriesId]
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 classesRouter.get("/:id", async (req, res) => {
   try {
@@ -252,22 +263,54 @@ classesRouter.get("/", async (req, res) => {
   }
 });
 
-
-
 classesRouter.post("/", async (req, res) => {
   try {
     console.log(req.body);
-    const { title, description, location, capacity, level, costume, isDraft } =
-      req.body;
+    const {
+      title,
+      description,
+      location,
+      capacity,
+      level,
+      costume,
+      isDraft,
+      isRecurring = false,
+      recurrencePattern = "none",
+      seriesId = null,
+    } = req.body;
+
     const data = await db.query(
       `
-        INSERT INTO classes (title, description, location, capacity, level, costume, is_draft)
-        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
-      [title, description, location, capacity, level, costume, isDraft]
+        INSERT INTO classes (
+          title, 
+          description, 
+          location, 
+          capacity, 
+          level, 
+          costume, 
+          is_draft, 
+          is_recurring, 
+          recurrence_pattern,
+          series_id
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;`,
+      [
+        title,
+        description,
+        location,
+        capacity,
+        level,
+        costume,
+        isDraft,
+        isRecurring,
+        recurrencePattern,
+        seriesId,
+      ]
     );
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
+    console.log(err);
     res.status(500).send(err.message);
   }
 });
@@ -275,8 +318,18 @@ classesRouter.post("/", async (req, res) => {
 classesRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, location, capacity, level, costume, isDraft } =
-      req.body;
+    const {
+      title,
+      description,
+      location,
+      capacity,
+      level,
+      costume,
+      isDraft,
+      isRecurring,
+      recurrencePattern,
+      seriesId,
+    } = req.body;
 
     const query = `UPDATE CLASSES SET
     title = COALESCE($1, title),
@@ -285,8 +338,11 @@ classesRouter.put("/:id", async (req, res) => {
     capacity = COALESCE($4, capacity),
     level = COALESCE($5, level),
     costume = COALESCE($6, costume),
-    is_draft = COALESCE($7, is_draft)
-    WHERE id = $8 RETURNING *;`;
+    is_draft = COALESCE($7, is_draft),
+    is_recurring = COALESCE($8, is_recurring),
+    recurrence_pattern = COALESCE($9, recurrence_pattern),
+    series_id = COALESCE($10, series_id)
+    WHERE id = $11 RETURNING *;`;
 
     const data = await db.query(query, [
       title,
@@ -296,6 +352,9 @@ classesRouter.put("/:id", async (req, res) => {
       level,
       costume,
       isDraft,
+      isRecurring,
+      recurrencePattern,
+      seriesId,
       id,
     ]);
 
@@ -304,7 +363,5 @@ classesRouter.put("/:id", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
-
 
 export { classesRouter };
