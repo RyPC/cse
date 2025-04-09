@@ -36,8 +36,8 @@ export const CreateClassForm = memo(
     const [title, setTitle] = useState(modalData?.title ?? "");
     const [location, setLocation] = useState(modalData?.location ?? "");
     const [date, setDate] = useState(modalData?.date ?? "");
-    const [endDate, setEndDate] = useState(""); // End date for recurring classes
-    const [recurrencePattern, setRecurrencePattern] = useState("none"); // none or weekly
+    const [endDate, setEndDate] = useState("");
+    const [recurrencePattern, setRecurrencePattern] = useState("none");
     const [startTime, setStartTime] = useState(modalData?.startTime ?? "");
     const [endTime, setEndTime] = useState(modalData?.endTime ?? "");
     const [description, setDescription] = useState(
@@ -60,10 +60,9 @@ export const CreateClassForm = memo(
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isDraft, setIsDraft] = useState(false);
 
-    // Function to calculate dates for recurring classes
     const calculateRecurringDates = (startDate, endDate, pattern) => {
-      if (pattern !== "weekly" || !startDate || !endDate) {
-        return [startDate]; // Return only start date if not recurring
+      if (pattern === "none" || !startDate || !endDate) {
+        return [startDate];
       }
 
       const start = new Date(startDate);
@@ -73,15 +72,31 @@ export const CreateClassForm = memo(
       const currentDate = new Date(start);
       while (currentDate <= end) {
         dates.push(new Date(currentDate).toISOString().split("T")[0]);
-        // Add 7 days for weekly pattern
-        currentDate.setDate(currentDate.getDate() + 7);
+
+        switch (pattern) {
+          case "weekly":
+            currentDate.setDate(currentDate.getDate() + 7);
+            break;
+          case "biweekly":
+            currentDate.setDate(currentDate.getDate() + 14);
+            break;
+          case "monthly": {
+            const month = currentDate.getMonth();
+            currentDate.setMonth(month + 1);
+            if (currentDate.getDate() !== start.getDate()) {
+              currentDate.setDate(0);
+            }
+            break;
+          }
+          default:
+            currentDate.setDate(currentDate.getDate() + 7);
+        }
       }
 
       return dates;
     };
 
     const postClass = async () => {
-      // Calculate recurring dates if weekly is selected
       const classDates = calculateRecurringDates(
         date,
         endDate,
@@ -101,7 +116,6 @@ export const CreateClassForm = memo(
         recurrencePattern: recurrencePattern,
       };
 
-      // Handle editing a single class
       if (modalData) {
         await backend
           .put("/classes/" + modalData.classId, {
@@ -141,10 +155,8 @@ export const CreateClassForm = memo(
             });
         }
       } else {
-        // Creating new class(es)
         const createdClassIds = [];
 
-        // Create a class for each date in the recurring series
         for (const classDate of classDates) {
           const classBody = {
             ...baseClassBody,
@@ -161,7 +173,6 @@ export const CreateClassForm = memo(
             if (classId) {
               createdClassIds.push(classId);
 
-              // Add scheduled class
               if (classDate && startTime && endTime) {
                 const scheduledClassBody = {
                   class_id: classId,
@@ -172,7 +183,6 @@ export const CreateClassForm = memo(
                 await backend.post("/scheduled-classes", scheduledClassBody);
               }
 
-              // Add class tag
               if (classType !== "") {
                 await backend.post("/class-tags", {
                   classId: classId,
@@ -207,10 +217,8 @@ export const CreateClassForm = memo(
 
     const isEditingDraft = modalData && modalData.isDraft;
 
-    // Handle date change validation
     useEffect(() => {
       if (recurrencePattern !== "none" && endDate && date) {
-        // Check if end date is after start date
         if (new Date(endDate) < new Date(date)) {
           setEndDate(date);
         }
@@ -226,8 +234,7 @@ export const CreateClassForm = memo(
         >
           {!isSubmitted
             ? modalData
-              ? // if it is not submitted, and coming from a draft, then it is an edit, else it is a new class, else it is a published class
-                "Edit Class"
+              ? "Edit Class"
               : "New Class"
             : `${title} ${isDraft ? "Draft" : "Published"}`}
         </Text>
@@ -245,6 +252,8 @@ export const CreateClassForm = memo(
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                bg="white"
+                color="black"
               />
             </FormControl>
 
@@ -255,75 +264,102 @@ export const CreateClassForm = memo(
                 required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
+                bg="white"
+                color="black"
               />
             </FormControl>
 
-            <FormControl>
-              <FormLabel>Start Date</FormLabel>
-              <Input
-                type="date"
-                required
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel>Recurrence Pattern</FormLabel>
-              <RadioGroup
-                value={recurrencePattern}
-                onChange={setRecurrencePattern}
-              >
-                <HStack spacing={4}>
-                  <Radio value="none">None</Radio>
-                  <Radio value="weekly">Weekly</Radio>
-                </HStack>
-              </RadioGroup>
-              <FormHelperText>
-                {recurrencePattern === "weekly"
-                  ? "Classes will be created weekly starting from the Start Date"
-                  : "A single class will be created on the Start Date"}
-              </FormHelperText>
-            </FormControl>
-
-            {recurrencePattern !== "none" && (
-              <FormControl mt={4}>
-                <FormLabel>End Date</FormLabel>
+            <HStack
+              spacing={4}
+              mt={4}
+              align="flex-start"
+            >
+              <FormControl>
+                <FormLabel>Start Date</FormLabel>
                 <Input
                   type="date"
                   required
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  min={date} // Can't be before start date
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  bg="white"
+                  color="black"
                 />
               </FormControl>
-            )}
 
-            <FormControl>
-              <FormLabel>Start Time</FormLabel>
-              <Input
-                type="time"
-                required
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-              />
+              <FormControl>
+                <FormLabel>End Date</FormLabel>
+                <Input
+                  type="date"
+                  required={recurrencePattern !== "none"}
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  min={date}
+                  isDisabled={recurrencePattern === "none"}
+                  opacity={recurrencePattern === "none" ? 0.4 : 1}
+                  bg="white"
+                  color="black"
+                />
+              </FormControl>
+            </HStack>
+
+            <FormControl mt={4}>
+              <FormLabel>Recurrence Pattern</FormLabel>
+              <Select
+                value={recurrencePattern}
+                onChange={(e) => setRecurrencePattern(e.target.value)}
+                bg="white"
+                color="black"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
+              >
+                <option value="none">None</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-Weekly</option>
+                <option value="monthly">Monthly</option>
+              </Select>
             </FormControl>
 
-            <FormControl>
-              <FormLabel>End Time</FormLabel>
-              <Input
-                type="time"
-                required
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-              />
-            </FormControl>
+            <HStack
+              spacing={4}
+              mt={4}
+              align="flex-start"
+            >
+              <FormControl>
+                <FormLabel>Start Time</FormLabel>
+                <Input
+                  type="time"
+                  required
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  bg="white"
+                  color="black"
+                />
+              </FormControl>
 
-            <FormControl>
+              <FormControl>
+                <FormLabel>End Time</FormLabel>
+                <Input
+                  type="time"
+                  required
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  bg="white"
+                  color="black"
+                />
+              </FormControl>
+            </HStack>
+
+            <FormControl mt={4}>
               <FormLabel>Description</FormLabel>
               <Textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                bg="white"
+                color="black"
               />
             </FormControl>
 
@@ -334,6 +370,8 @@ export const CreateClassForm = memo(
                   required
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
+                  bg="white"
+                  color="black"
                 />
               </NumberInput>
             </FormControl>
@@ -344,6 +382,14 @@ export const CreateClassForm = memo(
                 required
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
+                bg="white"
+                color="black"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
               >
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
@@ -357,6 +403,14 @@ export const CreateClassForm = memo(
                 required
                 value={performance}
                 onChange={(e) => setPerformance(e.target.value)}
+                bg="white"
+                color="black"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
               >
                 <option
                   key={null}
@@ -382,6 +436,14 @@ export const CreateClassForm = memo(
                 required
                 value={classType}
                 onChange={(e) => setClassType(e.target.value)}
+                bg="white"
+                color="black"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
               >
                 {tags
                   ? tags.map((tag, ind) => (
@@ -401,22 +463,27 @@ export const CreateClassForm = memo(
               justifyContent="center"
               mt={4}
             >
-              {/* wasnt a draft then show the button to save as draft */}
               {((!isSubmitted && !modalData) || modalData?.isDraft) && (
                 <Button
                   onClick={() => {
                     onOpen();
                     setIsDraft(true);
                   }}
+                  bg="#D8BFD8"
+                  color="black"
+                  border="1px solid black"
+                  _hover={{ bg: "#C8A9C8" }}
                 >
                   Save as Draft
                 </Button>
               )}
               <Button
-                colorScheme="blue"
                 type="submit"
+                bg="#663399"
+                color="white"
+                border="1px solid black"
+                _hover={{ bg: "#5D2E8C" }}
               >
-                {/* publish either way */}
                 Publish
               </Button>
             </Stack>

@@ -1,5 +1,5 @@
 CREATE TYPE LEVEL AS ENUM ("beginner", "intermediate", "advanced")
-CREATE TYPE RECURRENCE_PATTERN AS ENUM ("none", "weekly")
+CREATE TYPE RECURRENCE_PATTERN AS ENUM ("none", "weekly", "biweekly", "monthly")
 
 CREATE TABLE IF NOT EXISTS classes
 (
