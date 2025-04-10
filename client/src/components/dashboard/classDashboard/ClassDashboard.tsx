@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import {
+  Box,
+  Button,
   Flex,
   Heading,
   Image,
@@ -17,6 +19,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { FiTrash2 } from "react-icons/fi";
+import { SlArrowLeft } from "react-icons/sl";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
@@ -54,14 +58,28 @@ export function OverallClassDashboard() {
   }, [backend]);
   return (
     <VStack>
-      <Flex w={"100%"} justify={"space-between"}>
+      <Flex
+        w={"100%"}
+        justify={"space-between"}
+      >
         <Heading
           as="h1"
           size="lg"
           mb={4}
           alignSelf={"flex-start"}
+          alignContent="center"
+          fontWeight={700}
+          fontSize={36}
         >
-          Classes
+          <Button
+            backgroundColor="transparent"
+            fontSize={25}
+            mb={1}
+            onClick={() => navigate("/dashboard")}
+          >
+            <SlArrowLeft />
+          </Button>
+          Classes and Events
         </Heading>
         <Image
           alignSelf={"flex-end"}
@@ -75,50 +93,91 @@ export function OverallClassDashboard() {
           onClose={onClose}
         />
       </Flex>
+      <Box
+        w="100%"
+        pl={20}
+      >
+        SEARCH BAR HERE
+      </Box>
       <TableContainer
         w="100%"
         sx={{
           overflowX: "auto",
         }}
+        pl={20}
       >
-        <Table
-          variant="simple"
-          colorScheme="black"
-          size="lg"
-          sx={{}}
-        >
-          <TableCaption>All Classes</TableCaption>
+        <Table colorScheme="gray">
+          {/* <TableCaption>All Classes</TableCaption> */}
           <Thead>
             <Tr>
               <Th
-                fontWeight={"bold"}
-                color={"black"}
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
               >
-                Class Title
+                Class
               </Th>
-              <Th>Description</Th>
-              <Th>Level</Th>
-              <Th>Location</Th>
-              <Th>Capacity</Th>
-              <Th>Costume</Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Teacher
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Level
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Date
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
             {classes
-              ? classes.map((cls) => (
+              ? classes.map((cls, index) => (
                   <Tr
                     key={cls.id}
                     onClick={() => navigate(`/dashboard/classes/${cls.id}`)}
-                    _hover={{ bg: "gray.500", cursor: "pointer" }}
+                    backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
+                    _hover={{ bg: "gray.300", cursor: "pointer" }}
+                    color="gray.700"
                   >
-                    <Td fontWeight="bold">{cls.title}</Td>
-                    <Td>{cls.description}</Td>
-                    <Td>{cls.level}</Td>
-
-                    <Td>{cls.location}</Td>
-                    <Td>{cls.capacity}</Td>
-                    <Td>{cls.costume}</Td>
-                    {/* <Td>{cls.teacher}</Td> */}
+                    <Td fontFamily="Inter">{cls.title}</Td>
+                    <Td fontFamily="Inter">{cls.teacher}</Td>
+                    <Td fontFamily="Inter">{cls.level}</Td>
+                    <Td fontFamily="Inter">{cls.date}</Td>
+                    <Td>
+                      <Button
+                        backgroundColor="transparent"
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevents earlier onclick
+                        }}
+                        m={-8} // overrides bounds of row
+                        fontSize="28px"
+                      >
+                        <FiTrash2 />
+                      </Button>
+                    </Td>
                   </Tr>
                 ))
               : null}

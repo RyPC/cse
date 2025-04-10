@@ -25,9 +25,9 @@ import teachersIcon from "../../components/dashboard/sidebarImgs/teachers.svg";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
+import { Attendance } from "../../types/attendance";
 import { Class } from "../../types/legacy/class";
 import { User } from "../../types/user";
-import { Attendance } from "../../types/attendance";
 import { NotificationPanel } from "./NotificationPanel";
 
 interface StatCardProps {
@@ -52,8 +52,20 @@ const data = [
   { month: "Dec", count: 18 },
 ];
 
-const monthLabels = ["Jan","Feb", "Mar", "Apr", "May", "June", 
-                     "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthLabels = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "June",
+  "July",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
@@ -112,7 +124,6 @@ export const DashboardHome = () => {
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -321,7 +332,7 @@ export const Sidebar = () => {
         >
           <HStack>
             <Image src={classesIcon} />
-            <Text>Classes</Text>
+            <Text>Classes / Events</Text>
           </HStack>
         </Box>
         <Box
