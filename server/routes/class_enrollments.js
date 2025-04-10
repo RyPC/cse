@@ -25,6 +25,18 @@ classEnrollmentsRouter.get("/test", async (req, res) => {
   }
 });
 
+classEnrollmentsRouter.get("/student-class-count", async (req,res) => {
+  try {
+    const result = await db.query(
+      `SELECT student_id as id, COUNT(*) FROM class_enrollments GROUP BY student_id`
+    );
+
+    res.status(200).json(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 classEnrollmentsRouter.get("/statistics", async (req, res) => {
   try {
