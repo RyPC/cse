@@ -38,9 +38,10 @@ export const StudentDashboard = () => {
         const response = await backend.get("/students");
         setStudents(response.data);
 
-        const countResponse = await backend.get("/class-enrollments/student-class-count");
+        const countResponse = await backend.get(
+          "/class-enrollments/student-class-count"
+        );
         setClassCount(countResponse.data);
-        
       } catch (error) {
         console.error("Error fetching students:", error);
       }
@@ -149,7 +150,8 @@ export const StudentDashboard = () => {
                     </Td>
                     <Td>{stud.email}</Td>
                     <Td>
-                      {classCount.find((elem) => elem.id === stud.id)?.count ?? 0}
+                      {classCount.find((elem) => elem.id === stud.id)?.count ??
+                        0}
                     </Td>
                     <Td>
                       <Button

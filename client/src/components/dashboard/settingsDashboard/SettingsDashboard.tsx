@@ -40,6 +40,8 @@ const SettingsDashboard: React.FC = () => {
           mb={4}
           alignSelf={"flex-start"}
           alignContent="center"
+          fontWeight={700}
+          fontSize={36}
         >
           <Button
             backgroundColor="transparent"
@@ -49,7 +51,7 @@ const SettingsDashboard: React.FC = () => {
           >
             <SlArrowLeft />
           </Button>
-          Students
+          Settings
         </Heading>
         <Image
           alignSelf={"flex-end"}
