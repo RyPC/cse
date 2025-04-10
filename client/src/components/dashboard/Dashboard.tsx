@@ -37,34 +37,11 @@ interface StatCardProps {
   value: string | number;
 }
 
-const data = [
-  { month: "Jan", count: 15 },
-  { month: "Feb", count: 10 },
-  { month: "Mar", count: 12 },
-  { month: "Apr", count: 21 },
-  { month: "May", count: 8 },
-  { month: "June", count: 10 },
-  { month: "July", count: 12 },
-  { month: "Aug", count: 11 },
-  { month: "Sep", count: 19 },
-  { month: "Oct", count: 10 },
-  { month: "Nov", count: 20 },
-  { month: "Dec", count: 18 },
-];
 
 const monthLabels = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "June",
-  "July",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
+  "Jan","Feb","Mar","Apr",
+  "May","June","July","Aug",
+  "Sep","Oct","Nov","Dec"
 ];
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
@@ -136,23 +113,11 @@ export const DashboardHome = () => {
 
         const attendanceResponse = await backend.get("/class-enrollments/statistics"); 
         const data = attendanceResponse.data;
-        console.log(typeof(data));
-        console.log(data);
-
-        while(data.length < 12) {
-          for (let i=0; i < 12; i++) {
-            if(data[i].month !== String(i+1)) {
-              data.splice(i,0,{month: monthLabels[i], count: 0});
-            }
-            else if(data[i].month === String(i+1)) {
-              data[i].month = monthLabels[i];
-            }
-            else {
-              data.splice(i,0,i);
-            }
-            
-          }
-        }
+        const graphInfo: Attendance[] = monthLabels.map((label) => {
+          const found = data.find((elem) => Number(elem.month) === (monthLabels.indexOf(label) +1));
+          return found ? { month: monthLabels[Number(found.month)], count: Number(found.count)} : { month: label, count: 0};
+        });
+        setAttendance(graphInfo);
 
       } catch (error) {
         alert(error);
