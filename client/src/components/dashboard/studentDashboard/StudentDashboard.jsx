@@ -5,13 +5,16 @@ import {
   Button,
   Flex,
   Heading,
+  HStack,
   Image,
+  Input,
   Link,
   Stack,
   Table,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
@@ -20,7 +23,9 @@ import {
 } from "@chakra-ui/react";
 
 import { FiTrash2 } from "react-icons/fi";
-import { SlArrowLeft } from "react-icons/sl";
+import { LuFilter } from "react-icons/lu";
+import { PiArrowsDownUpFill } from "react-icons/pi";
+import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
@@ -31,6 +36,7 @@ export const StudentDashboard = () => {
   const { notifRef } = useRef();
   const navigate = useNavigate();
   const { backend } = useBackendContext();
+  const [pageNum, setPageNum] = useState(0);
   const [students, setStudents] = useState([]);
   const [classCount, setClassCount] = useState([]);
 
@@ -89,12 +95,62 @@ export const StudentDashboard = () => {
           onClose={onClose}
         />
       </Flex>
-      <Box
+      <HStack
         w="100%"
         pl={20}
       >
-        SEARCH BAR HERE
-      </Box>
+        <Input
+          flex={4}
+          h="36px"
+          borderRadius="18px"
+          placeholder="Search"
+          disabled
+        ></Input>
+        <Box flex={1} />
+        <HStack gap={0}>
+          <Text>
+            {pageNum * 10 + 1}
+            {" - "}
+            {pageNum * 10 + 10 < students.length
+              ? pageNum * 10 + 10
+              : students.length}
+            {" of "}
+            {students.length}
+          </Text>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+            onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
+          >
+            <SlArrowLeft />
+          </Button>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+            onClick={() =>
+              setPageNum(
+                pageNum * 10 + 10 >= students.length ? pageNum : pageNum + 1
+              )
+            }
+          >
+            <SlArrowRight />
+          </Button>
+          <Text>|</Text>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+          >
+            <LuFilter />
+          </Button>
+          <Text>|</Text>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+          >
+            <PiArrowsDownUpFill />
+          </Button>
+        </HStack>
+      </HStack>
       <TableContainer
         w="100%"
         sx={{
@@ -139,36 +195,38 @@ export const StudentDashboard = () => {
           </Thead>
           <Tbody>
             {students
-              ? students.map((stud, index) => (
-                  <Tr
-                    key={stud.id}
-                    onClick={() => navigate(`/dashboard/students/${stud.id}`)}
-                    backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
-                    _hover={{ bg: "gray.300", cursor: "pointer" }}
-                    color="gray.700"
-                  >
-                    <Td>
-                      {stud.firstName} {stud.lastName}
-                    </Td>
-                    <Td>{stud.email}</Td>
-                    <Td>
-                      {classCount.find((elem) => elem.id === stud.id)?.count ??
-                        0}
-                    </Td>
-                    <Td>
-                      <Button
-                        backgroundColor="transparent"
-                        onClick={(e) => {
-                          e.stopPropagation(); // prevents earlier onclick
-                        }}
-                        m={-8} // overrides bounds of row
-                        fontSize="28px"
-                      >
-                        <FiTrash2 />
-                      </Button>
-                    </Td>
-                  </Tr>
-                ))
+              ? students
+                  .slice(pageNum * 10, pageNum * 10 + 10)
+                  .map((stud, index) => (
+                    <Tr
+                      key={stud.id}
+                      onClick={() => navigate(`/dashboard/students/${stud.id}`)}
+                      backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
+                      _hover={{ bg: "gray.300", cursor: "pointer" }}
+                      color="gray.700"
+                    >
+                      <Td>
+                        {stud.firstName} {stud.lastName}
+                      </Td>
+                      <Td>{stud.email}</Td>
+                      <Td>
+                        {classCount.find((elem) => elem.id === stud.id)
+                          ?.count ?? 0}
+                      </Td>
+                      <Td>
+                        <Button
+                          backgroundColor="transparent"
+                          onClick={(e) => {
+                            e.stopPropagation(); // prevents earlier onclick
+                          }}
+                          m={-8} // overrides bounds of row
+                          fontSize="28px"
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))
               : null}
           </Tbody>
         </Table>
