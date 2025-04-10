@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS classes
     is_recurring BOOLEAN DEFAULT FALSE,
     recurrence_pattern RECURRENCE_PATTERN DEFAULT 'none',
     series_id INTEGER,
+    start_date DATE,
+    end_date DATE,
     CONSTRAINT class_pkey PRIMARY KEY (id)
 )
 

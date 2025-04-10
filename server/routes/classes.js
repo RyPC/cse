@@ -265,35 +265,25 @@ classesRouter.get("/", async (req, res) => {
 
 classesRouter.post("/", async (req, res) => {
   try {
-    console.log(req.body);
     const {
       title,
       description,
       location,
       capacity,
       level,
-      costume,
-      isDraft,
+      date,
+      costume = "No costume required",
+      isDraft = false,
       isRecurring = false,
-      recurrencePattern = "none",
-      seriesId = null,
+      recurrence_pattern = "none",
+      start_date,
+      end_date,
     } = req.body;
 
     const data = await db.query(
       `
-        INSERT INTO classes (
-          title, 
-          description, 
-          location, 
-          capacity, 
-          level, 
-          costume, 
-          is_draft, 
-          is_recurring, 
-          recurrence_pattern,
-          series_id
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;`,
+      INSERT INTO classes (title, description, location, capacity, level, costume, is_draft, is_recurring, recurrence_pattern, start_date, end_date)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;`,
       [
         title,
         description,
@@ -303,14 +293,14 @@ classesRouter.post("/", async (req, res) => {
         costume,
         isDraft,
         isRecurring,
-        recurrencePattern,
-        seriesId,
+        recurrence_pattern,
+        start_date || date,
+        end_date || date,
       ]
     );
 
-    res.status(200).json(keysToCamel(data));
+    res.status(201).json(keysToCamel(data));
   } catch (err) {
-    console.log(err);
     res.status(500).send(err.message);
   }
 });
@@ -327,8 +317,10 @@ classesRouter.put("/:id", async (req, res) => {
       costume,
       isDraft,
       isRecurring,
-      recurrencePattern,
+      recurrence_pattern,
       seriesId,
+      start_date,
+      end_date,
     } = req.body;
 
     const query = `UPDATE CLASSES SET
@@ -341,8 +333,10 @@ classesRouter.put("/:id", async (req, res) => {
     is_draft = COALESCE($7, is_draft),
     is_recurring = COALESCE($8, is_recurring),
     recurrence_pattern = COALESCE($9, recurrence_pattern),
-    series_id = COALESCE($10, series_id)
-    WHERE id = $11 RETURNING *;`;
+    series_id = COALESCE($10, series_id),
+    start_date = COALESCE($11, start_date),
+    end_date = COALESCE($12, end_date)
+    WHERE id = $13 RETURNING *;`;
 
     const data = await db.query(query, [
       title,
@@ -353,8 +347,10 @@ classesRouter.put("/:id", async (req, res) => {
       costume,
       isDraft,
       isRecurring,
-      recurrencePattern,
+      recurrence_pattern,
       seriesId,
+      start_date,
+      end_date,
       id,
     ]);
 

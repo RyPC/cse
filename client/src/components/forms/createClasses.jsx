@@ -35,9 +35,15 @@ export const CreateClassForm = memo(
 
     const [title, setTitle] = useState(modalData?.title ?? "");
     const [location, setLocation] = useState(modalData?.location ?? "");
-    const [date, setDate] = useState(modalData?.date ?? "");
-    const [endDate, setEndDate] = useState("");
-    const [recurrencePattern, setRecurrencePattern] = useState("none");
+    const [date, setDate] = useState(
+      modalData?.start_date ?? modalData?.date ?? ""
+    );
+    const [endDate, setEndDate] = useState(
+      modalData?.end_date ?? modalData?.date ?? ""
+    );
+    const [recurrencePattern, setRecurrencePattern] = useState(
+      modalData?.recurrence_pattern ?? "none"
+    );
     const [startTime, setStartTime] = useState(modalData?.startTime ?? "");
     const [endTime, setEndTime] = useState(modalData?.endTime ?? "");
     const [description, setDescription] = useState(
@@ -112,35 +118,77 @@ export const CreateClassForm = memo(
         performance: performance ?? "",
         isDraft,
         title: title ?? "",
-        isRecurring: recurrencePattern !== "none",
-        recurrencePattern: recurrencePattern,
+        is_recurring: recurrencePattern !== "none",
+        recurrence_pattern: recurrencePattern,
+        start_date: date,
+        end_date: recurrencePattern !== "none" ? endDate : date,
       };
 
       if (modalData) {
+        // Update class information
         await backend
           .put("/classes/" + modalData.classId, {
             ...baseClassBody,
-            date: date ?? new Date(),
-            startTime: startTime ?? "",
-            endTime: endTime ?? "",
+            isRecurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
 
-        if (date && startTime && endTime) {
-          const scheduledClassBody = {
-            class_id: modalData.classId,
-            date,
-            start_time: startTime,
-            end_time: endTime,
-          };
-          await backend
-            .post("/scheduled-classes", scheduledClassBody)
-            .then((response) =>
-              console.log("Scheduled class updated:", response)
-            )
-            .catch((error) =>
-              console.log("Error updating scheduled class:", error)
-            );
+        // For recurring classes, delete all existing scheduled classes and create new ones
+        if (
+          recurrencePattern !== "none" ||
+          modalData.recurrence_pattern !== "none"
+        ) {
+          try {
+            // First, delete all existing scheduled classes
+            await backend
+              .delete(`/scheduled-classes/${modalData.classId}`)
+              .then((response) =>
+                console.log("Deleted old scheduled classes:", response)
+              )
+              .catch((error) =>
+                console.log("Error deleting scheduled classes:", error)
+              );
+
+            // Then create new scheduled classes for each date in the pattern
+            for (const classDate of classDates) {
+              if (classDate && startTime && endTime) {
+                const scheduledClassBody = {
+                  class_id: modalData.classId,
+                  date: classDate,
+                  start_time: startTime,
+                  end_time: endTime,
+                };
+                await backend
+                  .post("/scheduled-classes", scheduledClassBody)
+                  .then((response) =>
+                    console.log("Created scheduled class:", response)
+                  )
+                  .catch((error) =>
+                    console.log("Error creating scheduled class:", error)
+                  );
+              }
+            }
+          } catch (error) {
+            console.error("Error updating recurring classes:", error);
+          }
+        } else {
+          // For non-recurring classes, just update the single scheduled class
+          if (date && startTime && endTime) {
+            const scheduledClassBody = {
+              class_id: modalData.classId,
+              date,
+              start_time: startTime,
+              end_time: endTime,
+            };
+            await backend
+              .post("/scheduled-classes", scheduledClassBody)
+              .then((response) =>
+                console.log("Scheduled class updated:", response)
+              )
+              .catch((error) =>
+                console.log("Error updating scheduled class:", error)
+              );
+          }
         }
 
         if (classType !== "") {
@@ -161,8 +209,6 @@ export const CreateClassForm = memo(
           const classBody = {
             ...baseClassBody,
             date: classDate,
-            startTime: startTime ?? "",
-            endTime: endTime ?? "",
           };
 
           try {
@@ -215,8 +261,6 @@ export const CreateClassForm = memo(
       }
     }, [backend]);
 
-    const isEditingDraft = modalData && modalData.isDraft;
-
     useEffect(() => {
       if (recurrencePattern !== "none" && endDate && date) {
         if (new Date(endDate) < new Date(date)) {
@@ -224,6 +268,13 @@ export const CreateClassForm = memo(
         }
       }
     }, [date, endDate, recurrencePattern]);
+
+    // Ensure end date is set to start date when selecting "none" recurrence pattern
+    useEffect(() => {
+      if (recurrencePattern === "none") {
+        setEndDate(date);
+      }
+    }, [recurrencePattern, date]);
 
     return (
       <Container>
