@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   Heading,
+  Image,
   Input,
   Select,
   Stack,
@@ -25,7 +26,8 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
 import { EmailTemplate } from "../signup/EmailTemplate";
-import ReactDOMServer from "react-dom/server"
+import ReactDOMServer from "react-dom/server";
+import centerStageLogo from "./requests/cse-logo.png";
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "Field Cannot Be Empty"),
@@ -97,6 +99,7 @@ export const TeacherSignup = () => {
       sx={{ width: 300, marginX: "auto" }}
     >
       <Heading>Teacher Signup</Heading>
+      <Image src={centerStageLogo}></Image>
 
       <form
         onSubmit={handleSubmit(handleSignup)}
@@ -107,6 +110,7 @@ export const TeacherSignup = () => {
             w="100%"
             isInvalid={!!errors.firstName}
           >
+            <FormHelperText>First Name</FormHelperText>
             <Center>
               <Input
                 placeholder="First Name"
@@ -126,6 +130,7 @@ export const TeacherSignup = () => {
             w="100%"
             isInvalid={!!errors.lastName}
           >
+            <FormHelperText>Last Name</FormHelperText>
             <Center>
               <Input
                 placeholder="Last Name"
@@ -144,6 +149,7 @@ export const TeacherSignup = () => {
             w="100%"
             isInvalid={!!errors.experience}
           >
+            <FormHelperText>Experience Level</FormHelperText>
             <Center>
               <Select
                 placeholder="Select Experience Level"
@@ -163,6 +169,7 @@ export const TeacherSignup = () => {
             isInvalid={!!errors.email}
             w={"100%"}
           >
+            <FormHelperText>Email</FormHelperText>
             <Center>
               <Input
                 placeholder="Email"
@@ -180,6 +187,7 @@ export const TeacherSignup = () => {
           </FormControl>
 
           <FormControl isInvalid={!!errors.password}>
+          <FormHelperText>Password</FormHelperText>
             <Center>
               <Input
                 placeholder="Password"
@@ -203,14 +211,20 @@ export const TeacherSignup = () => {
             </ChakraLink>
           </FormControl>
 
-          <Button
-            type="submit"
-            size={"lg"}
-            sx={{ width: "100%" }}
-            isDisabled={Object.keys(errors).length > 0}
-          >
-            Signup
-          </Button>
+          <Center>
+            <Button
+              type="submit"
+              size={"lg"}
+              // sx={{ width: "100%" }}
+              isDisabled={Object.keys(errors).length > 0}
+              bg="#422e8d"
+              color="white"
+              w="200px"
+              h="55px"
+              >
+              Submit
+            </Button>
+          </Center>
           {/* Removed SelectRoot component as it was causing an error */}
         </Stack>
       </form>
@@ -220,7 +234,9 @@ export const TeacherSignup = () => {
         variant={"solid"}
         size={"lg"}
         onClick={handleGoogleSignup}
-        sx={{ width: "100%" }}
+        // sx={{ width: "100%" }}
+        w="200px"
+        h="55px"
       >
         Signup with Google
       </Button>

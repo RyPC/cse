@@ -30,29 +30,36 @@ export const Profile = () => {
         mb={4}
       />
       <Heading size="lg">{hardcodedName}</Heading>
-      <Text>Email: {currentUser?.email || "Not available"}</Text>
-      <Text>Role: {currentUser?.user_role || "Not available"}</Text>
+      <Text>{currentUser?.user_role || "Not available"}</Text>
+      <Text>{currentUser?.email || "Not available"}</Text>
 
       <VStack
         spacing={4}
-        mt={6}
+        mt="60px"
       >
         <Button
           onClick={() => console.log("Redirect to GoFundMe to be implemented")}
           as="a"
           href="https://ctc-uci.com/"
           target="_blank"
-          colorScheme="blue"
+          bg="#422e8d"
+          color="white"
+          w="331px"
+          h="60px"
         >
-          Donation
+          Donations
         </Button>
         <Button
           onClick={() => console.log("Settings opened!")}
-          colorScheme="gray"
+          bg="#422e8d"
+          color="white"
+          w="331px"
+          h="60px"
         >
           <a href="/settings">Settings</a>
         </Button>
-        <L/>
+        {/* <L/> */}
+        {/* log out is not shown in hi-fi */}
       </VStack>
     </Flex>
     <Navbar></Navbar>

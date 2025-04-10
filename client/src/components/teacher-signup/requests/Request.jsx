@@ -1,6 +1,6 @@
 import { Box, Button, Image, Text, VStack } from "@chakra-ui/react";
 import {useNavigate, useLocation} from "react-router-dom";
-import centerStageLogo from "./center-stage-logo.png";
+import centerStageLogo from "./cse-logo.png";
 
 const Request = () => {
     const navigate = useNavigate();
@@ -18,19 +18,23 @@ const Request = () => {
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
               <VStack textAlign="center">
 
-                // Image is currently a placeholder, replace with proper logo
                 <Image
                     src={centerStageLogo}
                     boxSize="100px"
-                    borderRadius="full"
+                    // borderRadius="full"
                     objectFit="contain"
                     alt="Center Stage Logo"
                 />
         
-                <Text fontSize="lg">{message}</Text>
+                <Text fontSize="lg" w={"50%"}>{message}</Text>
         
-                <Button onClick={() => navigate("/login")}>
-                  Ok
+                <Button
+                  bg="#422e8d"
+                  color="white"
+                  w="200px"
+                  h="55px"
+                  onClick={() => navigate("/login")}>
+                  OK
                 </Button>
               </VStack>
             </Box>
