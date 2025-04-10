@@ -47,7 +47,7 @@ export function OverallClassDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const classesResponse = await backend.get("/classes");
+        const classesResponse = await backend.get("/classes/scheduled");
         setClasses(classesResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -156,8 +156,10 @@ export function OverallClassDashboard() {
             {classes
               ? classes.map((cls, index) => (
                   <Tr
-                    key={cls.id}
-                    onClick={() => navigate(`/dashboard/classes/${cls.id}`)}
+                    key={index}
+                    onClick={() =>
+                      navigate(`/dashboard/classes/${cls.id}/${cls.date}`)
+                    }
                     backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
                     _hover={{ bg: "gray.300", cursor: "pointer" }}
                     color="gray.700"
@@ -165,7 +167,7 @@ export function OverallClassDashboard() {
                     <Td fontFamily="Inter">{cls.title}</Td>
                     <Td fontFamily="Inter">{cls.teacher}</Td>
                     <Td fontFamily="Inter">{cls.level}</Td>
-                    <Td fontFamily="Inter">{cls.date}</Td>
+                    <Td fontFamily="Inter">{cls.date?.split("T")[0]}</Td>
                     <Td>
                       <Button
                         backgroundColor="transparent"

@@ -26,6 +26,26 @@ classesRouter.get("/scheduled", async (req, res) => {
   }
 });
 
+classesRouter.get("/scheduled/:id/:date", async (req, res) => {
+  try {
+    const { id, date } = req.params;
+    const data = await db.query(
+      `SELECT
+        c.*,
+        sc.date,
+        sc.start_time,
+        sc.end_time
+      FROM classes c
+      JOIN scheduled_classes sc ON c.id = sc.class_id
+      WHERE c.id = $1 AND sc.date = $2;`,
+      [id, date]
+    );
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 classesRouter.get("/students/teacher/:id", async (req, res) => {
   try {
     const teacherId = req.params.id;
@@ -127,12 +147,9 @@ classesRouter.get("/corequisites/:id", async (req, res) => {
 classesRouter.delete("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query(
-      `DELETE FROM corequisites WHERE class_id = $1`,
-      [id]
-    );
+    await db.query(`DELETE FROM corequisites WHERE class_id = $1`, [id]);
 
-    res.status(200).json(keysToCamel({"success": true}));
+    res.status(200).json(keysToCamel({ success: true }));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -141,12 +158,24 @@ classesRouter.delete("/corequisites/:id", async (req, res) => {
 classesRouter.delete("/corequisites/event/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    await db.query(
-      `DELETE FROM corequisites WHERE event_id = $1`,
+    await db.query(`DELETE FROM corequisites WHERE event_id = $1`, [id]);
+
+    res.status(200).json(keysToCamel({ success: true }));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classesRouter.get("/joined/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.query(
+      `SELECT * FROM classes
+            JOIN scheduled_classes ON classes.id = scheduled_classes.class_id
+            WHERE classes.id = $1;`,
       [id]
     );
-
-    res.status(200).json(keysToCamel({"success": true}));
+    res.status(200).json(keysToCamel(data));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -230,7 +259,6 @@ classesRouter.get("/search/:name", async (req, res) => {
   }
 });
 
-
 classesRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -251,8 +279,6 @@ classesRouter.get("/", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
-
 
 classesRouter.post("/", async (req, res) => {
   try {
@@ -304,7 +330,5 @@ classesRouter.put("/:id", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
-
 
 export { classesRouter };
