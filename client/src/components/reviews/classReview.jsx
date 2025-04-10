@@ -53,6 +53,7 @@ const PublishedReviews = ({ classId }) => {
           <StudentReview
             displayName={user?.firstName}
             class_id={classId}
+            student_id={user?.id}
             onUpdate={onUpdate}
           />
           <Divider />

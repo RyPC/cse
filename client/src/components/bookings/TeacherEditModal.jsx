@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useMemo } from "react";
 
 import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
-  Select, Text, IconButton } from "@chakra-ui/react";
+  Select, Text, IconButton, FormControl, FormLabel, Textarea } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -44,10 +44,24 @@ export const TeacherEditModal = ({
   setCurrentModal, 
   classData, setClassData, 
   performances, 
-  triggerRefresh 
+  setRefresh,
+  coreqId
 }) => {
   const { backend } = useBackendContext();
+  const [isPublishing, setIsPublishing] = useState(false);
+  const formRef = useRef(null);
+  const [tags, setTags] = useState([]);
+  const [classType, setClassType] = useState(
+    classData?.classType ?? "1"
+  );
 
+  useMemo(() => {
+    if (backend) {
+      backend.get("/tags").then((response) => {
+        setTags(response.data)
+      })
+    }
+  }, [backend]);
   const onBack = () => {
     setCurrentModal("view");
   };
@@ -64,9 +78,20 @@ export const TeacherEditModal = ({
         isDraft: draft,
       };
       await backend.put(`/classes/${classData.id}`, updatedData);
-      await backend.put(`/scheduled-classes/`,
-        { class_id: classData.id, date: date, start_time: startTime, end_time: endTime }
-      );
+      console.log("Updating class", classData.id, updatedData);
+      await backend.delete(`/corequisites/class/${classData.id}`);
+      await backend.put(`/corequisites/${classData.id}/${performanceId}`, updatedData);
+      console.log("Updating corequisites", classData.id, performanceId, updatedData);
+
+      if (date)
+        await backend.put(`/scheduled-classes/`,
+          { 
+            class_id: classData.id, 
+            date: date, 
+            start_time: startTime, 
+            end_time: endTime 
+          }
+        );
       // Update classData
       setClassData((prev) => ({
         ...prev,
@@ -81,7 +106,19 @@ export const TeacherEditModal = ({
         isDraft: draft,
       }
       ));
-      triggerRefresh();
+
+      if (classType !== "") {
+        await backend
+          .post("/class-tags", {
+            classId: classData.id,
+            tagId: classType
+          })
+          .then(response => console.log(response))
+          .catch(err => {
+            console.error(err)
+          })
+      }
+
       setCurrentModal("view");
       setRefresh();
     } catch (error) {
@@ -92,8 +129,19 @@ export const TeacherEditModal = ({
     await onSave(true);
   };
   const onPublish = async () => {
-    await onSave(false);
+    setIsPublishing(true);
+    
+    // defer validation for isPublishing to update
+    setTimeout(() => {
+      if (formRef.current && !formRef.current.checkValidity()) {
+        formRef.current.reportValidity(); // stops user from submitting if date is empty
+        return;
+      }
+  
+      onSave(false); // publishes, swithes is_draft to false
+    }, 0);
   };
+  
 
   // input values
   const [classTitle, setClassTitle] = useState(classData?.title);
@@ -104,6 +152,7 @@ export const TeacherEditModal = ({
   const [description, setDescription] = useState(classData?.description);
   const [capacity, setCapacity] = useState(classData?.capacity);
   const [level, setLevel] = useState(classData?.level);
+  const [performanceId, setPerformanceId] = useState(coreqId)
 
   const handleLocationSelect = (e) => {
     setLocation(e.target.value);
@@ -111,6 +160,10 @@ export const TeacherEditModal = ({
 
   const handleLevelSelect = (e) => {
     setLevel(e.target.value);
+  }
+
+  const handlePerformanceSelect = (e) => {
+    setPerformanceId(e.target.value);
   }
 
   const onTitleChange = (e) => setClassTitle(e.target.value);
@@ -129,100 +182,118 @@ export const TeacherEditModal = ({
           <ModalHeader flex={1} textAlign="center">{classData.title}</ModalHeader>
         </Flex>
         <ModalBody>
-          <Text mb='1rem'>
-            Class Title (affects all classes with this title)
-          </Text>
-          <Input
-          value={classTitle}
-          onChange={onTitleChange}
-          placeholder="Enter class title..."/>
+          <form ref={formRef} onSubmit={(e) => e.preventDefault()}> {/* necessary for required tag on date! */}
+            <FormControl mb={4}>
+              <FormLabel>Class Title</FormLabel>
+              <Input
+                value={classTitle}
+                onChange={onTitleChange}
+                placeholder="Enter class title..."
+              />
+            </FormControl>
 
-          <Text mb='1rem'>
-            Location (affects all classes with this title)
-          </Text>
-          <Select maxWidth="200px" value={location} placeholder='Select location...' onChange={handleLocationSelect}>
-            <option value={classData.location}>{classData.location}</option>
-            {/* <option value="Location 1">Location 1</option>
-            <option value="Location 2">Location 2</option> */}
-          </Select>
+            <FormControl mb={4}>
+              <FormLabel>Location</FormLabel>
+              <Input
+                value={location}
+                onChange={handleLocationSelect}
+                placeholder="Enter location..."
+              />
+            </FormControl>
 
-          <Text mb='1rem'>
-            Date
-          </Text>
-          <Input
-          // disabled // REMOVE LATER
-          type="date"
-          value={date}
-          onChange={onDateChange}
-          maxWidth="200px"
-          placeholder="Enter date.."/>
+            <FormControl mb={4} isRequired={isPublishing}>
+              <FormLabel>Date</FormLabel>
+              <Input
+                type="date"
+                value={date}
+                onChange={onDateChange}
+                maxWidth="200px"
+                placeholder="Enter date..."
+              />
+            </FormControl>
 
-          <Text mb='1rem'>
-            Start Time (affects only this specific offering)
-          </Text>
-          <Input
-          // disabled // REMOVE LATER
-          type="time"
-          maxWidth="200px"
-          value={startTime}
-          onChange={onStartTimeChange}
-          placeholder="Enter start time..."/>
+            <FormControl mb={4}>
+              <FormLabel>Start Time</FormLabel>
+              <Input
+                type="time"
+                maxWidth="200px"
+                value={startTime}
+                onChange={onStartTimeChange}
+                placeholder="Enter start time..."
+              />
+            </FormControl>
 
-          <Text mb='1rem'>
-            End Time (affects only this specific offering)
-          </Text>
-          <Input
-          // disabled // REMOVE LATER
-          type="time"
-          maxWidth="200px"
-          value={endTime}
-          onChange={onEndTimeChange}
-          placeholder="Enter end time..."/>
+            <FormControl mb={4}>
+              <FormLabel>End Time</FormLabel>
+              <Input
+                type="time"
+                maxWidth="200px"
+                value={endTime}
+                onChange={onEndTimeChange}
+                placeholder="Enter end time..."
+              />
+            </FormControl>
 
-          <Text mb='1rem'>
-            Description (affects all classes with this title)
-          </Text>
-          <Input
-          height="100px"
-          value={description}
-          onChange={onDescriptionChange}
-          placeholder="Enter description..."/>
+            <FormControl mb={4}>
+              <FormLabel>Description</FormLabel>
+              <Textarea 
+                height="100px"
+                value={description}
+                onChange={onDescriptionChange}
+                placeholder="Enter description..."
+              />
+            </FormControl>
 
-          <Text mb='1rem'>
-            Capacity (affects all classes with this title)
-          </Text>
-          <Input
-          type="number"
-          maxWidth="200px"
-          value={capacity}
-          onChange={onCapacityChange}
-          placeholder="Enter time..."/>
+            <FormControl mb={4}>
+              <FormLabel>Capacity</FormLabel>
+              <Input
+                type="number"
+                maxWidth="200px"
+                value={capacity}
+                onChange={onCapacityChange}
+                placeholder="Enter capacity..."
+              />
+            </FormControl>
 
-          <Text mb='1rem'>
-            Level (affects all classes with this title)
-          </Text>
-          <Select maxWidth="200px" value={level} placeholder='Select level...' onChange={handleLevelSelect}>
-            <option value='beginner'>Beginner</option>
-            <option value='intermediate'>Intermediate</option>
-            <option value='advanced'>Advanced</option>
-          </Select>
+            <FormControl mb={4}>
+              <FormLabel>Level</FormLabel>
+              <Select
+                maxWidth="200px"
+                value={level}
+                placeholder="Select level..."
+                onChange={handleLevelSelect}
+              >
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </Select>
+            </FormControl>
 
-          <Text mb='1rem'>
-            Performances
-          </Text>
-          <Select maxWidth="200px" value={location} onChange={handleLocationSelect}>
-            { performances.map((performance) =>
-              <option key={performance.id} value={performance.id}>{performance.title}</option>
-            )}
-          </Select>
+            <FormControl mb={4}>
+              <FormLabel>Performances</FormLabel>
+              <Select
+                maxWidth="200px"
+                value={performanceId}
+                placeholder="Select a performance..."
+                onChange={handlePerformanceSelect}
+              >
+                {performances.map((performance) => (
+                  <option key={performance.id} value={performance.id}>
+                    {performance.title}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+
+          </form>
         </ModalBody>
 
         <ModalFooter>
-          <Flex justifyContent="center" w="100%">
-            <Button backgroundColor="#D9D9D9" mr={3} onClick={onSaveAsDraft}>
+          <Flex justifyContent="center" w="100%" gap={3}>
+            <Button flex="1" onClick={onSaveAsDraft}>
               Save as Draft
             </Button>
-            <Button backgroundColor="#646363" mr={3} onClick={onPublish}>
+            <Button colorScheme="blue" flex="1" onClick={onPublish}>
               Publish
             </Button>
           </Flex>

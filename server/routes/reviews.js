@@ -79,7 +79,6 @@ reviewsRouter.put("/", async (req, res) => {
     WHERE class_id = $3 AND student_id = $4 RETURNING *;`;
 
     const data = await db.query(query, [rating, review, class_id, student_id]);
-
     res.status(200).json(keysToCamel(data));
   } catch (err) {
     res.status(500).send(err.message);

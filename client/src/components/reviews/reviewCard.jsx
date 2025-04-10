@@ -36,7 +36,6 @@ const ReviewCard = ({
   useEffect(() => {
     const fetchStudent = async () => {
       const user = await backend.get(`/students/${student_id}`);
-      // console.log(user.data);
       setStudent(user.data);
     };
     fetchStudent();
@@ -49,7 +48,9 @@ const ReviewCard = ({
             name="Dan Abrahmov"
             src="https://bit.ly/dan-abramov"
           />
-          <Text>{displayName}</Text>
+          <Text>
+            {student?.firstName} {student?.lastName}
+          </Text>
         </HStack>
         <HStack>
           {stars.map((_, index) => (

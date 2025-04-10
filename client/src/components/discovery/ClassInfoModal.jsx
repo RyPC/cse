@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Card,
   HStack,
   Image,
   Flex,
@@ -122,7 +123,7 @@ function ClassInfoModal({
                   <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
                     <VStack align = "start" spacing={2}>
                       <HStack align="center">
-                        <Text as="b"> 
+                        <Text as="b">
                           Recommended
                         </Text>
                       </HStack>
@@ -213,26 +214,26 @@ function ClassInfoModal({
           <Flex justifyContent="center" width = "100%">
             <ModalFooter>
               {role === "student" && (
-                <Button 
+                <Button
                   width = "100%"
                   p = {7}
-                  bg = "#422E8D" 
-                  color = "white" 
-                  onClick={classSignUp}>Sign up 
+                  bg = "#422E8D"
+                  color = "white"
+                  onClick={classSignUp}>Sign up
                 </Button>
               )}
             </ModalFooter>
           </Flex>
           <PublishedReviews classId={id} />
         </ModalContent>
-        <PublishedReviews
+        {/* <PublishedReviews
           title={title}
           location={location}
           description={description}
           level={level}
           date={date}
           id={id}
-        ></PublishedReviews>
+        ></PublishedReviews> */}
       </Modal>
     </>
   );
