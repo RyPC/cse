@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { Outlet, useNavigate } from "react-router-dom";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { ResponsiveContainer, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import cseLogo from "../../components/dashboard/cseLogo.png";
 import classesIcon from "../../components/dashboard/sidebarImgs/classes.svg";
@@ -27,7 +27,6 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
 import { Attendance } from "../../types/attendance";
 import { Class } from "../../types/legacy/class";
-import { User } from "../../types/user";
 import { NotificationPanel } from "./NotificationPanel";
 
 interface StatCardProps {
@@ -47,7 +46,6 @@ const monthLabels = [
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
     <Flex
-      bg="gray.100"
       p={4}
       borderRadius="md"
       shadow="md"
@@ -56,14 +54,19 @@ export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
       w={["100%", "30%"]} // Responsive width
       mb={[4, 0]} // Margin bottom for mobile
     >
-      <Icon
+      {/* <Icon
         as="circle"
         boxSize="50px"
         color={iconColor}
         mr={4}
-      />
+      /> */}
       <Flex direction="column">
-        <Text color="black">{label}</Text>
+        <Text 
+          fontSize="xl"
+          color="black"
+        >
+          {label}
+        </Text>
         <Text
           fontSize="3xl"
           fontWeight="bold"
@@ -96,7 +99,7 @@ export const DashboardHome = () => {
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
 
-  const [users, setUsers] = useState<User[] | undefined>();
+  const [students, setStudents] = useState(0);
   const [classes, setClasses] = useState<Class[] | undefined>();
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -105,8 +108,8 @@ export const DashboardHome = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const usersResponse = await backend.get("/users");
-        setUsers(usersResponse.data);
+        const studentResponse = await backend.get("/students/count");
+        setStudents(Number(studentResponse.data[0].count));
 
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
@@ -115,8 +118,9 @@ export const DashboardHome = () => {
         const data = attendanceResponse.data;
         const graphInfo: Attendance[] = monthLabels.map((label) => {
           const found = data.find((elem) => Number(elem.month) === (monthLabels.indexOf(label) +1));
-          return found ? { month: monthLabels[Number(found.month)], count: Number(found.count)} : { month: label, count: 0};
+          return found ? { month: monthLabels[Number(found.month)-1], count: Number(found.count)} : { month: label, count: 0};
         });
+        console.log(graphInfo);
         setAttendance(graphInfo);
 
       } catch (error) {
@@ -164,8 +168,8 @@ export const DashboardHome = () => {
           <StatCard
             icon="email"
             iconColor="blue.500"
-            label="Total Students"
-            value={users?.length || 0}
+            label="Students"
+            value={students}
           />
           <StatCard
             icon="email"
@@ -176,67 +180,88 @@ export const DashboardHome = () => {
           <StatCard
             icon="email"
             iconColor="purple.500"
-            label="Total Classes"
+            label="Classes Held"
             value={classes?.length || 0}
           />
         </Flex>
 
-        <Box
-          bg="gray.100"
-          w="100%"
-          h="400px"
-          borderRadius="md"
-          display="flex"
-          position={"relative"}
-          alignItems="center"
-          justifyContent="center"
-          paddingRight="20px"
+        <Flex
+          direction="column"
+          width="100%"
         >
-          <LineChart width={950} height={350} data={attendance}>
-            <Line 
-             type="linear" 
-             dataKey="count" 
-             stroke="#422E8D" 
-             dot={false} 
-             strokeWidth={3}
-            />
-            <XAxis dataKey="month" />
-            <YAxis />
-          </LineChart>
-
-          {/* <Box
-            position="absolute"
-            top="4"
-            right="4"
-          >
-            <Flex
-              bg="white"
-              borderRadius="full"
-              border="1px"
-              borderColor="gray.200"
-              p={1}
-              shadow="sm"
+          <Box
+            alignItems="left"
+            justifyContent="left"
+            paddingLeft="35px"
+            paddingTop="30px"
             >
-              {["day", "week", "month"].map((period) => (
-                <Box
-                  key={period}
-                  px={3}
-                  py={1}
-                  cursor="pointer"
-                  borderRadius="full"
-                  bg={selectedPeriod === period ? "blue.500" : "transparent"}
-                  color={selectedPeriod === period ? "white" : "gray.600"}
-                  onClick={() => setSelectedPeriod(period)}
-                  _hover={{
-                    bg: selectedPeriod === period ? "blue.600" : "gray.100",
-                  }}
-                >
-                  {period.charAt(0).toUpperCase() + period.slice(1)}
-                </Box>
-              ))}
-            </Flex>
-          </Box> */}
-        </Box>
+              <Text
+                fontSize="xl"
+                color="black"
+                fontWeight="bold"
+                marginBottom="20px"
+              >
+                Attendance Over Time
+              </Text>
+          </Box>
+          <Box
+            w="100%"
+            // h="400px"
+            borderRadius="md"
+            display="flex"
+            position={"relative"}
+            alignItems="center"
+            justifyContent="center"
+            paddingRight="20px"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={attendance}>
+                <Line 
+                  type="linear" 
+                  dataKey="count" 
+                  stroke="#422E8D" 
+                  dot={false} 
+                  strokeWidth={3}
+                />
+                <XAxis dataKey="month" />
+                <YAxis />
+              </LineChart>
+            </ResponsiveContainer>
+
+            {/* <Box
+              position="absolute"
+              top="4"
+              right="4"
+            >
+              <Flex
+                bg="white"
+                borderRadius="full"
+                border="1px"
+                borderColor="gray.200"
+                p={1}
+                shadow="sm"
+              >
+                {["day", "week", "month"].map((period) => (
+                  <Box
+                    key={period}
+                    px={3}
+                    py={1}
+                    cursor="pointer"
+                    borderRadius="full"
+                    bg={selectedPeriod === period ? "blue.500" : "transparent"}
+                    color={selectedPeriod === period ? "white" : "gray.600"}
+                    onClick={() => setSelectedPeriod(period)}
+                    _hover={{
+                      bg: selectedPeriod === period ? "blue.600" : "gray.100",
+                    }}
+                  >
+                    {period.charAt(0).toUpperCase() + period.slice(1)}
+                  </Box>
+                ))}
+              </Flex>
+            </Box> */}
+          </Box>
+        </Flex>
 
         {/* Signed-in User Info */}
         <VStack>
