@@ -21,6 +21,7 @@ import {
 
 import { FiTrash2 } from "react-icons/fi";
 import { SlArrowLeft } from "react-icons/sl";
+import { useNavigate } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { NotificationPanel } from "../NotificationPanel";
@@ -28,6 +29,7 @@ import { NotificationPanel } from "../NotificationPanel";
 export const StudentDashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { notifRef } = useRef();
+  const navigate = useNavigate();
   const { backend } = useBackendContext();
   const [students, setStudents] = useState([]);
   const [classCount, setClassCount] = useState([]);
