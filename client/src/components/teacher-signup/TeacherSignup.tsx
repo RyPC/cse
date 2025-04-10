@@ -102,8 +102,8 @@ export const TeacherSignup = () => {
       spacing={8}
       sx={{ width: 300, marginX: "auto" }}
     >
-      <Heading>Teacher Signup</Heading>
-      <Image src={centerStageLogo}></Image>
+      {/* <Heading>Teacher Signup</Heading> */}
+      <Image src={centerStageLogo} mt={20}></Image>
 
       <form
         onSubmit={handleSubmit(handleSignup)}
@@ -149,7 +149,7 @@ export const TeacherSignup = () => {
             </FormErrorMessage>
           </FormControl>
 
-          <FormControl
+          {/* <FormControl
             w="100%"
             isInvalid={!!errors.experience}
           >
@@ -167,7 +167,7 @@ export const TeacherSignup = () => {
             <FormErrorMessage>
               {errors.experience?.message?.toString()}
             </FormErrorMessage>
-          </FormControl>
+          </FormControl> */}
 
           <FormControl
             isInvalid={!!errors.email}
@@ -224,12 +224,12 @@ export const TeacherSignup = () => {
               {errors.repeatPassword?.message?.toString()}
             </FormErrorMessage>
 
-            <ChakraLink
+            {/* <ChakraLink
               as={Link}
               to="/login"
             >
               <FormHelperText>Click here to login</FormHelperText>
-            </ChakraLink>
+            </ChakraLink> */}
           </FormControl>
 
           <Center>
@@ -242,6 +242,7 @@ export const TeacherSignup = () => {
               color="white"
               w="200px"
               h="55px"
+              mt={10}
               >
               Submit
             </Button>

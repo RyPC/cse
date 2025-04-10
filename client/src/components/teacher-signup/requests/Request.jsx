@@ -10,8 +10,8 @@ const Request = () => {
 
 
     const message = pending 
-        ? 'Pending account verification. Once approved, check your email to log in'
-        : 'Request sent! Once approved, check your email to log in';
+        ? 'Pending account verification. Once approved, check your email to log in.'
+        : 'Request sent!\nOnce approved, check your email to log in.';
 
 
         return (
@@ -24,15 +24,17 @@ const Request = () => {
                     // borderRadius="full"
                     objectFit="contain"
                     alt="Center Stage Logo"
+                    mb={4}
                 />
         
-                <Text fontSize="lg" w={"50%"}>{message}</Text>
+                <Text fontSize="lg" w={"60%"} whiteSpace="pre-line">{message}</Text>
         
                 <Button
                   bg="#422e8d"
                   color="white"
-                  w="200px"
-                  h="55px"
+                  w="155px"
+                  h="45px"
+                  mt={3}
                   onClick={() => navigate("/login")}>
                   OK
                 </Button>
