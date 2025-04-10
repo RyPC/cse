@@ -35,6 +35,10 @@ const signupSchema = z.object({
   experience: z.string().min(1, "Must Select an Experience Value"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+  repeatPassword: z.string().min(6)
+}).refine((data) => data.password == data.repeatPassword, {
+  message: "Passwords must match.",
+  path: ["repeatPassword"],
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -113,7 +117,7 @@ export const TeacherSignup = () => {
             <FormHelperText>First Name</FormHelperText>
             <Center>
               <Input
-                placeholder="First Name"
+                // placeholder="First Name"
                 size="lg"
                 {...register("firstName")}
                 name="firstName"
@@ -133,7 +137,7 @@ export const TeacherSignup = () => {
             <FormHelperText>Last Name</FormHelperText>
             <Center>
               <Input
-                placeholder="Last Name"
+                // placeholder="Last Name"
                 size="lg"
                 {...register("lastName")}
                 name="lastName"
@@ -152,7 +156,7 @@ export const TeacherSignup = () => {
             <FormHelperText>Experience Level</FormHelperText>
             <Center>
               <Select
-                placeholder="Select Experience Level"
+                // placeholder="Select Experience Level"
                 {...register("experience")}
               >
                 <option value="beginner">Beginner</option>
@@ -172,7 +176,7 @@ export const TeacherSignup = () => {
             <FormHelperText>Email</FormHelperText>
             <Center>
               <Input
-                placeholder="Email"
+                // placeholder="Email"
                 type="email"
                 size={"lg"}
                 {...register("email")}
@@ -190,7 +194,7 @@ export const TeacherSignup = () => {
           <FormHelperText>Password</FormHelperText>
             <Center>
               <Input
-                placeholder="Password"
+                // placeholder="Password"
                 type="password"
                 size={"lg"}
                 {...register("password")}
@@ -201,6 +205,23 @@ export const TeacherSignup = () => {
             </Center>
             <FormErrorMessage>
               {errors.password?.message?.toString()}
+            </FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.repeatPassword}>
+          <FormHelperText>Repeat Password</FormHelperText>
+            <Center>
+              <Input
+                type="password"
+                size={"lg"}
+                {...register("repeatPassword")}
+                name="repeatPassword"
+                isRequired
+                // autoComplete="password"
+              />
+            </Center>
+            <FormErrorMessage>
+              {errors.repeatPassword?.message?.toString()}
             </FormErrorMessage>
 
             <ChakraLink
@@ -229,7 +250,7 @@ export const TeacherSignup = () => {
         </Stack>
       </form>
 
-      <Button
+      {/* <Button
         leftIcon={<FaGoogle />}
         variant={"solid"}
         size={"lg"}
@@ -239,7 +260,7 @@ export const TeacherSignup = () => {
         h="55px"
       >
         Signup with Google
-      </Button>
+      </Button> */}
     </VStack>
   );
 };
