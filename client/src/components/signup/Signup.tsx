@@ -5,8 +5,11 @@ import {
   Center,
   Link as ChakraLink,
   FormControl,
+  Box,
   FormErrorMessage,
+  Image,
   FormHelperText,
+  FormLabel,
   Heading,
   Input,
   Select,
@@ -24,6 +27,8 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
+
+import logo from "./logo.png";
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "Please include your first name."),
@@ -84,120 +89,136 @@ export const Signup = () => {
   }, [backend, handleRedirectResult, navigate, toast]);
 
   return (
-    <VStack
-      spacing={8}
-      sx={{ width: 300, marginX: "auto" }}
-    >
-      <Heading>Signup</Heading>
+    <Box mt={"15.10vh"}>
 
-      <form
-        onSubmit={handleSubmit(handleSignup)}
-        style={{ width: "100%" }}
+      <Center>
+        <Image src={logo} w="24.378vw" h="11.670vh" fit="contain"></Image>
+      </Center>
+    
+      <VStack
+        spacing={8}
+        sx={{ width: 300, marginX: "auto" }}
+        mt={5}
       >
-        <Stack spacing={2}>
-          <FormControl isInvalid={!!errors.firstName}>
-            <Center>
-              <Input
-                placeholder="First Name"
-                type="text"
-                size={"lg"}
-                {...register("firstName")}
-                name="firstName"
-                isRequired
-                autoComplete="firstname"
-              />
-            </Center>
-          </FormControl>
-          <FormControl isInvalid={!!errors.lastName}>
-            <Center>
-              <Input
-                placeholder="Last Name"
-                type="text"
-                size={"lg"}
-                {...register("lastName")}
-                name="lastName"
-                isRequired
-                autoComplete="lastname"
-              />
-            </Center>
-          </FormControl>
-          <FormControl
-            isInvalid={!!errors.email}
-            w={"100%"}
-          >
-            <Center>
-              <Input
-                placeholder="Email"
-                type="email"
-                size={"lg"}
-                {...register("email")}
-                name="email"
-                isRequired
-                autoComplete="email"
-              />
-            </Center>
-            <FormErrorMessage>
-              {errors.email?.message?.toString()}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.password}>
-            <Center>
-              <Input
-                placeholder="Password"
-                type="password"
-                size={"lg"}
-                {...register("password")}
-                name="password"
-                isRequired
-                autoComplete="password"
-              />
-            </Center>
-            <FormErrorMessage>
-              {errors.password?.message?.toString()}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl>
-            <Center>
-              <Select
-                placeholder="Select a level..."
-                required
-                {...register("level")}
-              >
-                <option value="beginner">Beginner </option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-              </Select>
-            </Center>
-            <Center>
-              <ChakraLink
-                as={Link}
-                to="/login"
-              >
-                <FormHelperText>Click here to login</FormHelperText>
-              </ChakraLink>
-            </Center>
-          </FormControl>
 
-          <Button
-            type="submit"
-            size={"lg"}
-            sx={{ width: "100%" }}
-            isDisabled={Object.keys(errors).length > 0}
-          >
-            Signup
-          </Button>
-        </Stack>
-      </form>
+        <form
+          onSubmit={handleSubmit(handleSignup)}
+          style={{ width: "100%" }}
+        >
+          <Stack spacing={2}>
+          <Center>
+            <FormControl isInvalid={!!errors.firstName}>
+                <FormLabel>First Name</FormLabel>
+                <Input
+                  type="text"
+                  size={"lg"}
+                  {...register("firstName")}
+                  name="firstName"
+                  isRequired
+                  autoComplete="firstname"
+                  h="3.661vh"
+                />
+              </FormControl>
+            </Center>
+            <Center>
+            <FormControl isInvalid={!!errors.lastName}>
+              <FormLabel>Last Name</FormLabel>
+                <Input
+                  type="text"
+                  size={"lg"}
+                  {...register("lastName")}
+                  name="lastName"
+                  isRequired
+                  autoComplete="lastname"
+                  h="3.661vh"
+                />
+                </FormControl>
+              </Center>
+            <Center>
+            <FormControl
+              isInvalid={!!errors.email}
+              w={"100%"}
+            >
+              <FormLabel>Email Address</FormLabel>
+                <Input
+                  type="email"
+                  size={"lg"}
+                  {...register("email")}
+                  name="email"
+                  isRequired
+                  autoComplete="email"
+                  h="3.661vh"
+                />
+              <FormErrorMessage>
+                {errors.email?.message?.toString()}
+              </FormErrorMessage>
+            </FormControl>
+            </Center>
+            <Center>
+              <FormControl isInvalid={!!errors.password}>
+                <FormLabel>Password</FormLabel>
+                  <Input
+                    type="password"
+                    size={"lg"}
+                    {...register("password")}
+                    name="password"
+                    isRequired
+                    autoComplete="password"
+                    h="3.661vh"
+                  />
 
-      <Button
-        leftIcon={<FaGoogle />}
-        variant={"solid"}
-        size={"lg"}
-        onClick={handleGoogleSignup}
-        sx={{ width: "100%" }}
-      >
-        Signup with Google
-      </Button>
-    </VStack>
+                <FormErrorMessage>
+                  {errors.password?.message?.toString()}
+                </FormErrorMessage>
+              </FormControl>
+            </Center>
+            <FormControl mt={4}>
+              <Center>
+                <Select
+                  placeholder="Select a level..."
+                  required
+                  {...register("level")}
+                >
+                  <option value="beginner">Beginner </option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </Select>
+              </Center>
+              <Center>
+                <ChakraLink
+                  as={Link}
+                  to="/login"
+                >
+                </ChakraLink>
+              </Center>
+            </FormControl>
+
+            <Center>
+              <Button
+                type="submit"
+                size={"lg"}
+                bg="#422E8D"
+                w={"48.2587vw"}
+                color="white"
+                isDisabled={Object.keys(errors).length > 0}
+                mt={4}
+              >
+                Submit
+              </Button>
+            </Center>
+          </Stack>
+        </form>
+
+        {/* <Button
+          leftIcon={<FaGoogle />}
+          variant={"solid"}
+          size={"lg"}
+          onClick={handleGoogleSignup}
+          sx={{ width: "100%" }}
+        >
+          Signup with Google
+        </Button> */}
+      </VStack>
+    </Box>
   );
 };

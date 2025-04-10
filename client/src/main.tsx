@@ -13,6 +13,7 @@ const colors = {
 
 const fonts = {
     body: `'inter', sans-serif`,
+    heading: `'inter', sans-serif`,
 }
 
 const theme = extendTheme({ colors, fonts });
