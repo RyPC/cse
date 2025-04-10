@@ -153,7 +153,7 @@ export const Login = () => {
             <FormHelperText>Email Address</FormHelperText>
             <Center>
               <Input
-                placeholder="Email"
+                // placeholder="Email"
                 type="email"
                 size={"lg"}
                 {...register("email")}
@@ -170,7 +170,7 @@ export const Login = () => {
           <FormHelperText>Password</FormHelperText>
             <Center>
               <Input
-                placeholder="Password"
+                // placeholder="Password"
                 type="password"
                 size={"lg"}
                 {...register("password")}
