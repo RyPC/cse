@@ -135,7 +135,7 @@ export const TeacherInfoDashboard = () => {
         w="100%"
         pl="60px"
         pr="160px"
-        gap={20}
+        gap="60px"
       >
         <Box
           flex={1}
@@ -170,7 +170,7 @@ export const TeacherInfoDashboard = () => {
         w="100%"
         pl="60px"
         pr="160px"
-        gap={20}
+        gap="60px"
       >
         <Box
           flex={1}

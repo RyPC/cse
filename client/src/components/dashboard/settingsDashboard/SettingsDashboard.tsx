@@ -69,7 +69,7 @@ const SettingsDashboard: React.FC = () => {
         w="100%"
         pl="60px"
         pr="160px"
-        gap={20}
+        gap="60px"
       >
         <Box
           flex={1}
@@ -104,7 +104,7 @@ const SettingsDashboard: React.FC = () => {
         w="100%"
         pl="60px"
         pr="160px"
-        gap={20}
+        gap="60px"
       >
         <Box
           flex={1}

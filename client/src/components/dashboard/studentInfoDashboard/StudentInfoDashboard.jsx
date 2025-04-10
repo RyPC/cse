@@ -46,7 +46,6 @@ export const StudentInfoDashboard = () => {
         // Fetch classes for enrolled student
         const classesResponse = await backend.get(`/students/joined/${id}`);
         setClasses(classesResponse.data);
-        console.log(classesResponse.data);
       } catch (error) {
         console.error("Error fetching students:", error);
       }
@@ -96,7 +95,7 @@ export const StudentInfoDashboard = () => {
         w="100%"
         pl="60px"
         pr="160px"
-        gap={20}
+        gap="60px"
       >
         <Box
           flex={1}
@@ -131,7 +130,7 @@ export const StudentInfoDashboard = () => {
         w="100%"
         pl="60px"
         pr="160px"
-        gap={20}
+        gap="60px"
       >
         <Box
           flex={1}
@@ -221,73 +220,5 @@ export const StudentInfoDashboard = () => {
         </Table>
       </TableContainer>
     </VStack>
-
-    /*
-    <Stack
-      mx="10%"
-      my={5}
-    >
-      <Flex
-        direction="row"
-        justify="flex-end"
-      >
-        <Image
-          cursor="pointer"
-          src="../../../../bell.png"
-          onClick={onOpen}
-          ref={notifRef}
-        />
-      </Flex>
-      <NotificationPanel
-        isOpen={isOpen}
-        onClose={onClose}
-      />
-
-      {students.length !== 0 ? (
-        <Box my={5}>
-          <Heading>
-            {students[0].firstName} {students[0].lastName}
-          </Heading>
-          <Heading
-            size="md"
-            fontWeight="normal"
-          >
-            {students[0].email}
-          </Heading>
-        </Box>
-      ) : (
-        <Heading>Student is not enrolled in any classes</Heading>
-      )}
-
-      <TableContainer
-        sx={{
-          overflowX: "auto",
-        }}
-      >
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Class</Th>
-              <Th>Description</Th>
-              <Th>Level</Th>
-              <Th>Date</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {students.length !== 0
-              ? students.map((stud, i) => (
-                  <Tr key={i}>
-                    <Td>{stud.title}</Td>
-                    <Td>{stud.description}</Td>
-                    <Td>{stud.level}</Td>
-                    <Td>{stud.attendance}</Td>
-                  </Tr>
-                ))
-              : null}
-          </Tbody>
-        </Table>
-      </TableContainer>
-    </Stack>
-*/
   );
 };
