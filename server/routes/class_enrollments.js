@@ -23,7 +23,19 @@ classEnrollmentsRouter.get("/test", async (req, res) => {
   } catch (err) {
     res.status(500).send(err.message);
   }
-})
+});
+
+
+classEnrollmentsRouter.get("/statistics", async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT EXTRACT(MONTH FROM attendance) AS month, COUNT(*) FROM class_enrollments 
+       WHERE EXTRACT(MONTH FROM attendance) IS NOT NULL GROUP BY month ORDER BY month ASC;`);
+    res.status(200).send(keysToCamel(result));
+  } catch (err) {
+      res.status(500).json({ error: err.message });
+  }
+});
 
 classEnrollmentsRouter.get("/:id", async (req, res) => {
   try {
@@ -102,16 +114,6 @@ classEnrollmentsRouter.get(
 
 );
 
-classEnrollmentsRouter.get("/attendance", async (req, res) => {
-  try {
-    const result = await db.query(
-      ` SELECT EXTRACT(MONTH FROM attendance) AS month, COUNT(*) FROM class_enrollments GROUP BY month;
-      `);
-    res.status(200).send(keysToCamel(result));
-  } catch (err) {
-      res.status(500).json({ error: err.message });
-  }
-});
 
 classEnrollmentsRouter.get(
   "/teacher/:teacher_id/:class_id",

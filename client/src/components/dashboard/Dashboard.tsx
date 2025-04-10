@@ -109,7 +109,7 @@ export const DashboardHome = () => {
 
   const [users, setUsers] = useState<User[] | undefined>();
   const [classes, setClasses] = useState<Class[] | undefined>();
-  const [attendance, setAttendance] = useState<Attendance[] | undefined>();
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
 
@@ -123,8 +123,25 @@ export const DashboardHome = () => {
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
 
-        const attendanceResponse = await backend.get("/class-enrollments/attendance"); 
-        setAttendance(attendanceResponse.data);
+        const attendanceResponse = await backend.get("/class-enrollments/statistics"); 
+        const data = attendanceResponse.data;
+        console.log(typeof(data));
+        console.log(data);
+
+        while(data.length < 12) {
+          for (let i=0; i < 12; i++) {
+            if(data[i].month !== String(i+1)) {
+              data.splice(i,0,{month: monthLabels[i], count: 0});
+            }
+            else if(data[i].month === String(i+1)) {
+              data[i].month = monthLabels[i];
+            }
+            else {
+              data.splice(i,0,i);
+            }
+            
+          }
+        }
 
       } catch (error) {
         alert(error);
@@ -199,7 +216,7 @@ export const DashboardHome = () => {
           justifyContent="center"
           paddingRight="20px"
         >
-          <LineChart width={950} height={350} data={data}>
+          <LineChart width={950} height={350} data={attendance}>
             <Line 
              type="linear" 
              dataKey="count" 
