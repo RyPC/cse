@@ -660,7 +660,7 @@ const ClassTeacherCard = memo(
                         performance,
                         isDraft,
                         rsvpCount,
-``                      };
+                     };
                       setSelectedCard(modalData);
                       onOpen();
                     }
