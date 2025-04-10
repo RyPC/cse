@@ -181,21 +181,6 @@ classesRouter.get("/joined/:id", async (req, res) => {
   }
 });
 
-classesRouter.get("/joined/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const data = await db.query(
-      `SELECT * FROM classes
-            JOIN scheduled_classes ON classes.id = scheduled_classes.class_id
-            WHERE classes.id = $1;`,
-      [id]
-    );
-    res.status(200).json(keysToCamel(data));
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
 classesRouter.get("/published", async (req, res) => {
   try {
     const data = await db.query(
