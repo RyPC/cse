@@ -1,5 +1,6 @@
 import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Box, Icon, VStack } from "@chakra-ui/react";
-import { MdCheck } from "react-icons/md";
+import CompletedIndicator from "./CompletedIndicator.png"
+
 
 
 export const ConfirmationModal = ({ isOpen, onClose, card }) => {
@@ -20,7 +21,7 @@ export const ConfirmationModal = ({ isOpen, onClose, card }) => {
                     borderRadius="full"
                     bg="#d9d9d9"
                 >
-                    <Icon as={MdCheck} boxSize={20} color="black"/>
+                    <img src={CompletedIndicator} alt="Completed Indicator" />
                 </Box>
             </VStack>
             <ModalBody textAlign="center" fontSize="2xl" fontWeight="bold">
@@ -28,8 +29,8 @@ export const ConfirmationModal = ({ isOpen, onClose, card }) => {
             </ModalBody>
 
             <ModalFooter justifyContent="center">
-                <Button bg="#d9d9d9" width="100%" mr={3} onClick={onClose}>
-                    Back to Booked Events Page
+                <Button bg="#422E8D" color = "white" width="60%" mr={3} onClick={onClose}>
+                    View Booked Events
                 </Button>
             </ModalFooter>
         </ModalContent>
