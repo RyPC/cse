@@ -9,8 +9,8 @@ export const VideoCard = ({ id, title, description, S3Url, classId, mediaUrl }) 
         <iframe
           width="100%"
           height="200"
-          src={mediaUrl}
           title={title}
+          src = {mediaUrl}
           allowFullScreen
         ></iframe>
 {/*         
