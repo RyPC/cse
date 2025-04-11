@@ -1,15 +1,19 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   Heading,
   Image,
+  SimpleGrid,
+  Spacer,
   Text,
   VStack,
 } from "@chakra-ui/react";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { Navbar } from "../navbar/Navbar";
+import arrowImage from "./arrow.svg";
 
 export const Settings = () => {
   const { currentUser, role } = useAuthContext();
@@ -20,81 +24,75 @@ export const Settings = () => {
     ? `${currentUser.displayName}`
     : "First Last";
 
-    return (
-    <Box>
-      <Flex
-        direction="column"
-        align="center"
-        height="80vh"
-        padding={4}
-        mt={10}
-      >
-        <Heading
-          size="lg"
-          mb={4}
-        >
-          Account Details
-        </Heading>
-        <Image
-          borderRadius="full"
-          boxSize="150px"
-          src={hardcodedProfilePic}
-          alt="Profile"
-          mb={4}
-        />
+  return (
+    <>
+      <Center h="90vh">
+        <VStack>
+          <Center>
+            <VStack>
+              <Heading
+                fontSize="28px"
+                fontWeight="500"
+                mb={4}
+              >
+                Account Details
+              </Heading>
+              <Image
+                borderRadius="full"
+                boxSize="150px"
+                src={hardcodedProfilePic}
+                alt="Profile"
+                mb={4}
+                fit="cover"
+              />
+            </VStack>
+          </Center>
 
-        <Flex
-          direction="row"
-          height="40%"
-          width="100%"
-        >
-          <Flex
-            direction="column"
-            padding={2}
-            width="50%"
-            justify="space-between"
-          >
-            <Text>Name</Text>
-            <Text>Role</Text>
-            <Text>ID Number</Text>
-            <Text>Email</Text>
-            <Text>Password</Text>
-          </Flex>
-
-          <Flex
-            direction="column"
-            padding={2}
-            width="50%"
-            justify="space-between"
-          >
-            <Text>{hardcodedName}</Text>
-            <Text>{role || "Not available"}</Text>
-            <Text>{currentUser?.uid || "Not available"}</Text>
-            <Text>{currentUser?.email || "Not available"}</Text>
-            <Flex
-              direction="row"
-              justify="space-between"
-              align="center"
+          <Center>
+            <SimpleGrid
+              maxW="80vw"
+              columns={2}
+              spacing="40px"
             >
-              <Text>Change Password</Text>
+              <Text>Name</Text>
+              <Text>{currentUser?.displayName || "Not Available"}</Text>
+              <Text>Role</Text>
+              <Text>{role}</Text>
+              <Text>Student Number</Text>
+              <Text>{currentUser?.uid || "Not available"}</Text>
+              <Text>Email</Text>
+              <Text>{currentUser?.email || "Not available"}</Text>
+              <Text>Password</Text>
               <Button
+                // sx={{ border: "1px solid red" }}
                 variant="plain"
                 size="xs"
                 onClick={() =>
                   console.log("Change password functionality to be implemented")
                 }
               >
+                {/* <Flex direction="row"> */}
+                <Text
+                  fontSize="16px"
+                  fontWeight={500}
+                >
+                  {" "}
+                  Change Password
+                </Text>
+
                 <Image
-                  src="../Vector.png"
+                  display="inline"
+                  src={arrowImage}
                   alt="Profile"
                   mt={1}
                 />
+                {/* </Flex> */}
               </Button>
-            </Flex>
-          </Flex>
-        </Flex>
-      </Flex>
-      <Navbar></Navbar>
-    </Box>
+            </SimpleGrid>
+          </Center>
+        </VStack>
+      </Center>
+      <Navbar />
+    </>
   );
 };

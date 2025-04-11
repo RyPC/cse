@@ -39,7 +39,12 @@ export const Profile = () => {
           mb={4}
           alt="Profile"
         />
-        <Heading fontSize="20px">{hardcodedName}</Heading>
+        <Heading
+          fontSize="20px"
+          fontWeight="600"
+        >
+          {hardcodedName}
+        </Heading>
         <Text>{currentUser?.email || "Not available"}</Text>
         <Text>Role: {currentUser?.user_role || "Not available"}</Text>
 
