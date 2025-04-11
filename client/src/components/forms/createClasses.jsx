@@ -204,17 +204,19 @@ export const CreateClassForm = memo(
         }
       } else {
         const createdClassIds = [];
+        const classBody = {
+          ...baseClassBody,
+          date: date,
+        };
+        const response = await backend.post("/classes", classBody);
+        console.log("Class created:", response);
+        const classId = response?.data[0]?.id;
 
         for (const classDate of classDates) {
-          const classBody = {
-            ...baseClassBody,
-            date: classDate,
-          };
-
           try {
-            const response = await backend.post("/classes", classBody);
-            console.log("Class created:", response);
-            const classId = response?.data[0]?.id;
+            // const response = await backend.post("/classes", classBody);
+            // console.log("Class created:", response);
+            // const classId = response?.data[0]?.id;
 
             if (classId) {
               createdClassIds.push(classId);
