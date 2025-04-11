@@ -323,11 +323,10 @@ export const CreateClassForm = memo(
             </FormControl>
 
             <HStack
-              spacing={4}
               mt={4}
               align="flex-start"
             >
-              <FormControl>
+              <FormControl width={"50%"}>
                 <FormLabel>Start Date</FormLabel>
                 <Input
                   type="date"
@@ -339,7 +338,7 @@ export const CreateClassForm = memo(
                 />
               </FormControl>
 
-              <FormControl>
+              <FormControl width={"50%"}>
                 <FormLabel>End Date</FormLabel>
                 <Input
                   type="date"
@@ -377,7 +376,6 @@ export const CreateClassForm = memo(
             </FormControl>
 
             <HStack
-              spacing={4}
               mt={4}
               align="flex-start"
             >
