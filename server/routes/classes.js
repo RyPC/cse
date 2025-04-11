@@ -304,7 +304,15 @@ classesRouter.post("/", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
+classesRouter.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query(`DELETE FROM classes WHERE id = $1;`, [id]);
+    res.status(200).json(keysToCamel({ success: true }));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 classesRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;

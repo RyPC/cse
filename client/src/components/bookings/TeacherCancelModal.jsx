@@ -11,17 +11,27 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+
 export const TeacherCancelModal = ({
   isOpen,
   onClose,
   setCurrentModal,
   classData,
 }) => {
+  const { backend } = useBackendContext();
+
   const onGoBack = () => {
     setCurrentModal("view");
   };
-  const onConfirm = () => {
-    setCurrentModal("confirmation");
+  const onConfirm = async () => {
+    try {
+      await backend.delete(`/scheduled-classes/${classData.id}`);
+      await backend.delete(`/classes/${classData.id}`);
+      setCurrentModal("confirmation");
+    } catch (error) {
+      console.error("Error deleting class:", error);
+    }
   };
   return (
     <Modal
