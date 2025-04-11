@@ -24,6 +24,7 @@ import {
 import { IoIosCheckmarkCircle } from "react-icons/io";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { calculateRecurringDates } from "../../utils/formatDateTime";
 import SaveClass from "./modals/saveClass";
 import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 
@@ -66,42 +67,6 @@ export const CreateClassForm = memo(
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isDraft, setIsDraft] = useState(false);
 
-    const calculateRecurringDates = (startDate, endDate, pattern) => {
-      if (pattern === "none" || !startDate || !endDate) {
-        return [startDate];
-      }
-
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const dates = [];
-
-      const currentDate = new Date(start);
-      while (currentDate <= end) {
-        dates.push(new Date(currentDate).toISOString().split("T")[0]);
-
-        switch (pattern) {
-          case "weekly":
-            currentDate.setDate(currentDate.getDate() + 7);
-            break;
-          case "biweekly":
-            currentDate.setDate(currentDate.getDate() + 14);
-            break;
-          case "monthly": {
-            const month = currentDate.getMonth();
-            currentDate.setMonth(month + 1);
-            if (currentDate.getDate() !== start.getDate()) {
-              currentDate.setDate(0);
-            }
-            break;
-          }
-          default:
-            currentDate.setDate(currentDate.getDate() + 7);
-        }
-      }
-
-      return dates;
-    };
-
     const postClass = async () => {
       const classDates = calculateRecurringDates(
         date,
@@ -129,7 +94,7 @@ export const CreateClassForm = memo(
         await backend
           .put("/classes/" + modalData.classId, {
             ...baseClassBody,
-            isRecurring: recurrencePattern !== "none",
+            is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
 
