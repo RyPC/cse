@@ -9,7 +9,6 @@ export const ConfirmationModal = ({ isOpen, onClose, card }) => {
         <ModalOverlay />
         <ModalContent>
             <ModalHeader py={3}>
-                
             </ModalHeader>
             <VStack>
                 <Box
