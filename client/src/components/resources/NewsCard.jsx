@@ -5,7 +5,7 @@ export const NewsCard = ({ id, S3Url, description, mediaUrl }) => {
     <Card w={{base: "80%", md: "20em"}}>
       <CardBody>
         <Text>ID: {id}</Text>
-        <Text>S3 URL: {S3Url}</Text>
+        {/* <Text>S3 URL: {S3Url}</Text> */}
         <Text>Description: {description}</Text>
         <Text>Media URL: {mediaUrl}</Text>
       </CardBody>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { VideoCard } from "./VideoCard";
 import { NewsCard } from "./NewsCard";
 import { UploadComponent } from "./UploadComponent";
-import { Button, Flex, Text, Box , IconButton} from "@chakra-ui/react";
+import { Button, Flex, Text, Box, IconButton, Badge} from "@chakra-ui/react";
 import { ControllerModal } from "./ResourceFlow/ResourceFlowController";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
@@ -14,6 +14,8 @@ export const Resources = () => {
   const { backend } = useBackendContext();
   const [videos, setVideos] = useState([]);
   const [news, setNews] = useState([]);
+  const [tags, setTags] = useState({});
+  const [tagFilter, setTagFilter] = useState({});
   const [showModal, setShowModal] = useState(false);
   const {role} = useAuthContext();
 
@@ -36,6 +38,13 @@ export const Resources = () => {
     }, 0);
   };
 
+  const handleFilterToggle = (id) => () => {
+    console.log(`Tag ${id} has been toggled!`);
+    setTagFilter(prev => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -60,15 +69,41 @@ export const Resources = () => {
     }
   };
 
+  const fetchTags = async () => {
+    try {
+      const tagsResponse = await backend.get('/tags');
+      const initialTagFilter = {};
+      const initialTags = {};
+      tagsResponse.data.forEach(tag => {
+        initialTagFilter[tag.id] = true;
+        initialTags[tag.id] = tag.tag;
+      });
+    
+      setTagFilter(initialTagFilter);
+      setTags(initialTags);
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+    }
+  }
+
   useEffect(() => {
     fetchVideos(); // Fetch videos initially
     fetchNews();   // Fetch news initially
+    fetchTags();   // Fetch tags initially
   }, []);
 
   return (
     <Box position="relative" pb="70px" minHeight="100vh">
     <Flex direction="column" p={4} gap={4}>
       <Text textStyle="xl" mb={4}>Resources</Text>
+      <Box>
+        {Object.keys(tags).map((tag) => (
+            <Badge
+                key={tag}
+                onClick={handleFilterToggle(tag)}
+                colorScheme={tagFilter[tag] ? 'green': 'red'}>{tags[tag]}</Badge>
+          ))}
+      </Box>
       <Flex gap={4}>
         {/* <Button onClick={handleVideoButton}>Videos</Button>
         <Button onClick={handleNewsButton}>News</Button> */}
@@ -76,18 +111,22 @@ export const Resources = () => {
       <Box>
         <Text fontWeight="bold" mt={4}>Videos</Text>
         <Flex wrap="wrap" gap={4}>
-          {videos.map((video) => (
-            <VideoCard
-              key={video.id}
-              id={video.id}
-              description={video.description}
-              title={video.title}
-              S3Url={video.S3Url}
-              classId={video.classId}
-              mediaUrl={video.mediaUrl}
-              tags={video.tags}
-            />
-          ))}
+          {videos.map((video) => {
+            if (video.tags.some(tag => tagFilter[tag])) {
+                return (
+                  <VideoCard
+                    key={video.id}
+                    id={video.id}
+                    description={video.description}
+                    title={video.title}
+                    S3Url={video.S3Url}
+                    classId={video.classId}
+                    mediaUrl={video.mediaUrl}
+                    tags={video.tags.map(tag => tags[tag])}
+                  />
+              )
+            }
+          })}
         </Flex>
       </Box>
       <Box>
