@@ -4,12 +4,15 @@ import {
   Center,
   Flex,
   Heading,
+  HStack,
   Image,
   SimpleGrid,
   Spacer,
   Text,
   VStack,
 } from "@chakra-ui/react";
+
+import { FaChevronRight } from "react-icons/fa";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { Navbar } from "../navbar/Navbar";
@@ -63,31 +66,32 @@ export const Settings = () => {
               <Text>Email</Text>
               <Text>{currentUser?.email || "Not available"}</Text>
               <Text>Password</Text>
-              <Button
-                // sx={{ border: "1px solid red" }}
-                variant="plain"
-                size="xs"
-                onClick={() =>
-                  console.log("Change password functionality to be implemented")
-                }
-              >
-                {/* <Flex direction="row"> */}
-                <Text
-                  fontSize="16px"
-                  fontWeight={500}
+              <Text>
+                <Button
+                  rounded={false}
+                  variant="plain"
+                  size="xs"
+                  onClick={() =>
+                    console.log(
+                      "Change password functionality to be implemented"
+                    )
+                  }
+                  p={0}
                 >
-                  {" "}
-                  Change Password
-                </Text>
-
-                <Image
-                  display="inline"
-                  src={arrowImage}
-                  alt="Profile"
-                  mt={1}
-                />
-                {/* </Flex> */}
-              </Button>
+                  <Flex
+                    alignItems="center"
+                    gap="4vw"
+                  >
+                    <Text
+                      fontSize="16px"
+                      fontWeight={500}
+                    >
+                      Change Password
+                    </Text>
+                    <FaChevronRight fontSize="16px" />
+                  </Flex>
+                </Button>
+              </Text>
             </SimpleGrid>
           </Center>
         </VStack>
