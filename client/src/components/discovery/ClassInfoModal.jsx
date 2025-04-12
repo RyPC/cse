@@ -170,20 +170,20 @@ function ClassInfoModal({
                 justifyContent={"space-between"}
               >
                 <Box>
-                  <Text fontWeight="bold">Location:</Text>
+                  <Text fontWeight="bold">Location</Text>
                   <Text>{location}</Text>
                 </Box>
                 <Box>
-                  <Text fontWeight="bold">Time:</Text>
-                  <Text>{startTime} : {endTime}</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight="bold">Date:</Text>
+                  <Text fontWeight="bold">Date</Text>
                   <Text>{date}</Text>
                 </Box>
               </HStack>
 
               <Box width="100%">
+                <Box>
+                    <Text fontWeight="bold">Time</Text>
+                    <Text>pass in time prop and use it</Text>
+                </Box>
                 <Text fontWeight="bold">Description:</Text>
                 <Text>{description}</Text>
               </Box>
@@ -194,18 +194,18 @@ function ClassInfoModal({
                 justifyContent={"space-between"}
               >
                 <Box>
-                  <Text fontWeight="bold">Capacity:</Text>
+                  <Text fontWeight="bold">Capacity</Text>
                   <Text>{capacity}</Text>
                 </Box>
                 <Box>
-                  <Text fontWeight="bold">Level:</Text>
+                  <Text fontWeight="bold">Level</Text>
                   <Text>{level}</Text>
                 </Box>
               </HStack>
 
               <HStack width={"100%"}>
                 <Box>
-                  <Text fontWeight="bold">Costume:</Text>
+                  <Text fontWeight="bold">Classes</Text>
                   <Text>{costume}</Text>
                 </Box>
               </HStack>

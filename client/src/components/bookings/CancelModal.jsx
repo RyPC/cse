@@ -13,18 +13,34 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal, card, handleEven
         <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-                <ModalHeader textAlign="center" pb={0}>Are you sure you want to cancel this {type}?</ModalHeader>
+                <ModalHeader textAlign="center" pb={0}> Delete RSVP?</ModalHeader>
                 <ModalBody textAlign="center" py={4}>
                     You're cancelling <Text fontWeight="bold" display="inline">{card ? card.title : "N/A"}</Text>. This action can't be undone.
                 </ModalBody>
 
-                <ModalFooter borderTop="1px solid black" p={0}>
+                <ModalFooter justifyContent="center" pt={4}>
                     <Flex w="100%">
-                        <Button flex="1" bg="white" borderRight="1px solid black" onClick={onGoBack} borderRadius="0" borderBottomLeftRadius={6} py={6}>
-                            Close
+                        <Button 
+                            flex="1" 
+                            bg="#E8E7EF" 
+                            onClick={onGoBack} 
+                            borderRadius="lg" 
+                            borderBottomLeftRadius={6} 
+                            mr={3}
+                            px = {6}
+                            > Go Back
                         </Button>
-                        <Button flex="1" bg="white" fontWeight="bold" onClick={onConfirm} borderRadius="0" borderBottomRightRadius={6} py={6}>
-                            Confirm
+                        <Button 
+                            flex="1" 
+                            bg="#422E8D" 
+                            color = "white" 
+                            fontWeight="bold" 
+                            onClick={onConfirm} 
+                            borderRadius="lg"
+                            borderBottomRightRadius={6} 
+                            mr ={3}
+                            px ={6}
+                            > Confirm
                         </Button>
                     </Flex>
                 </ModalFooter>

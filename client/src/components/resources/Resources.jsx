@@ -66,7 +66,7 @@ export const Resources = () => {
 
   return (
     <Box position="relative" pb="70px" minHeight="100vh">
-    <Flex direction="column" p={4} gap={4}>
+    <Flex direction="column" p={4} gap={4} justify = "center">
       <Text textStyle="xl" mb={4}>Resources</Text>
       <Flex gap={4}>
         {/* <Button onClick={handleVideoButton}>Videos</Button>
