@@ -2,7 +2,6 @@ import { Card, CardHeader, CardBody, CardFooter, Text, Heading, Stack } from "@c
 
 // can componetize VideoCard and NewsCard into ResourceCard as theyre quite similar
 export const VideoCard = ({ id, title, description, S3Url, classId, mediaUrl, tags }) => {
-  console.log(tags)
   return (
     <Card w={{base: "100%", md: "20em"}}>
       <CardBody>

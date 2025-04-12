@@ -32,6 +32,25 @@ classVideosRouter.get("/with-tags", async (req, res) => {
   }
 });
 
+classVideosRouter.get("/with-tags/search/:name", async (req, res) => {
+    try {
+      const { name } = req.params;  
+      const data = await db.query(`
+        SELECT c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+        FROM class_videos c
+          LEFT JOIN video_tags v ON v.video_id = c.id
+          LEFT JOIN tags t ON t.id = v.tag_id
+        WHERE title ILIKE $1
+        GROUP BY c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id
+        ORDER BY c.id;
+      `, [`%${name}%`]);
+  
+      res.status(200).json(keysToCamel(data));
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+});
+
 classVideosRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
