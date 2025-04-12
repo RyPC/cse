@@ -17,8 +17,7 @@ export const Resources = () => {
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const {role} = useAuthContext();
-
+  const { role } = useAuthContext();
 
   const handleVideoButton = () => {
     console.log('Videos button has been pressed!');
@@ -132,15 +131,19 @@ export const Resources = () => {
       <Box>
         <Text fontWeight="bold" mt={4}>News</Text>
         <Flex wrap="wrap" gap={4}>
-          {news.map((newsItem) => (
-            <NewsCard
-              key={newsItem.id}
-              id={newsItem.id}
-              S3Url={newsItem.S3Url}
-              description={newsItem.description}
-              mediaUrl={newsItem.mediaUrl}
-            />
-          ))}
+          {news.map((newsItem) => {
+            // if (newsItem.tags.some(tag => tagFilter[tag])) {
+              return ( 
+                <NewsCard
+                  key={newsItem.id}
+                  id={newsItem.id}
+                  S3Url={newsItem.S3Url}
+                  description={newsItem.description}
+                  mediaUrl={newsItem.mediaUrl}
+                />
+              )
+            // }
+          })}
         </Flex>
 
       </Box>
