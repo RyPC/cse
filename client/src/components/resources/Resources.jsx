@@ -22,10 +22,6 @@ export const Resources = () => {
   const {role} = useAuthContext();
 
   const handleInputChange = (e) => {
-    // Refactor Discovery search function to match videos + articles (news)
-    //  e.g. create two functions searchVideos() and searchArticles (not sure why we called them 'news' in the first place)
-    //        copy alex's code from Discovery.jsx :D
-
     setSearchInput(e.target.value);
   };
 
@@ -59,19 +55,9 @@ export const Resources = () => {
     setIsModalOpen(false);
   };
 
-  const fetchVideos = async () => {
-    try {
-      const videoResponse = await backend.get(`/classes-videos/with-tags`);
-      setVideos(videoResponse.data);
-
-    } catch (error) {
-      console.error('Error fetching videos:', error);
-    }
-  };
-
   const fetchNews = async () => {
     try {
-      const newsResponse = await backend.get('/articles');
+      const newsResponse = await backend.get('/articles/with-tags');
       setNews(newsResponse.data);
     } catch (error) {
       console.error('Error fetching news:', error);
@@ -180,6 +166,7 @@ export const Resources = () => {
                   S3Url={newsItem.S3Url}
                   description={newsItem.description}
                   mediaUrl={newsItem.mediaUrl}
+                  tags={newsItem.tags}
                 />
               )
             // }

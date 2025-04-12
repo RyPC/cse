@@ -1,39 +1,19 @@
-import { Card, CardBody, Text } from "@chakra-ui/react";
+import { Card, CardBody, Text, Stack } from "@chakra-ui/react";
 
-export const NewsCard = ({ id, S3Url, description, mediaUrl }) => {
+export const NewsCard = ({ id, S3Url, description, mediaUrl, tags }) => {
   return (
     <Card w={{base: "80%", md: "20em"}}>
       <CardBody>
-        <Text>ID: {id}</Text>
-        {/* <Text>S3 URL: {S3Url}</Text> */}
-        <Text>Description: {description}</Text>
-        <Text>Media URL: {mediaUrl}</Text>
+        <Stack gap={2}>
+          {/* <Text>ID: {id}</Text> */}
+          {/* <Text>S3 URL: {S3Url}</Text> */}
+          <Text fontSize="md">{description ?? "No description"}</Text>
+          <Text fontSize="sm">Posted by "Instructor Name" for "Class Name"</Text>
+          <Text>Media URL: {mediaUrl}</Text>
+          {tags?.length && <Text>Tags: {tags.join(', ')}</Text>}
+          {/* <Text>Tags: {tags?.length ? tags.join(', ') : 'No tags!'}</Text> */}
+        </Stack>
       </CardBody>
     </Card>
   );
 };
-
-
-
-
-
-// 0
-// id	10
-// s3Url	"ok.png"
-// description	"Teset"
-// mediaUrl	"https://ok.com/ok.jpg"
-// 1
-// id	13
-// s3Url	"ok.png"
-// description	"Pronsh"
-// mediaUrl	"https://ok.com/ok.jpg"
-// 2
-// id	9
-// s3Url	"new"
-// description	"Teset"
-// mediaUrl	"https://ok.com/ok.jpg"
-// 3
-// id	12
-// s3Url	"test.png"
-// description	"test description"
-// mediaUrl	"google.com"
