@@ -1,8 +1,9 @@
+import { Button, Flex, Text, Box, IconButton, Badge, Input} from "@chakra-ui/react";
+
 import { useState, useEffect } from "react";
 import { VideoCard } from "./VideoCard";
 import { NewsCard } from "./NewsCard";
 import { UploadComponent } from "./UploadComponent";
-import { Button, Flex, Text, Box, IconButton, Badge} from "@chakra-ui/react";
 import { ControllerModal } from "./ResourceFlow/ResourceFlowController";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
@@ -12,12 +13,21 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 export const Resources = () => {
 
   const { backend } = useBackendContext();
+  const [searchInput, setSearchInput] = useState("");
   const [videos, setVideos] = useState([]);
   const [news, setNews] = useState([]);
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
   const [showModal, setShowModal] = useState(false);
-  const { role } = useAuthContext();
+  const {role} = useAuthContext();
+
+  const handleInputChange = (e) => {
+    // Refactor Discovery search function to match videos + articles (news)
+    //  e.g. create two functions searchVideos() and searchArticles (not sure why we called them 'news' in the first place)
+    //        copy alex's code from Discovery.jsx :D
+
+    setSearchInput(e.target.value);
+  };
 
   const handleVideoButton = () => {
     console.log('Videos button has been pressed!');
@@ -74,7 +84,7 @@ export const Resources = () => {
       const initialTagFilter = {};
       const initialTags = {};
       tagsResponse.data.forEach(tag => {
-        initialTagFilter[tag.id] = true;
+        initialTagFilter[tag.id] = false;
         initialTags[tag.id] = tag.tag;
       });
     
@@ -85,45 +95,75 @@ export const Resources = () => {
     }
   }
 
+  const searchVideos = async () => {
+    if (searchInput) {
+      try {
+        const response = await backend.get(`/classes-videos/with-tags/search/${searchInput}`);
+        // console.log("Search results:", response.data);
+        setVideos(response.data);
+      } catch (error) {
+        console.error(`Error fetching videos with query '${searchInput}':`, error);
+      }
+    } else {
+      try {
+        const response = await backend.get("/classes-videos/with-tags");
+        setVideos(response.data);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    }
+  };
+
   useEffect(() => {
-    fetchVideos(); // Fetch videos initially
+    searchVideos(); // Fetch videos initially
     fetchNews();   // Fetch news initially
     fetchTags();   // Fetch tags initially
-  }, []);
+  }, [searchInput]);
 
   return (
     <Box position="relative" pb="70px" minHeight="100vh">
     <Flex direction="column" p={4} gap={4}>
-      <Text textStyle="xl" mb={4}>Resources</Text>
-      <Box>
+      <Input
+        placeholder="Search bar"
+        rounded="3xl"
+        mt={10}
+        value={searchInput}
+        onChange={handleInputChange}
+      />
+      <Flex gap={3}>
         {Object.keys(tags).map((tag) => (
             <Badge
                 key={tag}
                 onClick={handleFilterToggle(tag)}
+                rounded="xl"
+                px={4}
+                py={1}
                 colorScheme={tagFilter[tag] ? 'green': 'red'}>{tags[tag]}</Badge>
           ))}
-      </Box>
-      <Flex gap={4}>
-        {/* <Button onClick={handleVideoButton}>Videos</Button>
-        <Button onClick={handleNewsButton}>News</Button> */}
       </Flex>
+      {/* <Flex gap={4}>
+        <Button onClick={handleVideoButton}>Videos</Button>
+        <Button onClick={handleNewsButton}>News</Button>
+      </Flex> */}
       <Box>
         <Text fontWeight="bold" mt={4}>Videos</Text>
         <Flex wrap="wrap" gap={4}>
           {videos.map((video) => {
-            if (video.tags.some(tag => tagFilter[tag])) {
-                return (
-                  <VideoCard
-                    key={video.id}
-                    id={video.id}
-                    description={video.description}
-                    title={video.title}
-                    S3Url={video.S3Url}
-                    classId={video.classId}
-                    mediaUrl={video.mediaUrl}
-                    tags={video.tags.map(tag => tags[tag])}
-                  />
-              )
+            const isFilterActive = Object.values(tagFilter).some(Boolean);
+
+            if (!isFilterActive || (video.tags && video.tags.some(tag => tagFilter[tag]))) {
+              return (
+                <VideoCard
+                  key={video.id}
+                  id={video.id}
+                  description={video.description}
+                  title={video.title}
+                  S3Url={video.S3Url}
+                  classId={video.classId}
+                  mediaUrl={video.mediaUrl}
+                  tags={video.tags?.map(tag => tags[tag] || [])}
+                />
+            )
             }
           })}
         </Flex>
