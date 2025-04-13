@@ -18,11 +18,12 @@ classVideosRouter.get("/", async (req, res) => {
 classVideosRouter.get("/with-tags", async (req, res) => {
   try {
     const data = await db.query(`
-      SELECT c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+      SELECT c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, cs.title AS class_title, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
       FROM class_videos c
         LEFT JOIN video_tags v ON v.video_id = c.id
         LEFT JOIN tags t ON t.id = v.tag_id
-      GROUP BY c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id
+        LEFT JOIN classes cs ON cs.id = c.class_id
+      GROUP BY c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, cs.title
       ORDER BY c.id;
     `);
 

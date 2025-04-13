@@ -24,8 +24,8 @@ articlesRouter.get("/with-tags", async (req, res) => {
       const data = await db.query(`
         SELECT a.id, a.s3_url, a.description, a.media_url, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
         FROM articles a
-          LEFT JOIN video_tags v ON v.video_id = a.id
-          LEFT JOIN tags t ON t.id = v.tag_id
+          LEFT JOIN article_tags av ON av.article_id = a.id
+          LEFT JOIN tags t ON t.id = av.tag_id
         GROUP BY a.id, a.s3_url, a.description, a.media_url
         ORDER BY a.id;
       `);
