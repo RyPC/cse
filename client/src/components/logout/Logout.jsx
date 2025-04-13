@@ -29,6 +29,11 @@ const Logout = ({ cookies }) => {
       <Button
         type="submit"
         onClick={handleLogout}
+        bg="#422e8d"
+        color="white"
+        w="331px"
+        h="60px"
+        mb={6}
       >
         Log out
       </Button>

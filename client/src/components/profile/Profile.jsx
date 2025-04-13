@@ -58,7 +58,7 @@ export const Profile = () => {
         >
           <a href="/settings">Settings</a>
         </Button>
-        {/* <L/> */}
+        <L/>
         {/* log out is not shown in hi-fi */}
       </VStack>
     </Flex>
