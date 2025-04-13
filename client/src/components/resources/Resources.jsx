@@ -15,7 +15,7 @@ export const Resources = () => {
   const { backend } = useBackendContext();
   const [searchInput, setSearchInput] = useState("");
   const [videos, setVideos] = useState([]);
-  const [news, setNews] = useState([]);
+  const [articles, setArticles] = useState([]);
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
   const [showModal, setShowModal] = useState(false);
@@ -32,7 +32,7 @@ export const Resources = () => {
 
   const handleNewsButton = () => {
     console.log('News button has been pressed!');
-    console.log(news);
+    console.log(articles);
   };
   const handleAddButtonClick = () => {
     console.log('Add button clicked!');
@@ -58,7 +58,7 @@ export const Resources = () => {
   const fetchNews = async () => {
     try {
       const newsResponse = await backend.get('/articles/with-tags');
-      setNews(newsResponse.data);
+      setArticles(newsResponse.data);
     } catch (error) {
       console.error('Error fetching news:', error);
     }
@@ -135,6 +135,7 @@ export const Resources = () => {
         <Text fontWeight="bold" mt={4}>Videos</Text>
         <Flex wrap="wrap" gap={4}>
           {videos.map((video) => {
+            console.log(video)
             const isFilterActive = Object.values(tagFilter).some(Boolean);
 
             if (!isFilterActive || (video.tags && video.tags.some(tag => tagFilter[tag]))) {
@@ -144,8 +145,9 @@ export const Resources = () => {
                   id={video.id}
                   description={video.description}
                   title={video.title}
-                  S3Url={video.S3Url}
+                  S3Url={video.s3Url}
                   classId={video.classId}
+                  classTitle={video.classTitle}
                   mediaUrl={video.mediaUrl}
                   tags={video.tags?.map(tag => tags[tag] || [])}
                 />
@@ -155,21 +157,23 @@ export const Resources = () => {
         </Flex>
       </Box>
       <Box>
-        <Text fontWeight="bold" mt={4}>News</Text>
+        <Text fontWeight="bold" mt={4}>Articles</Text>
         <Flex wrap="wrap" gap={4}>
-          {news.map((newsItem) => {
-            // if (newsItem.tags.some(tag => tagFilter[tag])) {
-              return ( 
-                <NewsCard
-                  key={newsItem.id}
-                  id={newsItem.id}
-                  S3Url={newsItem.S3Url}
-                  description={newsItem.description}
-                  mediaUrl={newsItem.mediaUrl}
-                  tags={newsItem.tags}
-                />
-              )
-            // }
+          {articles.map((article) => {
+              const isFilterActive = Object.values(tagFilter).some(Boolean);
+            
+              if (!isFilterActive || (article.tags && article.tags.some(tag => tagFilter[tag]))) {
+                return ( 
+                  <NewsCard
+                    key={article.id}
+                    id={article.id}
+                    S3Url={article.s3Url}
+                    description={article.description}
+                    mediaUrl={article.mediaUrl}
+                    tags={article.tags?.map(tag => tags[tag] || [])}
+                  />
+                )
+              }
           })}
         </Flex>
 
