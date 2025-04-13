@@ -71,7 +71,7 @@ export const Resources = () => {
       const initialTags = {};
       tagsResponse.data.forEach(tag => {
         initialTagFilter[tag.id] = false;
-        initialTags[tag.id] = tag.tag;
+        initialTags[tag.id] = tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
       });
     
       setTagFilter(initialTagFilter);
@@ -118,14 +118,18 @@ export const Resources = () => {
       />
       <Flex gap={3}>
         {Object.keys(tags).map((tag) => (
-            <Badge
-                key={tag}
-                onClick={handleFilterToggle(tag)}
-                rounded="xl"
-                px={4}
-                py={1}
-                colorScheme={tagFilter[tag] ? 'green': 'red'}>{tags[tag]}</Badge>
-          ))}
+          <Badge
+            key={tag}
+            onClick={handleFilterToggle(tag)}
+            rounded="xl"
+            px={4}
+            py={1}
+            colorScheme={tagFilter[tag] ? 'green': 'red'}
+            textTransform="none"
+          >
+            {tags[tag]}
+          </Badge>
+        ))}
       </Flex>
       {/* <Flex gap={4}>
         <Button onClick={handleVideoButton}>Videos</Button>
@@ -135,7 +139,6 @@ export const Resources = () => {
         <Text fontWeight="bold" mt={4}>Videos</Text>
         <Flex wrap="wrap" gap={4}>
           {videos.map((video) => {
-            console.log(video)
             const isFilterActive = Object.values(tagFilter).some(Boolean);
 
             if (!isFilterActive || (video.tags && video.tags.some(tag => tagFilter[tag]))) {

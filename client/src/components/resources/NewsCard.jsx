@@ -1,4 +1,4 @@
-import { Card, CardBody, Text, Stack, Link, Image } from "@chakra-ui/react";
+import { Card, CardBody, Text, Stack, Link, Image, Badge, Flex } from "@chakra-ui/react";
 
 export const NewsCard = ({ id, S3Url, description, mediaUrl, tags }) => {
   return (
@@ -9,7 +9,21 @@ export const NewsCard = ({ id, S3Url, description, mediaUrl, tags }) => {
           <Link href={mediaUrl} isExternal>
             <Image src={S3Url} alt={`image for video article ${id}`} />
           </Link>
-          {tags?.length && <Text>Tags: {tags.join(', ')}</Text>}
+          
+          <Flex gap={1} wrap="nowrap">
+            {tags?.length > 0 &&
+              tags.map((tag, index) => (
+                <Badge
+                  key={index}
+                  rounded="lg"
+                  px={3}
+                  py={1}
+                  textTransform="none"
+                >
+                  {tag}
+                </Badge>
+              ))}
+          </Flex>
         </Stack>
       </CardBody>
     </Card>

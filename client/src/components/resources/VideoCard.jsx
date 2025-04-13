@@ -1,7 +1,6 @@
-import { Card, CardHeader, CardBody, CardFooter, Text, Heading, Stack, Image, Link } from "@chakra-ui/react";
+import { Card, CardHeader, CardBody, CardFooter, Text, Heading, Stack, Image, Link, Badge, Flex } from "@chakra-ui/react";
 
 export const VideoCard = ({ id, title, description, S3Url, classId, classTitle, mediaUrl, tags }) => {
-  // console.log(S3Url);
   return (
     <Card w={{base: "100%", md: "20em"}}>
       <CardBody>
@@ -12,7 +11,21 @@ export const VideoCard = ({ id, title, description, S3Url, classId, classTitle, 
           <Link href={mediaUrl} isExternal>
             <Image src={S3Url} alt={`image for video ${title}`} />
           </Link>
-          {tags?.length && <Text>Tags: {tags.join(', ')}</Text>}
+
+          <Flex gap={1} wrap="nowrap">
+            {tags?.length > 0 &&
+              tags.map((tag, index) => (
+                <Badge
+                  key={index}
+                  rounded="lg"
+                  px={3}
+                  py={1}
+                  textTransform="none"
+                >
+                  {tag}
+                </Badge>
+              ))}
+          </Flex>
         </Stack>
       </CardBody>
     </Card>
