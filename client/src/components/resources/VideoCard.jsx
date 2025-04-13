@@ -9,7 +9,7 @@ export const VideoCard = ({ id, title, description, S3Url, classId, classTitle, 
           <Text fontSize="md">{description ?? "No description"}</Text>
           <Text fontSize="sm">Posted by "Instructor Name" for {classTitle}</Text> {/* Implement Instructor Name at later task! - josh :D */}
           <Link href={mediaUrl} isExternal>
-            <Image src={S3Url} alt={`image for video ${title}`} />
+            <Image src={S3Url} alt={`image for video ${title}`}/>
           </Link>
 
           <Flex gap={1} wrap="nowrap">

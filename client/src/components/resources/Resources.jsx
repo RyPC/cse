@@ -1,4 +1,5 @@
-import { Button, Flex, Text, Box, IconButton, Badge, Input} from "@chakra-ui/react";
+import { Button, Flex, Text, Box, IconButton, Badge, Input, InputGroup, InputLeftAddon} from "@chakra-ui/react";
+import { IoSearch } from "react-icons/io5";
 
 import { useState, useEffect } from "react";
 import { VideoCard } from "./VideoCard";
@@ -109,13 +110,18 @@ export const Resources = () => {
   return (
     <Box position="relative" pb="70px" minHeight="100vh">
     <Flex direction="column" p={4} gap={4}>
-      <Input
-        placeholder="Search bar"
-        rounded="3xl"
-        mt={10}
-        value={searchInput}
-        onChange={handleInputChange}
-      />
+      <InputGroup mt={10}>
+        <InputLeftAddon>
+          <IoSearch/>
+        </InputLeftAddon>
+        <Input
+          placeholder="Search bar"
+          rounded="3xl"
+          value={searchInput}
+          onChange={handleInputChange}
+        />
+      </InputGroup>
+      
       <Flex gap={3}>
         {Object.keys(tags).map((tag) => (
           <Badge
@@ -131,10 +137,7 @@ export const Resources = () => {
           </Badge>
         ))}
       </Flex>
-      {/* <Flex gap={4}>
-        <Button onClick={handleVideoButton}>Videos</Button>
-        <Button onClick={handleNewsButton}>News</Button>
-      </Flex> */}
+      
       <Box>
         <Text fontWeight="bold" mt={4}>Videos</Text>
         <Flex wrap="wrap" gap={4}>
