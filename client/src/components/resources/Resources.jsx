@@ -1,4 +1,4 @@
-import { Button, Flex, Text, Box, IconButton, Badge, Input, InputGroup, InputLeftAddon} from "@chakra-ui/react";
+import { Flex, Text, Box, IconButton, Badge, Input, InputGroup, InputLeftAddon} from "@chakra-ui/react";
 import { IoSearch } from "react-icons/io5";
 
 import { useState, useEffect } from "react";
@@ -10,9 +10,7 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 
-
 export const Resources = () => {
-
   const { backend } = useBackendContext();
   const [searchInput, setSearchInput] = useState("");
   const [videos, setVideos] = useState([]);
@@ -24,24 +22,6 @@ export const Resources = () => {
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
-  };
-
-  const handleVideoButton = () => {
-    console.log('Videos button has been pressed!');
-    console.log(videos);
-  };
-
-  const handleNewsButton = () => {
-    console.log('News button has been pressed!');
-    console.log(articles);
-  };
-  const handleAddButtonClick = () => {
-    console.log('Add button clicked!');
-
-    setShowModal(false);
-    setTimeout(() => {
-      setShowModal(true);
-    }, 0);
   };
 
   const handleFilterToggle = (id) => () => {
@@ -115,7 +95,7 @@ export const Resources = () => {
           <IoSearch/>
         </InputLeftAddon>
         <Input
-          placeholder="Search bar"
+          placeholder="Search"
           rounded="3xl"
           value={searchInput}
           onChange={handleInputChange}
