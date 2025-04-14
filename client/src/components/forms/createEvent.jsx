@@ -67,17 +67,23 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
   };
 
   const handleSubmit = async (isDraft) => {
-    if (!validateForm()) return;
+    
+    if (!isDraft && !validateForm()) return;
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
       const eventData = {
         ...formData,
-        start_time: formData.startTime,
-        end_time: formData.endTime,
-        call_time: formData.callTime,
+        level: formData.level == "" ? "beginner" : formData.level,
+        date: formData.date == "" ? new Date() : formData.date,
+        start_time: formData.startTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.startTime,
+        end_time: formData.endTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.endTime,
+        call_time: formData.callTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.callTime,
+        capacity: formData.capacity == "" ? 0 : formData.capacity,
         is_draft: isDraft,
       };
+
+      console.log(eventData)
 
       // Using axios instead of fetch
       let response;
@@ -129,9 +135,9 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
       spacing={4}
       align="stretch"
     >
-      {!eventId ? (<Text>New Event</Text>) : ""}
+      {!eventId ? (<Text></Text>) : ""}
       <Box>
-        <Text>Title</Text>
+        <Text >Event Title</Text>
         <Input
           name="title"
           value={formData.title}
@@ -217,16 +223,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
       </Box>
 
       <Box>
-        <Text>Capacity</Text>
-        <Input
-          type="number"
-          name="capacity"
-          value={formData.capacity}
-          onChange={handleChange}
-        />
-      </Box>
-
-      <Box>
         <Text>Description</Text>
         <Textarea
           name="description"
@@ -238,6 +234,18 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
           <Text color="red.500">{errors.description}</Text>
         )}
       </Box>
+
+      <Box>
+        <Text>Capacity</Text>
+        <Input
+          type="number"
+          name="capacity"
+          value={formData.capacity}
+          onChange={handleChange}
+        />
+      </Box>
+
+      
 
       <Box>
         <Text>Costume</Text>
@@ -260,7 +268,9 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         <Button
             onClick={() => handleSubmit(false)} // false = publish
             isLoading={isSubmitting}
-            colorScheme="blue"
+            bg="#422E8D"
+            color="white"
+
             flex="1"
         >
             Publish

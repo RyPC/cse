@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+import { MdAdd } from "react-icons/md";
 
 import {
   Box,
@@ -21,6 +22,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  Input
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -64,8 +66,9 @@ export const Bookings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
+  const [searchInput, setSearchInput] = useState("");
 
-  const [refresh, setRefresh] = useState(0)
+  const [refresh, setRefresh] = useState(0);
 
   const isTeacher = role === "teacher";
   useEffect(() => {
@@ -74,7 +77,7 @@ export const Bookings = () => {
       backend.get(`/classes/published`).then((res) => setClasses(res.data));
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
-      backend.get('/events').then((res) => setAllEvents(res.data));
+      backend.get("/events").then((res) => setAllEvents(res.data));
     } else if (currentUser && role === "student") {
       backend
         .get(`/users/${currentUser.uid}`)
@@ -99,12 +102,12 @@ export const Bookings = () => {
             .catch((err) => {
               console.log("Error fetching event enrollments:", err);
             });
-          })
-          .catch((err) => {
-            console.log("Error fetching user:", err);
-          });
-      }
-    }, [backend, currentUser, isTeacher, refresh]);
+        })
+        .catch((err) => {
+          console.log("Error fetching user:", err);
+        });
+    }
+  }, [backend, currentUser, isTeacher, refresh]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -116,11 +119,11 @@ export const Bookings = () => {
   useEffect(() => {
     const fetchCoreqId = async () => {
       if (!selectedCard?.id || !isOpen) return;
-  
+
       try {
         const res = await backend.get(`/corequisites/${selectedCard.id}`);
         const data = res.data;
-  
+
         if (data.length > 0) {
           const eventId = data[0].eventId;
           console.log("Fetched coreqId:", eventId);
@@ -134,10 +137,9 @@ export const Bookings = () => {
         setCoreqId(null);
       }
     };
-  
+
     fetchCoreqId();
   }, [backend, selectedCard, isOpen]);
-  
 
   const onCloseModal = () => {
     setSelectedCard(null);
@@ -151,38 +153,48 @@ export const Bookings = () => {
   };
 
   const triggerRefresh = () => {
-    setRefresh(refresh+1);
+    setRefresh(refresh + 1);
     console.log("Refresh triggered");
-  }
+  };
   // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
   const deepEquality = (object1, object2) => {
     if (object1 === null || object2 === null) return object1 === object2;
     const keys1 = Object.keys(object1);
     const keys2 = Object.keys(object2);
-  
+
     if (keys1.length !== keys2.length) {
       return false;
     }
-  
+
     for (const key of keys1) {
       const val1 = object1[key];
       const val2 = object2[key];
       const areObjects = typeof val1 === "object" && typeof val2 === "object";
       if (
-        areObjects && !deepEquality(val1, val2) ||
-        !areObjects && val1 !== val2
+        (areObjects && !deepEquality(val1, val2)) ||
+        (!areObjects && val1 !== val2)
       ) {
         return false;
       }
     }
-  
+
     return true;
-  }
+  };
 
   const updateModal = (item) => {
     const type =
-      classes.some(e => deepEquality(e, item)) || draftClasses.some(e => deepEquality(e, item)) ? "class" : "event";
-    console.log("update", item, classes, draftClasses, type, deepEquality(classes[0], item));
+      classes.some((e) => deepEquality(e, item)) ||
+      draftClasses.some((e) => deepEquality(e, item))
+        ? "class"
+        : "event";
+    console.log(
+      "update",
+      item,
+      classes,
+      draftClasses,
+      type,
+      deepEquality(classes[0], item)
+    );
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
@@ -240,8 +252,8 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-      backend.get(`/events/published`).then((res) => setEvents(res.data));
-      backend.get(`/classes/published`).then((res) => {
+      backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
+      backend.get(`/classes/search/${searchInput}`).then((res) => {
         setClasses(res.data);
       });
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
@@ -257,6 +269,39 @@ export const Bookings = () => {
     }
   };
 
+  const reloadClasses = async () => {
+    if (searchInput) {
+      backend.get(`/classes/search/${searchInput}`).then((res) => {
+        setClasses(res.data);
+      });
+    } else {
+      backend.get(`/classes/published`).then((res) => {
+        setClasses(res.data);
+      });
+    }
+
+    const attendedClasses = classes.filter((c) => c.attendance !== null);
+    const attendedEvents = events.filter((e) => e.attendance !== null);
+    setAttended([...attendedClasses, ...attendedEvents]);
+    loadCorequisites(selectedCard.id);
+  }
+
+  const reloadEvents = async () => {
+    if (searchInput) {
+      backend.get(`/events/search/${searchInput}`).then((res) => {
+        setEvents(res.data);
+      });
+    } else {
+      backend.get(`/events/published`).then((res) => {
+        setEvents(res.data);
+      });
+    }
+    const attendedClasses = classes.filter((c) => c.attendance !== null);
+    const attendedEvents = events.filter((e) => e.attendance !== null);
+    setAttended([...attendedClasses, ...attendedEvents]);
+    loadCorequisites(selectedCard.id);
+  }
+
   // useEffect(() => {
   //   console.log("selectedCard", selectedCard);
   // }, [selectedCard]);
@@ -266,7 +311,6 @@ export const Bookings = () => {
       const [classesResponse, classDataResponse] = await Promise.all([
         backend.get("/scheduled-classes"),
         backend.get("/classes"),
-        
       ]);
 
       const classDataDict = new Map();
@@ -275,12 +319,11 @@ export const Bookings = () => {
       console.log("Fetching tags for class:", clsId);
       const response = await backend.get(`/class-tags/tags/${clsId}`);
       console.log("Raw tag data:", response.data);
-      
+
       const formattedData = classesResponse.data
         .map((cls) => {
           const fullData = classDataDict.get(cls.classId);
 
-          
           return fullData
             ? {
                 classId: cls.classId,
@@ -317,21 +360,53 @@ export const Bookings = () => {
     return d;
   };
 
+  const handleKeyDown = async (e) => {
+    if (e.key === "Enter") {
+      if (tabIndex === 0) {
+        await reloadClasses();
+      } else if (tabIndex === 1) {
+        await reloadEvents();
+      }
+    }
+  };
+
   // console.log("draft classes", draftClasses);
   // console.log("events", events);
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
   return (
-    <Box>
+    <Box  pt={2}>
+      <VStack
+        spacing={8}>
+        <Input
+              placeholder="Search bar"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+          />
+      </VStack>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
+        <Box px={4} width="100%" pt={4}>
+        <Input
+
+          placeholder="Search"
+          variant="filled"
+          borderRadius="full"
+          borderColor={"gray.300"}
+          bg="white.100"
+          _hover={{ bg: "gray.200" }}
+          _focus={{ bg: "white", borderColor: "gray.300" }}
+        />
+        </Box>
+
         <Tabs
           width="100%"
           variant="line"
           colorScheme="blackAlpha"
-          pt={8}
+
           onChange={(index) => setTabIndex(index)}
         >
           <TabList justifyContent="center">
@@ -440,7 +515,7 @@ export const Bookings = () => {
                           key={item.id}
                           {...item}
                           onClick={() => updateModal(item)}
-                          />
+                        />
                       ) : (
                         <EventCard
                           key={item.id}
@@ -593,17 +668,21 @@ export const Bookings = () => {
             onOpen();
           }}
           position="fixed"
-          bottom="160px"
-          right="50px"
+          bottom="90px"
+          right="20px"
           borderRadius="50%"
-          width="60px"
-          height="60px"
-          bg="blue.500"
+          width="66px"
+          height="66px"
+          bg="#422E8D"
           color="white"
           _hover={{ bg: "blue.700" }}
-          fontSize="2xl"
+          fontSize="4xl"
+          zIndex={999}
+
         >
-          +
+          <MdAdd size={40} />
+
+
         </Button>
       )}
       <Navbar />
@@ -624,6 +703,10 @@ const ClassTeacherCard = memo(
     performance,
     rsvpCount,
     isDraft,
+    recurrencePattern,
+    isRecurring,
+    startDate,
+    endDate,
     startTime,
     endTime,
     navigate,
@@ -667,12 +750,13 @@ const ClassTeacherCard = memo(
                 {rsvpCount === 1 ? "person" : "people"} RSVP'd
               </Text>
             </HStack>
+
             <Button
               alignSelf="flex-end"
               variant="solid"
               size="sm"
-              bg="gray.500"
-              color="black"
+              bg="#422E8D"
+              color="white"
               _hover={{ bg: "gray.700" }}
               mt={2}
               onClick={
@@ -688,10 +772,14 @@ const ClassTeacherCard = memo(
                         level,
                         costume,
                         performances: performance,
+                        isRecurring,
+                        recurrencePattern,
+                        startDate,
+                        endDate,
                         isDraft,
                         rsvpCount,
                         startTime,
-                        endTime
+                        endTime,
                       };
                       setSelectedCard(modalData);
                       onOpen({
@@ -701,11 +789,15 @@ const ClassTeacherCard = memo(
                         date,
                         description,
                         capacity,
+                        isRecurring,
+                        recurrencePattern,
+                        startDate,
+                        endDate,
                         level,
                         costume,
                         isDraft,
                         startTime,
-                        endTime
+                        endTime,
                       });
                     }
                   : () => {
@@ -718,11 +810,15 @@ const ClassTeacherCard = memo(
                         capacity,
                         level,
                         costume,
+                        isRecurring,
+                        recurrencePattern,
                         performances: performance,
                         isDraft,
+                        startDate,
+                        endDate,
                         rsvpCount,
                         startTime,
-                        endTime
+                        endTime,
                       };
                       setSelectedCard(modalData);
                       onOpen({
@@ -733,10 +829,14 @@ const ClassTeacherCard = memo(
                         description,
                         capacity,
                         level,
+                        isRecurring,
+                        recurrencePattern,
                         costume,
+                        startDate,
+                        endDate,
                         isDraft,
                         startTime,
-                        endTime
+                        endTime,
                       });
                     }
                 // : () => navigate(`/dashboard/classes/${classId}`)

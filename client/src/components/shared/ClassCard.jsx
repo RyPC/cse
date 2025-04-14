@@ -114,8 +114,8 @@ export const ClassCard = ({
               alignSelf="flex-end"
               variant="solid"
               size="sm"
-              bg="gray.500"
-              color="black"
+              bg="#422E8D"
+              color="white"
               _hover={{ bg: "gray.700" }}
               mt={2}
               onClick={() => {

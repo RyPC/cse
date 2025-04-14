@@ -1,16 +1,23 @@
-import {React, useRef} from "react";
+import { React, useRef } from "react";
 
 import {
   Box,
+  Button,
   Container,
   Flex,
   FormControl,
   FormLabel,
   Heading,
+  HStack,
   Image,
   Input,
+  Text,
   useDisclosure,
+  VStack,
 } from "@chakra-ui/react";
+
+import { SlArrowLeft } from "react-icons/sl";
+import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 import { NotificationPanel } from "../NotificationPanel";
@@ -18,53 +25,105 @@ import { NotificationPanel } from "../NotificationPanel";
 const SettingsDashboard: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
+  const navigate = useNavigate();
   const { currentUser } = useAuthContext();
+
   return (
-    <Container maxW="container.sm">
-      <Box mt={4} w={"100%"}>
-        <Flex
-          w={"100%"}
-          justify={"space-between"}
+    <VStack gap="30px">
+      <Flex
+        w={"100%"}
+        justify={"space-between"}
+      >
+        <Heading
+          as="h1"
+          size="lg"
+          mb={4}
+          alignSelf={"flex-start"}
+          alignContent="center"
+          fontWeight={700}
+          fontSize={36}
         >
-          <Heading
-            as="h1"
-            size="lg"
-            mb={4}
+          <Button
+            backgroundColor="transparent"
+            fontSize={25}
+            mb={1}
+            onClick={() => navigate("/dashboard")}
           >
-            Settings
-          </Heading>
-          <Image
-            alignSelf={"flex-end"}
-            cursor="pointer"
-            onClick={onOpen}
-            ref={notifRef}
-            src="../bell.png"
-          />
-          <NotificationPanel
-            isOpen={isOpen}
-            onClose={onClose}
-          />
-        </Flex>
-        <Box mt={2}>
-          <FormControl mb={4}>
-            <FormLabel>Name</FormLabel>
-            <Input
-              value={currentUser?.displayName || ""}
-              isReadOnly
-              disabled
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Email</FormLabel>
-            <Input
-              value={currentUser?.email || ""}
-              isReadOnly
-              disabled
-            />
-          </FormControl>
+            <SlArrowLeft />
+          </Button>
+          Settings
+        </Heading>
+        <Image
+          alignSelf={"flex-end"}
+          cursor="pointer"
+          onClick={onOpen}
+          ref={notifRef}
+          src="../bell.png"
+        />
+        <NotificationPanel
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      </Flex>
+      <HStack
+        w="100%"
+        pl="60px"
+        pr="160px"
+        gap="60px"
+      >
+        <Box
+          flex={1}
+          fontWeight={700}
+          fontSize={18}
+        >
+          First Name
         </Box>
-      </Box>
-    </Container>
+        <Box
+          flex={1}
+          textAlign="right"
+          fontSize={18}
+        >
+          {currentUser?.displayName?.split(" ")[0] || ""}
+        </Box>
+        <Box
+          flex={1}
+          fontWeight={700}
+          fontSize={18}
+        >
+          Last Name
+        </Box>
+        <Box
+          flex={1}
+          textAlign="right"
+          fontSize={18}
+        >
+          {currentUser?.displayName?.split(" ")[1] || ""}
+        </Box>
+      </HStack>
+      <HStack
+        w="100%"
+        pl="60px"
+        pr="160px"
+        gap="60px"
+      >
+        <Box
+          flex={1}
+          fontWeight={700}
+          fontSize={18}
+        >
+          Email
+        </Box>
+        <Box
+          flex={1}
+          textAlign="right"
+          fontSize={18}
+        >
+          {currentUser?.email || ""}
+        </Box>
+        <Box flex={1} />
+        <Box flex={1} />
+      </HStack>
+    </VStack>
   );
 };
 
