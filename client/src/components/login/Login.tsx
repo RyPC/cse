@@ -16,7 +16,6 @@ import {
   VStack,
   Text,
   Box,
-  Image
 } from "@chakra-ui/react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
