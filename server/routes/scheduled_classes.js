@@ -48,27 +48,52 @@ scheduledClassesRouter.post("/", async (req, res) => {
 });
 
 scheduledClassesRouter.put("/", async (req, res) => {
-    try {
-        const { class_id, date, start_time, end_time } = req.body;
+  try {
+    const { class_id, date, start_time, end_time } = req.body;
 
-        if (!class_id || !date)
-            return res.status(400).send("Invalid PUT request, please enter required `class_id` and `date` parameters");
+    if (!class_id || !date)
+      return res
+        .status(400)
+        .send(
+          "Invalid PUT request, please enter required `class_id` and `date` parameters"
+        );
 
-        const query = `UPDATE scheduled_classes SET
+    const query = `UPDATE scheduled_classes SET
         start_time = COALESCE($1, start_time),
         end_time = COALESCE($2, end_time)
         WHERE class_id = $3 and date = $4
         RETURNING *;`;
 
-        const data = await db.query(query, [start_time, end_time, class_id, date]);
+    const data = await db.query(query, [start_time, end_time, class_id, date]);
 
-        if (data.rowCount === 0)
-            return res.status(404).send("Scheduled class not found");
+    if (data.rowCount === 0)
+      return res.status(404).send("Scheduled class not found");
 
-        res.status(200).json(keysToCamel(data));
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  });
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+scheduledClassesRouter.delete("/:classId", async (req, res) => {
+  try {
+    const { classId } = req.params;
+
+    const result = await db.query(
+      `DELETE FROM scheduled_classes 
+       WHERE class_id = $1
+       RETURNING *;`,
+      [classId]
+    );
+
+    res.status(200).json({
+      message: `Deleted ${result.length} scheduled classes for class ID ${classId}`,
+      deleted: keysToCamel(result),
+    });
+  } catch (err) {
+    console.error("Error deleting scheduled classes:", err);
+    res.status(500).send(err.message);
+  }
+});
 
 export { scheduledClassesRouter };

@@ -244,6 +244,24 @@ classesRouter.get("/search/:name", async (req, res) => {
   }
 });
 
+classesRouter.get("/series/:seriesId", async (req, res) => {
+  try {
+    const { seriesId } = req.params;
+    const data = await db.query(
+      `SELECT c.*, sc.date, sc.start_time, sc.end_time
+       FROM classes c
+       LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+       WHERE c.series_id = $1
+       ORDER BY sc.date ASC;`,
+      [seriesId]
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 classesRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -267,27 +285,71 @@ classesRouter.get("/", async (req, res) => {
 
 classesRouter.post("/", async (req, res) => {
   try {
-    console.log(req.body);
-    const { title, description, location, capacity, level, costume, isDraft } =
-      req.body;
+    const {
+      title,
+      description,
+      location,
+      capacity,
+      level,
+      date,
+      costume = "No costume required",
+      isDraft = false,
+      is_recurring = false,
+      recurrence_pattern = "none",
+      start_date,
+      end_date,
+    } = req.body;
+
     const data = await db.query(
       `
-        INSERT INTO classes (title, description, location, capacity, level, costume, is_draft)
-        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;`,
-      [title, description, location, capacity, level, costume, isDraft]
+      INSERT INTO classes (title, description, location, capacity, level, costume, is_draft, is_recurring, recurrence_pattern, start_date, end_date)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;`,
+      [
+        title,
+        description,
+        location,
+        capacity,
+        level,
+        costume,
+        isDraft,
+        is_recurring,
+        recurrence_pattern,
+        start_date || date,
+        end_date || date,
+      ]
     );
 
-    res.status(200).json(keysToCamel(data));
+    res.status(201).json(keysToCamel(data));
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
-
+classesRouter.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await db.query(`DELETE FROM classes WHERE id = $1;`, [id]);
+    res.status(200).json(keysToCamel({ success: true }));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 classesRouter.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, location, capacity, level, costume, isDraft } =
-      req.body;
+    const {
+      title,
+      description,
+      location,
+      capacity,
+      level,
+      costume,
+      isDraft,
+      is_recurring,
+      recurrence_pattern,
+      seriesId,
+      start_date,
+      end_date,
+    } = req.body;
 
     const query = `UPDATE CLASSES SET
     title = COALESCE($1, title),
@@ -296,8 +358,13 @@ classesRouter.put("/:id", async (req, res) => {
     capacity = COALESCE($4, capacity),
     level = COALESCE($5, level),
     costume = COALESCE($6, costume),
-    is_draft = COALESCE($7, is_draft)
-    WHERE id = $8 RETURNING *;`;
+    is_draft = COALESCE($7, is_draft),
+    is_recurring = COALESCE($8, is_recurring),
+    recurrence_pattern = COALESCE($9, recurrence_pattern),
+    series_id = COALESCE($10, series_id),
+    start_date = COALESCE($11, start_date),
+    end_date = COALESCE($12, end_date)
+    WHERE id = $13 RETURNING *;`;
 
     const data = await db.query(query, [
       title,
@@ -307,6 +374,11 @@ classesRouter.put("/:id", async (req, res) => {
       level,
       costume,
       isDraft,
+      is_recurring,
+      recurrence_pattern,
+      seriesId,
+      start_date,
+      end_date,
       id,
     ]);
 
