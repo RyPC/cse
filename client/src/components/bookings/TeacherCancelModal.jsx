@@ -1,14 +1,43 @@
-import { Text, Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Flex } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+} from "@chakra-ui/react";
 
-export const TeacherCancelModal = ({ isOpen, onClose, setCurrentModal, classData }) => {
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+
+export const TeacherCancelModal = ({
+  isOpen,
+  onClose,
+  setCurrentModal,
+  classData,
+}) => {
+  const { backend } = useBackendContext();
+
   const onGoBack = () => {
     setCurrentModal("view");
   };
-  const onConfirm = () => {
-    setCurrentModal("confirmation");
+  const onConfirm = async () => {
+    try {
+      await backend.delete(`/scheduled-classes/${classData.id}`);
+      await backend.delete(`/classes/${classData.id}`);
+      setCurrentModal("confirmation");
+    } catch (error) {
+      console.error("Error deleting class:", error);
+    }
   };
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign="center">Delete class?</ModalHeader>
@@ -29,6 +58,5 @@ export const TeacherCancelModal = ({ isOpen, onClose, setCurrentModal, classData
         </ModalFooter>
       </ModalContent>
     </Modal>
-
   );
 };

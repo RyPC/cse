@@ -1,18 +1,19 @@
-import { useState, useRef, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
   Select, Text, IconButton, FormControl, FormLabel, Textarea ,   useToast,
 } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
-import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { calculateRecurringDates } from "../../utils/formatDateTime";
 
 const stringToDate = (dateString) => {
   // Split string and convert to numbers
   const [year, month, day] = dateString.split("-").map(Number);
   return new Date(year, month - 1, day);
-}
+};
 
 const stringToTime = (timeString) => {
   const d = new Date();
@@ -23,9 +24,8 @@ const stringToTime = (timeString) => {
   // Convert to 24-hour time
   let hoursIn24 = parseInt(hours, 10);
   if (modifier === "PM" && hoursIn24 !== 12) {
-    hoursIn24+= 12;
-  }
-  else if (modifier === "AM" && hoursIn24 === 12) {
+    hoursIn24 += 12;
+  } else if (modifier === "AM" && hoursIn24 === 12) {
     hoursIn24 = 0;
   }
 
@@ -39,17 +39,21 @@ const formatDate = (date) => {
   return date.toISOString().split("T")[0]; // Extract YYYY-MM-DD
 };
 
-export const TeacherEditModal = ({ 
-  isOpen, 
-  onClose, 
-  setCurrentModal, 
-  classData, setClassData, 
-  performances, 
+export const TeacherEditModal = ({
+  isOpen,
+  onClose,
+  setCurrentModal,
+  classData,
+  setClassData,
+  performances,
   setRefresh,
-  coreqId
+  coreqId,
 }) => {
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
+  const [recurrencePattern, setRecurrencePattern] = useState(
+    classData?.recurrencePattern ?? "none"
+  );
   const formRef = useRef(null);
   const [tags, setTags] = useState([]);
   const toast = useToast();
@@ -61,8 +65,8 @@ export const TeacherEditModal = ({
   useMemo(() => {
     if (backend) {
       backend.get("/tags").then((response) => {
-        setTags(response.data)
-      })
+        setTags(response.data);
+      });
     }
   }, [backend]);
   const onBack = () => {
@@ -78,27 +82,68 @@ export const TeacherEditModal = ({
         capacity,
         level,
         costume: null,
+        start_date: startDate,
+        end_date: endDate,
+        recurrence_pattern: recurrencePattern,
+        is_recurring: recurrencePattern !== "none",
         isDraft: draft,
       };
+      console.log(classData);
       await backend.put(`/classes/${classData.id}`, updatedData);
       console.log("Updating class", classData.id, updatedData);
       await backend.delete(`/corequisites/class/${classData.id}`);
-      await backend.put(`/corequisites/${classData.id}/${performanceId}`, updatedData);
-      console.log("Updating corequisites", classData.id, performanceId, updatedData);
-
-      if (date)
-        await backend.put(`/scheduled-classes/`,
-          { 
-            class_id: classData.id, 
-            date: date, 
-            start_time: startTime, 
-            end_time: endTime 
-          }
+      if (performanceId) {
+        await backend.put(
+          `/corequisites/${classData.id}/${performanceId}`,
+          updatedData
         );
+        console.log(
+          "Updating corequisites",
+          classData.id,
+          performanceId,
+          updatedData
+        );
+      }
+
+      if (recurrencePattern !== "none") {
+        await backend.delete(`/scheduled-classes/${classData.id}`);
+        const classDates = calculateRecurringDates(
+          stringToDate(startDate),
+          stringToDate(endDate),
+          recurrencePattern
+        );
+        console.log("classdates", classDates);
+        for (const classDate of classDates) {
+          if (classDate && startTime && endTime) {
+            const scheduledClassBody = {
+              class_id: classData.id,
+              date: classDate,
+              start_time: startTime,
+              end_time: endTime,
+            };
+            await backend
+              .post("/scheduled-classes", scheduledClassBody)
+              .then((response) =>
+                console.log("Created scheduled class:", response)
+              )
+              .catch((error) =>
+                console.log("Error creating scheduled class:", error)
+              );
+          }
+        }
+      } else {
+        if (startDate)
+          await backend.put(`/scheduled-classes/`, {
+            class_id: classData.id,
+            date: startDate,
+            start_time: startTime,
+            end_time: endTime,
+          });
+      }
       // Update classData
       setClassData((prev) => ({
         ...prev,
-        date,
+        date: startDate,
         startTime,
         endTime,
         title: classTitle,
@@ -107,25 +152,24 @@ export const TeacherEditModal = ({
         capacity,
         level,
         isDraft: draft,
-      }
-      ));
+      }));
 
       if (classType !== "") {
         await backend
           .post("/class-tags", {
             classId: classData.id,
-            tagId: classType
+            tagId: classType,
           })
-          .then(response => console.log(response))
-          .catch(err => {
-            console.error(err)
-          })
+          .then((response) => console.log(response))
+          .catch((err) => {
+            console.error(err);
+          });
       }
 
       setCurrentModal("view");
       setRefresh();
     } catch (error) {
-      console.error('Error updating class data:', error);
+      console.error("Error updating class data:", error);
     }
   };
   const onSaveAsDraft = async () => {
@@ -148,52 +192,86 @@ export const TeacherEditModal = ({
         formRef.current.reportValidity(); // stops user from submitting if date is empty
         return;
       }
-  
+
       onSave(false); // publishes, swithes is_draft to false
     }, 0);
   };
-  
 
   // input values
   const [classTitle, setClassTitle] = useState(classData?.title);
   const [location, setLocation] = useState(classData?.location);
-  const [date, setDate] = useState(classData?.date ? formatDate(classData.date) : "");
+  const [startDate, setStartDate] = useState(
+    classData?.startDate
+      ? formatDate(classData.startDate)
+      : formatDate(classData.date)
+  );
+  const [endDate, setEndDate] = useState(
+    classData?.endDate ? formatDate(classData.endDate) : ""
+  );
   const [startTime, setStartTime] = useState(classData?.startTime);
   const [endTime, setEndTime] = useState(classData?.endTime);
   const [description, setDescription] = useState(classData?.description);
   const [capacity, setCapacity] = useState(classData?.capacity);
   const [level, setLevel] = useState(classData?.level);
-  const [performanceId, setPerformanceId] = useState(coreqId)
+  const [performanceId, setPerformanceId] = useState(coreqId);
 
   const handleLocationSelect = (e) => {
     setLocation(e.target.value);
-  }
+  };
 
   const handleLevelSelect = (e) => {
     setLevel(e.target.value);
-  }
+  };
 
   const handlePerformanceSelect = (e) => {
     setPerformanceId(e.target.value);
-  }
+  };
 
   const onTitleChange = (e) => setClassTitle(e.target.value);
   const onDescriptionChange = (e) => setDescription(e.target.value);
   const onCapacityChange = (e) => setCapacity(e.target.value);
-  const onDateChange = (e) => setDate(e.target.value);
+  const onDateChange = (e) => setStartDate(e.target.value);
+  const onEndDateChage = (e) => setEndDate(e.target.value);
   const onStartTimeChange = (e) => setStartTime(e.target.value);
   const onEndTimeChange = (e) => setEndTime(e.target.value);
 
+  useEffect(() => {
+    console.log(classData);
+  }, []);
   return (
-    <Modal size="full" isOpen={isOpen} onClose={onClose}>
+    <Modal
+      size="full"
+      isOpen={isOpen}
+      onClose={onClose}
+    >
       <ModalOverlay />
       <ModalContent>
-        <Flex align="center" w="100%" position="relative">
-          <IconButton onClick={onBack} icon={<BsChevronLeft />} position="absolute" left={5} backgroundColor="white"/>
-          <ModalHeader flex={1} textAlign="center">{classData.title}</ModalHeader>
+        <Flex
+          align="center"
+          w="100%"
+          position="relative"
+        >
+          <IconButton
+            onClick={onBack}
+            icon={<BsChevronLeft />}
+            position="absolute"
+            left={5}
+            backgroundColor="white"
+          />
+          <ModalHeader
+            flex={1}
+            textAlign="center"
+          >
+            {classData.title}
+          </ModalHeader>
         </Flex>
         <ModalBody>
-          <form ref={formRef} onSubmit={(e) => e.preventDefault()}> {/* necessary for required tag on date! */}
+          <form
+            ref={formRef}
+            onSubmit={(e) => e.preventDefault()}
+          >
+            {" "}
+            {/* necessary for required tag on date! */}
             <FormControl mb={4}>
               <FormLabel>Class Title</FormLabel>
               <Input
@@ -202,7 +280,6 @@ export const TeacherEditModal = ({
                 placeholder="Enter class title..."
               />
             </FormControl>
-
             <FormControl mb={4}>
               <FormLabel>Location</FormLabel>
               <Input
@@ -211,18 +288,53 @@ export const TeacherEditModal = ({
                 placeholder="Enter location..."
               />
             </FormControl>
-
-            <FormControl mb={4} isRequired={isPublishing}>
-              <FormLabel>Date</FormLabel>
+            <FormControl
+              mb={4}
+              isRequired={isPublishing}
+            >
+              <FormLabel>Start Date</FormLabel>
               <Input
                 type="date"
-                value={date}
+                value={startDate}
                 onChange={onDateChange}
                 maxWidth="200px"
                 placeholder="Enter date..."
               />
             </FormControl>
-
+            <FormControl>
+              <FormLabel>End Date</FormLabel>
+              <Input
+                type="date"
+                required={recurrencePattern !== "none"}
+                value={endDate}
+                onChange={onEndDateChage}
+                min={startDate}
+                isDisabled={recurrencePattern === "none"}
+                maxWidth="200px"
+                bg="white"
+                color="black"
+              />
+            </FormControl>
+            <FormControl mt={4}>
+              <FormLabel>Recurrence Pattern</FormLabel>
+              <Select
+                value={recurrencePattern}
+                onChange={(e) => setRecurrencePattern(e.target.value)}
+                bg="white"
+                color="black"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
+              >
+                <option value="none">None</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-Weekly</option>
+                <option value="monthly">Monthly</option>
+              </Select>
+            </FormControl>
             <FormControl mb={4}>
               <FormLabel>Start Time</FormLabel>
               <Input
@@ -233,7 +345,6 @@ export const TeacherEditModal = ({
                 placeholder="Enter start time..."
               />
             </FormControl>
-
             <FormControl mb={4}>
               <FormLabel>End Time</FormLabel>
               <Input
@@ -244,17 +355,15 @@ export const TeacherEditModal = ({
                 placeholder="Enter end time..."
               />
             </FormControl>
-
             <FormControl mb={4}>
               <FormLabel>Description</FormLabel>
-              <Textarea 
+              <Textarea
                 height="100px"
                 value={description}
                 onChange={onDescriptionChange}
                 placeholder="Enter description..."
               />
             </FormControl>
-
             <FormControl mb={4}>
               <FormLabel>Capacity</FormLabel>
               <Input
@@ -265,7 +374,6 @@ export const TeacherEditModal = ({
                 placeholder="Enter capacity..."
               />
             </FormControl>
-
             <FormControl mb={4}>
               <FormLabel>Level</FormLabel>
               <Select
@@ -279,7 +387,6 @@ export const TeacherEditModal = ({
                 <option value="advanced">Advanced</option>
               </Select>
             </FormControl>
-
             <FormControl mb={4}>
               <FormLabel>Performances</FormLabel>
               <Select
@@ -289,13 +396,15 @@ export const TeacherEditModal = ({
                 onChange={handlePerformanceSelect}
               >
                 {performances.map((performance) => (
-                  <option key={performance.id} value={performance.id}>
+                  <option
+                    key={performance.id}
+                    value={performance.id}
+                  >
                     {performance.title}
                   </option>
                 ))}
               </Select>
             </FormControl>
-
           </form>
         </ModalBody>
 
@@ -313,4 +422,3 @@ export const TeacherEditModal = ({
     </Modal>
   );
 };
-

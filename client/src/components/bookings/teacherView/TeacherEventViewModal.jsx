@@ -260,11 +260,15 @@ function TeacherEventViewModal({
                   <Heading size="lg">{title ? title : "N/A"}</Heading>
                   <Menu>
                     <MenuButton as={IconButton} icon={<MdMoreHoriz />}/>
-                    <MenuList>
-                      <MenuItem onClick={handleEditEvent}> <BiSolidEdit />
-                        Edit</MenuItem>
-                      <MenuItem onClick={handleDeleteEvent}><FaRegTrashCan />
-                      Delete</MenuItem>
+                    <MenuList
+                      backgroundColor="gray.100"
+                      p={0}
+                      minW="auto"
+                      w="110px" 
+                      h="80px"
+                      >
+                      <MenuItem background='transparent' fontSize="md" onClick={handleEditEvent}><BiSolidEdit />Edit</MenuItem>
+                      <MenuItem background='transparent' fontSize="md" onClick={handleDeleteEvent}><FaRegTrashCan />Delete</MenuItem>
                     </MenuList>
                   </Menu>
               </HStack>
