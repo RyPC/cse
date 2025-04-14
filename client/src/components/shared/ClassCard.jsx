@@ -115,7 +115,7 @@ export const ClassCard = ({
               variant="solid"
               size="sm"
               bg="#422E8D"
-              color="#FFFFFF"
+              color="white"
               _hover={{ bg: "gray.700" }}
               mt={2}
               onClick={() => {

@@ -1,6 +1,22 @@
-import React from 'react';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Stack, Text, Badge, Box, Icon } from '@chakra-ui/react';
-import { useDisclosure } from '@chakra-ui/react';
+import React from "react";
+
+import {
+  Badge,
+  Box,
+  Button,
+  Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stack,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react";
+
 import { TbCapsuleHorizontal } from "react-icons/tb";
 
 import { LevelCard } from "../resources/LevelCard";
@@ -17,12 +33,19 @@ const ClassInfoModal = (props) => {
     };
     const numPebbles = levels[level] || 0;
     return (
-      <Stack direction="row" spacing={2}>
+      <Stack
+        direction="row"
+        spacing={2}
+      >
         {[...Array(3)].map((_, index) => (
           <Icon
             key={index}
             as={TbCapsuleHorizontal}
-            color={index < numPebbles ? ['green.500', 'yellow.500', 'red.500'][numPebbles-1] : 'gray.300'}
+            color={
+              index < numPebbles
+                ? ["green.500", "yellow.500", "red.500"][numPebbles - 1]
+                : "gray.300"
+            }
             boxSize={6}
           />
         ))}
@@ -34,7 +57,10 @@ const ClassInfoModal = (props) => {
     <>
       <Button onClick={onOpen}>Open Class Info Modal</Button>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -44,32 +70,54 @@ const ClassInfoModal = (props) => {
 
           <ModalBody>
             <Box p={5}>
-              <Text fontSize="md" color="gray.600" mb={4}>
+              <Text
+                fontSize="md"
+                color="gray.600"
+                mb={4}
+              >
                 {description}
               </Text>
 
               <Box mb={4}>
-                <Text fontSize="sm" color="gray.500" mb={2}>
+                <Text
+                  fontSize="sm"
+                  color="gray.500"
+                  mb={2}
+                >
                   <strong>Difficulty:</strong>
                 </Text>
                 {renderDifficultyMeter(level)}
               </Box>
 
-              <Stack direction="column" spacing={3}>
-                <Text fontSize="sm" color="gray.500">
+              <Stack
+                direction="column"
+                spacing={3}
+              >
+                <Text
+                  fontSize="sm"
+                  color="gray.500"
+                >
                   <strong>Location:</strong> {location}
                 </Text>
 
-                <Text fontSize="sm" color="gray.500">
+                <Text
+                  fontSize="sm"
+                  color="gray.500"
+                >
                   <strong>Capacity:</strong> {capacity}
                 </Text>
 
-                <Text fontSize="sm" color="gray.500">
-                  <strong>Level:</strong>{' '}
-                  <LevelCard level={level} />
+                <Text
+                  fontSize="sm"
+                  color="gray.500"
+                >
+                  <strong>Level:</strong> <LevelCard level={level} />
                 </Text>
 
-                <Text fontSize="sm" color="gray.500">
+                <Text
+                  fontSize="sm"
+                  color="gray.500"
+                >
                   <strong>Costume:</strong> {costume}
                 </Text>
               </Stack>
@@ -87,4 +135,3 @@ const ClassInfoModal = (props) => {
 };
 
 export default ClassInfoModal;
-

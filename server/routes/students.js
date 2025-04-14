@@ -27,6 +27,19 @@ studentsRouter.get("/firebase/:firebaseUid", async (req, res) => {
   }
 });
 
+studentsRouter.get("/count", async (req, res) => {
+  try {
+    const students = await db.query(
+      `SELECT COUNT(*)
+       FROM students`
+    );
+
+    res.status(200).json(keysToCamel(students));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 studentsRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;

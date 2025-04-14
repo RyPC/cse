@@ -9,6 +9,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   Heading,
+  Image,
   Input,
   Stack,
   useToast,
@@ -79,7 +80,7 @@ export const Login = () => {
 
         if (teacher) {
             if (teacher.isActivated) {
-                navigate('/discovery');
+                navigate('/bookings');
             }
             else {
                 navigate('/teacher-signup/pending');
