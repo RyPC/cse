@@ -26,6 +26,26 @@ classesRouter.get("/scheduled", async (req, res) => {
   }
 });
 
+classesRouter.get("/scheduled/:id/:date", async (req, res) => {
+  try {
+    const { id, date } = req.params;
+    const data = await db.query(
+      `SELECT
+        c.*,
+        sc.date,
+        sc.start_time,
+        sc.end_time
+      FROM classes c
+      JOIN scheduled_classes sc ON c.id = sc.class_id
+      WHERE c.id = $1 AND sc.date = $2;`,
+      [id, date]
+    );
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 classesRouter.get("/students/teacher/:id", async (req, res) => {
   try {
     const teacherId = req.params.id;
