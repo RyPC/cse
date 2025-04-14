@@ -8,6 +8,9 @@ import {
 
 import { Admin } from "./components/admin/Admin";
 import { Bookings } from "./components/bookings/Bookings";
+import { CheckInHandler } from "./components/bookings/teacherView/qrcode/CheckInHandler";
+import { ClassCheckInHandler } from "./components/bookings/teacherView/qrcode/ClassCheckInHandler";
+import { EventCheckInHandler } from "./components/bookings/teacherView/qrcode/EventCheckInHandler";
 import { CatchAll } from "./components/CatchAll";
 import ClassDashboard, {
   OverallClassDashboard,
@@ -22,22 +25,19 @@ import { TeacherInfoDashboard } from "./components/dashboard/teacherInfoDashboar
 import { Discovery } from "./components/discovery/Discovery";
 import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
+import { L } from "./components/logout/Logout";
 import { Playground } from "./components/playground/Playground";
 import { Profile } from "./components/profile/Profile";
+import { Settings } from "./components/profile/Settings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { CheckInHandler } from "./components/bookings/teacherView/qrcode/CheckInHandler";
-import { ClassCheckInHandler } from "./components/bookings/teacherView/qrcode/ClassCheckInHandler";
-import { EventCheckInHandler } from "./components/bookings/teacherView/qrcode/EventCheckInHandler";
 import { Resources } from "./components/resources/Resources";
 import { Reviews } from "./components/reviews/Reviews";
-import { Settings } from "./components/profile/Settings";
 import { Signup } from "./components/signup/Signup";
+import Request from "./components/teacher-signup/requests/Request";
 import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
-import Request from "./components/teacher-signup/requests/Request";
-import { L } from "./components/logout/Logout";
 
 const App = () => {
   return (
@@ -93,7 +93,7 @@ const App = () => {
                       element={<OverallClassDashboard />}
                     />
                     <Route
-                      path=":classId"
+                      path=":classId/:classDate"
                       element={<ClassInfoDashboard />}
                     />
                   </Route>
@@ -177,18 +177,17 @@ const App = () => {
                   element={<ProtectedRoute element={<CatchAll />} />}
                 />
                 <Route
-                  path = "/teacher-signup/request"
-                  element = {<ProtectedRoute element = {<Request />} />}
+                  path="/teacher-signup/request"
+                  element={<ProtectedRoute element={<Request />} />}
                 />
                 <Route
-                  path = "/teacher-signup/pending"
-                  element = {<ProtectedRoute element = {<Request />} />}
+                  path="/teacher-signup/pending"
+                  element={<ProtectedRoute element={<Request />} />}
                 />
                 <Route
-                  path = "/logout"
-                  element = {<L/>}
-                  >
-                </Route>
+                  path="/logout"
+                  element={<L />}
+                ></Route>
               </Routes>
             </Router>
           </RoleProvider>
