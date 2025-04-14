@@ -32,6 +32,15 @@ export const Resources = () => {
     }));
   };
 
+  const handleAddButtonClick = () => {
+    console.log('Add button clicked!');
+
+    setShowModal(false);
+    setTimeout(() => {
+      setShowModal(true);
+    }, 0);
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -164,7 +173,7 @@ export const Resources = () => {
         </Flex>
 
       </Box>
-      <UploadComponent />
+      {/* <UploadComponent /> */}
     </Flex>
       {role === "teacher" && 
         <IconButton
