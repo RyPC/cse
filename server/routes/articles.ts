@@ -19,6 +19,23 @@ interface ArticleRequest {
   media_url?: string;
 }
 
+articlesRouter.get("/with-tags", async (req, res) => {
+    try {
+      const data = await db.query(`
+        SELECT a.id, a.s3_url, a.description, a.media_url, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+        FROM articles a
+          LEFT JOIN article_tags av ON av.article_id = a.id
+          LEFT JOIN tags t ON t.id = av.tag_id
+        GROUP BY a.id, a.s3_url, a.description, a.media_url
+        ORDER BY a.id;
+      `);
+  
+      res.status(200).json(keysToCamel(data));
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+});
+
 // GET /articles/:id
 articlesRouter.get("/:id", async (req, res) => {
   try {

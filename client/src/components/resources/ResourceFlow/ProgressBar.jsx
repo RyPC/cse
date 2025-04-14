@@ -13,7 +13,6 @@ import {
     Progress
 } from '@chakra-ui/react'
 
-
 export const ProgressBar = ({currStep}) => {
     const steps = [
         { title: '1st', description: 'Select Class' },
@@ -35,7 +34,7 @@ export const ProgressBar = ({currStep}) => {
   
     return (
       <Box position='relative'>
-        <Stepper size='sm' index={activeStep} gap='0'>
+        <Stepper size='sm' index={activeStep} gap='0' colorScheme="purple" sx={{ "--chakra-colors-purple-500": "#422E8D"}}>
           {steps.map((step, index) => (
             <Step key={index} gap='0'>
               <StepIndicator bg='white'>
@@ -50,7 +49,9 @@ export const ProgressBar = ({currStep}) => {
           height='3px'
           width='full'
           top='10px'
-          zIndex={-1}
+          zIndex={-1} 
+          colorScheme="purple"
+          sx={{"--chakra-colors-purple-500": "#422E8D"}}
         />
       </Box>
     )

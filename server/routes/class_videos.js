@@ -5,11 +5,9 @@ import { db } from "../db/db-pgp";
 const classVideosRouter = express.Router();
 classVideosRouter.use(express.json());
 
-classVideosRouter.get("/:id", async (req, res) => {
+classVideosRouter.get("/", async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const data = await db.query(`SELECT * FROM class_videos WHERE id = $1`, [id]);
+    const data = await db.query(`SELECT * FROM class_videos;`);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
@@ -17,9 +15,48 @@ classVideosRouter.get("/:id", async (req, res) => {
   }
 });
 
-classVideosRouter.get("/", async (req, res) => {
+classVideosRouter.get("/with-tags", async (req, res) => {
   try {
-    const data = await db.query(`SELECT * FROM class_videos;`);
+    const data = await db.query(`
+      SELECT c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, cs.title AS class_title, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+      FROM class_videos c
+        LEFT JOIN video_tags v ON v.video_id = c.id
+        LEFT JOIN tags t ON t.id = v.tag_id
+        LEFT JOIN classes cs ON cs.id = c.class_id
+      GROUP BY c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, cs.title
+      ORDER BY c.id;
+    `);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+classVideosRouter.get("/with-tags/search/:name", async (req, res) => {
+    try {
+      const { name } = req.params;  
+      const data = await db.query(`
+        SELECT c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+        FROM class_videos c
+          LEFT JOIN video_tags v ON v.video_id = c.id
+          LEFT JOIN tags t ON t.id = v.tag_id
+        WHERE title ILIKE $1
+        GROUP BY c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id
+        ORDER BY c.id;
+      `, [`%${name}%`]);
+  
+      res.status(200).json(keysToCamel(data));
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+});
+
+classVideosRouter.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const data = await db.query(`SELECT * FROM class_videos WHERE id = $1`, [id]);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
