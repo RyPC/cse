@@ -22,7 +22,7 @@ import {
   Text,
   useDisclosure,
   VStack,
-  Input,
+  Input
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -66,6 +66,7 @@ export const Bookings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
+  const [searchInput, setSearchInput] = useState("");
 
   const [refresh, setRefresh] = useState(0);
 
@@ -251,8 +252,8 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-      backend.get(`/events/published`).then((res) => setEvents(res.data));
-      backend.get(`/classes/published`).then((res) => {
+      backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
+      backend.get(`/classes/search/${searchInput}`).then((res) => {
         setClasses(res.data);
       });
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
@@ -267,6 +268,39 @@ export const Bookings = () => {
       console.error("Error reloading classes:", error);
     }
   };
+
+  const reloadClasses = async () => {
+    if (searchInput) {
+      backend.get(`/classes/search/${searchInput}`).then((res) => {
+        setClasses(res.data);
+      });
+    } else {
+      backend.get(`/classes/published`).then((res) => {
+        setClasses(res.data);
+      });
+    }
+
+    const attendedClasses = classes.filter((c) => c.attendance !== null);
+    const attendedEvents = events.filter((e) => e.attendance !== null);
+    setAttended([...attendedClasses, ...attendedEvents]);
+    loadCorequisites(selectedCard.id);
+  }
+
+  const reloadEvents = async () => {
+    if (searchInput) {
+      backend.get(`/events/search/${searchInput}`).then((res) => {
+        setEvents(res.data);
+      });
+    } else {
+      backend.get(`/events/published`).then((res) => {
+        setEvents(res.data);
+      });
+    }
+    const attendedClasses = classes.filter((c) => c.attendance !== null);
+    const attendedEvents = events.filter((e) => e.attendance !== null);
+    setAttended([...attendedClasses, ...attendedEvents]);
+    loadCorequisites(selectedCard.id);
+  }
 
   // useEffect(() => {
   //   console.log("selectedCard", selectedCard);
@@ -326,12 +360,31 @@ export const Bookings = () => {
     return d;
   };
 
+  const handleKeyDown = async (e) => {
+    if (e.key === "Enter") {
+      if (tabIndex === 0) {
+        await reloadClasses();
+      } else if (tabIndex === 1) {
+        await reloadEvents();
+      }
+    }
+  };
+
   // console.log("draft classes", draftClasses);
   // console.log("events", events);
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
   return (
     <Box  pt={2}>
+      <VStack
+        spacing={8}>
+        <Input
+              placeholder="Search bar"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+          />
+      </VStack>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
@@ -353,7 +406,7 @@ export const Bookings = () => {
           width="100%"
           variant="line"
           colorScheme="blackAlpha"
-          
+
           onChange={(index) => setTabIndex(index)}
         >
           <TabList justifyContent="center">
@@ -625,11 +678,11 @@ export const Bookings = () => {
           _hover={{ bg: "blue.700" }}
           fontSize="4xl"
           zIndex={999}
-          
+
         >
           <MdAdd size={40} />
 
-          
+
         </Button>
       )}
       <Navbar />

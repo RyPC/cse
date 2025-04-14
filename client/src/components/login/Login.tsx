@@ -90,7 +90,7 @@ export const Login = () => {
             localStorage.removeItem("qrcode_redirect");
             navigate(qrCodeRedirect);
           } else {
-            navigate('/discovery');
+            navigate('/bookings');
           }
         }
 
