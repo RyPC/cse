@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from "react";
+import { MdAdd } from "react-icons/md";
 
 import {
   Box,
@@ -21,6 +22,7 @@ import {
   Text,
   useDisclosure,
   VStack,
+  Input,
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -329,16 +331,29 @@ export const Bookings = () => {
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
   return (
-    <Box>
+    <Box  pt={2}>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
+        <Box px={4} width="100%" pt={4}>
+        <Input
+
+          placeholder="Search"
+          variant="filled"
+          borderRadius="full"
+          borderColor={"gray.300"}
+          bg="white.100"
+          _hover={{ bg: "gray.200" }}
+          _focus={{ bg: "white", borderColor: "gray.300" }}
+        />
+        </Box>
+
         <Tabs
           width="100%"
           variant="line"
           colorScheme="blackAlpha"
-          pt={8}
+          
           onChange={(index) => setTabIndex(index)}
         >
           <TabList justifyContent="center">
@@ -600,17 +615,21 @@ export const Bookings = () => {
             onOpen();
           }}
           position="fixed"
-          bottom="160px"
-          right="50px"
+          bottom="90px"
+          right="20px"
           borderRadius="50%"
-          width="60px"
-          height="60px"
-          bg="blue.500"
+          width="66px"
+          height="66px"
+          bg="#422E8D"
           color="white"
           _hover={{ bg: "blue.700" }}
-          fontSize="2xl"
+          fontSize="4xl"
+          zIndex={999}
+          
         >
-          +
+          <MdAdd size={40} />
+
+          
         </Button>
       )}
       <Navbar />
@@ -656,7 +675,7 @@ const ClassTeacherCard = memo(
         </CardHeader>
         <CardBody>
           <VStack
-            ign="stretch"
+            align="stretch"
             spacing={2}
           >
             <HStack>
@@ -683,8 +702,8 @@ const ClassTeacherCard = memo(
               alignSelf="flex-end"
               variant="solid"
               size="sm"
-              bg="gray.500"
-              color="black"
+              bg="#422E8D"
+              color="white"
               _hover={{ bg: "gray.700" }}
               mt={2}
               onClick={

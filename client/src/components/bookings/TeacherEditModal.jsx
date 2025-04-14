@@ -1,21 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import {
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  IconButton,
-  Input,
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Select,
-  Text,
-  Textarea,
+import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
+  Select, Text, IconButton, FormControl, FormLabel, Textarea ,   useToast,
 } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
@@ -70,7 +56,11 @@ export const TeacherEditModal = ({
   );
   const formRef = useRef(null);
   const [tags, setTags] = useState([]);
-  const [classType, setClassType] = useState(classData?.classType ?? "1");
+  const toast = useToast();
+
+  const [classType, setClassType] = useState(
+    classData?.classType ?? "1"
+  );
 
   useMemo(() => {
     if (backend) {
@@ -187,7 +177,15 @@ export const TeacherEditModal = ({
   };
   const onPublish = async () => {
     setIsPublishing(true);
+    toast({
+      title: "Changes saved successfully.",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+      colorScheme: "purple",
 
+    });
     // defer validation for isPublishing to update
     setTimeout(() => {
       if (formRef.current && !formRef.current.checkValidity()) {
@@ -411,22 +409,11 @@ export const TeacherEditModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Flex
-            justifyContent="center"
-            w="100%"
-            gap={3}
-          >
-            <Button
-              flex="1"
-              onClick={onSaveAsDraft}
-            >
-              Save as Draft
+          <Flex justifyContent="center" w="100%" gap={3}>
+            <Button flex="1" onClick={onSaveAsDraft}>
+              Save Draft
             </Button>
-            <Button
-              colorScheme="blue"
-              flex="1"
-              onClick={onPublish}
-            >
+            <Button bg= "#422E8D"  color = "white" flex="1" onClick={onPublish}>
               Publish
             </Button>
           </Flex>

@@ -17,8 +17,10 @@ import {
   Text,
   useDisclosure,
   VStack,
+  HStack
 } from "@chakra-ui/react";
-
+import { BiSolidEdit, BiTrash } from "react-icons/bi";
+import { FaRegTrashCan } from "react-icons/fa6";
 import { BsChevronLeft } from "react-icons/bs";
 import { formatDate } from "../../utils/formatDateTime";
 import { useState, useEffect } from "react";
@@ -116,52 +118,34 @@ export const TeacherViewModal = ({
               ...
             </MenuButton>
             <MenuList
-              backgroundColor="rgba(0, 0, 0, 0.7)"
-              color="white"
-              borderRadius="8px"
-              padding="4px"
+              backgroundColor="gray.100"
+              p={0}
+              minW="auto"
+              w="110px" 
+              h="80px"
             >
               <MenuItem
                 value="edit"
                 onClick={enterEditMode}
                 background="transparent"
+                
+                
               >
-                Edit
+                <BiSolidEdit style={{ marginRight: "6px" }} />Edit
               </MenuItem>
               <MenuItem
                 value="delete"
                 onClick={onCancel}
                 background="transparent"
+                
               >
-                Delete
+                <BiTrash style={{ marginRight: "6px" }} />Delete
               </MenuItem>
             </MenuList>
           </Menu>
         </Flex>
         <ModalBody>
-          <Flex
-            gap="40"
-            justify="center"
-          >
-            <div>
-              <Text
-                fontWeight="bold"
-                mb="1rem"
-              >
-                Location
-              </Text>
-              <Text>{classData?.location}</Text>
-            </div>
-            <div>
-              <Text
-                fontWeight="bold"
-                mb="1rem"
-              >
-                Date
-              </Text>
-              <Text>{formatDate(classData?.date)}</Text>
-            </div>
-          </Flex>
+          
           <VStack>
             <Box
               bg="gray.200"
@@ -213,6 +197,17 @@ export const TeacherViewModal = ({
               </Box>
             </Box>
           </VStack>
+
+          <HStack width="100%" justify="space-between" align="start" mt={4}>
+            <Box>
+              <Text fontWeight="bold" mb="0.5rem">Location</Text>
+              <Text>{classData?.location}</Text>
+            </Box>
+            <Box>
+              <Text fontWeight="bold" mb="0.5rem">Date</Text>
+              <Text>{formatDate(classData?.date)}</Text>
+            </Box>
+          </HStack>
           <Box>
             <Text
               fontWeight="bold"
@@ -249,29 +244,16 @@ export const TeacherViewModal = ({
             </Text>
             <Text>{classData?.description}</Text>
           </Box>
-          <Flex
-            gap="40"
-            justify="center"
-          >
-            <div>
-              <Text
-                fontWeight="bold"
-                mb="1rem"
-              >
-                Capacity
-              </Text>
-              <Text>{classData?.capacity}</Text>
-            </div>
-            <div>
-              <Text
-                fontWeight="bold"
-                mb="1rem"
-              >
-                Level
-              </Text>
-              <Text>{classData?.level}</Text>
-            </div>
-          </Flex>
+          <HStack width="100%" justify="space-between" align="start" mt={6}>
+          <Box>
+            <Text fontWeight="bold" mb="0.5rem">Capacity</Text>
+            <Text>{classData?.capacity}</Text>
+          </Box>
+          <Box>
+            <Text fontWeight="bold" mb="0.5rem">Level</Text>
+            <Text>{classData?.level}</Text>
+          </Box>
+        </HStack>
           <Box>
             <Text
               fontWeight="bold"

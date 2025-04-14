@@ -40,33 +40,19 @@ export const TeacherCancelModal = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader textAlign="center">
-          Are you sure you want to delete this class?
-        </ModalHeader>
+        <ModalHeader textAlign="center">Delete class?</ModalHeader>
         <ModalCloseButton />
         <ModalBody textAlign="center">
-          <Text>You are deleting {classData.title}.</Text>
-          <Text>This action can't be undone.</Text>
+          <Text>You are deleting {classData.title}. This action can't be undone.</Text>
         </ModalBody>
 
         <ModalFooter>
-          <Flex
-            justifyContent="center"
-            w="100%"
-          >
-            <Button
-              backgroundColor="#D9D9D9"
-              mr={3}
-              onClick={onGoBack}
-            >
-              <Text>Close</Text>
+          <Flex justifyContent="center" w="100%">
+            <Button backgroundColor="#D9D9D9" mr={3} w= "100px" onClick={onGoBack}>
+            <Text>Cancel</Text>
             </Button>
-            <Button
-              backgroundColor="#D9D9D9"
-              mr={3}
-              onClick={onConfirm}
-            >
-              <Text fontWeight="bold">Delete</Text>
+            <Button bg="#422E8D" mr={3} w= "100px" onClick={onConfirm}>
+              <Text fontWeight="bold" color="white">Delete</Text>
             </Button>
           </Flex>
         </ModalFooter>
