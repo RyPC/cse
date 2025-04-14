@@ -6,24 +6,46 @@ import { db } from "../db/db-pgp"; // TODO: replace this db with
 const classEnrollmentsRouter = express.Router();
 classEnrollmentsRouter.use(express.json());
 
-
-
 // test
 classEnrollmentsRouter.get("/test", async (req, res) => {
   const { student_id, class_id, attendance } = req.query;
 
   try {
     const result = await db.query(
-      'SELECT * FROM class_enrollments WHERE student_id = $1 AND class_id = $2 AND attendance = $3',
+      "SELECT * FROM class_enrollments WHERE student_id = $1 AND class_id = $2 AND attendance = $3",
       [student_id, class_id, attendance]
-    )
+    );
 
     const exists = result.length > 0;
-    res.status(200).send({exists});
+    res.status(200).send({ exists });
   } catch (err) {
     res.status(500).send(err.message);
   }
-})
+});
+
+classEnrollmentsRouter.get("/student-class-count", async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT student_id as id, COUNT(*) FROM class_enrollments GROUP BY student_id`
+    );
+
+    res.status(200).json(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+classEnrollmentsRouter.get("/statistics", async (req, res) => {
+  try {
+    const result = await db.query(
+      `SELECT EXTRACT(MONTH FROM attendance) AS month, COUNT(*) FROM class_enrollments 
+       WHERE EXTRACT(MONTH FROM attendance) IS NOT NULL GROUP BY month ORDER BY month ASC;`
+    );
+    res.status(200).send(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 classEnrollmentsRouter.get("/:id", async (req, res) => {
   try {
@@ -72,13 +94,11 @@ classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
   }
 });
 
-classEnrollmentsRouter.get(
-  "/class/:class_id/:date",
-  async (req, res) => {
-    try {
-      const { class_id, date} = req.params;
-      const result = await db.query(
-        ` 
+classEnrollmentsRouter.get("/class/:class_id/:date", async (req, res) => {
+  try {
+    const { class_id, date } = req.params;
+    const result = await db.query(
+      ` 
         SELECT 
             u.first_name, 
             u.last_name, 
@@ -91,16 +111,15 @@ classEnrollmentsRouter.get(
         WHERE c.id = $1 AND (ce.attendance = $2 OR ce.attendance IS NULL)
         GROUP BY u.first_name, u.last_name, u.email;
 
-        `, [class_id, date]
-      );
-      
-      res.status(200).send(keysToCamel(result));
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  }
+        `,
+      [class_id, date]
+    );
 
-);
+    res.status(200).send(keysToCamel(result));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 classEnrollmentsRouter.get(
   "/teacher/:teacher_id/:class_id",
@@ -176,6 +195,5 @@ classEnrollmentsRouter.delete("/:student_id/:class_id", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
 
 export { classEnrollmentsRouter };

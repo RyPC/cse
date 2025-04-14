@@ -135,9 +135,9 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
       spacing={4}
       align="stretch"
     >
-      {!eventId ? (<Text>New Event</Text>) : ""}
+      {!eventId ? (<Text></Text>) : ""}
       <Box>
-        <Text>Title</Text>
+        <Text >Event Title</Text>
         <Input
           name="title"
           value={formData.title}
@@ -223,16 +223,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
       </Box>
 
       <Box>
-        <Text>Capacity</Text>
-        <Input
-          type="number"
-          name="capacity"
-          value={formData.capacity}
-          onChange={handleChange}
-        />
-      </Box>
-
-      <Box>
         <Text>Description</Text>
         <Textarea
           name="description"
@@ -244,6 +234,18 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
           <Text color="red.500">{errors.description}</Text>
         )}
       </Box>
+
+      <Box>
+        <Text>Capacity</Text>
+        <Input
+          type="number"
+          name="capacity"
+          value={formData.capacity}
+          onChange={handleChange}
+        />
+      </Box>
+
+      
 
       <Box>
         <Text>Costume</Text>
@@ -266,7 +268,9 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         <Button
             onClick={() => handleSubmit(false)} // false = publish
             isLoading={isSubmitting}
-            colorScheme="blue"
+            bg="#422E8D"
+            color="white"
+
             flex="1"
         >
             Publish

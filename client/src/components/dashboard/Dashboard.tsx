@@ -5,6 +5,7 @@ import {
   Button,
   Flex,
   Heading,
+  HStack,
   Icon,
   Image,
   Text,
@@ -13,12 +14,19 @@ import {
 } from "@chakra-ui/react";
 
 import { Outlet, useNavigate } from "react-router-dom";
+import { ResponsiveContainer, Line, LineChart, XAxis, YAxis } from "recharts";
 
+import cseLogo from "../../components/dashboard/cseLogo.png";
+import classesIcon from "../../components/dashboard/sidebarImgs/classes.svg";
+import dashboardIcon from "../../components/dashboard/sidebarImgs/dashboard.svg";
+import settingsIcon from "../../components/dashboard/sidebarImgs/settings.svg";
+import studentsIcon from "../../components/dashboard/sidebarImgs/students.svg";
+import teachersIcon from "../../components/dashboard/sidebarImgs/teachers.svg";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
-import { Class } from "../../types/class";
-import { User } from "../../types/user";
+import { Attendance } from "../../types/attendance";
+import { Class } from "../../types/legacy/class";
 import { NotificationPanel } from "./NotificationPanel";
 
 interface StatCardProps {
@@ -28,10 +36,16 @@ interface StatCardProps {
   value: string | number;
 }
 
+
+const monthLabels = [
+  "Jan","Feb","Mar","Apr",
+  "May","June","July","Aug",
+  "Sep","Oct","Nov","Dec"
+];
+
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
   return (
     <Flex
-      bg="gray.100"
       p={4}
       borderRadius="md"
       shadow="md"
@@ -40,14 +54,19 @@ export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
       w={["100%", "30%"]} // Responsive width
       mb={[4, 0]} // Margin bottom for mobile
     >
-      <Icon
+      {/* <Icon
         as="circle"
         boxSize="50px"
         color={iconColor}
         mr={4}
-      />
+      /> */}
       <Flex direction="column">
-        <Text color="black">{label}</Text>
+        <Text 
+          fontSize="xl"
+          color="black"
+        >
+          {label}
+        </Text>
         <Text
           fontSize="3xl"
           fontWeight="bold"
@@ -65,7 +84,7 @@ export const Dashboard = () => {
     <Flex>
       <Sidebar />
       <Box
-        ml="200px"
+        ml="250px"
         p={5}
         w="100%"
       >
@@ -80,20 +99,32 @@ export const DashboardHome = () => {
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
 
-  const [users, setUsers] = useState<User[] | undefined>();
+  const [students, setStudents] = useState(0);
   const [classes, setClasses] = useState<Class[] | undefined>();
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const usersResponse = await backend.get("/users");
-        setUsers(usersResponse.data);
+        const studentResponse = await backend.get("/students/count");
+        setStudents(Number(studentResponse.data[0].count));
 
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
+
+        const attendanceResponse = await backend.get("/class-enrollments/statistics"); 
+        const data = attendanceResponse.data;
+        const graphInfo: Attendance[] = monthLabels.map((label) => {
+          const found = data.find((elem) => Number(elem.month) === (monthLabels.indexOf(label) +1));
+          return found ? { month: monthLabels[Number(found.month)-1], count: Number(found.count)} : { month: label, count: 0};
+        });
+        console.log(graphInfo);
+        setAttendance(graphInfo);
+
       } catch (error) {
+        alert(error);
         console.error("Error fetching data:", error);
       }
     };
@@ -108,7 +139,10 @@ export const DashboardHome = () => {
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto", padding: 4 }}
       >
-        <Flex w={"100%"} justify={"space-between"}>
+        <Flex
+          w={"100%"}
+          justify={"space-between"}
+        >
           <Heading alignSelf="flex-start">Dashboard</Heading>
           <Image
             alignSelf={"flex-end"}
@@ -134,68 +168,100 @@ export const DashboardHome = () => {
           <StatCard
             icon="email"
             iconColor="blue.500"
-            label="Total Students"
-            value={users?.length || 0}
+            label="Students"
+            value={students}
           />
           <StatCard
             icon="email"
             iconColor="green.500"
             label="Attendance Rate"
-            value={"15%"}
+            value={"15%"} //to be changed
           />
           <StatCard
             icon="email"
             iconColor="purple.500"
-            label="Total Classes"
+            label="Classes Held"
             value={classes?.length || 0}
           />
         </Flex>
 
-        {/* Graph Placeholder */}
-        <Box
-          bg="gray.100"
-          w="100%"
-          h="200px"
-          borderRadius="md"
-          display="flex"
-          position={"relative"}
-          alignItems="center"
-          justifyContent="center"
+        <Flex
+          direction="column"
+          width="100%"
         >
-          <Text color="gray.500">Graph Placeholder</Text>
           <Box
-            position="absolute"
-            top="4"
-            right="4"
-          >
-            <Flex
-              bg="white"
-              borderRadius="full"
-              border="1px"
-              borderColor="gray.200"
-              p={1}
-              shadow="sm"
+            alignItems="left"
+            justifyContent="left"
+            paddingLeft="35px"
+            paddingTop="30px"
             >
-              {["day", "week", "month"].map((period) => (
-                <Box
-                  key={period}
-                  px={3}
-                  py={1}
-                  cursor="pointer"
-                  borderRadius="full"
-                  bg={selectedPeriod === period ? "blue.500" : "transparent"}
-                  color={selectedPeriod === period ? "white" : "gray.600"}
-                  onClick={() => setSelectedPeriod(period)}
-                  _hover={{
-                    bg: selectedPeriod === period ? "blue.600" : "gray.100",
-                  }}
-                >
-                  {period.charAt(0).toUpperCase() + period.slice(1)}
-                </Box>
-              ))}
-            </Flex>
+              <Text
+                fontSize="xl"
+                color="black"
+                fontWeight="bold"
+                marginBottom="20px"
+              >
+                Attendance Over Time
+              </Text>
           </Box>
-        </Box>
+          <Box
+            w="100%"
+            // h="400px"
+            borderRadius="md"
+            display="flex"
+            position={"relative"}
+            alignItems="center"
+            justifyContent="center"
+            paddingRight="20px"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={attendance}>
+                <Line 
+                  type="linear" 
+                  dataKey="count" 
+                  stroke="#422E8D" 
+                  dot={false} 
+                  strokeWidth={3}
+                />
+                <XAxis dataKey="month" />
+                <YAxis />
+              </LineChart>
+            </ResponsiveContainer>
+
+            {/* <Box
+              position="absolute"
+              top="4"
+              right="4"
+            >
+              <Flex
+                bg="white"
+                borderRadius="full"
+                border="1px"
+                borderColor="gray.200"
+                p={1}
+                shadow="sm"
+              >
+                {["day", "week", "month"].map((period) => (
+                  <Box
+                    key={period}
+                    px={3}
+                    py={1}
+                    cursor="pointer"
+                    borderRadius="full"
+                    bg={selectedPeriod === period ? "blue.500" : "transparent"}
+                    color={selectedPeriod === period ? "white" : "gray.600"}
+                    onClick={() => setSelectedPeriod(period)}
+                    _hover={{
+                      bg: selectedPeriod === period ? "blue.600" : "gray.100",
+                    }}
+                  >
+                    {period.charAt(0).toUpperCase() + period.slice(1)}
+                  </Box>
+                ))}
+              </Flex>
+            </Box> */}
+          </Box>
+        </Flex>
 
         {/* Signed-in User Info */}
         <VStack>
@@ -218,65 +284,97 @@ export const Sidebar = () => {
       pos="fixed"
       left={0}
       h="100vh"
-      bg="gray.800"
-      w="200px"
+      bg="#FEF7FF"
+      w="250px"
       p={5}
+      fontFamily="Inter"
+      fontWeight={400}
+      fontSize="16px"
     >
-      <VStack
-        spacing={4}
-        align="stretch"
+      <Flex
+        flexDirection="column"
+        gap={4}
+        height="100%"
+        marginTop="40px"
       >
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard")}
+          textAlign="left"
         >
-          Dashboard
+          <HStack>
+            <Image src={dashboardIcon} />
+            <Text>Dashboard</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/classes")}
+          textAlign="left"
         >
-          Classes
+          <HStack>
+            <Image src={classesIcon} />
+            <Text>Classes / Events</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/teachers")}
+          textAlign="left"
         >
-          Teachers
+          <HStack>
+            <Image src={teachersIcon} />
+            <Text>Teachers</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/students")}
+          textAlign="left"
         >
-          Students
+          <HStack>
+            <Image src={studentsIcon} />
+            <Text>Students</Text>
+          </HStack>
         </Box>
         <Box
           as="button"
           p={3}
           borderRadius="md"
-          _hover={{ bg: "gray.700" }}
-          color="white"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
           onClick={() => navigate("/dashboard/settings")}
+          textAlign="left"
         >
-          Settings
+          <HStack>
+            <Image src={settingsIcon} />
+            <Text>Settings</Text>
+          </HStack>
         </Box>
-      </VStack>
+        <Box
+          flex={1}
+          alignContent="center"
+          textAlign="center"
+        >
+          <Image src={cseLogo} />
+        </Box>
+      </Flex>
     </Box>
   );
 };

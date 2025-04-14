@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   Heading,
+  Image,
   Input,
   Stack,
   useToast,
@@ -23,6 +24,7 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
+import centerStageLogo from "../teacher-signup/requests/cse-logo.png";
 
 const signinSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -136,7 +138,8 @@ export const Login = () => {
       spacing={8}
       sx={{ width: 300, marginX: "auto" }}
     >
-      <Heading>Login</Heading>
+      {/* <Heading>Login</Heading> */}
+      <Image src={centerStageLogo} mt={20}></Image>
 
       <form
         onSubmit={handleSubmit(handleLogin)}
@@ -147,9 +150,10 @@ export const Login = () => {
             isInvalid={!!errors.email}
             w={"100%"}
           >
+            <FormHelperText>Email Address</FormHelperText>
             <Center>
               <Input
-                placeholder="Email"
+                // placeholder="Email"
                 type="email"
                 size={"lg"}
                 {...register("email")}
@@ -163,9 +167,10 @@ export const Login = () => {
             </FormErrorMessage>
           </FormControl>
           <FormControl isInvalid={!!errors.password}>
+          <FormHelperText>Password</FormHelperText>
             <Center>
               <Input
-                placeholder="Password"
+                // placeholder="Password"
                 type="password"
                 size={"lg"}
                 {...register("password")}
@@ -177,22 +182,30 @@ export const Login = () => {
             <FormErrorMessage>
               {errors.password?.message?.toString()}
             </FormErrorMessage>
-            <ChakraLink
+            {/* <ChakraLink
               as={Link}
               to="/signup"
             >
               <FormHelperText>Click here to sign up</FormHelperText>
-            </ChakraLink>
+            </ChakraLink> */}
           </FormControl>
 
-          <Button
-            type="submit"
-            size={"lg"}
-            sx={{ width: "100%" }}
-            isDisabled={Object.keys(errors).length > 0}
-          >
-            Login
-          </Button>
+          <Center>
+            <Button
+              type="submit"
+              size={"lg"}
+              // sx={{ width: "100%" }}
+              bg="#422e8d"
+              color="white"
+              w="200px"
+              h="55px"
+              mt={10}
+              isDisabled={Object.keys(errors).length > 0}
+            >
+              Submit
+            </Button>
+          </Center>
+          
         </Stack>
       </form>
 

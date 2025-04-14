@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   Heading,
   Image,
@@ -22,12 +23,14 @@ export const Settings = () => {
 
     return (
     <Box>
+      <Center>
       <Flex
         direction="column"
         align="center"
         height="80vh"
         padding={4}
         mt={10}
+        w={"100%"}
       >
         <Heading
           size="lg"
@@ -53,10 +56,11 @@ export const Settings = () => {
             padding={2}
             width="50%"
             justify="space-between"
+            mt={4}
           >
             <Text>Name</Text>
             <Text>Role</Text>
-            <Text>ID Number</Text>
+            {/* <Text>ID Number</Text> */}
             <Text>Email</Text>
             <Text>Password</Text>
           </Flex>
@@ -66,10 +70,11 @@ export const Settings = () => {
             padding={2}
             width="50%"
             justify="space-between"
+            mt={4}
           >
             <Text>{hardcodedName}</Text>
             <Text>{role || "Not available"}</Text>
-            <Text>{currentUser?.uid || "Not available"}</Text>
+            {/* <Text>{currentUser?.uid || "Not available"}</Text> */}
             <Text>{currentUser?.email || "Not available"}</Text>
             <Flex
               direction="row"
@@ -94,6 +99,7 @@ export const Settings = () => {
           </Flex>
         </Flex>
       </Flex>
+      </Center>
       <Navbar></Navbar>
     </Box>
   );

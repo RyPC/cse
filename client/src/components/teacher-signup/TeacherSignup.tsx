@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
   FormHelperText,
   Heading,
+  Image,
   Input,
   Select,
   Stack,
@@ -25,7 +26,8 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
 import { EmailTemplate } from "../signup/EmailTemplate";
-import ReactDOMServer from "react-dom/server"
+import ReactDOMServer from "react-dom/server";
+import centerStageLogo from "./requests/cse-logo.png";
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "Field Cannot Be Empty"),
@@ -33,6 +35,10 @@ const signupSchema = z.object({
   experience: z.string().min(1, "Must Select an Experience Value"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
+  repeatPassword: z.string().min(6)
+}).refine((data) => data.password == data.repeatPassword, {
+  message: "Passwords must match.",
+  path: ["repeatPassword"],
 });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
@@ -96,7 +102,8 @@ export const TeacherSignup = () => {
       spacing={8}
       sx={{ width: 300, marginX: "auto" }}
     >
-      <Heading>Teacher Signup</Heading>
+      {/* <Heading>Teacher Signup</Heading> */}
+      <Image src={centerStageLogo} mt={20}></Image>
 
       <form
         onSubmit={handleSubmit(handleSignup)}
@@ -107,9 +114,10 @@ export const TeacherSignup = () => {
             w="100%"
             isInvalid={!!errors.firstName}
           >
+            <FormHelperText>First Name</FormHelperText>
             <Center>
               <Input
-                placeholder="First Name"
+                // placeholder="First Name"
                 size="lg"
                 {...register("firstName")}
                 name="firstName"
@@ -126,9 +134,10 @@ export const TeacherSignup = () => {
             w="100%"
             isInvalid={!!errors.lastName}
           >
+            <FormHelperText>Last Name</FormHelperText>
             <Center>
               <Input
-                placeholder="Last Name"
+                // placeholder="Last Name"
                 size="lg"
                 {...register("lastName")}
                 name="lastName"
@@ -140,13 +149,14 @@ export const TeacherSignup = () => {
             </FormErrorMessage>
           </FormControl>
 
-          <FormControl
+          {/* <FormControl
             w="100%"
             isInvalid={!!errors.experience}
           >
+            <FormHelperText>Experience Level</FormHelperText>
             <Center>
               <Select
-                placeholder="Select Experience Level"
+                // placeholder="Select Experience Level"
                 {...register("experience")}
               >
                 <option value="beginner">Beginner</option>
@@ -157,15 +167,16 @@ export const TeacherSignup = () => {
             <FormErrorMessage>
               {errors.experience?.message?.toString()}
             </FormErrorMessage>
-          </FormControl>
+          </FormControl> */}
 
           <FormControl
             isInvalid={!!errors.email}
             w={"100%"}
           >
+            <FormHelperText>Email</FormHelperText>
             <Center>
               <Input
-                placeholder="Email"
+                // placeholder="Email"
                 type="email"
                 size={"lg"}
                 {...register("email")}
@@ -180,9 +191,10 @@ export const TeacherSignup = () => {
           </FormControl>
 
           <FormControl isInvalid={!!errors.password}>
+          <FormHelperText>Password</FormHelperText>
             <Center>
               <Input
-                placeholder="Password"
+                // placeholder="Password"
                 type="password"
                 size={"lg"}
                 {...register("password")}
@@ -194,36 +206,62 @@ export const TeacherSignup = () => {
             <FormErrorMessage>
               {errors.password?.message?.toString()}
             </FormErrorMessage>
+            </FormControl>
 
-            <ChakraLink
+            <FormControl isInvalid={!!errors.repeatPassword}>
+          <FormHelperText>Repeat Password</FormHelperText>
+            <Center>
+              <Input
+                type="password"
+                size={"lg"}
+                {...register("repeatPassword")}
+                name="repeatPassword"
+                isRequired
+                // autoComplete="password"
+              />
+            </Center>
+            <FormErrorMessage>
+              {errors.repeatPassword?.message?.toString()}
+            </FormErrorMessage>
+
+            {/* <ChakraLink
               as={Link}
               to="/login"
             >
               <FormHelperText>Click here to login</FormHelperText>
-            </ChakraLink>
+            </ChakraLink> */}
           </FormControl>
 
-          <Button
-            type="submit"
-            size={"lg"}
-            sx={{ width: "100%" }}
-            isDisabled={Object.keys(errors).length > 0}
-          >
-            Signup
-          </Button>
+          <Center>
+            <Button
+              type="submit"
+              size={"lg"}
+              // sx={{ width: "100%" }}
+              isDisabled={Object.keys(errors).length > 0}
+              bg="#422e8d"
+              color="white"
+              w="200px"
+              h="55px"
+              mt={10}
+              >
+              Submit
+            </Button>
+          </Center>
           {/* Removed SelectRoot component as it was causing an error */}
         </Stack>
       </form>
 
-      <Button
+      {/* <Button
         leftIcon={<FaGoogle />}
         variant={"solid"}
         size={"lg"}
         onClick={handleGoogleSignup}
-        sx={{ width: "100%" }}
+        // sx={{ width: "100%" }}
+        w="200px"
+        h="55px"
       >
         Signup with Google
-      </Button>
+      </Button> */}
     </VStack>
   );
 };
