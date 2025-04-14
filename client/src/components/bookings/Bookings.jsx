@@ -652,7 +652,7 @@ const ClassTeacherCard = memo(
             size="md"
             fontWeight="bold"
           >
-            {title ? test : "Placeholder Title"}
+            {title ? title : "Placeholder Title"}
           </Heading>
         </CardHeader>
         <CardBody>

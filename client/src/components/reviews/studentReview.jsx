@@ -94,10 +94,11 @@ const StudentReview = ({
 
       const attendanceObject = attendance.data.find((a) => a.id === class_id)
 
-      setAttended(attendanceObject.attendance);
+      setAttended(attendanceObject ? attendanceObject.attendance : null);
     };
     fetchAttendance();
   }, [backend, class_id, student_id]);
+  
   return (
     <Card>
       <CardBody hidden={attended === null}>
@@ -118,7 +119,7 @@ const StudentReview = ({
                 onChange={(e) => setStarRating(e.target.value)}
                 color={
                   (hoverValue || starRating) > index
-                    ? colors.orange
+                    ? colors.purple
                     : colors.grey
                 }
                 onClick={() => handleClickStar(index + 1)}
