@@ -11,9 +11,12 @@ import {
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { L } from "../logout/Logout";
 import { Navbar } from "../navbar/Navbar";
+import { useNavigate } from "react-router-dom";
+
 
 export const Profile = () => {
   const { currentUser } = useAuthContext();
+  const navigate = useNavigate()
 
   const hardcodedProfilePic =
     "https://d1ef7ke0x2i9g8.cloudfront.net/hong-kong/_large700/2143830/LC-Sign-Tony-interview-Big-Hitter-header.webp";
@@ -70,7 +73,7 @@ export const Profile = () => {
             <Text fontSize="16px">Donations</Text>
           </Button>
           <Button
-            onClick={() => console.log("Settings opened!")}
+            onClick={() => navigate("/settings")}
             colorScheme="gray"
             borderRadius="5px"
             color="white"
@@ -79,7 +82,7 @@ export const Profile = () => {
             // width calculated from figma hi-fi
             w="82.33vw"
           >
-            <a href="/settings">Settings</a>
+            Settings
           </Button>
           <L />
         </VStack>
