@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { Box, Button, Flex, Heading, Input, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, InputGroup, InputLeftElement, VStack } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+import { FaSearch } from "react-icons/fa";
 
 export const Discovery = () => {
   // Active Tab Logic
@@ -112,18 +113,30 @@ export const Discovery = () => {
         my={5}
         mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
       >
-        <Heading>Discovery</Heading>
-        <Input
-          placeholder="Search bar"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-        ></Input>
+        <InputGroup>
+          <InputLeftElement
+            pointerEvents="none"
+            children={<FaSearch color="gray.300" />}
+          />
+          <Input
+            placeholder= "Search"
+            variant="filled"
+            borderRadius="full"
+            borderColor={"gray.300"}
+            bg="white.100"
+            _hover={{ bg: "gray.200" }}
+            _focus={{ bg: "white", borderColor: "gray.300" }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          ></Input>
+        </InputGroup>
         <Flex gap="5"
           justify="center"
           borderBottom = "1px solid"
           borderColor = "gray.200"
         >
+        
           <Button
             variant="unstyled" 
             borderBottom="2px solid"

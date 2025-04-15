@@ -23,6 +23,8 @@ import {
   useDisclosure,
   VStack,
   Input,
+  InputGroup,
+  InputLeftElement
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -44,6 +46,7 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
+import { FaSearch } from "react-icons/fa";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -349,16 +352,21 @@ export const Bookings = () => {
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
         <Box px={4} width="100%" pt={4}>
-        <Input
-
-          placeholder="Search"
-          variant="filled"
-          borderRadius="full"
-          borderColor={"gray.300"}
-          bg="white.100"
-          _hover={{ bg: "gray.200" }}
-          _focus={{ bg: "white", borderColor: "gray.300" }}
-        />
+        <InputGroup>
+          <InputLeftElement
+            pointerEvents="none"
+            children={<FaSearch color="gray.300" />}
+          />
+          <Input
+            placeholder="Search"
+            variant="filled"
+            borderRadius="full"
+            borderColor={"gray.300"}
+            bg="white.100"
+            _hover={{ bg: "gray.200" }}
+            _focus={{ bg: "white", borderColor: "gray.300" }}
+          />
+        </InputGroup>
         </Box>
 
         <Tabs
