@@ -353,10 +353,9 @@ export const Bookings = () => {
       >
         <Box px={4} width="100%" pt={4}>
         <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<FaSearch color="gray.300" />}
-          />
+          <InputLeftElement pointerEvents='none'>
+            <FaSearch color="gray.300" />
+          </InputLeftElement>
           <Input
             placeholder="Search"
             variant="filled"

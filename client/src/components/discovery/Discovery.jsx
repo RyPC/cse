@@ -114,10 +114,9 @@ export const Discovery = () => {
         mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
       >
         <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<FaSearch color="gray.300" />}
-          />
+          <InputLeftElement pointerEvents='none'>
+            <FaSearch color="gray.300" />
+          </InputLeftElement>
           <Input
             placeholder= "Search"
             variant="filled"
