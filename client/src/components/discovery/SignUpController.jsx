@@ -121,6 +121,7 @@ function SignUpController({
         lstCorequisites={corequisites}
         handleClose={toggleCoreqModal}
         killModal={() => setOpenCoreqModal(false)}
+        user={user}
       />
 
       {/* <Button onClick={() => setOpenRootModal(true)}>View Details</Button> */}

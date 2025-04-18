@@ -17,6 +17,7 @@ import ClassInfoModal from "./ClassInfoModal";
 import EventInfoModal from "./EventInfoModal";
 
 function CoReqWarningModal({
+  user,
   origin,
   isOpenProp,
   lstCorequisites,
@@ -63,6 +64,7 @@ function CoReqWarningModal({
           costume={coreq.costume}
           isCorequisiteSignUp={true}
           handleClose={cancelSignUp}
+          user={user}
         />
       ) : (
         <ClassInfoModal
@@ -77,6 +79,7 @@ function CoReqWarningModal({
           id={coreq.id}
           isCorequisiteSignUp={true}
           handleClose={cancelSignUp}
+          user={user}
         />
       )}
 
