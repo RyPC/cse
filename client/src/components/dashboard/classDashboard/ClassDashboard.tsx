@@ -31,6 +31,7 @@ import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { Class } from "../../../types/class";
+import { Event } from "../../../types/event";
 import { NotificationPanel } from "../NotificationPanel";
 import { TeacherCancelModal } from "../../bookings/TeacherCancelModal";
 import { ConfirmClassDeleteModal } from "./ConfirmClassDeleteModal";
@@ -43,9 +44,12 @@ export default ClassDashboard;
 
 export function OverallClassDashboard() {
   const [pageNum, setPageNum] = useState<number>(0);
+  const [pageNumE, setPageNumE] = useState<number>(0);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
   const [currModal, setModal] = useState('none');
   const [selectedClass, setSelectedClass] = useState();
+  const [selectedEvent, setSelectedEvent] = useState();
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
@@ -55,20 +59,23 @@ export function OverallClassDashboard() {
   const notifRef = useRef();
 
   const confirmDelete = () => {
-    //display pop up, asking if they want to delete this class.
-    //if yes, call deleteClass(classId)
-    //if not, do nothing and remove the pop up from screen
     setModal('toConfirm');
     onOpenModal();
   };
 
-  //should a delete function be in a useEffect?
+  const confirmDeleteEvent = () => {
+    setModal('toConfirmEvent'); //TBD not set up yet.
+    onOpenModal();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const classesResponse = await backend.get("/classes/scheduled");
+        const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
+
+        const eventsResponse = await backend.get("/events");
+        setEvents(eventsResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -121,7 +128,7 @@ export function OverallClassDashboard() {
           flex={4}
           h="36px"
           borderRadius="18px"
-          placeholder="Search"
+          placeholder="Search Classes"
           disabled
         ></Input>
         <Box flex={1} />
@@ -175,9 +182,9 @@ export function OverallClassDashboard() {
           overflowX: "auto",
         }}
         pl={20}
+        mb={10}
       >
         <Table colorScheme="gray">
-          {/* <TableCaption>All Classes</TableCaption> */}
           <Thead>
             <Tr>
               <Th
@@ -247,7 +254,153 @@ export function OverallClassDashboard() {
                             e.stopPropagation(); // prevents earlier onclick
                             setSelectedClass(cls);
                             confirmDelete();
-                            console.log('clicked trashcan');
+                          }}
+                          m={-8} // overrides bounds of row
+                          fontSize="28px"
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))
+              : null}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      
+      <HStack
+        w="100%"
+        pl={20}
+      >
+        <Input
+          flex={4}
+          h="36px"
+          borderRadius="18px"
+          placeholder="Search Events"
+          disabled
+        ></Input>
+        <Box flex={1} />
+        <HStack gap={0}>
+          <Text>
+            {pageNumE * 10 + 1}
+            {" - "}
+            {pageNumE * 10 + 10 < events.length
+              ? pageNumE * 10 + 10
+              : events.length}
+            {" of "}
+            {events.length}
+          </Text>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+            onClick={() => setPageNumE(pageNumE <= 0 ? pageNumE : pageNumE - 1)}
+          >
+            <SlArrowLeft />
+          </Button>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+            onClick={() =>
+              setPageNumE(
+                pageNumE * 10 + 10 >= events.length ? pageNumE : pageNumE + 1
+              )
+            }
+          >
+            <SlArrowRight />
+          </Button>
+          <Text>|</Text>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+          >
+            <LuFilter />
+          </Button>
+          <Text>|</Text>
+          <Button
+            backgroundColor="transparent"
+            p={0}
+          >
+            <PiArrowsDownUpFill />
+          </Button>
+        </HStack>
+      </HStack>
+      <TableContainer
+        w="100%"
+        sx={{
+          overflowX: "auto",
+        }}
+        pl={20}
+      >
+        <Table colorScheme="gray">
+          <Thead>
+            <Tr>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Event
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Teacher
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Level
+              </Th>
+              <Th
+                fontFamily="Inter"
+                fontWeight={700}
+                color="#4A5568"
+                letterSpacing="5%"
+                fontSize={18}
+                textTransform="none"
+              >
+                Date
+              </Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+              {events
+              ? events
+                  .slice(pageNumE * 10, pageNumE * 10 + 10)
+                  .map((ev, index) => (
+                    <Tr
+                      key={index}
+                      onClick={() =>
+                        navigate(`/dashboard/classes/${ev.id}/${ev.date}`) //TBD: should be replaced with /events but doesnt exist yet
+                      }
+                      backgroundColor={index % 2 ? "white" : "gray.100"}
+                      _hover={{ bg: "gray.300", cursor: "pointer" }}
+                      color="gray.700"
+                    >
+                      <Td fontFamily="Inter">{ev.title}</Td>
+                      <Td fontFamily="Inter">{ev.teacher}</Td>
+                      <Td fontFamily="Inter">{ev.level}</Td>
+                      <Td fontFamily="Inter">{ev.date?.split("T")[0]}</Td>
+                      <Td>
+                        <Button
+                          backgroundColor="transparent"
+                          onClick={(e) => {
+                            e.stopPropagation(); // prevents earlier onclick
+                            setSelectedEvent(ev);
+                            confirmDeleteEvent();
                           }}
                           m={-8} // overrides bounds of row
                           fontSize="28px"
