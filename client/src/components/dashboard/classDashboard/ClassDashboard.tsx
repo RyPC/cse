@@ -32,6 +32,8 @@ import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { Class } from "../../../types/class";
 import { NotificationPanel } from "../NotificationPanel";
+import { TeacherCancelModal } from "../../bookings/TeacherCancelModal";
+import { ConfirmClassDeleteModal } from "./ConfirmClassDeleteModal";
 
 function ClassDashboard() {
   return <Outlet />;
@@ -42,12 +44,25 @@ export default ClassDashboard;
 export function OverallClassDashboard() {
   const [pageNum, setPageNum] = useState<number>(0);
   const [classes, setClasses] = useState<Class[]>([]);
+  const [currModal, setModal] = useState('none');
+  const [selectedClass, setSelectedClass] = useState();
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen:isOpenModal, onOpen:onOpenModal, onClose:onCloseModal } = useDisclosure();
   const notifRef = useRef();
+
+  const confirmDelete = () => {
+    //display pop up, asking if they want to delete this class.
+    //if yes, call deleteClass(classId)
+    //if not, do nothing and remove the pop up from screen
+    setModal('toConfirm');
+    onOpenModal();
+  };
+
+  //should a delete function be in a useEffect?
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +77,7 @@ export function OverallClassDashboard() {
     fetchData();
   }, [backend]);
   return (
-    <VStack>
+   <VStack>
       <Flex
         w={"100%"}
         justify={"space-between"}
@@ -208,7 +223,7 @@ export function OverallClassDashboard() {
             </Tr>
           </Thead>
           <Tbody>
-            {classes
+              {classes
               ? classes
                   .slice(pageNum * 10, pageNum * 10 + 10)
                   .map((cls, index) => (
@@ -230,6 +245,9 @@ export function OverallClassDashboard() {
                           backgroundColor="transparent"
                           onClick={(e) => {
                             e.stopPropagation(); // prevents earlier onclick
+                            setSelectedClass(cls);
+                            confirmDelete();
+                            console.log('clicked trashcan');
                           }}
                           m={-8} // overrides bounds of row
                           fontSize="28px"
@@ -249,6 +267,21 @@ export function OverallClassDashboard() {
           {role === "admin" ? "Admin" : "User"})
         </Text>
       </VStack>
-    </VStack>
+
+    {currModal === 'confirmation' 
+      ? <ConfirmClassDeleteModal
+          isOpen={isOpenModal}
+          onClose={onCloseModal}
+        />
+      : (currModal === 'toConfirm' 
+        ? <TeacherCancelModal
+            isOpen={isOpenModal}
+            onClose={onCloseModal}
+            setCurrentModal={setModal}
+            classData={selectedClass}
+          /> : null
+        )}
+
+    </VStack> 
   );
 }
