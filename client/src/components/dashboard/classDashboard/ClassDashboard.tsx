@@ -68,10 +68,19 @@ export function OverallClassDashboard() {
     onOpenModal();
   };
 
+  // const getTeacher = async (classId) => {
+  //   try {
+  //     const teacherResponse = await backend.get(`/classes_taught/${classId}`);
+  //     return [teacherResponse.data.firstName, teacherResponse.data.lastName];
+  //   } catch (error) {
+  //     console.error("Error fetching teacher:", error);
+  //   }
+  // };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const classesResponse = await backend.get("/classes");
+        const classesResponse = await backend.get("/classes/teachers");
         setClasses(classesResponse.data);
 
         const eventsResponse = await backend.get("/events");
@@ -80,9 +89,9 @@ export function OverallClassDashboard() {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
   }, [backend]);
+
   return (
    <VStack>
       <Flex
@@ -204,6 +213,7 @@ export function OverallClassDashboard() {
                 letterSpacing="5%"
                 fontSize={18}
                 textTransform="none"
+                width="15vw" 
               >
                 Teacher
               </Th>
@@ -214,6 +224,7 @@ export function OverallClassDashboard() {
                 letterSpacing="5%"
                 fontSize={18}
                 textTransform="none"
+                width="15vw" 
               >
                 Level
               </Th>
@@ -243,8 +254,8 @@ export function OverallClassDashboard() {
                       _hover={{ bg: "gray.300", cursor: "pointer" }}
                       color="gray.700"
                     >
-                      <Td fontFamily="Inter">{cls.title}</Td>
-                      <Td fontFamily="Inter">{cls.teacher}</Td>
+                      <Td maxW="25vw" minW="25vw" width="25vw" overflow="hidden" textOverflow="ellipsis" fontFamily="Inter">{cls.title}</Td>
+                      <Td fontFamily="Inter">{cls.teachers}</Td>
                       <Td fontFamily="Inter">{cls.level}</Td>
                       <Td fontFamily="Inter">{cls.date?.split("T")[0]}</Td>
                       <Td>
@@ -350,17 +361,8 @@ export function OverallClassDashboard() {
                 color="#4A5568"
                 letterSpacing="5%"
                 fontSize={18}
-                textTransform="none"
-              >
-                Teacher
-              </Th>
-              <Th
-                fontFamily="Inter"
-                fontWeight={700}
-                color="#4A5568"
-                letterSpacing="5%"
-                fontSize={18}
-                textTransform="none"
+                textTransform="none" 
+                width="20vw" 
               >
                 Level
               </Th>
@@ -371,6 +373,7 @@ export function OverallClassDashboard() {
                 letterSpacing="5%"
                 fontSize={18}
                 textTransform="none"
+                width="20vw" 
               >
                 Date
               </Th>
@@ -390,8 +393,7 @@ export function OverallClassDashboard() {
                       _hover={{ bg: "gray.300", cursor: "pointer" }}
                       color="gray.700"
                     >
-                      <Td fontFamily="Inter">{ev.title}</Td>
-                      <Td fontFamily="Inter">{ev.teacher}</Td>
+                      <Td maxW="25vw" minW="25vw" width="25vw" overflow="hidden" textOverflow="ellipsis" fontFamily="Inter">{ev.title}</Td>
                       <Td fontFamily="Inter">{ev.level}</Td>
                       <Td fontFamily="Inter">{ev.date?.split("T")[0]}</Td>
                       <Td>
