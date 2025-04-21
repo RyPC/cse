@@ -273,7 +273,6 @@ classesRouter.get("/:id", async (req, res) => {
   }
 });
 
-
 classesRouter.get("/", async (req, res) => {
   try {
     const data = await db.query(`SELECT * FROM classes;`);

@@ -32,8 +32,8 @@ import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { Class } from "../../../types/class";
 import { Event } from "../../../types/event";
-import { NotificationPanel } from "../NotificationPanel";
 import { TeacherCancelModal } from "../../bookings/TeacherCancelModal";
+import { NotificationPanel } from "../NotificationPanel";
 import { ConfirmClassDeleteModal } from "./ConfirmClassDeleteModal";
 
 function ClassDashboard() {
@@ -47,7 +47,7 @@ export function OverallClassDashboard() {
   const [pageNumE, setPageNumE] = useState<number>(0);
   const [classes, setClasses] = useState<Class[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const [currModal, setModal] = useState('none');
+  const [currModal, setModal] = useState("none");
   const [selectedClass, setSelectedClass] = useState();
   const [selectedEvent, setSelectedEvent] = useState();
   const { currentUser } = useAuthContext();
@@ -55,16 +55,20 @@ export function OverallClassDashboard() {
   const { role } = useRoleContext();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen:isOpenModal, onOpen:onOpenModal, onClose:onCloseModal } = useDisclosure();
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
   const notifRef = useRef();
 
   const confirmDelete = () => {
-    setModal('toConfirm');
+    setModal("toConfirm");
     onOpenModal();
   };
 
   const confirmDeleteEvent = () => {
-    setModal('toConfirmEvent'); //TBD not set up yet.
+    setModal("toConfirmEvent"); //TBD not set up yet.
     onOpenModal();
   };
 
@@ -85,7 +89,7 @@ export function OverallClassDashboard() {
   }, [backend]);
 
   return (
-   <VStack>
+    <VStack>
       <Flex
         w={"100%"}
         justify={"space-between"}
@@ -205,7 +209,7 @@ export function OverallClassDashboard() {
                 letterSpacing="5%"
                 fontSize={18}
                 textTransform="none"
-                width="15vw" 
+                width="15vw"
               >
                 Teacher
               </Th>
@@ -216,7 +220,7 @@ export function OverallClassDashboard() {
                 letterSpacing="5%"
                 fontSize={18}
                 textTransform="none"
-                width="15vw" 
+                width="15vw"
               >
                 Level
               </Th>
@@ -233,7 +237,7 @@ export function OverallClassDashboard() {
             </Tr>
           </Thead>
           <Tbody>
-              {classes
+            {classes
               ? classes
                   .slice(pageNum * 10, pageNum * 10 + 10)
                   .map((cls, index) => (
@@ -246,7 +250,16 @@ export function OverallClassDashboard() {
                       _hover={{ bg: "gray.300", cursor: "pointer" }}
                       color="gray.700"
                     >
-                      <Td maxW="25vw" minW="25vw" width="25vw" overflow="hidden" textOverflow="ellipsis" fontFamily="Inter">{cls.title}</Td>
+                      <Td
+                        maxW="25vw"
+                        minW="25vw"
+                        width="25vw"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        fontFamily="Inter"
+                      >
+                        {cls.title}
+                      </Td>
                       <Td fontFamily="Inter">{cls.teachers}</Td>
                       <Td fontFamily="Inter">{cls.level}</Td>
                       <Td fontFamily="Inter">{cls.date?.split("T")[0]}</Td>
@@ -270,7 +283,7 @@ export function OverallClassDashboard() {
           </Tbody>
         </Table>
       </TableContainer>
-      
+
       <HStack
         w="100%"
         pl={20}
@@ -353,8 +366,8 @@ export function OverallClassDashboard() {
                 color="#4A5568"
                 letterSpacing="5%"
                 fontSize={18}
-                textTransform="none" 
-                width="20vw" 
+                textTransform="none"
+                width="20vw"
               >
                 Level
               </Th>
@@ -365,14 +378,14 @@ export function OverallClassDashboard() {
                 letterSpacing="5%"
                 fontSize={18}
                 textTransform="none"
-                width="20vw" 
+                width="20vw"
               >
                 Date
               </Th>
             </Tr>
           </Thead>
           <Tbody>
-              {events
+            {events
               ? events
                   .slice(pageNumE * 10, pageNumE * 10 + 10)
                   .map((ev, index) => (
@@ -385,7 +398,16 @@ export function OverallClassDashboard() {
                       _hover={{ bg: "gray.300", cursor: "pointer" }}
                       color="gray.700"
                     >
-                      <Td maxW="25vw" minW="25vw" width="25vw" overflow="hidden" textOverflow="ellipsis" fontFamily="Inter">{ev.title}</Td>
+                      <Td
+                        maxW="25vw"
+                        minW="25vw"
+                        width="25vw"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        fontFamily="Inter"
+                      >
+                        {ev.title}
+                      </Td>
                       <Td fontFamily="Inter">{ev.level}</Td>
                       <Td fontFamily="Inter">{ev.date?.split("T")[0]}</Td>
                       <Td>
@@ -415,20 +437,19 @@ export function OverallClassDashboard() {
         </Text>
       </VStack>
 
-    {currModal === 'confirmation' 
-      ? <ConfirmClassDeleteModal
+      {currModal === "confirmation" ? (
+        <ConfirmClassDeleteModal
           isOpen={isOpenModal}
           onClose={onCloseModal}
         />
-      : (currModal === 'toConfirm' 
-        ? <TeacherCancelModal
-            isOpen={isOpenModal}
-            onClose={onCloseModal}
-            setCurrentModal={setModal}
-            classData={selectedClass}
-          /> : null
-        )}
-
-    </VStack> 
+      ) : currModal === "toConfirm" ? (
+        <TeacherCancelModal
+          isOpen={isOpenModal}
+          onClose={onCloseModal}
+          setCurrentModal={setModal}
+          classData={selectedClass}
+        />
+      ) : null}
+    </VStack>
   );
 }
