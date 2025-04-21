@@ -33,8 +33,9 @@ import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { Class } from "../../../types/class";
 import { Event } from "../../../types/event";
 import { TeacherCancelModal } from "../../bookings/TeacherCancelModal";
+import { EventDeleteConfirmationModal } from "./EventDeleteConfirmationModal";
 import { NotificationPanel } from "../NotificationPanel";
-import { ConfirmClassDeleteModal } from "./ConfirmClassDeleteModal";
+import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 
 function ClassDashboard() {
   return <Outlet />;
@@ -438,18 +439,32 @@ export function OverallClassDashboard() {
       </VStack>
 
       {currModal === "confirmation" ? (
-        <ConfirmClassDeleteModal
+        <ConfirmDeleteModal
           isOpen={isOpenModal}
           onClose={onCloseModal}
+          itemType="Class"
         />
-      ) : currModal === "toConfirm" ? (
-        <TeacherCancelModal
+      ) : (currModal === "confirmationEvent" ?
+        (<ConfirmDeleteModal
           isOpen={isOpenModal}
           onClose={onCloseModal}
-          setCurrentModal={setModal}
-          classData={selectedClass}
-        />
-      ) : null}
+          itemType="Event"
+        />) : 
+          (currModal === "toConfirm" ? (
+          <TeacherCancelModal
+            isOpen={isOpenModal}
+            onClose={onCloseModal}
+            setCurrentModal={setModal}
+            classData={selectedClass}
+          />
+        ) : (currModal === "toConfirmEvent" ? 
+          <EventDeleteConfirmationModal
+            isOpen={isOpenModal}
+            onClose={onCloseModal}
+            setCurrentModal={setModal}
+            eventData={selectedEvent}
+          />
+          : null)))}
     </VStack>
   );
 }
