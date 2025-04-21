@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -20,6 +20,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { debounce } from "lodash";
 import { FiTrash2 } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
 import { PiArrowsDownUpFill } from "react-icons/pi";
@@ -60,15 +61,34 @@ export const StudentDashboard = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
 
+    updateStudents(searchTerm);
+    setPageNum(0);
+  };
+
+  const updateStudents = async (term) => {
     try {
       const response = await backend.get("/students", {
-        params: { search: searchTerm },
+        params: { search: term.trim() },
       });
       setStudents(response.data);
     } catch (error) {
-      console.error("Error searching students:", error);
+      console.error("Error fetching students:", error);
     }
   };
+
+  const handleChange = (e) => {
+    setSearchTerm(e.target.value);
+    debouncedSearch(e.target.value); // Only runs after not typing for 500ms
+  };
+
+  const debouncedSearch = useCallback(
+    debounce((term) => {
+      if (term.length >= 2 || term.length === 0) {
+        updateStudents(term);
+      }
+    }, 500),
+    []
+  );
 
   return (
     <VStack>
@@ -121,7 +141,7 @@ export const StudentDashboard = () => {
             borderRadius="18px"
             placeholder="Search"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleChange}
           ></Input>
           <Box flex={1} />
           <HStack gap={0}>
