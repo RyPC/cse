@@ -8,8 +8,6 @@ import {
   HStack,
   Image,
   Input,
-  Link,
-  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -39,6 +37,7 @@ export const StudentDashboard = () => {
   const [pageNum, setPageNum] = useState(0);
   const [students, setStudents] = useState([]);
   const [classCount, setClassCount] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +56,19 @@ export const StudentDashboard = () => {
 
     fetchData();
   }, [backend]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await backend.get("/students", {
+        params: { search: searchTerm },
+      });
+      setStudents(response.data);
+    } catch (error) {
+      console.error("Error searching students:", error);
+    }
+  };
 
   return (
     <VStack>
@@ -95,62 +107,68 @@ export const StudentDashboard = () => {
           onClose={onClose}
         />
       </Flex>
-      <HStack
-        w="100%"
-        pl={20}
+      <form
+        onSubmit={handleSearch}
+        style={{ width: "100%" }}
       >
-        <Input
-          flex={4}
-          h="36px"
-          borderRadius="18px"
-          placeholder="Search"
-          disabled
-        ></Input>
-        <Box flex={1} />
-        <HStack gap={0}>
-          <Text>
-            {pageNum * 10 + 1}
-            {" - "}
-            {pageNum * 10 + 10 < students.length
-              ? pageNum * 10 + 10
-              : students.length}
-            {" of "}
-            {students.length}
-          </Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
-          >
-            <SlArrowLeft />
-          </Button>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() =>
-              setPageNum(
-                pageNum * 10 + 10 >= students.length ? pageNum : pageNum + 1
-              )
-            }
-          >
-            <SlArrowRight />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <LuFilter />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <PiArrowsDownUpFill />
-          </Button>
+        <HStack
+          w="100%"
+          pl={20}
+        >
+          <Input
+            flex={4}
+            h="36px"
+            borderRadius="18px"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          ></Input>
+          <Box flex={1} />
+          <HStack gap={0}>
+            <Text>
+              {pageNum * 10 + 1}
+              {" - "}
+              {pageNum * 10 + 10 < students.length
+                ? pageNum * 10 + 10
+                : students.length}
+              {" of "}
+              {students.length}
+            </Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
+            >
+              <SlArrowLeft />
+            </Button>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={() =>
+                setPageNum(
+                  pageNum * 10 + 10 >= students.length ? pageNum : pageNum + 1
+                )
+              }
+            >
+              <SlArrowRight />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+            >
+              <LuFilter />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+            >
+              <PiArrowsDownUpFill />
+            </Button>
+          </HStack>
         </HStack>
-      </HStack>
+      </form>
       <TableContainer
         w="100%"
         sx={{

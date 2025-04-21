@@ -62,12 +62,21 @@ studentsRouter.get("/:id", async (req, res) => {
 });
 
 studentsRouter.get("/", async (req, res) => {
+  const { search } = req.query;
   try {
-    const students = await db.query(
-      `SELECT u.id, u.first_name, u.last_name, u.role, u.user_role, u.email, u.firebase_uid, s.level
-       FROM users u
-       JOIN students s ON u.id = s.id`
-    );
+    let query = `
+      SELECT u.id, u.first_name, u.last_name, u.role, u.user_role, u.email, u.firebase_uid, s.level
+      FROM users u
+      JOIN students s ON u.id = s.id
+    `;
+
+    if (search) {
+      query += `
+        WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1
+      `;
+    }
+
+    const students = await db.query(query, search ? [`%${search}%`] : []);
 
     res.status(200).json(keysToCamel(students));
   } catch (err) {
