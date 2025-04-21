@@ -166,23 +166,6 @@ classesRouter.delete("/corequisites/event/:id", async (req, res) => {
   }
 });
 
-classesRouter.get("/teachers", async (req, res) => {
-  try {
-    const data = await db.query(`
-            SELECT c.*, 
-            COALESCE(STRING_AGG(u.first_name || ' ' || u.last_name, ', '),'') AS teachers
-            FROM classes c
-            LEFT JOIN classes_taught ct ON ct.class_id = c.id
-            LEFT JOIN teachers t ON t.id = ct.teacher_id
-            LEFT JOIN users u ON u.id = t.id
-            GROUP BY c.id;`);
-
-    res.status(200).json(keysToCamel(data));
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
 classesRouter.get("/joined/:id", async (req, res) => {
   try {
     const { id } = req.params;

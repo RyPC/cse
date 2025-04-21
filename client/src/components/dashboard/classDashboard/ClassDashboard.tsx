@@ -68,19 +68,11 @@ export function OverallClassDashboard() {
     onOpenModal();
   };
 
-  // const getTeacher = async (classId) => {
-  //   try {
-  //     const teacherResponse = await backend.get(`/classes_taught/${classId}`);
-  //     return [teacherResponse.data.firstName, teacherResponse.data.lastName];
-  //   } catch (error) {
-  //     console.error("Error fetching teacher:", error);
-  //   }
-  // };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const classesResponse = await backend.get("/classes/teachers");
+        const classesResponse = await backend.get("/scheduled-classes/teachers");
         setClasses(classesResponse.data);
 
         const eventsResponse = await backend.get("/events");
@@ -387,7 +379,7 @@ export function OverallClassDashboard() {
                     <Tr
                       key={index}
                       onClick={() =>
-                        navigate(`/dashboard/classes/${ev.id}/${ev.date}`) //TBD: should be replaced with /events but doesnt exist yet
+                        navigate(`/dashboard/classes/event/${ev.id}`)
                       }
                       backgroundColor={index % 2 ? "white" : "gray.100"}
                       _hover={{ bg: "gray.300", cursor: "pointer" }}

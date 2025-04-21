@@ -4,6 +4,7 @@ export type DetailedClass = {
   description: string;
   capacity: number;
   costume: string;
+  callTime: string;
   level: string;
   location: string;
   date: Date;
