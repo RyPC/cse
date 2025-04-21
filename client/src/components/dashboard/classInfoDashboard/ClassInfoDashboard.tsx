@@ -59,6 +59,7 @@ export default function ClassInfoDashboard() {
         const attendanceResponse = await backend.get(
           `class-enrollments/class/${classId}/${classDate}`
         );
+        console.log(attendanceResponse.data);
         setAttendance(attendanceResponse.data);
         console.log(attendanceResponse.data);
       } catch (error) {
@@ -122,7 +123,7 @@ export default function ClassInfoDashboard() {
           Title
         </Box>
         <Box
-          flex={1}
+          flex={3}
           textAlign="right"
           fontSize={18}
         >
@@ -136,7 +137,7 @@ export default function ClassInfoDashboard() {
           Location
         </Box>
         <Box
-          flex={1}
+          flex={3}
           textAlign="right"
           fontSize={18}
         >

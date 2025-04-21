@@ -57,8 +57,9 @@ export default function EventInfoDashboard() {
 
         // Fetch event attendances
         const attendanceResponse = await backend.get(
-          `/event-enrollments/${eventId}`
+          `/event-enrollments/event/${eventId}`
         );
+        console.log(attendanceResponse.data);
         setAttendance(attendanceResponse.data);
         console.log(attendanceResponse.data);
       } catch (error) {
