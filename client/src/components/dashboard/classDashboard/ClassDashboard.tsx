@@ -36,6 +36,7 @@ import { ClassDeleteConfirmationModal } from "./ClassDeleteConfirmationModal";
 import { EventDeleteConfirmationModal } from "./EventDeleteConfirmationModal";
 import { NotificationPanel } from "../NotificationPanel";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import { formatDate, formatTime } from "../../../utils/formatDateTime";
 
 function ClassDashboard() {
   return <Outlet />;
@@ -263,7 +264,7 @@ export function OverallClassDashboard() {
                       </Td>
                       <Td fontFamily="Inter">{cls.teachers}</Td>
                       <Td fontFamily="Inter">{cls.level}</Td>
-                      <Td fontFamily="Inter">{cls.date?.split("T")[0]}</Td>
+                      <Td fontFamily="Inter">{cls.date ? formatDate(cls.date) : ''}</Td>
                       <Td>
                         <Button
                           backgroundColor="transparent"
@@ -410,7 +411,7 @@ export function OverallClassDashboard() {
                         {ev.title}
                       </Td>
                       <Td fontFamily="Inter">{ev.level}</Td>
-                      <Td fontFamily="Inter">{ev.date?.split("T")[0]}</Td>
+                      <Td fontFamily="Inter">{ev.date ? formatDate(ev.date) : ''}</Td>
                       <Td>
                         <Button
                           backgroundColor="transparent"
