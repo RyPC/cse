@@ -32,7 +32,7 @@ import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { Class } from "../../../types/class";
 import { Event } from "../../../types/event";
-import { TeacherCancelModal } from "../../bookings/TeacherCancelModal";
+import { ClassDeleteConfirmationModal } from "./ClassDeleteConfirmationModal";
 import { EventDeleteConfirmationModal } from "./EventDeleteConfirmationModal";
 import { NotificationPanel } from "../NotificationPanel";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
@@ -451,7 +451,7 @@ export function OverallClassDashboard() {
           itemType="Event"
         />) : 
           (currModal === "toConfirm" ? (
-          <TeacherCancelModal
+          <ClassDeleteConfirmationModal
             isOpen={isOpenModal}
             onClose={onCloseModal}
             setCurrentModal={setModal}

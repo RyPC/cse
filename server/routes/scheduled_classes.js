@@ -94,6 +94,28 @@ scheduledClassesRouter.put("/", async (req, res) => {
   }
 });
 
+scheduledClassesRouter.delete("/:classId/:classDate", async (req, res) => {
+  try {
+    const { classId, classDate } = req.params;
+
+    const result = await db.query(
+      `DELETE FROM scheduled_classes 
+       WHERE class_id = $1
+       AND date = $2
+       RETURNING *;`,
+      [classId,classDate]
+    );
+
+    res.status(200).json({
+      message: `Deleted ${result.length} scheduled classes for class ID ${classId}`,
+      deleted: keysToCamel(result),
+    });
+  } catch (err) {
+    console.error("Error deleting scheduled classes:", err);
+    res.status(500).send(err.message);
+  }
+});
+
 scheduledClassesRouter.delete("/:classId", async (req, res) => {
   try {
     const { classId } = req.params;
