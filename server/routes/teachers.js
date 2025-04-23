@@ -6,11 +6,12 @@ import { db } from "../db/db-pgp"; // TODO: replace this db with
 export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
-teachersRouter.get("/classes/", async (req, res) => {
+teachersRouter.get("/classes/count", async (req, res) => {
   const { search } = req.query;
   try {
     let query = `
-      SELECT t.id as teacher_id, c.id as class_id, t.*, u.*, c.* FROM teachers t
+      SELECT COUNT(DISTINCT t.id) AS count
+      FROM teachers t
       LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
       LEFT JOIN classes c ON c.id = ct.class_id
       INNER JOIN users u ON u.id = t.id
@@ -22,7 +23,7 @@ teachersRouter.get("/classes/", async (req, res) => {
       `;
     }
 
-    const teacherClasses = await db.query(query, search ? [`%${search}%`] : []);
+    const teacherClasses = await db.query(query, [`%${search}%`]);
 
     res.status(200).json(keysToCamel(teacherClasses));
   } catch (err) {
@@ -33,6 +34,43 @@ teachersRouter.get("/classes/", async (req, res) => {
     });
   }
 });
+
+teachersRouter.get("/classes/", async (req, res) => {
+  const { search, page } = req.query;
+  const pageNum = page ? parseInt(page) : 0;
+  try {
+    let query = `
+      SELECT t.id as teacher_id, t.*, u.*, COUNT(class_id) AS class_count
+      FROM teachers t
+      LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
+      LEFT JOIN classes c ON c.id = ct.class_id
+      INNER JOIN users u ON u.id = t.id
+      GROUP BY t.id, u.id
+    `;
+
+    if (search) {
+      query += `
+        WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1
+      `;
+    }
+
+    query += `
+      ORDER BY LOWER(u.first_name), LOWER(u.last_name) 
+    `;
+    query += `LIMIT 10 OFFSET $2;`;
+
+    const teacherClasses = await db.query(query, [`%${search}%`, 10 * pageNum]);
+
+    res.status(200).json(keysToCamel(teacherClasses));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
+
 teachersRouter.get("/notactivated", async (req, res) => {
   try {
     const teacher = await db.query(`

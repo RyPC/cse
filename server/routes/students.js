@@ -85,7 +85,9 @@ studentsRouter.get("/", async (req, res) => {
         WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1
       `;
     }
-    query += `ORDER BY LOWER(u.first_name), LOWER(u.last_name)`;
+    query += `
+      ORDER BY LOWER(u.first_name), LOWER(u.last_name) ASC
+    `;
 
     query += `LIMIT 10 OFFSET $2;`;
 
