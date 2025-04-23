@@ -81,12 +81,12 @@ export const Settings = () => {
               justify="space-between"
               align="center"
             >
-              <Text>Change Password</Text>
+              <Text><a href="/forgotPassword">Change Password</a></Text>
               <Button
                 variant="plain"
                 size="xs"
                 onClick={() =>
-                  console.log("Change password functionality to be implemented")
+                  window.location.assign("/forgotPassword")
                 }
               >
                 <Image

@@ -38,6 +38,8 @@ import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
+import { ForgotPasswordConfirmation } from "./utils/auth/ForgotPasswordConfirmation"
+import { ForgotPassword } from "./utils/auth/ForgotPassword";
 
 const App = () => {
   return (
@@ -54,6 +56,14 @@ const App = () => {
                 <Route
                   path="/create-event"
                   element={<CreateEvent />}
+                />
+                <Route
+                  path="/forgotPassword"
+                  element={<ForgotPassword />}
+                />
+                <Route
+                  path="/forgotPasswordConfirmation"
+                  element={<ForgotPasswordConfirmation />}
                 />
                 <Route
                   path="/signup"
@@ -141,7 +151,7 @@ const App = () => {
                 />
                 <Route
                   path="/playground"
-                  element={<ProtectedRoute element={<Playground />} />}
+                  element={<Playground />} // <ProtectedRoute element={<Playground />}
                 />
 
                 <Route
