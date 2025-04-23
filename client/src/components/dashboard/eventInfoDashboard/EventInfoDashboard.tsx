@@ -27,6 +27,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { DetailedClass } from "../../../types/scheduled_class";
 import { NotificationPanel } from "../NotificationPanel";
+import { formatDate, formatTime } from "../../../utils/formatDateTime";
 
 type AttendanceRecord = {
   firstName: string;
@@ -57,8 +58,9 @@ export default function EventInfoDashboard() {
 
         // Fetch event attendances
         const attendanceResponse = await backend.get(
-          `/event-enrollments/${eventId}`
+          `/event-enrollments/event/${eventId}`
         );
+        console.log(attendanceResponse.data);
         setAttendance(attendanceResponse.data);
         console.log(attendanceResponse.data);
       } catch (error) {
@@ -194,7 +196,7 @@ export default function EventInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentEvent?.startTime}
+          {currentEvent ? formatTime(currentEvent.startTime) : ''}
         </Box>
         <Box
           flex={1}
@@ -208,7 +210,7 @@ export default function EventInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentEvent?.endTime}
+          {currentEvent ? formatTime(currentEvent.endTime) : ''}
         </Box>
       </HStack>
       <HStack
@@ -229,7 +231,7 @@ export default function EventInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentEvent?.callTime}
+          {currentEvent ? formatTime(currentEvent.callTime) : ''}
         </Box>
         <Box
           flex={1}

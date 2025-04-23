@@ -32,9 +32,11 @@ import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { Class } from "../../../types/class";
 import { Event } from "../../../types/event";
-import { TeacherCancelModal } from "../../bookings/TeacherCancelModal";
+import { ClassDeleteConfirmationModal } from "./ClassDeleteConfirmationModal";
+import { EventDeleteConfirmationModal } from "./EventDeleteConfirmationModal";
 import { NotificationPanel } from "../NotificationPanel";
-import { ConfirmClassDeleteModal } from "./ConfirmClassDeleteModal";
+import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import { formatDate, formatTime } from "../../../utils/formatDateTime";
 
 function ClassDashboard() {
   return <Outlet />;
@@ -262,7 +264,7 @@ export function OverallClassDashboard() {
                       </Td>
                       <Td fontFamily="Inter">{cls.teachers}</Td>
                       <Td fontFamily="Inter">{cls.level}</Td>
-                      <Td fontFamily="Inter">{cls.date?.split("T")[0]}</Td>
+                      <Td fontFamily="Inter">{cls.date ? formatDate(cls.date) : ''}</Td>
                       <Td>
                         <Button
                           backgroundColor="transparent"
@@ -409,7 +411,7 @@ export function OverallClassDashboard() {
                         {ev.title}
                       </Td>
                       <Td fontFamily="Inter">{ev.level}</Td>
-                      <Td fontFamily="Inter">{ev.date?.split("T")[0]}</Td>
+                      <Td fontFamily="Inter">{ev.date ? formatDate(ev.date) : ''}</Td>
                       <Td>
                         <Button
                           backgroundColor="transparent"
@@ -438,18 +440,32 @@ export function OverallClassDashboard() {
       </VStack>
 
       {currModal === "confirmation" ? (
-        <ConfirmClassDeleteModal
+        <ConfirmDeleteModal
           isOpen={isOpenModal}
           onClose={onCloseModal}
+          itemType="Class"
         />
-      ) : currModal === "toConfirm" ? (
-        <TeacherCancelModal
+      ) : (currModal === "confirmationEvent" ?
+        (<ConfirmDeleteModal
           isOpen={isOpenModal}
           onClose={onCloseModal}
-          setCurrentModal={setModal}
-          classData={selectedClass}
-        />
-      ) : null}
+          itemType="Event"
+        />) : 
+          (currModal === "toConfirm" ? (
+          <ClassDeleteConfirmationModal
+            isOpen={isOpenModal}
+            onClose={onCloseModal}
+            setCurrentModal={setModal}
+            classData={selectedClass}
+          />
+        ) : (currModal === "toConfirmEvent" ? 
+          <EventDeleteConfirmationModal
+            isOpen={isOpenModal}
+            onClose={onCloseModal}
+            setCurrentModal={setModal}
+            eventData={selectedEvent}
+          />
+          : null)))}
     </VStack>
   );
 }

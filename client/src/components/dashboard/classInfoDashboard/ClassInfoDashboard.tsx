@@ -27,6 +27,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { DetailedClass } from "../../../types/scheduled_class";
 import { NotificationPanel } from "../NotificationPanel";
+import { formatDate, formatTime } from "../../../utils/formatDateTime";
 
 type AttendanceRecord = {
   firstName: string;
@@ -59,6 +60,7 @@ export default function ClassInfoDashboard() {
         const attendanceResponse = await backend.get(
           `class-enrollments/class/${classId}/${classDate}`
         );
+        console.log(attendanceResponse.data);
         setAttendance(attendanceResponse.data);
         console.log(attendanceResponse.data);
       } catch (error) {
@@ -122,7 +124,7 @@ export default function ClassInfoDashboard() {
           Title
         </Box>
         <Box
-          flex={1}
+          flex={3}
           textAlign="right"
           fontSize={18}
         >
@@ -136,7 +138,7 @@ export default function ClassInfoDashboard() {
           Location
         </Box>
         <Box
-          flex={1}
+          flex={3}
           textAlign="right"
           fontSize={18}
         >
@@ -196,7 +198,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass?.startTime}
+          {currentClass? formatTime(currentClass.startTime) : ''}
         </Box>
         <Box
           flex={1}
@@ -210,7 +212,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass?.endTime}
+          {currentClass? formatTime(currentClass.endTime) : ''}
         </Box>
       </HStack>
       <HStack
