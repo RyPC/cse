@@ -39,8 +39,9 @@ eventsRouter.get("/corequisites/:id", async (req, res) => {
 
 eventsRouter.get(`/drafts`, async (req, res) => {
   try {
-    const drafts = await db.query (
-      `select * from events where is_draft = true;`, []
+    const drafts = await db.query(
+      `SELECT * FROM events WHERE is_draft = true;`,
+      []
     );
     res.status(200).json(keysToCamel(drafts));
   } catch (err) {
@@ -48,10 +49,11 @@ eventsRouter.get(`/drafts`, async (req, res) => {
   }
 });
 
-eventsRouter.get('/published', async (req, res) => {
+eventsRouter.get("/published", async (req, res) => {
   try {
-    const drafts = await db.query (
-      `select * from events where is_draft = false;`, []
+    const drafts = await db.query(
+      `SELECT * FROM events WHERE is_draft = false;`,
+      []
     );
     res.status(200).json(keysToCamel(drafts));
   } catch (err) {
@@ -71,8 +73,16 @@ eventsRouter.get("/:id", async (req, res) => {
 });
 
 eventsRouter.get("/", async (req, res) => {
+  const { search } = req.query;
   try {
-    const allEvents = await db.query("SELECT * FROM events;");
+    let query = `SELECT * FROM events`;
+
+    if (search) {
+      query += " WHERE title ILIKE $1;";
+    }
+
+    const allEvents = await db.query(query, search ? [`%${search}%`] : []);
+
     res.status(200).json(keysToCamel(allEvents));
   } catch (err) {
     res.status(500).send(err.message);

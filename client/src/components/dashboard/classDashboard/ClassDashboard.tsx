@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -21,6 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { debounce } from "lodash";
 import { FiTrash2 } from "react-icons/fi";
 import { LuFilter } from "react-icons/lu";
 import { PiArrowsDownUpFill } from "react-icons/pi";
@@ -32,11 +33,11 @@ import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../../contexts/hooks/useRoleContext";
 import { Class } from "../../../types/class";
 import { Event } from "../../../types/event";
-import { ClassDeleteConfirmationModal } from "./ClassDeleteConfirmationModal";
-import { EventDeleteConfirmationModal } from "./EventDeleteConfirmationModal";
-import { NotificationPanel } from "../NotificationPanel";
-import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 import { formatDate, formatTime } from "../../../utils/formatDateTime";
+import { NotificationPanel } from "../NotificationPanel";
+import { ClassDeleteConfirmationModal } from "./ClassDeleteConfirmationModal";
+import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import { EventDeleteConfirmationModal } from "./EventDeleteConfirmationModal";
 
 function ClassDashboard() {
   return <Outlet />;
@@ -52,6 +53,8 @@ export function OverallClassDashboard() {
   const [currModal, setModal] = useState("none");
   const [selectedClass, setSelectedClass] = useState();
   const [selectedEvent, setSelectedEvent] = useState();
+  const [eventSearchTerm, setEventSearchTerm] = useState("");
+  const [classSearchTerm, setClassSearchTerm] = useState("");
   const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
   const { role } = useRoleContext();
@@ -74,11 +77,12 @@ export function OverallClassDashboard() {
     onOpenModal();
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const classesResponse = await backend.get("/scheduled-classes/teachers");
+        const classesResponse = await backend.get(
+          "/scheduled-classes/teachers"
+        );
         setClasses(classesResponse.data);
 
         const eventsResponse = await backend.get("/events");
@@ -89,6 +93,66 @@ export function OverallClassDashboard() {
     };
     fetchData();
   }, [backend]);
+
+  const handleClassSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    updateClasses(classSearchTerm);
+    setPageNum(0);
+  };
+  const handleEventSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    updateEvents(eventSearchTerm);
+    setPageNumE(0);
+  };
+
+  const updateClasses = async (term: string) => {
+    try {
+      const response = await backend.get("/scheduled-classes/teachers/", {
+        params: { search: term.trim() },
+      });
+      setClasses(response.data);
+    } catch (error) {
+      console.error("Error fetching classes: ", error);
+    }
+  };
+  const updateEvents = async (term: string) => {
+    try {
+      const response = await backend.get("/events/", {
+        params: { search: term.trim() },
+      });
+      setEvents(response.data);
+    } catch (error) {
+      console.error("Error fetching events: ", error);
+    }
+  };
+
+  const handleClassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setClassSearchTerm(e.target.value);
+    debouncedClassSearch(e.target.value); // Only runs after not typing for 500ms
+  };
+  const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEventSearchTerm(e.target.value);
+    debouncedEventSearch(e.target.value); // Only runs after not typing for 500ms
+  };
+
+  const debouncedClassSearch = useCallback(
+    debounce((term) => {
+      if (term.length >= 2 || term.length === 0) {
+        updateClasses(term);
+      }
+    }, 500),
+    []
+  );
+  const debouncedEventSearch = useCallback(
+    debounce((term) => {
+      if (term.length >= 2 || term.length === 0) {
+        updateEvents(term);
+      }
+    }, 500),
+    []
+  );
 
   return (
     <VStack>
@@ -127,62 +191,68 @@ export function OverallClassDashboard() {
           onClose={onClose}
         />
       </Flex>
-      <HStack
-        w="100%"
-        pl={20}
+      <form
+        onSubmit={handleClassSearch}
+        style={{ width: "100%" }}
       >
-        <Input
-          flex={4}
-          h="36px"
-          borderRadius="18px"
-          placeholder="Search Classes"
-          disabled
-        ></Input>
-        <Box flex={1} />
-        <HStack gap={0}>
-          <Text>
-            {pageNum * 10 + 1}
-            {" - "}
-            {pageNum * 10 + 10 < classes.length
-              ? pageNum * 10 + 10
-              : classes.length}
-            {" of "}
-            {classes.length}
-          </Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
-          >
-            <SlArrowLeft />
-          </Button>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() =>
-              setPageNum(
-                pageNum * 10 + 10 >= classes.length ? pageNum : pageNum + 1
-              )
-            }
-          >
-            <SlArrowRight />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <LuFilter />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <PiArrowsDownUpFill />
-          </Button>
+        <HStack
+          w="100%"
+          pl={20}
+        >
+          <Input
+            flex={4}
+            h="36px"
+            borderRadius="18px"
+            placeholder="Search Classes"
+            value={classSearchTerm}
+            onChange={handleClassChange}
+          ></Input>
+          <Box flex={1} />
+          <HStack gap={0}>
+            <Text>
+              {pageNum * 10 + 1}
+              {" - "}
+              {pageNum * 10 + 10 < classes.length
+                ? pageNum * 10 + 10
+                : classes.length}
+              {" of "}
+              {classes.length}
+            </Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
+            >
+              <SlArrowLeft />
+            </Button>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={() =>
+                setPageNum(
+                  pageNum * 10 + 10 >= classes.length ? pageNum : pageNum + 1
+                )
+              }
+            >
+              <SlArrowRight />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+            >
+              <LuFilter />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+            >
+              <PiArrowsDownUpFill />
+            </Button>
+          </HStack>
         </HStack>
-      </HStack>
+      </form>
       <TableContainer
         w="100%"
         sx={{
@@ -264,7 +334,9 @@ export function OverallClassDashboard() {
                       </Td>
                       <Td fontFamily="Inter">{cls.teachers}</Td>
                       <Td fontFamily="Inter">{cls.level}</Td>
-                      <Td fontFamily="Inter">{cls.date ? formatDate(cls.date) : ''}</Td>
+                      <Td fontFamily="Inter">
+                        {cls.date ? formatDate(cls.date) : ""}
+                      </Td>
                       <Td>
                         <Button
                           backgroundColor="transparent"
@@ -285,63 +357,70 @@ export function OverallClassDashboard() {
           </Tbody>
         </Table>
       </TableContainer>
-
-      <HStack
-        w="100%"
-        pl={20}
+      <form
+        onSubmit={handleEventSearch}
+        style={{ width: "100%" }}
       >
-        <Input
-          flex={4}
-          h="36px"
-          borderRadius="18px"
-          placeholder="Search Events"
-          disabled
-        ></Input>
-        <Box flex={1} />
-        <HStack gap={0}>
-          <Text>
-            {pageNumE * 10 + 1}
-            {" - "}
-            {pageNumE * 10 + 10 < events.length
-              ? pageNumE * 10 + 10
-              : events.length}
-            {" of "}
-            {events.length}
-          </Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() => setPageNumE(pageNumE <= 0 ? pageNumE : pageNumE - 1)}
-          >
-            <SlArrowLeft />
-          </Button>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() =>
-              setPageNumE(
-                pageNumE * 10 + 10 >= events.length ? pageNumE : pageNumE + 1
-              )
-            }
-          >
-            <SlArrowRight />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <LuFilter />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <PiArrowsDownUpFill />
-          </Button>
+        <HStack
+          w="100%"
+          pl={20}
+        >
+          <Input
+            flex={4}
+            h="36px"
+            borderRadius="18px"
+            placeholder="Search Events"
+            value={eventSearchTerm}
+            onChange={handleEventChange}
+          ></Input>
+          <Box flex={1} />
+          <HStack gap={0}>
+            <Text>
+              {pageNumE * 10 + 1}
+              {" - "}
+              {pageNumE * 10 + 10 < events.length
+                ? pageNumE * 10 + 10
+                : events.length}
+              {" of "}
+              {events.length}
+            </Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={() =>
+                setPageNumE(pageNumE <= 0 ? pageNumE : pageNumE - 1)
+              }
+            >
+              <SlArrowLeft />
+            </Button>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={() =>
+                setPageNumE(
+                  pageNumE * 10 + 10 >= events.length ? pageNumE : pageNumE + 1
+                )
+              }
+            >
+              <SlArrowRight />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+            >
+              <LuFilter />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+            >
+              <PiArrowsDownUpFill />
+            </Button>
+          </HStack>
         </HStack>
-      </HStack>
+      </form>
       <TableContainer
         w="100%"
         sx={{
@@ -411,7 +490,9 @@ export function OverallClassDashboard() {
                         {ev.title}
                       </Td>
                       <Td fontFamily="Inter">{ev.level}</Td>
-                      <Td fontFamily="Inter">{ev.date ? formatDate(ev.date) : ''}</Td>
+                      <Td fontFamily="Inter">
+                        {ev.date ? formatDate(ev.date) : ""}
+                      </Td>
                       <Td>
                         <Button
                           backgroundColor="transparent"
@@ -445,27 +526,27 @@ export function OverallClassDashboard() {
           onClose={onCloseModal}
           itemType="Class"
         />
-      ) : (currModal === "confirmationEvent" ?
-        (<ConfirmDeleteModal
+      ) : currModal === "confirmationEvent" ? (
+        <ConfirmDeleteModal
           isOpen={isOpenModal}
           onClose={onCloseModal}
           itemType="Event"
-        />) : 
-          (currModal === "toConfirm" ? (
-          <ClassDeleteConfirmationModal
-            isOpen={isOpenModal}
-            onClose={onCloseModal}
-            setCurrentModal={setModal}
-            classData={selectedClass}
-          />
-        ) : (currModal === "toConfirmEvent" ? 
-          <EventDeleteConfirmationModal
-            isOpen={isOpenModal}
-            onClose={onCloseModal}
-            setCurrentModal={setModal}
-            eventData={selectedEvent}
-          />
-          : null)))}
+        />
+      ) : currModal === "toConfirm" ? (
+        <ClassDeleteConfirmationModal
+          isOpen={isOpenModal}
+          onClose={onCloseModal}
+          setCurrentModal={setModal}
+          classData={selectedClass}
+        />
+      ) : currModal === "toConfirmEvent" ? (
+        <EventDeleteConfirmationModal
+          isOpen={isOpenModal}
+          onClose={onCloseModal}
+          setCurrentModal={setModal}
+          eventData={selectedEvent}
+        />
+      ) : null}
     </VStack>
   );
 }

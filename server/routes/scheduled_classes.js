@@ -7,16 +7,28 @@ const scheduledClassesRouter = express.Router();
 scheduledClassesRouter.use(express.json());
 
 scheduledClassesRouter.get("/teachers", async (req, res) => {
+  const { search } = req.query;
   try {
-    const data = await db.query(`
-        SELECT sc.date,c.*, 
-        COALESCE(STRING_AGG(u.first_name || ' ' || u.last_name, ', '),'') AS teachers
-        FROM scheduled_classes sc
-        LEFT JOIN classes_taught ct ON ct.class_id = sc.class_id
-        LEFT JOIN teachers t ON t.id = ct.teacher_id
-        LEFT JOIN users u ON u.id = t.id
-        LEFT JOIN classes c ON c.id = sc.class_id
-        GROUP BY c.id,sc.date;`);
+    let query = `
+      SELECT sc.date,c.*, 
+      COALESCE(STRING_AGG(u.first_name || ' ' || u.last_name, ', '),'') AS teachers
+      FROM scheduled_classes sc
+      LEFT JOIN classes_taught ct ON ct.class_id = sc.class_id
+      LEFT JOIN teachers t ON t.id = ct.teacher_id
+      LEFT JOIN users u ON u.id = t.id
+      LEFT JOIN classes c ON c.id = sc.class_id
+    `;
+
+    if (search) {
+      query += `
+        WHERE c.title ILIKE $1
+      `;
+    }
+    query += `
+      GROUP BY c.id,sc.date;
+    `;
+
+    const data = await db.query(query, search ? [`%${search}%`] : []);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
@@ -47,7 +59,6 @@ scheduledClassesRouter.get("/", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
 
 scheduledClassesRouter.post("/", async (req, res) => {
   try {
@@ -103,7 +114,7 @@ scheduledClassesRouter.delete("/:classId/:classDate", async (req, res) => {
        WHERE class_id = $1
        AND date = $2
        RETURNING *;`,
-      [classId,classDate]
+      [classId, classDate]
     );
 
     res.status(200).json({
