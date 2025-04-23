@@ -45,7 +45,6 @@ teachersRouter.get("/classes/", async (req, res) => {
       LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
       LEFT JOIN classes c ON c.id = ct.class_id
       INNER JOIN users u ON u.id = t.id
-      GROUP BY t.id, u.id
     `;
 
     if (search) {
@@ -55,6 +54,7 @@ teachersRouter.get("/classes/", async (req, res) => {
     }
 
     query += `
+      GROUP BY t.id, u.id
       ORDER BY LOWER(u.first_name), LOWER(u.last_name) 
     `;
     query += `LIMIT 10 OFFSET $2;`;
