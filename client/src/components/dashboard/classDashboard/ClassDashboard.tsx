@@ -23,7 +23,6 @@ import {
 
 import { debounce } from "lodash";
 import { FiTrash2 } from "react-icons/fi";
-import { LuFilter } from "react-icons/lu";
 import { PiArrowsDownUpFill } from "react-icons/pi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -241,13 +240,6 @@ export function OverallClassDashboard() {
               backgroundColor="transparent"
               p={0}
             >
-              <LuFilter />
-            </Button>
-            <Text>|</Text>
-            <Button
-              backgroundColor="transparent"
-              p={0}
-            >
               <PiArrowsDownUpFill />
             </Button>
           </HStack>
@@ -403,13 +395,6 @@ export function OverallClassDashboard() {
               }
             >
               <SlArrowRight />
-            </Button>
-            <Text>|</Text>
-            <Button
-              backgroundColor="transparent"
-              p={0}
-            >
-              <LuFilter />
             </Button>
             <Text>|</Text>
             <Button
