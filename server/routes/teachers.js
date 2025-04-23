@@ -7,15 +7,22 @@ export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
 teachersRouter.get("/classes/", async (req, res) => {
+  const { search } = req.query;
   try {
-    const teacherClasses = await db.query(
-      `
-            SELECT t.id as teacher_id, c.id as class_id, t.*, u.*, c.* FROM teachers t
-            LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
-            LEFT JOIN classes c ON c.id = ct.class_id
-            INNER JOIN users u ON u.id = t.id
-            `
-    );
+    let query = `
+      SELECT t.id as teacher_id, c.id as class_id, t.*, u.*, c.* FROM teachers t
+      LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
+      LEFT JOIN classes c ON c.id = ct.class_id
+      INNER JOIN users u ON u.id = t.id
+    `;
+
+    if (search) {
+      query += `
+        WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1
+      `;
+    }
+
+    const teacherClasses = await db.query(query, search ? [`%${search}%`] : []);
 
     res.status(200).json(keysToCamel(teacherClasses));
   } catch (err) {
