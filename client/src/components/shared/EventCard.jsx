@@ -91,7 +91,7 @@ export const EventCard = ({
     <>
     <Card
       w={{ base: "90%", md: "30em" }}
-      bg="gray.200"
+      bg="#FFFFFF"
     >
       <CardHeader pb={0}>
         <Heading

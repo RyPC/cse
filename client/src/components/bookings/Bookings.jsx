@@ -22,7 +22,9 @@ import {
   Text,
   useDisclosure,
   VStack,
-  Input
+  Input,
+  InputGroup,
+  InputLeftElement
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
@@ -44,6 +46,7 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
+import { FaSearch } from "react-icons/fa";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -102,6 +105,15 @@ export const Bookings = () => {
             .catch((err) => {
               console.log("Error fetching event enrollments:", err);
             });
+
+          backend
+            .get(`/event-enrollments/student/${userId}`)
+            .then((res) => {
+              setEvents(res.data);
+            })
+            .catch((err) => {
+              console.log("Error fetching event enrollments:", err);
+            });
         })
         .catch((err) => {
           console.log("Error fetching user:", err);
@@ -140,6 +152,7 @@ export const Bookings = () => {
 
     fetchCoreqId();
   }, [backend, selectedCard, isOpen]);
+
 
   const onCloseModal = () => {
     setSelectedCard(null);
@@ -311,6 +324,7 @@ export const Bookings = () => {
       const [classesResponse, classDataResponse] = await Promise.all([
         backend.get("/scheduled-classes"),
         backend.get("/classes"),
+
       ]);
 
       const classDataDict = new Map();
@@ -323,6 +337,7 @@ export const Bookings = () => {
       const formattedData = classesResponse.data
         .map((cls) => {
           const fullData = classDataDict.get(cls.classId);
+
 
           return fullData
             ? {
@@ -377,29 +392,27 @@ export const Bookings = () => {
   return (
     <Box  pt={2}>
       <VStack
-        spacing={8}>
-        <Input
-              placeholder="Search bar"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-          />
-      </VStack>
-      <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
         <Box px={4} width="100%" pt={4}>
-        <Input
-
-          placeholder="Search"
-          variant="filled"
-          borderRadius="full"
-          borderColor={"gray.300"}
-          bg="white.100"
-          _hover={{ bg: "gray.200" }}
-          _focus={{ bg: "white", borderColor: "gray.300" }}
-        />
+        <InputGroup>
+          <InputLeftElement pointerEvents='none'>
+            <FaSearch color="gray.300" />
+          </InputLeftElement>
+          <Input
+            placeholder="Search"
+            variant="filled"
+            borderRadius="full"
+            borderColor={"gray.300"}
+            bg="white.100"
+            _hover={{ bg: "gray.200" }}
+            _focus={{ bg: "white", borderColor: "gray.300" }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        </InputGroup>
         </Box>
 
         <Tabs
@@ -413,6 +426,7 @@ export const Bookings = () => {
             <Tab
               _selected={{
                 color: "black",
+                borderBottom: "2px solid black",
                 borderColor: "black",
                 fontWeight: "bold",
               }}
@@ -422,6 +436,7 @@ export const Bookings = () => {
             <Tab
               _selected={{
                 color: "black",
+                borderBottom: "2px solid black",
                 borderColor: "black",
                 fontWeight: "bold",
               }}
@@ -431,6 +446,7 @@ export const Bookings = () => {
             <Tab
               _selected={{
                 color: "black",
+                borderBottom: "2px solid black",
                 borderColor: "black",
                 fontWeight: "bold",
               }}

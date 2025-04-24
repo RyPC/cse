@@ -63,7 +63,7 @@ export const Resources = () => {
         initialTagFilter[tag.id] = false;
         initialTags[tag.id] = tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
       });
-    
+
       setTagFilter(initialTagFilter);
       setTags(initialTags);
     } catch (error) {
@@ -110,7 +110,7 @@ export const Resources = () => {
           onChange={handleInputChange}
         />
       </InputGroup>
-      
+
       <Flex gap={3}>
         {Object.keys(tags).map((tag) => (
           <Badge
@@ -126,7 +126,7 @@ export const Resources = () => {
           </Badge>
         ))}
       </Flex>
-      
+
       <Box>
         <Text fontWeight="bold" mt={4}>Videos</Text>
         <Flex wrap="wrap" gap={4}>
@@ -156,9 +156,9 @@ export const Resources = () => {
         <Flex wrap="wrap" gap={4}>
           {articles.map((article) => {
               const isFilterActive = Object.values(tagFilter).some(Boolean);
-            
+
               if (!isFilterActive || (article.tags && article.tags.some(tag => tagFilter[tag]))) {
-                return ( 
+                return (
                   <NewsCard
                     key={article.id}
                     id={article.id}
@@ -175,7 +175,7 @@ export const Resources = () => {
       </Box>
       {/* <UploadComponent /> */}
     </Flex>
-      {role === "teacher" && 
+      {role === "teacher" &&
         <IconButton
           icon={<span style={{ fontSize: "24px" }}>+</span>}
           colorScheme="purple"
