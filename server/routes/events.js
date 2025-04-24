@@ -20,6 +20,23 @@ eventsRouter.get("/search/:name", async (req, res) => {
   }
 });
 
+eventsRouter.get("/count", async (req, res) => {
+  const { search } = req.query;
+  try {
+    const query = `
+      SELECT COUNT(*)
+      FROM events
+      ${search ? "WHERE title ILIKE $1" : ""};
+    `;
+
+    const eventCount = await db.query(query, search ? [`%${search}%`] : []);
+
+    res.status(200).json(keysToCamel(eventCount));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 eventsRouter.get("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -73,15 +90,18 @@ eventsRouter.get("/:id", async (req, res) => {
 });
 
 eventsRouter.get("/", async (req, res) => {
-  const { search } = req.query;
+  const { search, page } = req.query;
+  const pageNum = page ? parseInt(page) : 0;
   try {
-    let query = `SELECT * FROM events`;
+    const query = `
+      SELECT *
+      FROM events
+      ${search ? "WHERE title ILIKE $1" : ""}
+      ORDER BY date DESC
+      LIMIT 10 OFFSET $2;
+    `;
 
-    if (search) {
-      query += " WHERE title ILIKE $1;";
-    }
-
-    const allEvents = await db.query(query, search ? [`%${search}%`] : []);
+    const allEvents = await db.query(query, [`%${search}%`, 10 * pageNum]);
 
     res.status(200).json(keysToCamel(allEvents));
   } catch (err) {

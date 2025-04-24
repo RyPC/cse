@@ -49,6 +49,8 @@ export function OverallClassDashboard() {
   const [pageNumE, setPageNumE] = useState<number>(0);
   const [classes, setClasses] = useState<Class[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [numClasses, setNumClasses] = useState<number>(0);
+  const [numEvents, setNumEvents] = useState<number>(0);
   const [currModal, setModal] = useState("none");
   const [selectedClass, setSelectedClass] = useState();
   const [selectedEvent, setSelectedEvent] = useState();
@@ -79,13 +81,8 @@ export function OverallClassDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const classesResponse = await backend.get(
-          "/scheduled-classes/teachers"
-        );
-        setClasses(classesResponse.data);
-
-        const eventsResponse = await backend.get("/events");
-        setEvents(eventsResponse.data);
+        updateClasses("", 0);
+        updateEvents("", 0);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -96,32 +93,46 @@ export function OverallClassDashboard() {
   const handleClassSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    updateClasses(classSearchTerm);
+    updateClasses(classSearchTerm, pageNum);
     setPageNum(0);
   };
   const handleEventSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    updateEvents(eventSearchTerm);
+    updateEvents(eventSearchTerm, pageNumE);
     setPageNumE(0);
   };
 
-  const updateClasses = async (term: string) => {
+  const updateClasses = async (term: string, page: number) => {
     try {
       const response = await backend.get("/scheduled-classes/teachers/", {
-        params: { search: term.trim() },
+        params: { search: term.trim(), page: page },
       });
       setClasses(response.data);
+      console.log(response.data);
+
+      const countResponse = await backend.get(
+        "/scheduled-classes/teachers/count/",
+        {
+          params: { search: term.trim() },
+        }
+      );
+      setNumClasses(countResponse.data[0].count);
     } catch (error) {
       console.error("Error fetching classes: ", error);
     }
   };
-  const updateEvents = async (term: string) => {
+  const updateEvents = async (term: string, page: number) => {
     try {
       const response = await backend.get("/events/", {
-        params: { search: term.trim() },
+        params: { search: term.trim(), page: page },
       });
       setEvents(response.data);
+
+      const countResponse = await backend.get("/events/count/", {
+        params: { search: term.trim() },
+      });
+      setNumEvents(countResponse.data[0].count);
     } catch (error) {
       console.error("Error fetching events: ", error);
     }
@@ -139,7 +150,8 @@ export function OverallClassDashboard() {
   const debouncedClassSearch = useCallback(
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
-        updateClasses(term);
+        updateClasses(term, 0);
+        setPageNum(0);
       }
     }, 500),
     []
@@ -147,11 +159,38 @@ export function OverallClassDashboard() {
   const debouncedEventSearch = useCallback(
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
-        updateEvents(term);
+        updateEvents(term, 0);
+        setPageNumE(0);
       }
     }, 500),
     []
   );
+
+  const incPage = () => {
+    if (pageNum * 10 + 10 < numClasses) {
+      updateClasses(classSearchTerm, pageNum + 1);
+      setPageNum(pageNum + 1);
+    }
+  };
+  const decPage = () => {
+    if (pageNum > 0) {
+      updateClasses(classSearchTerm, pageNum - 1);
+      setPageNum(pageNum - 1);
+    }
+  };
+
+  const incPageE = () => {
+    if (pageNumE * 10 + 10 < numEvents) {
+      updateEvents(eventSearchTerm, pageNumE + 1);
+      setPageNumE(pageNumE + 1);
+    }
+  };
+  const decPageE = () => {
+    if (pageNumE > 0) {
+      updateEvents(eventSearchTerm, pageNumE - 1);
+      setPageNumE(pageNumE - 1);
+    }
+  };
 
   return (
     <VStack>
@@ -211,27 +250,21 @@ export function OverallClassDashboard() {
             <Text>
               {pageNum * 10 + 1}
               {" - "}
-              {pageNum * 10 + 10 < classes.length
-                ? pageNum * 10 + 10
-                : classes.length}
+              {pageNum * 10 + classes.length}
               {" of "}
-              {classes.length}
+              {numClasses}
             </Text>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
+              onClick={decPage}
             >
               <SlArrowLeft />
             </Button>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() =>
-                setPageNum(
-                  pageNum * 10 + 10 >= classes.length ? pageNum : pageNum + 1
-                )
-              }
+              onClick={incPage}
             >
               <SlArrowRight />
             </Button>
@@ -302,49 +335,47 @@ export function OverallClassDashboard() {
           </Thead>
           <Tbody>
             {classes
-              ? classes
-                  .slice(pageNum * 10, pageNum * 10 + 10)
-                  .map((cls, index) => (
-                    <Tr
-                      key={index}
-                      onClick={() =>
-                        navigate(`/dashboard/classes/${cls.id}/${cls.date}`)
-                      }
-                      backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
-                      _hover={{ bg: "gray.300", cursor: "pointer" }}
-                      color="gray.700"
+              ? classes.map((cls, index) => (
+                  <Tr
+                    key={index}
+                    onClick={() =>
+                      navigate(`/dashboard/classes/${cls.id}/${cls.date}`)
+                    }
+                    backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
+                    _hover={{ bg: "gray.300", cursor: "pointer" }}
+                    color="gray.700"
+                  >
+                    <Td
+                      maxW="25vw"
+                      minW="25vw"
+                      width="25vw"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      fontFamily="Inter"
                     >
-                      <Td
-                        maxW="25vw"
-                        minW="25vw"
-                        width="25vw"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        fontFamily="Inter"
+                      {cls.title}
+                    </Td>
+                    <Td fontFamily="Inter">{cls.teachers}</Td>
+                    <Td fontFamily="Inter">{cls.level}</Td>
+                    <Td fontFamily="Inter">
+                      {cls.date ? formatDate(cls.date) : ""}
+                    </Td>
+                    <Td>
+                      <Button
+                        backgroundColor="transparent"
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevents earlier onclick
+                          setSelectedClass(cls);
+                          confirmDelete();
+                        }}
+                        m={-8} // overrides bounds of row
+                        fontSize="28px"
                       >
-                        {cls.title}
-                      </Td>
-                      <Td fontFamily="Inter">{cls.teachers}</Td>
-                      <Td fontFamily="Inter">{cls.level}</Td>
-                      <Td fontFamily="Inter">
-                        {cls.date ? formatDate(cls.date) : ""}
-                      </Td>
-                      <Td>
-                        <Button
-                          backgroundColor="transparent"
-                          onClick={(e) => {
-                            e.stopPropagation(); // prevents earlier onclick
-                            setSelectedClass(cls);
-                            confirmDelete();
-                          }}
-                          m={-8} // overrides bounds of row
-                          fontSize="28px"
-                        >
-                          <FiTrash2 />
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))
+                        <FiTrash2 />
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))
               : null}
           </Tbody>
         </Table>
@@ -370,29 +401,21 @@ export function OverallClassDashboard() {
             <Text>
               {pageNumE * 10 + 1}
               {" - "}
-              {pageNumE * 10 + 10 < events.length
-                ? pageNumE * 10 + 10
-                : events.length}
+              {pageNumE * 10 + events.length}
               {" of "}
-              {events.length}
+              {numEvents}
             </Text>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() =>
-                setPageNumE(pageNumE <= 0 ? pageNumE : pageNumE - 1)
-              }
+              onClick={decPageE}
             >
               <SlArrowLeft />
             </Button>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() =>
-                setPageNumE(
-                  pageNumE * 10 + 10 >= events.length ? pageNumE : pageNumE + 1
-                )
-              }
+              onClick={incPageE}
             >
               <SlArrowRight />
             </Button>
@@ -452,48 +475,46 @@ export function OverallClassDashboard() {
           </Thead>
           <Tbody>
             {events
-              ? events
-                  .slice(pageNumE * 10, pageNumE * 10 + 10)
-                  .map((ev, index) => (
-                    <Tr
-                      key={index}
-                      onClick={() =>
-                        navigate(`/dashboard/classes/event/${ev.id}`)
-                      }
-                      backgroundColor={index % 2 ? "white" : "gray.100"}
-                      _hover={{ bg: "gray.300", cursor: "pointer" }}
-                      color="gray.700"
+              ? events.map((ev, index) => (
+                  <Tr
+                    key={index}
+                    onClick={() =>
+                      navigate(`/dashboard/classes/event/${ev.id}`)
+                    }
+                    backgroundColor={index % 2 ? "white" : "gray.100"}
+                    _hover={{ bg: "gray.300", cursor: "pointer" }}
+                    color="gray.700"
+                  >
+                    <Td
+                      maxW="25vw"
+                      minW="25vw"
+                      width="25vw"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      fontFamily="Inter"
                     >
-                      <Td
-                        maxW="25vw"
-                        minW="25vw"
-                        width="25vw"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        fontFamily="Inter"
+                      {ev.title}
+                    </Td>
+                    <Td fontFamily="Inter">{ev.level}</Td>
+                    <Td fontFamily="Inter">
+                      {ev.date ? formatDate(ev.date) : ""}
+                    </Td>
+                    <Td>
+                      <Button
+                        backgroundColor="transparent"
+                        onClick={(e) => {
+                          e.stopPropagation(); // prevents earlier onclick
+                          setSelectedEvent(ev);
+                          confirmDeleteEvent();
+                        }}
+                        m={-8} // overrides bounds of row
+                        fontSize="28px"
                       >
-                        {ev.title}
-                      </Td>
-                      <Td fontFamily="Inter">{ev.level}</Td>
-                      <Td fontFamily="Inter">
-                        {ev.date ? formatDate(ev.date) : ""}
-                      </Td>
-                      <Td>
-                        <Button
-                          backgroundColor="transparent"
-                          onClick={(e) => {
-                            e.stopPropagation(); // prevents earlier onclick
-                            setSelectedEvent(ev);
-                            confirmDeleteEvent();
-                          }}
-                          m={-8} // overrides bounds of row
-                          fontSize="28px"
-                        >
-                          <FiTrash2 />
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))
+                        <FiTrash2 />
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))
               : null}
           </Tbody>
         </Table>

@@ -6,10 +6,38 @@ import { db } from "../db/db-pgp";
 const scheduledClassesRouter = express.Router();
 scheduledClassesRouter.use(express.json());
 
-scheduledClassesRouter.get("/teachers", async (req, res) => {
+scheduledClassesRouter.get("/teachers/count", async (req, res) => {
   const { search } = req.query;
+
   try {
-    let query = `
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM (
+        SELECT sc.date, c.id
+        FROM scheduled_classes sc
+        LEFT JOIN classes_taught ct ON ct.class_id = sc.class_id
+        LEFT JOIN teachers t ON t.id = ct.teacher_id
+        LEFT JOIN users u ON u.id = t.id
+        LEFT JOIN classes c ON c.id = sc.class_id
+        ${search ? "WHERE c.title ILIKE $1" : ""}
+        GROUP BY c.id, sc.date
+      ) AS subq;
+    `;
+
+    const data = await db.query(query, [`%${search}%`]);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+scheduledClassesRouter.get("/teachers", async (req, res) => {
+  const { search, page } = req.query;
+  const pageNum = page ? parseInt(page) : 0;
+
+  try {
+    const query = `
       SELECT sc.date,c.*, 
       COALESCE(STRING_AGG(u.first_name || ' ' || u.last_name, ', '),'') AS teachers
       FROM scheduled_classes sc
@@ -17,18 +45,13 @@ scheduledClassesRouter.get("/teachers", async (req, res) => {
       LEFT JOIN teachers t ON t.id = ct.teacher_id
       LEFT JOIN users u ON u.id = t.id
       LEFT JOIN classes c ON c.id = sc.class_id
+      ${search ? "WHERE c.title ILIKE $1" : ""}
+      GROUP BY c.id, sc.date
+      ORDER BY LOWER(c.title) ASC
+      LIMIT 10 OFFSET $2;
     `;
 
-    if (search) {
-      query += `
-        WHERE c.title ILIKE $1
-      `;
-    }
-    query += `
-      GROUP BY c.id,sc.date;
-    `;
-
-    const data = await db.query(query, search ? [`%${search}%`] : []);
+    const data = await db.query(query, [`%${search}%`, 10 * pageNum]);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
