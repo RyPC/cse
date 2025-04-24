@@ -33,6 +33,10 @@ export const CreateClassForm = memo(
     const { backend } = useBackendContext();
     const [events, setEvents] = useState([]);
     const [tags, setTags] = useState([]);
+    const [teachers, setTeachers] = useState([]);
+    const [selectedInstructor, setSelectedInstructor] = useState(
+      modalData?.teachers?.[0] ?? ""
+    );
 
     const [title, setTitle] = useState(modalData?.title ?? "");
     const [location, setLocation] = useState(modalData?.location ?? "");
@@ -74,6 +78,8 @@ export const CreateClassForm = memo(
         recurrencePattern
       );
 
+      
+
       const baseClassBody = {
         location: location ?? "",
         description: description ?? "",
@@ -87,6 +93,8 @@ export const CreateClassForm = memo(
         recurrence_pattern: recurrencePattern,
         start_date: date,
         end_date: recurrencePattern !== "none" ? endDate : date,
+        instructor: selectedInstructor
+
       };
 
       if (modalData) {
@@ -224,6 +232,9 @@ export const CreateClassForm = memo(
         });
         backend.get("/tags").then((response) => {
           setTags(response.data);
+        });
+        backend.get("/teachers").then((response) => {
+          setTeachers(response.data);
         });
       }
     }, [backend]);
@@ -368,6 +379,32 @@ export const CreateClassForm = memo(
                 />
               </FormControl>
             </HStack>
+
+            <FormControl>
+              <FormLabel>Instructor</FormLabel>
+              <Select
+                placeholder="Select an instructor"
+                required
+                value={selectedInstructor}
+                onChange={(e) => setSelectedInstructor(e.target.value)}
+                bg="white"
+                color="black"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
+              >
+                {teachers.map((teacher) => (
+                  <option key={teacher.id} value={teacher.id}>
+                      {teacher.firstName} {teacher.lastName}
+
+                  </option>
+                ))}
+              </Select>
+
+            </FormControl>
 
             <FormControl mt={4}>
               <FormLabel>Description</FormLabel>
