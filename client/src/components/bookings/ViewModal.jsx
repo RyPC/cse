@@ -126,8 +126,9 @@ export const ViewModal = ({
         {!isAttended && !card?.attendance && (
           <ModalFooter justifyContent="center">
             <Button
+              width = "60%"
               size="sm"
-              background="#757575"
+              background="#422E8D"
               color="white"
               mr={3}
               onClick={onCancel}

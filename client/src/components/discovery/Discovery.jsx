@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { Box, Button, Flex, Heading, Input, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, InputGroup, InputLeftElement, VStack } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+import { FaSearch } from "react-icons/fa";
 
 export const Discovery = () => {
   // Active Tab Logic
@@ -37,7 +38,7 @@ export const Discovery = () => {
     fetchUserData();
   }, [backend, currentUser])
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       // Fetch and Store Classes Information
@@ -112,16 +113,55 @@ export const Discovery = () => {
         my={5}
         mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
       >
-        <Heading>Discovery</Heading>
-        <Input
-          placeholder="Search bar"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-        ></Input>
-        <Flex gap="5">
-          <Button onClick={toggleClasses} colorScheme={activeTab === "classes" ? "purple" : "gray"}>Classes</Button>
-          <Button onClick={toggleEvents} colorScheme={activeTab === "events" ? "purple" : "gray"}>Events</Button>
+        <InputGroup>
+          <InputLeftElement pointerEvents='none'>
+            <FaSearch color="gray.300" />
+          </InputLeftElement>
+          <Input
+            placeholder= "Search"
+            variant="filled"
+            borderRadius="full"
+            borderColor={"gray.300"}
+            bg="white.100"
+            _hover={{ bg: "gray.200" }}
+            _focus={{ bg: "white", borderColor: "gray.300" }}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          ></Input>
+        </InputGroup>
+        <Flex gap="5"
+          justify="center"
+          borderBottom = "1px solid"
+          borderColor = "gray.200"
+        >
+
+          <Button
+            variant="unstyled"
+            borderBottom="2px solid"
+            borderColor={activeTab === "classes" ? "black" : "transparent"}
+            fontWeight={activeTab === "classes" ? "bold" : "normal"}
+            color={activeTab === "classes" ? "black" : "gray.500"}
+            borderRadius="0"
+            onClick={() => {
+              setActiveTab("classes");
+              toggleClasses();
+            }}
+          >
+            Classes</Button>
+          <Button
+            variant="unstyled"
+            borderBottom="2px solid"
+            borderColor={activeTab === "events" ? "black" : "transparent"}
+            fontWeight={activeTab === "events" ? "bold" : "normal"}
+            color={activeTab === "events" ? "black" : "gray.500"}
+            borderRadius="0"
+            onClick={() => {
+              setActiveTab("events");
+              toggleEvents();
+            }}
+          >
+            Events</Button>
         </Flex>
 
         <Box my="14px">
