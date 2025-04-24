@@ -39,7 +39,8 @@ teachersRouter.get("/notactivated", async (req, res) => {
             SELECT *
             FROM Teachers
              INNER JOIN Users ON Users.id = Teachers.id
-            WHERE Teachers.is_activated = False;`);
+            WHERE Teachers.is_activated = False 
+            AND Users.hidden = False;`);
 
     res.status(200).json(keysToCamel(teacher));
   } catch (err) {

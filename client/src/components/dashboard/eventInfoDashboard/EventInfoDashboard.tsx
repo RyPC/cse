@@ -339,16 +339,6 @@ export default function EventInfoDashboard() {
                   fontSize={18}
                   textTransform="none"
                 >
-                  Location
-                </Th>
-                <Th
-                  fontFamily="Inter"
-                  fontWeight={700}
-                  color="#4A5568"
-                  letterSpacing="5%"
-                  fontSize={18}
-                  textTransform="none"
-                >
                   Email
                 </Th>
               </Tr>
@@ -366,7 +356,6 @@ export default function EventInfoDashboard() {
                   </Td>
                   <Td>{stud.attendance !== null ? "Yes" : "No"}</Td>
                   <Td>{currentEvent?.date.toLocaleDateString()}</Td>
-                  <Td>{currentEvent?.location}</Td>
                   <Td>{stud.email}</Td>
                 </Tr>
               ))}
