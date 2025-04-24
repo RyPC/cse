@@ -22,7 +22,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { debounce } from "lodash";
+import { debounce, set } from "lodash";
 import { FiTrash2 } from "react-icons/fi";
 import { PiArrowsDownUpFill } from "react-icons/pi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
@@ -42,43 +42,16 @@ export const TeacherDashboard = () => {
   const navigate = useNavigate();
 
   const [pageNum, setPageNum] = useState<number>(0);
-  const [teacherClasses, setTeacherClasses] = useState(new Map());
-  const [searchTerm, setSearchTerm] = useState("");
+  const [teachers, setTeachers] = useState([]);
+  const [numTeachers, setNumTeachers] = useState<number>(0);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const notifRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await backend.get("/teachers/classes/");
-        // console.log(response.data);
-        setTeacherClasses(
-          response.data.reduce((acc, item) => {
-            const {
-              teacherId,
-              classId,
-              firstName,
-              lastName,
-              email,
-              isActivated,
-              title,
-            } = item;
-            const key = JSON.stringify({
-              id: teacherId,
-              firstName,
-              lastName,
-              email,
-              isActivated,
-            }); // teacher + user
-            // console.log(key);
-            const value = { id: classId, title }; // class
-            if (!acc.has(key))
-              if (classId) acc.set(key, [value]);
-              else acc.set(key, []);
-            else acc.get(key).push(value);
-            return acc;
-          }, new Map())
-        );
+        updateTeachers("", 0);
       } catch (error) {
         console.error("Error fetching teachers and classes:", error);
       }
@@ -90,43 +63,21 @@ export const TeacherDashboard = () => {
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    updateTeachers(searchTerm);
+    updateTeachers(searchTerm, pageNum);
     setPageNum(0);
   };
 
-  const updateTeachers = async (term: string) => {
+  const updateTeachers = async (term: string, page: number) => {
     try {
       const response = await backend.get("/teachers/classes/", {
+        params: { search: term.trim(), page: page },
+      });
+      setTeachers(response.data);
+
+      const countResponse = await backend.get("/teachers/classes/count/", {
         params: { search: term.trim() },
       });
-      // console.log(response.data);
-      setTeacherClasses(
-        response.data.reduce((acc, item) => {
-          const {
-            teacherId,
-            classId,
-            firstName,
-            lastName,
-            email,
-            isActivated,
-            title,
-          } = item;
-          const key = JSON.stringify({
-            id: teacherId,
-            firstName,
-            lastName,
-            email,
-            isActivated,
-          }); // teacher + user
-          // console.log(key);
-          const value = { id: classId, title }; // class
-          if (!acc.has(key))
-            if (classId) acc.set(key, [value]);
-            else acc.set(key, []);
-          else acc.get(key).push(value);
-          return acc;
-        }, new Map())
-      );
+      setNumTeachers(countResponse.data[0].count);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -137,10 +88,23 @@ export const TeacherDashboard = () => {
     debouncedSearch(e.target.value); // Only runs after not typing for 500ms
   };
 
+  const incPage = () => {
+    if (pageNum * 10 + 10 < numTeachers) {
+      updateTeachers(searchTerm, pageNum + 1);
+      setPageNum(pageNum + 1);
+    }
+  };
+  const decPage = () => {
+    if (pageNum > 0) {
+      updateTeachers(searchTerm, pageNum - 1);
+      setPageNum(pageNum - 1);
+    }
+  };
+
   const debouncedSearch = useCallback(
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
-        updateTeachers(term);
+        updateTeachers(term, 0);
       }
     }, 500),
     []
@@ -204,29 +168,25 @@ export const TeacherDashboard = () => {
             <Text>
               {pageNum * 10 + 1}
               {" - "}
-              {pageNum * 10 + 10 < [...teacherClasses].length
+              {pageNum * 10 + 10 < teachers.length
                 ? pageNum * 10 + 10
-                : [...teacherClasses].length}
+                : teachers.length}
               {" of "}
-              {[...teacherClasses].length}
+              {numTeachers}
             </Text>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
+              onClick={decPage}
+              // disabled={pageNum === 0}
             >
               <SlArrowLeft />
             </Button>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() =>
-                setPageNum(
-                  pageNum * 10 + 10 >= [...teacherClasses].length
-                    ? pageNum
-                    : pageNum + 1
-                )
-              }
+              onClick={incPage}
+              // disabled={pageNum * 10 + 10 >= numTeachers}
             >
               <SlArrowRight />
             </Button>
@@ -293,44 +253,41 @@ export const TeacherDashboard = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {teacherClasses
-              ? [...teacherClasses]
-                  .slice(pageNum * 10, pageNum * 10 + 10)
-                  .map(([teacherString, classes], index) => {
-                    const teacher = JSON.parse(teacherString);
-                    return (
-                      <Tr
-                        key={teacher.id}
-                        onClick={() =>
-                          navigate(`/dashboard/teachers/${teacher.id}`)
-                        }
-                        backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
-                        _hover={{ bg: "gray.300", cursor: "pointer" }}
-                        color="gray.700"
-                      >
-                        <Td>
-                          {teacher.firstName} {teacher.lastName}
-                        </Td>
-                        <Td>{teacher.email}</Td>
-                        <Td>
-                          <StatusCard status={teacher.isActivated} />
-                        </Td>
-                        <Td>{classes.length}</Td>
-                        <Td>
-                          <Button
-                            backgroundColor="transparent"
-                            onClick={(e) => {
-                              e.stopPropagation(); // prevents earlier onclick
-                            }}
-                            m={-8} // overrides bounds of row
-                            fontSize="28px"
-                          >
-                            <FiTrash2 />
-                          </Button>
-                        </Td>
-                      </Tr>
-                    );
-                  })
+            {teachers
+              ? teachers.map((teacher, index) => {
+                  return (
+                    <Tr
+                      key={teacher.id}
+                      onClick={() =>
+                        navigate(`/dashboard/teachers/${teacher.id}`)
+                      }
+                      backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
+                      _hover={{ bg: "gray.300", cursor: "pointer" }}
+                      color="gray.700"
+                    >
+                      <Td>
+                        {teacher.firstName} {teacher.lastName}
+                      </Td>
+                      <Td>{teacher.email}</Td>
+                      <Td>
+                        <StatusCard status={teacher.isActivated} />
+                      </Td>
+                      <Td>{teacher.classCount}</Td>
+                      <Td>
+                        <Button
+                          backgroundColor="transparent"
+                          onClick={(e) => {
+                            e.stopPropagation(); // prevents earlier onclick
+                          }}
+                          m={-8} // overrides bounds of row
+                          fontSize="28px"
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  );
+                })
               : null}
           </Tbody>
         </Table>

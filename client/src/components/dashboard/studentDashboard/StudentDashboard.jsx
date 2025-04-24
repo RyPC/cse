@@ -35,6 +35,7 @@ export const StudentDashboard = () => {
   const navigate = useNavigate();
   const { backend } = useBackendContext();
   const [pageNum, setPageNum] = useState(0);
+  const [numStudents, setNumStudents] = useState(0);
   const [students, setStudents] = useState([]);
   const [classCount, setClassCount] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,13 +43,12 @@ export const StudentDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await backend.get("/students");
-        setStudents(response.data);
+        updateStudents(searchTerm, pageNum);
 
-        const countResponse = await backend.get(
+        const classCountResponse = await backend.get(
           "/class-enrollments/student-class-count"
         );
-        setClassCount(countResponse.data);
+        setClassCount(classCountResponse.data);
       } catch (error) {
         console.error("Error fetching students:", error);
       }
@@ -60,16 +60,22 @@ export const StudentDashboard = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
 
-    updateStudents(searchTerm);
+    updateStudents(searchTerm, pageNum);
     setPageNum(0);
   };
 
-  const updateStudents = async (term) => {
+  const updateStudents = async (term, page) => {
     try {
       const response = await backend.get("/students", {
-        params: { search: term.trim() },
+        params: { search: term.trim(), page: page },
       });
       setStudents(response.data);
+
+      const studentCountResponse = await backend.get("/students/count", {
+        params: { search: term.trim() },
+      });
+      setNumStudents(studentCountResponse.data[0].count);
+      console.log(studentCountResponse.data[0].count);
     } catch (error) {
       console.error("Error fetching students:", error);
     }
@@ -80,10 +86,24 @@ export const StudentDashboard = () => {
     debouncedSearch(e.target.value); // Only runs after not typing for 500ms
   };
 
+  const incPage = () => {
+    if (pageNum * 10 + 10 < numStudents) {
+      updateStudents(searchTerm, pageNum + 1);
+      setPageNum(pageNum + 1);
+    }
+  };
+  const decPage = () => {
+    if (pageNum > 0) {
+      updateStudents(searchTerm, pageNum - 1);
+      setPageNum(pageNum - 1);
+    }
+  };
+
   const debouncedSearch = useCallback(
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
-        updateStudents(term);
+        setPageNum(0);
+        updateStudents(term, 0);
       }
     }, 500),
     []
@@ -147,27 +167,21 @@ export const StudentDashboard = () => {
             <Text>
               {pageNum * 10 + 1}
               {" - "}
-              {pageNum * 10 + 10 < students.length
-                ? pageNum * 10 + 10
-                : students.length}
+              {pageNum * 10 + students.length}
               {" of "}
-              {students.length}
+              {numStudents}
             </Text>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
+              onClick={decPage}
             >
               <SlArrowLeft />
             </Button>
             <Button
               backgroundColor="transparent"
               p={0}
-              onClick={() =>
-                setPageNum(
-                  pageNum * 10 + 10 >= students.length ? pageNum : pageNum + 1
-                )
-              }
+              onClick={incPage}
             >
               <SlArrowRight />
             </Button>
@@ -226,7 +240,7 @@ export const StudentDashboard = () => {
           <Tbody>
             {students
               ? students
-                  .slice(pageNum * 10, pageNum * 10 + 10)
+                  // .slice(pageNum * 10, pageNum * 10 + 10)
                   .map((stud, index) => (
                     <Tr
                       key={stud.id}
