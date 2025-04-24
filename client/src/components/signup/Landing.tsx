@@ -22,7 +22,7 @@ export const Landing = () => {
   }
 
   return (
-    <VStack justifyContent="center" alignItems="center" paddingTop="50%">
+    <VStack justifyContent="center" alignItems="center" height={"100vh"}>
         <Image src={logo} fit="contain"></Image>
         <Button
             type="submit"

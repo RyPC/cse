@@ -144,7 +144,7 @@ export const Login = () => {
       <Center w="100vw">
         <VStack>
           <Image src={logo} w="24.378vw" h="11.670vh" fit="contain"></Image>
-          <Text fontSize="20px" sx={{fontWeight: "500" }}>Account created! Continue to log in.</Text> 
+          {/* <Text fontSize="20px" sx={{fontWeight: "500" }}>Account created! Continue to log in.</Text> */}
         </VStack>
       </Center>
 
