@@ -11,7 +11,7 @@ import { FaSearch } from "react-icons/fa";
 
 export const Discovery = () => {
   // Active Tab Logic
-  const [activeTab, setActiveTab] = useState("classes"); // Default to showing both
+  const [activeTab, setActiveTab] = useState("classes"); // Default to showing classes
   const [searchInput, setSearchInput] = useState("");
   const [refresh, setRefresh] = useState(0);
   const { currentUser } = useAuthContext();
@@ -38,7 +38,7 @@ export const Discovery = () => {
     fetchUserData();
   }, [backend, currentUser])
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       // Fetch and Store Classes Information
@@ -135,9 +135,9 @@ export const Discovery = () => {
           borderBottom = "1px solid"
           borderColor = "gray.200"
         >
-        
+
           <Button
-            variant="unstyled" 
+            variant="unstyled"
             borderBottom="2px solid"
             borderColor={activeTab === "classes" ? "black" : "transparent"}
             fontWeight={activeTab === "classes" ? "bold" : "normal"}
@@ -150,7 +150,7 @@ export const Discovery = () => {
           >
             Classes</Button>
           <Button
-            variant="unstyled" 
+            variant="unstyled"
             borderBottom="2px solid"
             borderColor={activeTab === "events" ? "black" : "transparent"}
             fontWeight={activeTab === "events" ? "bold" : "normal"}

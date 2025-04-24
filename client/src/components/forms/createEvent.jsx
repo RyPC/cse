@@ -67,17 +67,23 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
   };
 
   const handleSubmit = async (isDraft) => {
-    if (!validateForm()) return;
+    
+    if (!isDraft && !validateForm()) return;
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
       const eventData = {
         ...formData,
-        start_time: formData.startTime,
-        end_time: formData.endTime,
-        call_time: formData.callTime,
+        level: formData.level == "" ? "beginner" : formData.level,
+        date: formData.date == "" ? new Date() : formData.date,
+        start_time: formData.startTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.startTime,
+        end_time: formData.endTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.endTime,
+        call_time: formData.callTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.callTime,
+        capacity: formData.capacity == "" ? 0 : formData.capacity,
         is_draft: isDraft,
       };
+
+      console.log(eventData)
 
       // Using axios instead of fetch
       let response;
