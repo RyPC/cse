@@ -105,6 +105,7 @@ export const TeacherDashboard = () => {
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
         updateTeachers(term, 0);
+        setPageNum(0);
       }
     }, 500),
     []
