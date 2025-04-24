@@ -49,11 +49,14 @@ export const TeacherEditModal = ({
   setRefresh,
   coreqId,
 }) => {
+
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
   const [recurrencePattern, setRecurrencePattern] = useState(
     classData?.recurrencePattern ?? "none"
   );
+  const [teachers, setTeachers] = useState([]);
+  const [selectedInstructor, setSelectedInstructor] = useState(classData?.instructor ?? "");
   const formRef = useRef(null);
   const [tags, setTags] = useState([]);
   const toast = useToast();
@@ -66,6 +69,9 @@ export const TeacherEditModal = ({
     if (backend) {
       backend.get("/tags").then((response) => {
         setTags(response.data);
+      });
+      backend.get("/teachers").then((response) => {
+        setTeachers(response.data)
       });
     }
   }, [backend]);
@@ -92,6 +98,12 @@ export const TeacherEditModal = ({
       await backend.put(`/classes/${classData.id}`, updatedData);
       console.log("Updating class", classData.id, updatedData);
       await backend.delete(`/corequisites/class/${classData.id}`);
+      await backend.put(`/classes-taught`, {
+        classId: classData.id,
+        teacherId: selectedInstructor,
+      });
+      console.log(
+        "Updating instructor",classData.id, selectedInstructor  );
       if (performanceId) {
         await backend.put(
           `/corequisites/${classData.id}/${performanceId}`,
@@ -355,6 +367,27 @@ export const TeacherEditModal = ({
                 placeholder="Enter end time..."
               />
             </FormControl>
+
+            {/* editing teachers */}
+            <FormControl mb={4}>
+              <FormLabel>Instructor</FormLabel>
+              <Select
+                placeholder="Select an instructor"
+                value={selectedInstructor}
+                onChange={(e) => setSelectedInstructor(e.target.value)}
+                maxWidth="300px"
+                bg="white"
+                color="black"
+              >
+                {teachers.map((teacher) => (
+                  <option key={teacher.id} value={teacher.id}>
+                    {teacher.firstName} {teacher.lastName}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+
+
             <FormControl mb={4}>
               <FormLabel>Description</FormLabel>
               <Textarea

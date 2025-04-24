@@ -40,4 +40,49 @@ classesTaughtRouter.post("/", async (req, res) => {
   }
 });
 
+// GET instructor name by class ID
+classesTaughtRouter.get("/instructor/:classId", async (req, res) => {
+  try {
+    const classId = req.params.classId;
+
+    const result = await db.any(`
+      SELECT u.first_name, u.last_name
+      FROM classes_taught ct
+      JOIN teachers t ON ct.teacher_id = t.id
+      JOIN users u ON u.id = t.id
+      WHERE ct.class_id = $1;
+    `, [classId]);
+
+    res.status(200).json(result);
+
+
+
+  } catch (err) {
+    console.error("Failed to fetch instructor:", err);
+    res.status(500).send(err.message);
+  }
+});
+
+// updating class tought
+classesTaughtRouter.put("/", async (req, res) => {
+  const { classId, teacherId } = req.body;
+
+  try {
+    // Remove existing mapping(s) for this class
+    await db.none(`DELETE FROM classes_taught WHERE class_id = $1`, [classId]);
+
+    // Insert new mapping
+    await db.none(
+      `INSERT INTO classes_taught (class_id, teacher_id) VALUES ($1, $2)`,
+      [classId, teacherId]
+    );
+
+    res.status(200).json({ message: "Instructor updated successfully." });
+  } catch (error) {
+    console.error("Error updating instructor:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export { classesTaughtRouter };
+
