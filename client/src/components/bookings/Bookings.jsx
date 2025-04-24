@@ -1,14 +1,16 @@
 import { memo, useEffect, useState } from "react";
-import { MdAdd } from "react-icons/md";
 
 import {
+  Badge,
   Box,
   Button,
   Card,
   CardBody,
   CardHeader,
+  Flex,
   Heading,
   HStack,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -22,11 +24,10 @@ import {
   Text,
   useDisclosure,
   VStack,
-  Input
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
-import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
+import { MdAdd, MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -67,6 +68,8 @@ export const Bookings = () => {
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
   const [searchInput, setSearchInput] = useState("");
+  const [tags, setTags] = useState({});
+  const [tagFilter, setTagFilter] = useState({});
 
   const [refresh, setRefresh] = useState(0);
 
@@ -140,6 +143,29 @@ export const Bookings = () => {
 
     fetchCoreqId();
   }, [backend, selectedCard, isOpen]);
+
+  const fetchTags = async () => {
+    try {
+      const tagsResponse = await backend.get("/tags");
+      const initialTagFilter = {};
+      const initialTags = {};
+      tagsResponse.data.forEach((tag) => {
+        initialTagFilter[tag.id] = false;
+        initialTags[tag.id] =
+          tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
+      });
+
+      setTagFilter(initialTagFilter);
+      setTags(initialTags);
+      // console.log(initialTags);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTags();
+  }, [searchInput]);
 
   const onCloseModal = () => {
     setSelectedCard(null);
@@ -237,6 +263,14 @@ export const Bookings = () => {
     }
   };
 
+  const handleFilterToggle = (id) => () => {
+    console.log(`Tag ${id} has been toggled!`);
+    setTagFilter((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const loadCorequisites = async (classId) => {
     try {
       const response = await backend.get(`classes/corequisites/${classId}`);
@@ -252,7 +286,9 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-      backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
+      backend
+        .get(`/events/search/${searchInput}`)
+        .then((res) => setEvents(res.data));
       backend.get(`/classes/search/${searchInput}`).then((res) => {
         setClasses(res.data);
       });
@@ -284,7 +320,7 @@ export const Bookings = () => {
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
     loadCorequisites(selectedCard.id);
-  }
+  };
 
   const reloadEvents = async () => {
     if (searchInput) {
@@ -300,7 +336,7 @@ export const Bookings = () => {
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
     loadCorequisites(selectedCard.id);
-  }
+  };
 
   // useEffect(() => {
   //   console.log("selectedCard", selectedCard);
@@ -375,38 +411,39 @@ export const Bookings = () => {
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
   return (
-    <Box  pt={2}>
-      <VStack
-        spacing={8}>
+    <Box pt={2}>
+      <VStack spacing={8}>
         <Input
-              placeholder="Search bar"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-          />
+          placeholder="Search bar"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
       </VStack>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
-        <Box px={4} width="100%" pt={4}>
-        <Input
-
-          placeholder="Search"
-          variant="filled"
-          borderRadius="full"
-          borderColor={"gray.300"}
-          bg="white.100"
-          _hover={{ bg: "gray.200" }}
-          _focus={{ bg: "white", borderColor: "gray.300" }}
-        />
+        <Box
+          px={4}
+          width="100%"
+          pt={4}
+        >
+          <Input
+            placeholder="Search"
+            variant="filled"
+            borderRadius="full"
+            borderColor={"gray.300"}
+            bg="white.100"
+            _hover={{ bg: "gray.200" }}
+            _focus={{ bg: "white", borderColor: "gray.300" }}
+          />
         </Box>
 
         <Tabs
           width="100%"
           variant="line"
           colorScheme="blackAlpha"
-
           onChange={(index) => setTabIndex(index)}
         >
           <TabList justifyContent="center">
@@ -441,6 +478,21 @@ export const Bookings = () => {
 
           <TabPanels>
             <TabPanel>
+              <Flex gap={3}>
+                {Object.keys(tags).map((tag) => (
+                  <Badge
+                    key={tag}
+                    onClick={handleFilterToggle(tag)}
+                    rounded="xl"
+                    px={4}
+                    py={1}
+                    colorScheme={tagFilter[tag] ? "green" : "red"}
+                    textTransform="none"
+                  >
+                    {tags[tag]}
+                  </Badge>
+                ))}
+              </Flex>
               <VStack
                 spacing={4}
                 width="100%"
@@ -477,6 +529,21 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
+              <Flex gap={3}>
+                {Object.keys(tags).map((tag) => (
+                  <Badge
+                    key={tag}
+                    onClick={handleFilterToggle(tag)}
+                    rounded="xl"
+                    px={4}
+                    py={1}
+                    colorScheme={tagFilter[tag] ? "green" : "red"}
+                    textTransform="none"
+                  >
+                    {tags[tag]}
+                  </Badge>
+                ))}
+              </Flex>
               <VStack
                 spacing={4}
                 width="100%"
@@ -501,6 +568,21 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
+              <Flex gap={3}>
+                {Object.keys(tags).map((tag) => (
+                  <Badge
+                    key={tag}
+                    onClick={handleFilterToggle(tag)}
+                    rounded="xl"
+                    px={4}
+                    py={1}
+                    colorScheme={tagFilter[tag] ? "green" : "red"}
+                    textTransform="none"
+                  >
+                    {tags[tag]}
+                  </Badge>
+                ))}
+              </Flex>
               <VStack
                 spacing={4}
                 width="100%"
@@ -678,11 +760,8 @@ export const Bookings = () => {
           _hover={{ bg: "blue.700" }}
           fontSize="4xl"
           zIndex={999}
-
         >
           <MdAdd size={40} />
-
-
         </Button>
       )}
       <Navbar />
@@ -737,12 +816,10 @@ const ClassTeacherCard = memo(
                 {date ? date : "1/27/2025 @ 1 PM - 3 PM"}
               </Text>
             </HStack>
-
             <HStack>
               <FaMapMarkerAlt size={14} />
               <Text fontSize="sm">{location ? location : "Irvine"}</Text>
             </HStack>
-
             <HStack>
               <FaUser size={14} />
               <Text fontSize="sm">
@@ -750,7 +827,6 @@ const ClassTeacherCard = memo(
                 {rsvpCount === 1 ? "person" : "people"} RSVP'd
               </Text>
             </HStack>
-
             <Button
               alignSelf="flex-end"
               variant="solid"
