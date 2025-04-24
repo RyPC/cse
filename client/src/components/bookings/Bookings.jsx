@@ -252,10 +252,17 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-      backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
-      backend.get(`/classes/search/${searchInput}`).then((res) => {
-        setClasses(res.data);
-      });
+      if (searchInput) {
+        backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
+        backend.get(`/classes/search/${searchInput}`).then((res) => {
+          setClasses(res.data);
+        });
+      } else {
+        backend.get(`/events/published`).then((res) => setEvents(res.data));
+        backend.get(`/classes/published`).then((res) => {
+          setClasses(res.data);
+        });
+      }
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
 
@@ -263,7 +270,7 @@ export const Bookings = () => {
       const attendedEvents = events.filter((e) => e.attendance !== null);
       setAttended([...attendedClasses, ...attendedEvents]);
       setDrafts([...draftClasses, ...draftEvents]);
-      loadCorequisites(selectedCard.id);
+      if (selectedCard) loadCorequisites(selectedCard.id);
     } catch (error) {
       console.error("Error reloading classes:", error);
     }

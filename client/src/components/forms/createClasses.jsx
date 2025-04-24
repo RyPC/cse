@@ -499,6 +499,7 @@ export const CreateClassForm = memo(
                 color="white"
                 border="1px solid black"
                 _hover={{ bg: "#5D2E8C" }}
+                onClick={()=>{setIsDraft(false)}}
               >
                 Publish
               </Button>
@@ -527,12 +528,12 @@ export const CreateClassForm = memo(
         <SaveClassAsDraftModal
           isOpen={isOpen}
           onClose={onClose}
-          postClass={postClass}
+          postClass={() => {postClass().then(reloadCallback)}}
         />
         <SaveClass
           isOpen={isConfirmationOpen}
           onClose={onConfirmationClose}
-          postClass={postClass}
+          postClass={() => {postClass().then(reloadCallback)}}
         />
       </Container>
     );

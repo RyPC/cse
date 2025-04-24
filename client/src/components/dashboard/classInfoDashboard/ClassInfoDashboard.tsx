@@ -198,7 +198,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass? formatTime(currentClass.startTime) : ''}
+          {currentClass ? formatTime(currentClass.startTime) : ''}
         </Box>
         <Box
           flex={1}
@@ -212,7 +212,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass? formatTime(currentClass.endTime) : ''}
+          {currentClass ? formatTime(currentClass.endTime) : ''}
         </Box>
       </HStack>
       <HStack
@@ -328,16 +328,6 @@ export default function ClassInfoDashboard() {
                   fontSize={18}
                   textTransform="none"
                 >
-                  Location
-                </Th>
-                <Th
-                  fontFamily="Inter"
-                  fontWeight={700}
-                  color="#4A5568"
-                  letterSpacing="5%"
-                  fontSize={18}
-                  textTransform="none"
-                >
                   Email
                 </Th>
               </Tr>
@@ -355,7 +345,6 @@ export default function ClassInfoDashboard() {
                   </Td>
                   <Td>{stud.attendance !== null ? "Yes" : "No"}</Td>
                   <Td>{currentClass?.date.toLocaleDateString()}</Td>
-                  <Td>{currentClass?.location}</Td>
                   <Td>{stud.email}</Td>
                 </Tr>
               ))}

@@ -65,6 +65,22 @@ usersRouter.post("/create", async (req, res) => {
   }
 });
 
+//Update a user's hidden value (for denying teacher requests)
+usersRouter.put("/hide", async (req, res) => {
+  try {
+    const { uid } = req.body;
+
+    const user = await db.query(
+      "UPDATE users SET hidden = True WHERE id = $1",
+      [uid]
+    );
+
+    res.status(200).json(keysToCamel(user));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 // Update a user by ID
 usersRouter.put("/update", async (req, res) => {
   try {
