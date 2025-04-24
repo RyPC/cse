@@ -20,6 +20,12 @@ export const TeacherNotification = ({id, firstName, lastName}) => {
                 isClosable: true,
             });
         } catch (error) {
+            toast({
+                title: "Unable to approve teacher.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
             console.error("Error updating teacher's activation status: ", error);
         }
     };
@@ -37,6 +43,12 @@ export const TeacherNotification = ({id, firstName, lastName}) => {
                 isClosable: true,
             });
         } catch (error) {
+            toast({
+                title: "Unable to deny teacher.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
             console.error("Error updating teacher's activation status: ", error);
         }
     };
