@@ -16,7 +16,9 @@ import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import useSignupStore from "../../stores/SignupStore";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
+import SignUpClassController from "../discovery/SignUpClassController";
 import SignUpController from "../discovery/SignUpController";
 
 export const ClassCard = ({
@@ -32,7 +34,7 @@ export const ClassCard = ({
   attendeeCount = 0, // Default to 0 if not provided
   onClick,
   id,
-  user = null
+  user = null,
 }) => {
   const formattedDate = date ? formatDate(date) : null;
   const formattedStartTime = startTime ? formatTime(startTime) : null;
@@ -41,6 +43,7 @@ export const ClassCard = ({
   const [classDate, setClassDate] = useState(null);
   const { pathname } = useLocation();
   const [openRootModal, setOpenRootModal] = useState(false);
+  const coreqStore = useSignupStore();
   // console.log({formattedDate, formattedStartTime, formattedEndTime})
   // const fetchClassDate = async () => {
   //   if (!classDate) {
@@ -81,7 +84,7 @@ export const ClassCard = ({
             size="md"
             fontWeight="bold"
           >
-            {title}
+            {title} {JSON.stringify(coreqStore)}
           </Heading>
         </CardHeader>
         <CardBody>
@@ -122,6 +125,8 @@ export const ClassCard = ({
                 if (pathname === "/bookings") {
                   onClick();
                 } else {
+                  coreqStore.setRoot(id);
+                  coreqStore.setOpenRoot(true);
                   setOpenRootModal(true);
                 }
               }}
@@ -136,7 +141,7 @@ export const ClassCard = ({
           hidden
         >
           {/* <Text>0/{capacity} spots left</Text> */}
-          <SignUpController
+          <SignUpClassController
             class_id={id}
             title={title}
             description={description}

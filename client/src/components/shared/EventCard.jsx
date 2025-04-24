@@ -1,25 +1,26 @@
+import { useState } from "react";
+
 import {
+  Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Heading,
   HStack,
   Text,
+  useDisclosure,
   VStack,
-  Button,
-  CardFooter,
-  useDisclosure
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-
-
+import useSignupStore from "../../stores/SignupStore";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
-import SignUpController from "../discovery/SignUpController";
 import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal";
-import { useState } from "react";
+import SignUpController from "../discovery/SignUpController";
 
 export const EventCard = ({
   id,
@@ -40,11 +41,11 @@ export const EventCard = ({
   triggerRefresh,
   onCloseModal,
   user = null,
-
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
+  const coreqStore = useSignupStore();
   const [openModal, setOpenModal] = useState(false);
   const { pathname } = useLocation();
   const [openRootModal, setOpenRootModal] = useState(false);
@@ -72,74 +73,77 @@ export const EventCard = ({
   };
 
   const handleClickModal = () => {
-      if (pathname === "/bookings" && role !== "student") {
-        if (currentModal === "view") {
-          setOpenTeacherModal(true);
-          console.log("Open teacher view modal!");
-        }
-      } else if (pathname === "/bookings") {
-        onClick();
+    coreqStore.clearStore();
+    if (pathname === "/bookings" && role !== "student") {
+      if (currentModal === "view") {
+        setOpenTeacherModal(true);
+        console.log("Open teacher view modal!");
       }
-      else {
-        setOpenRootModal(true);
-      }
-    };
-
+    } else if (pathname === "/bookings") {
+      onClick();
+    } else {
+      setOpenRootModal(true);
+    }
+  };
 
   // console.log(user);
   return (
     <>
-    <Card
-      w={{ base: "90%", md: "30em" }}
-      bg="gray.200"
-    >
-      <CardHeader pb={0}>
-        <Heading
-          size="md"
-          fontWeight="bold"
-        >
-          {title}
-        </Heading>
-      </CardHeader>
-      <CardBody>
-        <VStack
-          align="stretch"
-          spacing={2}
-        >
-          <HStack>
-            <FaClock size={14} />
-            <Text fontSize="sm">
-              {formattedDate} @ {formattedStartTime} - {formattedEndTime}
-            </Text>
-          </HStack>
-
-          <HStack>
-            <FaMapMarkerAlt size={14} />
-            <Text fontSize="sm">{location}</Text>
-          </HStack>
-
-          <HStack>
-            <FaUser size={14} />
-            <Text fontSize="sm">
-              {attendeeCount} {attendeeCount === 1 ? "person" : "people"} RSVP'd
-            </Text>
-          </HStack>
-          <Button
-            alignSelf="flex-end"
-            variant="solid"
-            size="sm"
-            bg="#422E8D"
-            color="white"
-            _hover={{ bg: "gray.700" }}
-            mt={2}
-            onClick={handleClickModal}
+      <Card
+        w={{ base: "90%", md: "30em" }}
+        bg="gray.200"
+      >
+        <CardHeader pb={0}>
+          <Heading
+            size="md"
+            fontWeight="bold"
           >
-            View Details &gt;
-          </Button>
-        </VStack>
-      </CardBody>
+            {title}
+          </Heading>
+        </CardHeader>
+        <CardBody>
+          <VStack
+            align="stretch"
+            spacing={2}
+          >
+            <HStack>
+              <FaClock size={14} />
+              <Text fontSize="sm">
+                {formattedDate} @ {formattedStartTime} - {formattedEndTime}
+              </Text>
+            </HStack>
 
-      <CardFooter justifyContent="right" hidden>
+            <HStack>
+              <FaMapMarkerAlt size={14} />
+              <Text fontSize="sm">{location}</Text>
+            </HStack>
+
+            <HStack>
+              <FaUser size={14} />
+              <Text fontSize="sm">
+                {attendeeCount} {attendeeCount === 1 ? "person" : "people"}{" "}
+                RSVP'd
+              </Text>
+            </HStack>
+            <Button
+              alignSelf="flex-end"
+              variant="solid"
+              size="sm"
+              bg="#422E8D"
+              color="white"
+              _hover={{ bg: "gray.700" }}
+              mt={2}
+              onClick={handleClickModal}
+            >
+              View Details &gt;
+            </Button>
+          </VStack>
+        </CardBody>
+
+        <CardFooter
+          justifyContent="right"
+          hidden
+        >
           {/* <Text>Required Class ID: {classId}</Text> */}
           <SignUpController
             event_id={id}
@@ -157,21 +161,21 @@ export const EventCard = ({
           <TeacherEventViewModal
             isOpenProp={openTeacherModal}
             handleClose={closeTeacherModal}
-            id = {id}
-            location = {location}
-            title = {title}
-            description = {description}
-            level = {level}
-            date = {date}
-            startTime = {startTime}
-            endTime = {endTime}
-            callTime = {callTime}
-            costume = {costume}
-            capacity = {capacity}
-            triggerRefresh = {triggerRefresh}
+            id={id}
+            location={location}
+            title={title}
+            description={description}
+            level={level}
+            date={date}
+            startTime={startTime}
+            endTime={endTime}
+            callTime={callTime}
+            costume={costume}
+            capacity={capacity}
+            triggerRefresh={triggerRefresh}
           />
-      </CardFooter>
-    </Card>
+        </CardFooter>
+      </Card>
     </>
   );
 };

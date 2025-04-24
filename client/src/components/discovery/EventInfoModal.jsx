@@ -70,29 +70,24 @@ function EventInfoModal({
   //   }
   // }, [backend, id, user?.data, isOpenProp]);
 
-
   const enrollInEvent = async () => {
     // Check if already checked into event
-    const currentCheckIn = await backend.get(
-      `/event-enrollments/test`,
-      {
-        params:{
-          student_id: user.data[0].id,
-          event_id: id
-        }
-      }
-    );
+    const currentCheckIn = await backend.get(`/event-enrollments/test`, {
+      params: {
+        student_id: user.data[0].id,
+        event_id: id,
+      },
+    });
     if (user.data[0] && !currentCheckIn.data.exists) {
       const req = await backend.post(`/event-enrollments/`, {
         student_id: user.data[0].id,
         event_id: id,
-        attendance: null
+        attendance: null,
       });
       if (req.status === 201) {
         setOpenSuccessModal(true);
       }
-    }
-    else {
+    } else {
       console.log("Already signed up for this event!");
     }
   };
@@ -139,9 +134,7 @@ function EventInfoModal({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>
-            {title}
-          </ModalHeader>
+          <ModalHeader>{title}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <VStack
@@ -149,29 +142,27 @@ function EventInfoModal({
               align="center"
             >
               <HStack width="100%">
-                {!isCorequisiteSignUp && (
-                  <Box>
-                    <Text as="b">Corequisites</Text>
-                    {!corequisites || corequisites.length === 0 ? (
-                      <Text>No corequisites for this class</Text>
-                    ) : (
-                      <List>
-                        {corequisites.map((coreq, index) => (
-                          <ListItem key={index}>
-                            <ListIcon
-                              as={
-                                coreq.enrolled
-                                  ? FaCircleCheck
-                                  : FaCircleExclamation
-                              }
-                            />
-                            {coreq.title}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
-                  </Box>
-                )}
+                <Box>
+                  <Text as="b">Corequisites</Text>
+                  {!corequisites || corequisites.length === 0 ? (
+                    <Text>No corequisites for this class</Text>
+                  ) : (
+                    <List>
+                      {corequisites.map((coreq, index) => (
+                        <ListItem key={index}>
+                          <ListIcon
+                            as={
+                              coreq.enrolled
+                                ? FaCircleCheck
+                                : FaCircleExclamation
+                            }
+                          />
+                          {coreq.title}
+                        </ListItem>
+                      ))}
+                    </List>
+                  )}
+                </Box>
               </HStack>
               <Box
                 boxSize="sm"

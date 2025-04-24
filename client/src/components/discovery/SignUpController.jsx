@@ -4,6 +4,7 @@ import { Button } from "@chakra-ui/react";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import useSignupStore from "../../stores/SignupStore";
 import ClassInfoModal from "./ClassInfoModal";
 import CoReqWarningModal from "./CoReqWarningModal";
 import EventInfoModal from "./EventInfoModal";
@@ -15,10 +16,12 @@ function SignUpController({
   user,
   openRootModal,
   setOpenRootModal,
+  override_isCorequisite = false,
   class_id = null,
   event_id = null,
   ...infoProps
 }) {
+  const coreqStore = useSignupStore();
   const { backend } = useBackendContext();
   const { currentUser } = useAuthContext();
   const [openCoreqModal, setOpenCoreqModal] = useState(false);
@@ -48,18 +51,23 @@ function SignUpController({
           .filter((event) => event.studentId === user.id)
           .map((event) => {
             if (class_id === null) {
-              return event.classId;
+              if (event.classId !== coreqStore.root) {
+                return event.classId;
+              }
             } else {
               return event.eventId;
             }
           });
 
-        const corequisitesWithEnrollmentStatus = coreq.map((coreq) => {
-          if (userEnrollments.includes(coreq.id)) {
-            return { ...coreq, enrolled: true };
-          }
-          return coreq;
-        });
+        const corequisitesWithEnrollmentStatus = coreq
+          .filter((x) => x.id !== coreqStore.root)
+          .map((coreq) => {
+            if (userEnrollments.includes(coreq.id)) {
+              return { ...coreq, enrolled: true };
+            }
+            return coreq;
+          });
+        console.log(corequisitesWithEnrollmentStatus, coreqStore.root);
         setCorequisites(corequisitesWithEnrollmentStatus);
       } catch (error) {
         console.error("Error fetching enrolled events or users:", error);
@@ -74,10 +82,12 @@ function SignUpController({
 
   const toggleRootModal = () => {
     setOpenRootModal(!openRootModal);
+    coreqStore.setOpenRoot(true);
   };
   const toggleCoreqModal = () => {
     toggleRootModal();
     setOpenCoreqModal(true);
+    coreqStore.setOpenRoot(true);
   };
 
   useEffect(() => {
@@ -97,7 +107,7 @@ function SignUpController({
           id={class_id}
           {...infoProps}
           corequisites={corequisites}
-          isCorequisiteSignUp={false}
+          isCorequisiteSignUp={override_isCorequisite}
           handleClose={toggleRootModal}
           handleResolveCoreq={toggleCoreqModal}
           user={user}
@@ -108,13 +118,12 @@ function SignUpController({
           id={event_id}
           {...infoProps}
           corequisites={corequisites}
-          isCorequisiteSignUp={false}
+          isCorequisiteSignUp={override_isCorequisite}
           handleClose={toggleRootModal}
           handleResolveCoreq={toggleCoreqModal}
           user={user}
         />
       )}
-
       <CoReqWarningModal
         origin={class_id ? "CLASS" : "EVENT"}
         isOpenProp={openCoreqModal}
@@ -123,7 +132,6 @@ function SignUpController({
         killModal={() => setOpenCoreqModal(false)}
         user={user}
       />
-
       {/* <Button onClick={() => setOpenRootModal(true)}>View Details</Button> */}
     </>
   );

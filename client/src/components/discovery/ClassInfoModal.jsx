@@ -25,6 +25,7 @@ import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import useSignupStore from "../../stores/SignupStore";
 import PublishedReviews from "../reviews/classReview";
 import SuccessSignupModal from "./SuccessSignupModal";
 
@@ -46,6 +47,7 @@ function ClassInfoModal({
 }) {
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
+  const coreqStore = useSignupStore();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
