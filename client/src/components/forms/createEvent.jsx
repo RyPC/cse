@@ -33,6 +33,7 @@ export const CreateEvent = ({
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // initial state should be changed
   const [tags, setTags] = useState({});
   const [currentTag, setCurrentTag] = useState("classical");
   const { backend } = useBackendContext();
@@ -109,16 +110,15 @@ export const CreateEvent = ({
       } else {
         // Create new event (POST request)
 
-        const tagId = await backend.get(`/tags/${currentTag}`).then((res) => {
+        const tagId = backend.get(`/tags/${currentTag}`).then((res) => {
           return res.data[0].id;
         });
 
         response = backend.post("/events/", eventData).then((res) => {
-          console.log("event id", res.data[0].id);
-          console.log("tag id ", tagId);
-          console.log(res);
+          // console.log("event id", res.data[0].id);
+          // console.log("tag id ", tagId);
+          // console.log(res);
           tagResponse = backend.post("/event-tags/", {
-            // Hardcoded for now, above comments are what this will be replaced by
             eventId: res.data[0].id,
             tagId: tagId,
           });
@@ -140,7 +140,7 @@ export const CreateEvent = ({
           capacity: "",
         });
         if (onClose) onClose();
-        if (triggerRefresh) triggerRefresh();
+        if (reloadCallback) reloadCallback();
       } else {
         console.error("Failed to create/save event:", response.statusText);
       }
