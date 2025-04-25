@@ -108,23 +108,21 @@ export const CreateEvent = ({
         response = await backend.put(`/events/${eventId}/`, eventData);
       } else {
         // Create new event (POST request)
-        response = await backend
-          .post("/events/", eventData)
-          .then(async (res) => {
-            // console.log("event id", res.data[0].id);
-            // const tagId = await backend
-            //   .get(`/tags/${currentTag}`)
-            //   .then((res) => {
-            //     return res.data[0].id;
-            //   });
-            // console.log("tag id ", tagId);
-            console.log(res);
-            tagResponse = await backend.post("/event-tags/", {
-              // Hardcoded for now, above comments are what this will be replaced by
-              eventId: 55, // res.data[0].id
-              tagId: 3,
-            });
+
+        const tagId = await backend.get(`/tags/${currentTag}`).then((res) => {
+          return res.data[0].id;
+        });
+
+        response = backend.post("/events/", eventData).then((res) => {
+          console.log("event id", res.data[0].id);
+          console.log("tag id ", tagId);
+          console.log(res);
+          tagResponse = backend.post("/event-tags/", {
+            // Hardcoded for now, above comments are what this will be replaced by
+            eventId: res.data[0].id,
+            tagId: tagId,
           });
+        });
       }
 
       if (response.status === 201 || response.status === 200) {
@@ -142,7 +140,7 @@ export const CreateEvent = ({
           capacity: "",
         });
         if (onClose) onClose();
-        if (reloadCallback) reloadCallback();
+        if (triggerRefresh) triggerRefresh();
       } else {
         console.error("Failed to create/save event:", response.statusText);
       }

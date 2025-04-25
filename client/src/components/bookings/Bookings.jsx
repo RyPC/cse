@@ -26,8 +26,6 @@ import {
   Text,
   useDisclosure,
   VStack,
-  InputGroup,
-  InputLeftElement
 } from "@chakra-ui/react";
 
 import { FaClock, FaMapMarkerAlt, FaSearch, FaUser } from "react-icons/fa";
@@ -78,8 +76,8 @@ export const Bookings = () => {
   const [refresh, setRefresh] = useState(0);
 
   const isTeacher = role === "teacher";
-  const [activeTab, setActiveTab] = useState("classes"); 
-  
+  const [activeTab, setActiveTab] = useState("classes");
+
   const toggleClasses = () => {
     setActiveTab("classes");
   };
@@ -87,7 +85,7 @@ export const Bookings = () => {
   const toggleEvents = () => {
     setActiveTab("events");
   };
-  
+
   useEffect(() => {
     if (currentUser && role !== "student") {
       backend.get(`/events/published`).then((res) => setEvents(res.data));
@@ -422,7 +420,7 @@ export const Bookings = () => {
   const handleKeyDown = async (e) => {
     if (e.key === "Enter") {
       if (tabIndex === 0) {
-        console.log("hay")
+        console.log("hay");
         await reloadClasses();
         toggleClasses();
       } else if (tabIndex === 1) {
