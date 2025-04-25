@@ -24,7 +24,6 @@ import {
   Text,
   useDisclosure,
   VStack,
-  Input,
   InputGroup,
   InputLeftElement
 } from "@chakra-ui/react";
@@ -78,6 +77,16 @@ export const Bookings = () => {
   const [refresh, setRefresh] = useState(0);
 
   const isTeacher = role === "teacher";
+  const [activeTab, setActiveTab] = useState("classes"); 
+  
+  const toggleClasses = () => {
+    setActiveTab("classes");
+  };
+
+  const toggleEvents = () => {
+    setActiveTab("events");
+  };
+  
   useEffect(() => {
     if (currentUser && role !== "student") {
       backend.get(`/events/published`).then((res) => setEvents(res.data));
@@ -414,9 +423,12 @@ export const Bookings = () => {
   const handleKeyDown = async (e) => {
     if (e.key === "Enter") {
       if (tabIndex === 0) {
+        console.log("hay")
         await reloadClasses();
+        toggleClasses();
       } else if (tabIndex === 1) {
         await reloadEvents();
+        toggleEvents();
       }
     }
   };
@@ -492,21 +504,6 @@ export const Bookings = () => {
 
           <TabPanels>
             <TabPanel>
-              <Flex gap={3}>
-                {Object.keys(tags).map((tag) => (
-                  <Badge
-                    key={tag}
-                    onClick={handleFilterToggle(tag)}
-                    rounded="xl"
-                    px={4}
-                    py={1}
-                    colorScheme={tagFilter[tag] ? "green" : "red"}
-                    textTransform="none"
-                  >
-                    {tags[tag]}
-                  </Badge>
-                ))}
-              </Flex>
               <VStack
                 spacing={4}
                 width="100%"
@@ -543,21 +540,23 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
-              <Flex gap={3}>
-                {Object.keys(tags).map((tag) => (
-                  <Badge
-                    key={tag}
-                    onClick={handleFilterToggle(tag)}
-                    rounded="xl"
-                    px={4}
-                    py={1}
-                    colorScheme={tagFilter[tag] ? "green" : "red"}
-                    textTransform="none"
-                  >
-                    {tags[tag]}
-                  </Badge>
-                ))}
-              </Flex>
+              {tabIndex === 1 && (
+                <Flex gap={3}>
+                  {Object.keys(tags).map((tag) => (
+                    <Badge
+                      key={tag}
+                      onClick={handleFilterToggle(tag)}
+                      rounded="xl"
+                      px={4}
+                      py={1}
+                      colorScheme={tagFilter[tag] ? "green" : "red"}
+                      textTransform="none"
+                    >
+                      {tags[tag]}
+                    </Badge>
+                  ))}
+                </Flex>
+              )}
               <VStack
                 spacing={4}
                 width="100%"
