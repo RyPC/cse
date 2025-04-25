@@ -22,7 +22,7 @@ import {
 import { BiSolidEdit, BiTrash } from "react-icons/bi";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { BsChevronLeft } from "react-icons/bs";
-import { formatDate } from "../../utils/formatDateTime";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import { useState, useEffect } from "react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
@@ -216,8 +216,11 @@ export const TeacherViewModal = ({
               Time
             </Text>
             <Text>
-              {classData?.startTime} -{" "}
-              {classData?.endTime}
+              {
+                classData && classData.startTime && classData.endTime ?
+                `${formatTime(classData.startTime)} - ${formatTime(classData.endTime)}` : 
+                "-"
+              }
             </Text>
           </Box>
           <Text
