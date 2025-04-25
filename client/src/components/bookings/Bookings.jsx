@@ -284,6 +284,8 @@ export const Bookings = () => {
     }
   };
 
+  const isFilterActive = Object.values(tagFilter).some(Boolean);
+
   const handleFilterToggle = (id) => () => {
     console.log(`Tag ${id} has been toggled!`);
     setTagFilter((prev) => ({
@@ -565,7 +567,15 @@ export const Bookings = () => {
                 mb={20}
               >
                 {events.length > 0 ? (
-                  events.map((eventItem) => (
+                  events
+                  .filter((eventItem) => {
+                    if (!isFilterActive) return true;
+                    return (
+                      eventItem.tags &&
+                      eventItem.tags.some((tagId) => tagFilter[tagId])
+                    );
+                  })
+                  .map((eventItem) => (
                     <EventCard
                       key={eventItem.id}
                       {...eventItem}

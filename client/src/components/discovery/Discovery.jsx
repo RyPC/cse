@@ -125,10 +125,13 @@ export const Discovery = () => {
       }
     }
   };
-  const handleFilterToggle = (tagId) => () => {
+  const isFilterActive = Object.values(tagFilter).some(Boolean);
+
+  const handleFilterToggle = (id) => () => {
+    console.log(`Tag ${id} has been toggled!`);
     setTagFilter((prev) => ({
       ...prev,
-      [tagId]: !prev[tagId],
+      [id]: !prev[id],
     }));
   };
   
@@ -259,7 +262,15 @@ export const Discovery = () => {
             mt={5}
             wrap="wrap"
           >
-            {events.map((eventItem, index) => (
+            {events
+              .filter((eventItem) => {
+                if (!isFilterActive) return true;
+                return (
+                  eventItem.tags &&
+                  eventItem.tags.some((tagId) => tagFilter[tagId])
+                );
+              })
+              .map((eventItem, index) => (
               <EventCard
                 key={index}
                 title={eventItem.title}
