@@ -11,6 +11,8 @@ import {
   Heading,
   HStack,
   Input,
+  InputGroup,
+  InputLeftElement,
   Modal,
   ModalBody,
   ModalContent,
@@ -24,12 +26,9 @@ import {
   Text,
   useDisclosure,
   VStack,
-  Input,
-  InputGroup,
-  InputLeftElement
 } from "@chakra-ui/react";
 
-import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
+import { FaClock, FaMapMarkerAlt, FaSearch, FaUser } from "react-icons/fa";
 import { MdAdd, MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
@@ -48,7 +47,6 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
-import { FaSearch } from "react-icons/fa";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -360,7 +358,6 @@ export const Bookings = () => {
       const [classesResponse, classDataResponse] = await Promise.all([
         backend.get("/scheduled-classes"),
         backend.get("/classes"),
-
       ]);
 
       const classDataDict = new Map();
@@ -373,7 +370,6 @@ export const Bookings = () => {
       const formattedData = classesResponse.data
         .map((cls) => {
           const fullData = classDataDict.get(cls.classId);
-
 
           return fullData
             ? {
@@ -426,29 +422,33 @@ export const Bookings = () => {
   // console.log("attended", classes);
   // console.log("selected card", selectedCard);
   return (
-    <Box  pt={2}>
+    <Box pt={2}>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
-        <Box px={4} width="100%" pt={4}>
-        <InputGroup>
-          <InputLeftElement pointerEvents='none'>
-            <FaSearch color="gray.300" />
-          </InputLeftElement>
-          <Input
-            placeholder="Search"
-            variant="filled"
-            borderRadius="full"
-            borderColor={"gray.300"}
-            bg="white.100"
-            _hover={{ bg: "gray.200" }}
-            _focus={{ bg: "white", borderColor: "gray.300" }}
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </InputGroup>
+        <Box
+          px={4}
+          width="100%"
+          pt={4}
+        >
+          <InputGroup>
+            <InputLeftElement pointerEvents="none">
+              <FaSearch color="gray.300" />
+            </InputLeftElement>
+            <Input
+              placeholder="Search"
+              variant="filled"
+              borderRadius="full"
+              borderColor={"gray.300"}
+              bg="white.100"
+              _hover={{ bg: "gray.200" }}
+              _focus={{ bg: "white", borderColor: "gray.300" }}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </InputGroup>
         </Box>
 
         <Tabs

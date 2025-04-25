@@ -3,18 +3,22 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Flex,
   Input,
   Select,
   Text,
   Textarea,
   VStack,
-  Flex
 } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
-
-export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefresh }) => {
+export const CreateEvent = ({
+  event = null,
+  eventId = null,
+  onClose,
+  triggerRefresh,
+}) => {
   const [formData, setFormData] = useState({
     location: "",
     title: "",
@@ -29,6 +33,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tags, setTags] = useState({});
+  const [currentTag, setCurrentTag] = useState("classical");
   const { backend } = useBackendContext();
 
   useEffect(() => {
@@ -43,7 +49,7 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         endTime: event.endTime || "",
         callTime: event.callTime || "",
         costume: event.costume || "",
-        capacity: ((event.capacity || (event.capacity === 0)) ? event.capacity : "")
+        capacity: event.capacity || event.capacity === 0 ? event.capacity : "",
       });
     }
   }, [event]);
@@ -66,8 +72,8 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
     return Object.keys(newErrors).length === 0;
   };
 
+  // add in call to events router here!
   const handleSubmit = async (isDraft) => {
-    
     if (!isDraft && !validateForm()) return;
     setIsSubmitting(true);
     try {
@@ -76,23 +82,49 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         ...formData,
         level: formData.level == "" ? "beginner" : formData.level,
         date: formData.date == "" ? new Date() : formData.date,
-        start_time: formData.startTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.startTime,
-        end_time: formData.endTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.endTime,
-        call_time: formData.callTime == "" ? `${new Date().getHours()}:${new Date().getMinutes()}` : formData.callTime,
+        start_time:
+          formData.startTime == ""
+            ? `${new Date().getHours()}:${new Date().getMinutes()}`
+            : formData.startTime,
+        end_time:
+          formData.endTime == ""
+            ? `${new Date().getHours()}:${new Date().getMinutes()}`
+            : formData.endTime,
+        call_time:
+          formData.callTime == ""
+            ? `${new Date().getHours()}:${new Date().getMinutes()}`
+            : formData.callTime,
         capacity: formData.capacity == "" ? 0 : formData.capacity,
         is_draft: isDraft,
       };
 
-      console.log(eventData)
+      console.log(eventData);
 
       // Using axios instead of fetch
       let response;
+      let tagResponse;
       if (eventId) {
         // Edit event (PUT request)
         response = await backend.put(`/events/${eventId}/`, eventData);
       } else {
         // Create new event (POST request)
-        response = await backend.post("/events/", eventData);
+        response = await backend
+          .post("/events/", eventData)
+          .then(async (res) => {
+            // console.log("event id", res.data[0].id);
+            // const tagId = await backend
+            //   .get(`/tags/${currentTag}`)
+            //   .then((res) => {
+            //     return res.data[0].id;
+            //   });
+            // console.log("tag id ", tagId);
+            console.log(res);
+            tagResponse = await backend.post("/event-tags/", {
+              // res.data[0].id
+              eventId: 55,
+              tagId: 3,
+            });
+          });
       }
 
       if (response.status === 201 || response.status === 200) {
@@ -130,14 +162,59 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
     }));
   };
 
+  const fetchTags = async () => {
+    try {
+      const tagsResponse = await backend.get("/tags");
+      // const initialTagFilter = {};
+      const initialTags = {};
+      tagsResponse.data.forEach((tag) => {
+        // initialTagFilter[tag.id] = false;
+        initialTags[tag.id] =
+          tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
+      });
+
+      // setTagFilter(initialTagFilter);
+      setTags(initialTags);
+      console.log(initialTags);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
+
+  const DynamicSelect = ({ options }) => {
+    const handleOnChange = (optionData) => {
+      let eventVal = optionData.target.value;
+      eventVal = eventVal[0].toLowerCase() + eventVal.slice(1);
+      console.log(eventVal);
+      setCurrentTag(eventVal);
+    };
+    return (
+      <Select
+        name="level"
+        value={formData.level}
+        onChange={handleChange}
+        isInvalid={errors.level}
+        onChangeCapture={handleOnChange}
+      >
+        {Object.values(options).map((option) => {
+          return <option value={option}>{option}</option>;
+        })}
+      </Select>
+    );
+  };
+
   return (
     <VStack
       spacing={4}
       align="stretch"
     >
-      {!eventId ? (<Text></Text>) : ""}
+      {!eventId ? <Text></Text> : ""}
       <Box>
-        <Text >Event Title</Text>
+        <Text>Event Title</Text>
         <Input
           name="title"
           value={formData.title}
@@ -171,6 +248,12 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
           <option value="intermediate">Intermediate</option>
           <option value="advanced">Advanced</option>
         </Select>
+        {errors.level && <Text color="red.500">{errors.level}</Text>}
+      </Box>
+
+      <Box>
+        <Text>Tags</Text>
+        <DynamicSelect options={tags} />
         {errors.level && <Text color="red.500">{errors.level}</Text>}
       </Box>
 
@@ -245,8 +328,6 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         />
       </Box>
 
-      
-
       <Box>
         <Text>Costume</Text>
         <Textarea
@@ -257,27 +338,28 @@ export const CreateEvent = ({ event = null, eventId = null, onClose, triggerRefr
         />
         {errors.costume && <Text color="red.500">{errors.costume}</Text>}
       </Box>
-      <Flex justifyContent="center" w="100%" gap={3}>
+      <Flex
+        justifyContent="center"
+        w="100%"
+        gap={3}
+      >
         <Button
-            onClick={() => handleSubmit(true)} // true = save draft
-            isLoading={isSubmitting}
-            flex="1"
+          onClick={() => handleSubmit(true)} // true = save draft
+          isLoading={isSubmitting}
+          flex="1"
         >
-            Save Draft
+          Save Draft
         </Button>
         <Button
-            onClick={() => handleSubmit(false)} // false = publish
-            isLoading={isSubmitting}
-            bg="#422E8D"
-            color="white"
-
-            flex="1"
+          onClick={() => handleSubmit(false)} // false = publish
+          isLoading={isSubmitting}
+          bg="#422E8D"
+          color="white"
+          flex="1"
         >
-            Publish
+          Publish
         </Button>
       </Flex>
-
-      
     </VStack>
   );
 };
