@@ -120,8 +120,8 @@ export const CreateEvent = ({
             // console.log("tag id ", tagId);
             console.log(res);
             tagResponse = await backend.post("/event-tags/", {
-              // res.data[0].id
-              eventId: 55,
+              // Hardcoded for now, above comments are what this will be replaced by
+              eventId: 55, // res.data[0].id
               tagId: 3,
             });
           });
