@@ -36,6 +36,7 @@ export const StudentDashboard = () => {
   const { backend } = useBackendContext();
   const [pageNum, setPageNum] = useState(0);
   const [numStudents, setNumStudents] = useState(0);
+  const [reverse, setReverse] = useState(false);
   const [students, setStudents] = useState([]);
   const [classCount, setClassCount] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -43,7 +44,7 @@ export const StudentDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        updateStudents(searchTerm, pageNum);
+        updateStudents(searchTerm, pageNum, reverse);
 
         const classCountResponse = await backend.get(
           "/class-enrollments/student-class-count"
@@ -60,14 +61,15 @@ export const StudentDashboard = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
 
-    updateStudents(searchTerm, pageNum);
+    updateStudents(searchTerm, 0, false);
+    setReverse(false);
     setPageNum(0);
   };
 
-  const updateStudents = async (term, page) => {
+  const updateStudents = async (term, page, reverse) => {
     try {
       const response = await backend.get("/students", {
-        params: { search: term.trim(), page: page },
+        params: { search: term.trim(), page: page, reverse: reverse },
       });
       setStudents(response.data);
 
@@ -88,13 +90,13 @@ export const StudentDashboard = () => {
 
   const incPage = () => {
     if (pageNum * 10 + 10 < numStudents) {
-      updateStudents(searchTerm, pageNum + 1);
+      updateStudents(searchTerm, pageNum + 1, reverse);
       setPageNum(pageNum + 1);
     }
   };
   const decPage = () => {
     if (pageNum > 0) {
-      updateStudents(searchTerm, pageNum - 1);
+      updateStudents(searchTerm, pageNum - 1, reverse);
       setPageNum(pageNum - 1);
     }
   };
@@ -103,11 +105,18 @@ export const StudentDashboard = () => {
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
         setPageNum(0);
-        updateStudents(term, 0);
+        setReverse(false);
+        updateStudents(term, 0, false);
       }
     }, 500),
     []
   );
+
+  const handleReverse = () => {
+    updateStudents(searchTerm, pageNum, !reverse);
+    setReverse(!reverse);
+    setPageNum(0);
+  };
 
   return (
     <VStack>
@@ -187,8 +196,9 @@ export const StudentDashboard = () => {
             </Button>
             <Text>|</Text>
             <Button
-              backgroundColor="transparent"
+              backgroundColor={reverse ? "gray.300" : "transparent"}
               p={0}
+              onClick={handleReverse}
             >
               <PiArrowsDownUpFill />
             </Button>

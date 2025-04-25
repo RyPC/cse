@@ -33,12 +33,13 @@ scheduledClassesRouter.get("/teachers/count", async (req, res) => {
 });
 
 scheduledClassesRouter.get("/teachers", async (req, res) => {
-  const { search, page } = req.query;
+  const { search, page, reverse } = req.query;
   const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
 
   try {
     const query = `
-      SELECT sc.date,c.*, 
+      SELECT sc.date, c.*, 
       COALESCE(STRING_AGG(u.first_name || ' ' || u.last_name, ', '),'') AS teachers
       FROM scheduled_classes sc
       LEFT JOIN classes_taught ct ON ct.class_id = sc.class_id
@@ -47,7 +48,7 @@ scheduledClassesRouter.get("/teachers", async (req, res) => {
       LEFT JOIN classes c ON c.id = sc.class_id
       ${search ? "WHERE c.title ILIKE $1" : ""}
       GROUP BY c.id, sc.date
-      ORDER BY LOWER(c.title) ASC
+      ORDER BY sc.date ${reverseSearch ? "ASC" : "DESC"}, LOWER(c.title) ASC
       LIMIT 10 OFFSET $2;
     `;
 

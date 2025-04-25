@@ -21,7 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { debounce } from "lodash";
+import { debounce, set } from "lodash";
 import { FiTrash2 } from "react-icons/fi";
 import { PiArrowsDownUpFill } from "react-icons/pi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
@@ -51,6 +51,8 @@ export function OverallClassDashboard() {
   const [events, setEvents] = useState<Event[]>([]);
   const [numClasses, setNumClasses] = useState<number>(0);
   const [numEvents, setNumEvents] = useState<number>(0);
+  const [reverse, setReverse] = useState<boolean>(false);
+  const [reverseE, setReverseE] = useState<boolean>(false);
   const [currModal, setModal] = useState("none");
   const [selectedClass, setSelectedClass] = useState();
   const [selectedEvent, setSelectedEvent] = useState();
@@ -81,8 +83,8 @@ export function OverallClassDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        updateClasses("", 0);
-        updateEvents("", 0);
+        updateClasses("", 0, false);
+        updateEvents("", 0, false);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -93,20 +95,26 @@ export function OverallClassDashboard() {
   const handleClassSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    updateClasses(classSearchTerm, pageNum);
+    updateClasses(classSearchTerm, 0, false);
     setPageNum(0);
+    setReverse(false);
   };
   const handleEventSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    updateEvents(eventSearchTerm, pageNumE);
+    updateEvents(eventSearchTerm, 0, false);
     setPageNumE(0);
+    setReverseE(false);
   };
 
-  const updateClasses = async (term: string, page: number) => {
+  const updateClasses = async (
+    term: string,
+    page: number,
+    reverse: boolean
+  ) => {
     try {
       const response = await backend.get("/scheduled-classes/teachers/", {
-        params: { search: term.trim(), page: page },
+        params: { search: term.trim(), page: page, reverse: reverse },
       });
       setClasses(response.data);
       console.log(response.data);
@@ -122,10 +130,10 @@ export function OverallClassDashboard() {
       console.error("Error fetching classes: ", error);
     }
   };
-  const updateEvents = async (term: string, page: number) => {
+  const updateEvents = async (term: string, page: number, reverse: boolean) => {
     try {
       const response = await backend.get("/events/", {
-        params: { search: term.trim(), page: page },
+        params: { search: term.trim(), page: page, reverse: reverse },
       });
       setEvents(response.data);
 
@@ -150,8 +158,9 @@ export function OverallClassDashboard() {
   const debouncedClassSearch = useCallback(
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
-        updateClasses(term, 0);
+        updateClasses(term, 0, false);
         setPageNum(0);
+        setReverse(false);
       }
     }, 500),
     []
@@ -159,8 +168,9 @@ export function OverallClassDashboard() {
   const debouncedEventSearch = useCallback(
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
-        updateEvents(term, 0);
+        updateEvents(term, 0, false);
         setPageNumE(0);
+        setReverseE(false);
       }
     }, 500),
     []
@@ -168,28 +178,40 @@ export function OverallClassDashboard() {
 
   const incPage = () => {
     if (pageNum * 10 + 10 < numClasses) {
-      updateClasses(classSearchTerm, pageNum + 1);
+      updateClasses(classSearchTerm, pageNum + 1, reverse);
       setPageNum(pageNum + 1);
     }
   };
   const decPage = () => {
     if (pageNum > 0) {
-      updateClasses(classSearchTerm, pageNum - 1);
+      updateClasses(classSearchTerm, pageNum - 1, reverse);
       setPageNum(pageNum - 1);
     }
   };
 
   const incPageE = () => {
     if (pageNumE * 10 + 10 < numEvents) {
-      updateEvents(eventSearchTerm, pageNumE + 1);
+      updateEvents(eventSearchTerm, pageNumE + 1, reverseE);
       setPageNumE(pageNumE + 1);
     }
   };
   const decPageE = () => {
     if (pageNumE > 0) {
-      updateEvents(eventSearchTerm, pageNumE - 1);
+      updateEvents(eventSearchTerm, pageNumE - 1, reverseE);
       setPageNumE(pageNumE - 1);
     }
+  };
+
+  const handleReverse = () => {
+    updateClasses(classSearchTerm, 0, !reverse);
+    setReverse(!reverse);
+    setPageNum(0);
+  };
+
+  const handleReverseE = () => {
+    updateEvents(eventSearchTerm, 0, !reverseE);
+    setReverseE(!reverseE);
+    setPageNumE(0);
   };
 
   return (
@@ -270,8 +292,9 @@ export function OverallClassDashboard() {
             </Button>
             <Text>|</Text>
             <Button
-              backgroundColor="transparent"
+              backgroundColor={reverse ? "gray.300" : "transparent"}
               p={0}
+              onClick={handleReverse}
             >
               <PiArrowsDownUpFill />
             </Button>
@@ -421,8 +444,9 @@ export function OverallClassDashboard() {
             </Button>
             <Text>|</Text>
             <Button
-              backgroundColor="transparent"
+              backgroundColor={reverseE ? "gray.300" : "transparent"}
               p={0}
+              onClick={handleReverseE}
             >
               <PiArrowsDownUpFill />
             </Button>

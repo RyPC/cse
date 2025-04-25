@@ -71,25 +71,19 @@ studentsRouter.get("/:id", async (req, res) => {
 });
 
 studentsRouter.get("/", async (req, res) => {
-  const { search, page } = req.query;
+  const { search, page, reverse } = req.query;
   const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
 
   try {
-    let query = `
+    const query = `
       SELECT u.id, u.first_name, u.last_name, u.role, u.user_role, u.email, u.firebase_uid, s.level
       FROM users u
       JOIN students s ON u.id = s.id
+      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1" : ""}
+      ORDER BY LOWER(u.first_name) ${reverseSearch ? "DESC" : "ASC"}, LOWER(u.last_name) ${reverseSearch ? "DESC" : "ASC"}
+      LIMIT 10 OFFSET $2;
     `;
-    if (search) {
-      query += `
-        WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1
-      `;
-    }
-    query += `
-      ORDER BY LOWER(u.first_name), LOWER(u.last_name) ASC
-    `;
-
-    query += `LIMIT 10 OFFSET $2;`;
 
     const students = await db.query(query, [`%${search}%`, 10 * pageNum]);
 

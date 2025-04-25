@@ -36,28 +36,21 @@ teachersRouter.get("/classes/count", async (req, res) => {
 });
 
 teachersRouter.get("/classes/", async (req, res) => {
-  const { search, page } = req.query;
+  const { search, page, reverse } = req.query;
   const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
   try {
-    let query = `
+    const query = `
       SELECT t.id as teacher_id, t.*, u.*, COUNT(class_id) AS class_count
       FROM teachers t
       LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
       LEFT JOIN classes c ON c.id = ct.class_id
       INNER JOIN users u ON u.id = t.id
-    `;
-
-    if (search) {
-      query += `
-        WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1
-      `;
-    }
-
-    query += `
+      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1" : ""}
       GROUP BY t.id, u.id
-      ORDER BY LOWER(u.first_name), LOWER(u.last_name) 
+      ORDER BY LOWER(u.first_name) ${reverseSearch ? "DESC" : "ASC"}, LOWER(u.last_name) ${reverseSearch ? "DESC" : "ASC"}
+      LIMIT 10 OFFSET $2;
     `;
-    query += `LIMIT 10 OFFSET $2;`;
 
     const teacherClasses = await db.query(query, [`%${search}%`, 10 * pageNum]);
 

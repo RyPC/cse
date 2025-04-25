@@ -45,13 +45,14 @@ export const TeacherDashboard = () => {
   const [teachers, setTeachers] = useState([]);
   const [numTeachers, setNumTeachers] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [reverse, setReverse] = useState<boolean>(false);
   const notifRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        updateTeachers("", 0);
+        updateTeachers("", 0, false);
       } catch (error) {
         console.error("Error fetching teachers and classes:", error);
       }
@@ -63,14 +64,19 @@ export const TeacherDashboard = () => {
   const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    updateTeachers(searchTerm, pageNum);
+    updateTeachers(searchTerm, 0, false);
+    setReverse(false);
     setPageNum(0);
   };
 
-  const updateTeachers = async (term: string, page: number) => {
+  const updateTeachers = async (
+    term: string,
+    page: number,
+    reverse: boolean
+  ) => {
     try {
       const response = await backend.get("/teachers/classes/", {
-        params: { search: term.trim(), page: page },
+        params: { search: term.trim(), page: page, reverse: reverse },
       });
       setTeachers(response.data);
 
@@ -90,13 +96,13 @@ export const TeacherDashboard = () => {
 
   const incPage = () => {
     if (pageNum * 10 + 10 < numTeachers) {
-      updateTeachers(searchTerm, pageNum + 1);
+      updateTeachers(searchTerm, pageNum + 1, reverse);
       setPageNum(pageNum + 1);
     }
   };
   const decPage = () => {
     if (pageNum > 0) {
-      updateTeachers(searchTerm, pageNum - 1);
+      updateTeachers(searchTerm, pageNum - 1, reverse);
       setPageNum(pageNum - 1);
     }
   };
@@ -104,12 +110,19 @@ export const TeacherDashboard = () => {
   const debouncedSearch = useCallback(
     debounce((term) => {
       if (term.length >= 2 || term.length === 0) {
-        updateTeachers(term, 0);
+        updateTeachers(term, 0, false);
+        setReverse(false);
         setPageNum(0);
       }
     }, 500),
     []
   );
+
+  const handleReverse = () => {
+    updateTeachers(searchTerm, 0, !reverse);
+    setReverse(!reverse);
+    setPageNum(0);
+  };
 
   return (
     <VStack>
@@ -193,8 +206,9 @@ export const TeacherDashboard = () => {
             </Button>
             <Text>|</Text>
             <Button
-              backgroundColor="transparent"
+              backgroundColor={reverse ? "gray.300" : "transparent"}
               p={0}
+              onClick={handleReverse}
             >
               <PiArrowsDownUpFill />
             </Button>

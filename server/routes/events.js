@@ -90,14 +90,16 @@ eventsRouter.get("/:id", async (req, res) => {
 });
 
 eventsRouter.get("/", async (req, res) => {
-  const { search, page } = req.query;
+  const { search, page, reverse } = req.query;
   const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
+
   try {
     const query = `
       SELECT *
       FROM events
       ${search ? "WHERE title ILIKE $1" : ""}
-      ORDER BY date DESC
+      ORDER BY date ${reverseSearch ? "ASC" : "DESC"}, LOWER(title) ASC
       LIMIT 10 OFFSET $2;
     `;
 
