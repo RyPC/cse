@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Box, Button, Flex, Input, InputGroup, InputLeftElement, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Input, InputGroup, InputLeftElement, VStack, Badge } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
@@ -31,6 +31,10 @@ export const Discovery = () => {
   const [classes, setClasses] = useState([]);
   const [events, setEvents] = useState([]);
 
+  const [tags, setTags] = useState({});
+  const [tagFilter, setTagFilter] = useState({});
+
+
   // this will be an array of users
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -60,6 +64,29 @@ export const Discovery = () => {
 
     fetchData();
   }, [backend]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const tagsResponse = await backend.get("/tags");
+        const initialTagFilter = {};
+        const initialTags = {};
+        tagsResponse.data.forEach((tag) => {
+          initialTagFilter[tag.id] = false;
+          initialTags[tag.id] =
+            tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
+        });
+  
+        setTagFilter(initialTagFilter);
+        setTags(initialTags);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+  
+    fetchTags();
+  }, [backend]); // only run once or when `backend` changes
+  
 
   const searchEvents = async () => {
     if (searchInput) {
@@ -98,6 +125,14 @@ export const Discovery = () => {
       }
     }
   };
+  const handleFilterToggle = (tagId) => () => {
+    setTagFilter((prev) => ({
+      ...prev,
+      [tagId]: !prev[tagId],
+    }));
+  };
+  
+  
 
   const handleKeyDown = async (e) => {
     if (e.key === "Enter") {
@@ -130,39 +165,64 @@ export const Discovery = () => {
             onKeyDown={handleKeyDown}
           ></Input>
         </InputGroup>
-        <Flex gap="5"
-          justify="center"
-          borderBottom = "1px solid"
-          borderColor = "gray.200"
-        >
-
-          <Button
-            variant="unstyled"
-            borderBottom="2px solid"
-            borderColor={activeTab === "classes" ? "black" : "transparent"}
-            fontWeight={activeTab === "classes" ? "bold" : "normal"}
-            color={activeTab === "classes" ? "black" : "gray.500"}
-            borderRadius="0"
-            onClick={() => {
-              setActiveTab("classes");
-              toggleClasses();
-            }}
+        <Box width="100%" px={2}>
+          {activeTab === "events" && (
+            <Flex
+              wrap="wrap"
+              gap={2}
+              align="flex-start"
+              mb={3}
+            >
+              {Object.keys(tags).map((tag) => (
+                <Badge
+                  key={tag}
+                  onClick={handleFilterToggle(tag)}
+                  rounded="xl"
+                  px={4}
+                  py={1}
+                  colorScheme={tagFilter[tag] ? "green" : "red"}
+                  textTransform="none"
+                  cursor="pointer"
+                >
+                  {tags[tag]}
+                </Badge>
+              ))}
+            </Flex>
+          )}
+          <Flex
+            gap="5"
+            justify="center"
+            borderBottom="1px solid"
+            borderColor="gray.200"
           >
-            Classes</Button>
-          <Button
-            variant="unstyled"
-            borderBottom="2px solid"
-            borderColor={activeTab === "events" ? "black" : "transparent"}
-            fontWeight={activeTab === "events" ? "bold" : "normal"}
-            color={activeTab === "events" ? "black" : "gray.500"}
-            borderRadius="0"
-            onClick={() => {
-              setActiveTab("events");
-              toggleEvents();
-            }}
-          >
-            Events</Button>
-        </Flex>
+            <Button
+              variant="unstyled"
+              borderBottom="2px solid"
+              borderColor={activeTab === "classes" ? "black" : "transparent"}
+              fontWeight={activeTab === "classes" ? "bold" : "normal"}
+              color={activeTab === "classes" ? "black" : "gray.500"}
+              borderRadius="0"
+              onClick={() => {
+                setActiveTab("classes");
+                toggleClasses();
+              }}
+            >
+              Classes</Button>
+            <Button
+              variant="unstyled"
+              borderBottom="2px solid"
+              borderColor={activeTab === "events" ? "black" : "transparent"}
+              fontWeight={activeTab === "events" ? "bold" : "normal"}
+              color={activeTab === "events" ? "black" : "gray.500"}
+              borderRadius="0"
+              onClick={() => {
+                setActiveTab("events");
+                toggleEvents();
+              }}
+            >
+              Events</Button>
+          </Flex>
+        </Box>
 
         <Box my="14px">
           <Flex
