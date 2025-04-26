@@ -110,19 +110,17 @@ export const CreateEvent = ({
       } else {
         // Create new event (POST request)
 
-        const tagId = await backend.get(`/tags/${currentTag}`).then((res) => {
-          return res.data[0].id;
-        });
+        const tagId = await backend.get(`/tags/${currentTag}`);
 
-        response = await backend.post("/events/", eventData).then((res) => {
+        response = backend.post("/events/", eventData).then(async res => {
           // console.log("event id", res.data[0].id);
           // console.log("tag id ", tagId);
           // console.log(res);
-          tagResponse = backend.post("/event-tags/", {
+          tagResponse = await backend.post("/event-tags/", {
             eventId: res.data[0].id,
-            tagId: tagId,
+            tagId: tagId.data[0].id,
           });
-          return res;
+          return tagResponse;
         });
       }
 
@@ -194,11 +192,10 @@ export const CreateEvent = ({
     };
     return (
       <Select
-        name="level"
+        name="tags"
         value={formData.level}
-        onChange={handleChange}
+        onChange={handleOnChange}
         isInvalid={errors.level}
-        onChangeCapture={handleOnChange}
       >
         {Object.values(options).map((option) => {
           return <option value={option}>{option}</option>;

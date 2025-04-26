@@ -184,6 +184,25 @@ export const Bookings = () => {
     }
   };
 
+  const fetchEventsByTag = async (tagId) => {
+    try {
+      const res = await backend.get(`/event-tags/events/${tagId}`);
+      const events = res.data;
+      setEvents(events);
+    } catch (error) {
+      console.error("Error fetching events for specified tag:", error);
+    }
+  };
+
+  const fetchAllEvents = async () => {
+    try {
+      const res = await backend.get("/events/published");
+      setEvents(res.data);
+    } catch (error) {
+      console.error("Error fetching all events:", error);
+    }
+  }
+
   useEffect(() => {
     fetchTags();
   }, [searchInput]);
@@ -288,10 +307,15 @@ export const Bookings = () => {
 
   const handleFilterToggle = (id) => () => {
     console.log(`Tag ${id} has been toggled!`);
-    setTagFilter((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setTagFilter((prev) => {
+      const updatedFilter = { ...prev, [id]: !prev[id] };
+      return updatedFilter;
+    });
+    if (tagFilter[id]) {
+      fetchAllEvents();
+    } else {
+      fetchEventsByTag(id);
+    }
   };
 
   const loadCorequisites = async (classId) => {
@@ -572,20 +596,11 @@ export const Bookings = () => {
                 mb={20}
               >
                 {events.length > 0 ? (
-                  events
-                  .filter((eventItem) => {
-                    if (!isFilterActive) return true;
-                    return (
-                      eventItem.tags &&
-                      eventItem.tags.some((tagId) => tagFilter[tagId])
-                    );
-                  })
-                  .map((eventItem) => (
+                  events.map((eventItem) => (
                     <EventCard
                       key={eventItem.id}
                       {...eventItem}
                       onClick={() => updateModal(eventItem)}
-                      // setRefresh={reloadClassesAndDrafts}
                       triggerRefresh={triggerRefresh}
                       onCloseModal={onCloseModal}
                     />
