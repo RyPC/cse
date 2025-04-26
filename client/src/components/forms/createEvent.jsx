@@ -81,21 +81,21 @@ export const CreateEvent = ({
       // Convert form data to match API expectations
       const eventData = {
         ...formData,
-        level: formData.level == "" ? "beginner" : formData.level,
-        date: formData.date == "" ? new Date() : formData.date,
+        level: formData.level === "" ? "beginner" : formData.level,
+        date: formData.date === "" ? new Date() : formData.date,
         start_time:
-          formData.startTime == ""
+          formData.startTime === ""
             ? `${new Date().getHours()}:${new Date().getMinutes()}`
             : formData.startTime,
         end_time:
-          formData.endTime == ""
+          formData.endTime === ""
             ? `${new Date().getHours()}:${new Date().getMinutes()}`
             : formData.endTime,
         call_time:
-          formData.callTime == ""
+          formData.callTime === ""
             ? `${new Date().getHours()}:${new Date().getMinutes()}`
             : formData.callTime,
-        capacity: formData.capacity == "" ? 0 : formData.capacity,
+        capacity: formData.capacity === "" ? 0 : formData.capacity,
         is_draft: isDraft,
       };
 
@@ -110,11 +110,11 @@ export const CreateEvent = ({
       } else {
         // Create new event (POST request)
 
-        const tagId = backend.get(`/tags/${currentTag}`).then((res) => {
+        const tagId = await backend.get(`/tags/${currentTag}`).then((res) => {
           return res.data[0].id;
         });
 
-        response = backend.post("/events/", eventData).then((res) => {
+        response = await backend.post("/events/", eventData).then((res) => {
           // console.log("event id", res.data[0].id);
           // console.log("tag id ", tagId);
           // console.log(res);
@@ -122,6 +122,7 @@ export const CreateEvent = ({
             eventId: res.data[0].id,
             tagId: tagId,
           });
+          return res;
         });
       }
 
@@ -140,7 +141,7 @@ export const CreateEvent = ({
           capacity: "",
         });
         if (onClose) onClose();
-        if (reloadCallback) reloadCallback();
+        if (triggerRefresh) triggerRefresh();
       } else {
         console.error("Failed to create/save event:", response.statusText);
       }
@@ -170,6 +171,7 @@ export const CreateEvent = ({
         initialTags[tag.id] =
           tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
       });
+
 
       // setTagFilter(initialTagFilter);
       setTags(initialTags);
