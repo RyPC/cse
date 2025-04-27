@@ -1,4 +1,4 @@
-import { Flex, Text, Box, IconButton, Badge, Input, InputGroup, InputLeftAddon} from "@chakra-ui/react";
+import { Badge, Box, Flex, IconButton, Input, InputGroup, InputLeftAddon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
 import { IoSearch } from "react-icons/io5";
 
 import { useState, useEffect } from "react";
@@ -126,53 +126,63 @@ export const Resources = () => {
           </Badge>
         ))}
       </Flex>
-      
-      <Box>
-        <Text fontWeight="bold" mt={4}>Videos</Text>
-        <Flex wrap="wrap" gap={4}>
-          {videos.map((video) => {
-            const isFilterActive = Object.values(tagFilter).some(Boolean);
 
-            if (!isFilterActive || (video.tags && video.tags.some(tag => tagFilter[tag]))) {
-              return (
-                <VideoCard
-                  key={video.id}
-                  id={video.id}
-                  description={video.description}
-                  title={video.title}
-                  S3Url={video.s3Url}
-                  classId={video.classId}
-                  classTitle={video.classTitle}
-                  mediaUrl={video.mediaUrl}
-                  tags={video.tags?.map(tag => tags[tag] || [])}
-                />
-            )
-            }
-          })}
-        </Flex>
-      </Box>
-      <Box>
-        <Text fontWeight="bold" mt={4}>Articles</Text>
-        <Flex wrap="wrap" gap={4}>
-          {articles.map((article) => {
-              const isFilterActive = Object.values(tagFilter).some(Boolean);
-            
-              if (!isFilterActive || (article.tags && article.tags.some(tag => tagFilter[tag]))) {
-                return ( 
-                  <NewsCard
-                    key={article.id}
-                    id={article.id}
-                    S3Url={article.s3Url}
-                    description={article.description}
-                    mediaUrl={article.mediaUrl}
-                    tags={article.tags?.map(tag => tags[tag] || [])}
-                  />
+      {/* place Videos and News cards into separate tabs */}
+      <Tabs colorScheme="purple" mt={4}>
+        <TabList>
+          <Tab fontWeight="bold">Videos</Tab>
+          <Tab fontWeight="bold">Articles</Tab>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel>
+            <Text fontWeight="bold" mt={4}>Videos</Text>
+            <Flex wrap="wrap" gap={4}>
+              {videos.map((video) => {
+                const isFilterActive = Object.values(tagFilter).some(Boolean);
+
+                if (!isFilterActive || (video.tags && video.tags.some(tag => tagFilter[tag]))) {
+                  return (
+                    <VideoCard
+                      key={video.id}
+                      id={video.id}
+                      description={video.description}
+                      title={video.title}
+                      S3Url={video.s3Url}
+                      classId={video.classId}
+                      classTitle={video.classTitle}
+                      mediaUrl={video.mediaUrl}
+                      tags={video.tags?.map(tag => tags[tag] || [])}
+                    />
                 )
-              }
-          })}
-        </Flex>
+                }
+              })}
+            </Flex>
+          </TabPanel>
+          <TabPanel>
+            <Text fontWeight="bold" mt={4}>Articles</Text>
+            <Flex wrap="wrap" gap={4}>
+              {articles.map((article) => {
+                  const isFilterActive = Object.values(tagFilter).some(Boolean);
+                
+                  if (!isFilterActive || (article.tags && article.tags.some(tag => tagFilter[tag]))) {
+                    return ( 
+                      <NewsCard
+                        key={article.id}
+                        id={article.id}
+                        S3Url={article.s3Url}
+                        description={article.description}
+                        mediaUrl={article.mediaUrl}
+                        tags={article.tags?.map(tag => tags[tag] || [])}
+                      />
+                    )
+                  }
+              })}
+            </Flex>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
 
-      </Box>
       {/* <UploadComponent /> */}
     </Flex>
       {role === "teacher" && 
