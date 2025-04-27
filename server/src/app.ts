@@ -21,6 +21,7 @@ import emailRouter from "../routes/nodeMailer";
 import { articleTagsRouter } from "../routes/article_tags";
 import { videoTagsRouter } from "../routes/video_tags";
 import { classTagsRouter } from "../routes/class_tags";
+import { eventTagsRouter } from "../routes/event_tags";
 import { tagsRouter } from "../routes/tags";
 import { corequisitesRouter } from "../routes/corequisites";
 
@@ -71,6 +72,7 @@ app.use("/nodemailer", emailRouter);
 app.use("/s3", s3Router);
 app.use("/article-tags", articleTagsRouter);
 app.use("/class-tags", classTagsRouter);
+app.use("/event-tags", eventTagsRouter);
 app.use("/video-tags", videoTagsRouter);
 app.use("/tags", tagsRouter);
 app.use("/corequisites", corequisitesRouter);
