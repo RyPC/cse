@@ -105,6 +105,14 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
+        
+        // Add teacher to classes-taught on form post
+        await backend
+          .post(`/classes-taught/${modalData.classId}/${selectedInstructor.id}`, {
+          })
+          .then((response) =>
+            console.log(`Added teacher to classes-taught ${response}`))
+          .catch((error) => console.log(error));
 
         // For recurring classes, delete all existing scheduled classes and create new ones
         if (
