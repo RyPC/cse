@@ -26,8 +26,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { DetailedClass } from "../../../types/scheduled_class";
-import { NotificationPanel } from "../NotificationPanel";
 import { formatDate, formatTime } from "../../../utils/formatDateTime";
+import { NotificationPanel } from "../NotificationPanel";
 
 type AttendanceRecord = {
   firstName: string;
@@ -42,6 +42,7 @@ export default function ClassInfoDashboard() {
   const { backend } = useBackendContext();
   const [currentClass, setCurrentClass] = useState<DetailedClass | undefined>();
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [performances, setPerformances] = useState<string[]>([]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
@@ -60,9 +61,19 @@ export default function ClassInfoDashboard() {
         const attendanceResponse = await backend.get(
           `class-enrollments/class/${classId}/${classDate}`
         );
-        console.log(attendanceResponse.data);
         setAttendance(attendanceResponse.data);
-        console.log(attendanceResponse.data);
+        // console.log(attendanceResponse.data);
+
+        // Fetch performances from coreqs
+        const performancesResponse = await backend.get(
+          `classes/corequisites/${classId}`
+        );
+        setPerformances(
+          performancesResponse.data.map(
+            (performance: { title: string }) => performance.title
+          )
+        );
+        console.log(performancesResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -177,7 +188,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          TODO
+          {performances.join(", ")}
         </Box>
       </HStack>
       <HStack
@@ -198,7 +209,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass ? formatTime(currentClass.startTime) : ''}
+          {currentClass ? formatTime(currentClass.startTime) : ""}
         </Box>
         <Box
           flex={1}
@@ -212,7 +223,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass ? formatTime(currentClass.endTime) : ''}
+          {currentClass ? formatTime(currentClass.endTime) : ""}
         </Box>
       </HStack>
       <HStack

@@ -117,7 +117,6 @@ export function OverallClassDashboard() {
         params: { search: term.trim(), page: page, reverse: reverse },
       });
       setClasses(response.data);
-      console.log(response.data);
 
       const countResponse = await backend.get(
         "/scheduled-classes/teachers/count/",
