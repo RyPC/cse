@@ -736,7 +736,7 @@ const ClassTeacherCard = memo(
               <FaClock size={14} />
               <Text fontSize="sm">
                   {
-                    date ?? 
+                    date ? 
                     `${formatDate(date)} @ ${formatTime(startTime)} - ${formatTime(endTime)}` : 
                     "No date"
                   }
