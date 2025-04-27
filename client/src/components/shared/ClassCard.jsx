@@ -60,10 +60,10 @@ export const ClassCard = ({
         // console.log("id", id);
         const response = await backend.get(`/scheduled-classes/${id}`);
         if (response?.data[0]?.date) {
-          const formattedDate = new Date(
+          const newDate = new Date(
             response.data[0].date
           ).toLocaleDateString("en-US");
-          setClassDate(formattedDate);
+          setClassDate(newDate);
         }
       }
     };
@@ -94,7 +94,7 @@ export const ClassCard = ({
               <Text fontSize="sm">
                 {formattedDate
                   ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
-                  : "No date scheduled"}
+                  : "No date"}
               </Text>
             </HStack>
 

@@ -736,9 +736,9 @@ const ClassTeacherCard = memo(
               <FaClock size={14} />
               <Text fontSize="sm">
                   {
-                    date && startTime && endTime ? 
+                    date ?? 
                     `${formatDate(date)} @ ${formatTime(startTime)} - ${formatTime(endTime)}` : 
-                    "1/27/2025 @ 1 PM - 3 PM"
+                    "No date"
                   }
               </Text>
             </HStack>
