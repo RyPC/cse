@@ -24,6 +24,7 @@ export const CreateEvent = ({
     title: "",
     description: "",
     level: "",
+    tag: "",
     date: "",
     startTime: "",
     endTime: "",
@@ -35,7 +36,7 @@ export const CreateEvent = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   // initial state should be changed
   const [tags, setTags] = useState({});
-  const [currentTag, setCurrentTag] = useState("classical");
+  // const [currentTag, setCurrentTag] = useState("Select Tag");
   const { backend } = useBackendContext();
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export const CreateEvent = ({
       const eventData = {
         ...formData,
         level: formData.level === "" ? "beginner" : formData.level,
+        tag: formData.tag === "Select Tag" ? "" : formData.tag[0].toLowerCase() + formData.tag.slice(1),
         date: formData.date === "" ? new Date() : formData.date,
         start_time:
           formData.startTime === ""
@@ -109,19 +111,22 @@ export const CreateEvent = ({
         response = await backend.put(`/events/${eventId}/`, eventData);
       } else {
         // Create new event (POST request)
+          if (eventData.tag !== "") {
+            const tagId = await backend.get(`/tags/${eventData.tag}`);
 
-        const tagId = await backend.get(`/tags/${currentTag}`);
-
-        response = backend.post("/events/", eventData).then(async res => {
-          // console.log("event id", res.data[0].id);
-          // console.log("tag id ", tagId);
-          // console.log(res);
-          tagResponse = await backend.post("/event-tags/", {
-            eventId: res.data[0].id,
-            tagId: tagId.data[0].id,
-          });
-          return tagResponse;
-        });
+            response = backend.post("/events/", eventData).then(async res => {
+              // console.log("event id", res.data[0].id);
+              // console.log("tag id ", tagId);
+              // console.log(res);
+              tagResponse = await backend.post("/event-tags/", {
+                eventId: res.data[0].id,
+                tagId: tagId.data[0].id,
+              });
+              return tagResponse;
+            });
+          } else {
+            response = await backend.post("/events/", eventData);
+          }
       }
 
       if (response.status === 201 || response.status === 200) {
@@ -131,6 +136,7 @@ export const CreateEvent = ({
           title: "",
           description: "",
           level: "",
+          tag: "",
           date: "",
           startTime: "",
           endTime: "",
@@ -183,26 +189,31 @@ export const CreateEvent = ({
     fetchTags();
   }, []);
 
-  const DynamicSelect = ({ options }) => {
-    const handleOnChange = (optionData) => {
-      let eventVal = optionData.target.value;
-      eventVal = eventVal[0].toLowerCase() + eventVal.slice(1);
-      console.log(eventVal);
-      setCurrentTag(eventVal);
-    };
-    return (
-      <Select
-        name="tags"
-        value={formData.level}
-        onChange={handleOnChange}
-        isInvalid={errors.level}
-      >
-        {Object.values(options).map((option) => {
-          return <option value={option}>{option}</option>;
-        })}
-      </Select>
-    );
-  };
+  // const handleOnChange = (optionData) => {
+  //   handleChange(optionData);
+  //   let eventVal = optionData.target.value;
+  //   eventVal = eventVal[0].toLowerCase() + eventVal.slice(1);
+  //   setCurrentTag(eventVal);
+  //   console.log(currentTag);
+
+  // };
+
+  // const DynamicSelect = ({ options }) => {
+  //   // console.log("options", options);
+  //   return (
+  //     <Select
+  //       name="tag-select"
+  //       value={currentTag}
+  //       onChange={handleOnChange}
+  //       // isInvalid={errors.level}
+  //     >
+  //       <option value="Select Tag">Select Tag</option>
+  //       {Object.values(options).map((option) => {
+  //         return <option value={option}>{option}</option>;
+  //       })}
+  //     </Select>
+  //   );
+  // };
 
   return (
     <VStack
@@ -250,8 +261,19 @@ export const CreateEvent = ({
 
       <Box>
         <Text>Tags</Text>
-        <DynamicSelect options={tags} />
-        {errors.level && <Text color="red.500">{errors.level}</Text>}
+          <Select
+          name="tag"
+          value={formData.tag}
+          // onChange={handleOnChange}
+          onChange={handleChange}
+          // isInvalid={errors.level}
+        >
+          <option value="Select Tag">Select Tag</option>
+          {Object.values(tags).map((option) => {
+            return <option value={option}>{option}</option>;
+          })}
+        </Select>
+        {/* {errors.level && <Text color="red.500">{errors.level}</Text>} */}
       </Box>
 
       <Box>
