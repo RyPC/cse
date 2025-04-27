@@ -9,20 +9,14 @@ teachersRouter.use(express.json());
 teachersRouter.get("/classes/count", async (req, res) => {
   const { search } = req.query;
   try {
-    let query = `
+    const query = `
       SELECT COUNT(DISTINCT t.id) AS count
       FROM teachers t
       LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
       LEFT JOIN classes c ON c.id = ct.class_id
       INNER JOIN users u ON u.id = t.id
+      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1 OR u.email ILIKE $1" : ""};
     `;
-
-    if (search) {
-      query += `
-        WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1
-      `;
-    }
-
     const teacherClasses = await db.query(query, [`%${search}%`]);
 
     res.status(200).json(keysToCamel(teacherClasses));
@@ -46,7 +40,7 @@ teachersRouter.get("/classes/", async (req, res) => {
       LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
       LEFT JOIN classes c ON c.id = ct.class_id
       INNER JOIN users u ON u.id = t.id
-      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1" : ""}
+      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1 OR u.email ILIKE $1" : ""}
       GROUP BY t.id, u.id
       ORDER BY LOWER(u.first_name) ${reverseSearch ? "DESC" : "ASC"}, LOWER(u.last_name) ${reverseSearch ? "DESC" : "ASC"}
       LIMIT 10 OFFSET $2;
