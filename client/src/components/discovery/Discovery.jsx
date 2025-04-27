@@ -129,11 +129,68 @@ export const Discovery = () => {
 
   const handleFilterToggle = (id) => () => {
     console.log(`Tag ${id} has been toggled!`);
-    setTagFilter((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setTagFilter((prev) => {
+      const updatedFilter = { ...prev, [id]: !prev[id] };
+      return updatedFilter;
+    });
+    if (tagFilter[id]) {
+      fetchAllEvents();
+    } else {
+      fetchEventsByTag(id);
+    }
   };
+
+  const handleClassFilterToggle = (id) => () => {
+    console.log(`Tag ${id} has been toggled!`);
+    setTagFilter((prev) => {
+      const updatedFilter = { ...prev, [id]: !prev[id] };
+      return updatedFilter;
+    });
+    if (tagFilter[id]) {
+      fetchAllClasses();
+    } else {
+      fetchClassesByTag(id);
+    }
+  };
+
+  const fetchEventsByTag = async (tagId) => {
+    try {
+      const res = await backend.get(`/event-tags/events/${tagId}`);
+      const events = res.data;
+      console.log("Fetched Events for Tag", tagId, res.data);
+      setEvents(events);
+    } catch (error) {
+      console.error("Error fetching events for specified tag:", error);
+    }
+  };
+
+  const fetchAllEvents = async () => {
+    try {
+      const res = await backend.get("/events/published");
+      setEvents(res.data);
+    } catch (error) {
+      console.error("Error fetching all events:", error);
+    }
+  }
+
+  const fetchClassesByTag = async (tagId) => {
+    try {
+      const res = await backend.get(`/class-tags/classes/${tagId}`);
+      const classes = res.data;
+      setClasses(classes);
+    } catch (error) {
+      console.error("Error fetching events for specified tag:", error);
+    }
+  };
+
+  const fetchAllClasses = async () => {
+    try {
+      const res = await backend.get("/classes/published");
+      setClasses(res.data);
+    } catch (error) {
+      console.error("Error fetching all events:", error);
+    }
+  }
   
   
 
@@ -169,7 +226,7 @@ export const Discovery = () => {
           ></Input>
         </InputGroup>
         <Box width="100%" px={2}>
-          {activeTab === "events" && (
+          {(activeTab === "events" || activeTab === "classes") && (
             <Flex
               wrap="wrap"
               gap={2}
@@ -179,7 +236,11 @@ export const Discovery = () => {
               {Object.keys(tags).map((tag) => (
                 <Badge
                   key={tag}
-                  onClick={handleFilterToggle(tag)}
+                  onClick={
+                    activeTab === "events"
+                      ? handleFilterToggle(tag)
+                      : handleClassFilterToggle(tag)
+                  }
                   rounded="xl"
                   px={4}
                   py={1}
@@ -262,15 +323,7 @@ export const Discovery = () => {
             mt={5}
             wrap="wrap"
           >
-            {events
-              .filter((eventItem) => {
-                if (!isFilterActive) return true;
-                return (
-                  eventItem.tags &&
-                  eventItem.tags.some((tagId) => tagFilter[tagId])
-                );
-              })
-              .map((eventItem, index) => (
+            {events.map((eventItem, index) => (
               <EventCard
                 key={index}
                 title={eventItem.title}

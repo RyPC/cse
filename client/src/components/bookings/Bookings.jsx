@@ -203,6 +203,25 @@ export const Bookings = () => {
     }
   }
 
+  const fetchClassesByTag = async (tagId) => {
+    try {
+      const res = await backend.get(`/class-tags/classes/${tagId}`);
+      const classes = res.data;
+      setClasses(classes);
+    } catch (error) {
+      console.error("Error fetching events for specified tag:", error);
+    }
+  };
+
+  const fetchAllClasses = async () => {
+    try {
+      const res = await backend.get("/classes/published");
+      setClasses(res.data);
+    } catch (error) {
+      console.error("Error fetching all events:", error);
+    }
+  }
+
   useEffect(() => {
     fetchTags();
   }, [searchInput]);
@@ -315,6 +334,19 @@ export const Bookings = () => {
       fetchAllEvents();
     } else {
       fetchEventsByTag(id);
+    }
+  };
+
+  const handleClassFilterToggle = (id) => () => {
+    console.log(`Tag ${id} has been toggled!`);
+    setTagFilter((prev) => {
+      const updatedFilter = { ...prev, [id]: !prev[id] };
+      return updatedFilter;
+    });
+    if (tagFilter[id]) {
+      fetchAllClasses();
+    } else {
+      fetchClassesByTag(id);
     }
   };
 
@@ -536,6 +568,21 @@ export const Bookings = () => {
 
           <TabPanels>
             <TabPanel>
+            <Flex gap={3}>
+                  {Object.keys(tags).map((tag) => (
+                    <Badge
+                      key={tag}
+                      onClick={handleClassFilterToggle(tag)}
+                      rounded="xl"
+                      px={4}
+                      py={1}
+                      colorScheme={tagFilter[tag] ? "green" : "red"}
+                      textTransform="none"
+                    >
+                      {tags[tag]}
+                    </Badge>
+                  ))}
+                </Flex>
               <VStack
                 spacing={4}
                 width="100%"
@@ -572,7 +619,6 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
-              {tabIndex === 1 && (
                 <Flex gap={3}>
                   {Object.keys(tags).map((tag) => (
                     <Badge
@@ -588,7 +634,6 @@ export const Bookings = () => {
                     </Badge>
                   ))}
                 </Flex>
-              )}
               <VStack
                 spacing={4}
                 width="100%"
@@ -612,21 +657,6 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
-              <Flex gap={3}>
-                {Object.keys(tags).map((tag) => (
-                  <Badge
-                    key={tag}
-                    onClick={handleFilterToggle(tag)}
-                    rounded="xl"
-                    px={4}
-                    py={1}
-                    colorScheme={tagFilter[tag] ? "green" : "red"}
-                    textTransform="none"
-                  >
-                    {tags[tag]}
-                  </Badge>
-                ))}
-              </Flex>
               <VStack
                 spacing={4}
                 width="100%"
