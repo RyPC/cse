@@ -13,6 +13,8 @@ import {
 
 import { CiCircleCheck } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
+import CompletedIndicator from "./CompletedIndicator.png"
+
 
 function SuccessSignupModal({
   isOpen,
@@ -43,16 +45,16 @@ function SuccessSignupModal({
           display={"flex"}
           justifyContent={"center"}
         >
-          <VStack spacing={10}>
+          <VStack 
+            spacing={10}
+            minh = {"100vh"}
+            justify= {"center"}
+          >
             <VStack
               spacing={4}
               marginTop="5rem"
             >
-              <Text>Success!</Text>
-              <CiCircleCheck
-                color="gray"
-                fontSize="10rem"
-              />
+              <img src={CompletedIndicator} alt="Completed Indicator" />
               <Text textAlign={"center"}>
                 You've successfully signed up for <Box as="b">{title}</Box>
               </Text>
@@ -60,10 +62,11 @@ function SuccessSignupModal({
 
             {!isCorequisiteSignUp && (
               <Button
-                colorScheme="teal"
+                bg="#422E8D"
+                color = "#FFFFFF"
                 onClick={onClose}
               >
-                View Booking
+                View Booked Events
               </Button>
             )}
           </VStack>

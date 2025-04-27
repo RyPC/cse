@@ -25,6 +25,7 @@ import { TeacherInfoDashboard } from "./components/dashboard/teacherInfoDashboar
 import { Discovery } from "./components/discovery/Discovery";
 import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
+import { Landing } from "./components/signup/Landing";
 import { L } from "./components/logout/Logout";
 import { Playground } from "./components/playground/Playground";
 import { Profile } from "./components/profile/Profile";
@@ -68,6 +69,10 @@ const App = () => {
                 <Route
                   path="/signup"
                   element={<Signup />}
+                />
+                <Route
+                  path="/landing"
+                  element={<Landing />}
                 />
                 <Route
                   path="/teacher-signup"
@@ -177,7 +182,7 @@ const App = () => {
                   path="/"
                   element={
                     <Navigate
-                      to="/login"
+                      to="/landing"
                       replace
                     />
                   }

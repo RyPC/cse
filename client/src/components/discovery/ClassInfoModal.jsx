@@ -6,6 +6,7 @@ import {
   Card,
   HStack,
   Image,
+  Flex,
   List,
   ListIcon,
   ListItem,
@@ -20,6 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { FaTimesCircle } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
@@ -36,6 +38,8 @@ function ClassInfoModal({
   description,
   level,
   date,
+  startTime,
+  endTime,
   id,
   capacity,
   costume,
@@ -116,8 +120,13 @@ function ClassInfoModal({
             >
               {!isCorequisiteSignUp && (
                 <HStack width="100%">
-                  <Box>
-                    <Text as="b">Corequisites</Text>
+                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
+                    <VStack align = "start" spacing={2}>
+                      <HStack align="center">
+                        <Text as="b">
+                          Recommended
+                        </Text>
+                      </HStack>
                     {!corequisites || corequisites.length === 0 ? (
                       <Text>No corequisites for this class</Text>
                     ) : (
@@ -128,7 +137,7 @@ function ClassInfoModal({
                               as={
                                 coreq.enrolled
                                   ? FaCircleCheck
-                                  : FaCircleExclamation
+                                  : FaTimesCircle
                               }
                             />
                             {coreq.title}
@@ -136,6 +145,7 @@ function ClassInfoModal({
                         ))}
                       </List>
                     )}
+                    </VStack>
                   </Box>
                 </HStack>
               )}
@@ -160,16 +170,20 @@ function ClassInfoModal({
                 justifyContent={"space-between"}
               >
                 <Box>
-                  <Text fontWeight="bold">Location:</Text>
+                  <Text fontWeight="bold">Location</Text>
                   <Text>{location}</Text>
                 </Box>
                 <Box>
-                  <Text fontWeight="bold">Date:</Text>
+                  <Text fontWeight="bold">Date</Text>
                   <Text>{date}</Text>
                 </Box>
               </HStack>
 
               <Box width="100%">
+                <Box>
+                    <Text fontWeight="bold">Time</Text>
+                    <Text>pass in time prop and use it</Text>
+                </Box>
                 <Text fontWeight="bold">Description:</Text>
                 <Text>{description}</Text>
               </Box>
@@ -180,28 +194,36 @@ function ClassInfoModal({
                 justifyContent={"space-between"}
               >
                 <Box>
-                  <Text fontWeight="bold">Capacity:</Text>
+                  <Text fontWeight="bold">Capacity</Text>
                   <Text>{capacity}</Text>
                 </Box>
                 <Box>
-                  <Text fontWeight="bold">Level:</Text>
+                  <Text fontWeight="bold">Level</Text>
                   <Text>{level}</Text>
                 </Box>
               </HStack>
 
               <HStack width={"100%"}>
                 <Box>
-                  <Text fontWeight="bold">Costume:</Text>
+                  <Text fontWeight="bold">Classes</Text>
                   <Text>{costume}</Text>
                 </Box>
               </HStack>
             </VStack>
           </ModalBody>
-          <ModalFooter>
-            {role === "student" && (
-              <Button onClick={classSignUp}>Sign up</Button>
-            )}
-          </ModalFooter>
+          <Flex justifyContent="center" width = "100%">
+            <ModalFooter>
+              {role === "student" && (
+                <Button
+                  width = "100%"
+                  p = {7}
+                  bg = "#422E8D"
+                  color = "white"
+                  onClick={classSignUp}>Sign up
+                </Button>
+              )}
+            </ModalFooter>
+          </Flex>
           <PublishedReviews classId={id} />
         </ModalContent>
         {/* <PublishedReviews
