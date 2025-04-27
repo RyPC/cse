@@ -160,7 +160,7 @@ export const Login = () => {
           >
             <Stack spacing={2}>
 
-              <Box mb={7}>
+              <Box >
                 <FormControl
                   isInvalid={!!errors.email}
                   w={"100%"}
@@ -208,13 +208,20 @@ export const Login = () => {
                   >
                   </ChakraLink>
                 </FormControl>
-              </Box>
 
+              </Box>
+              <Box mb={5}>
+                <Text
+                  color="#6B46C1"
+                  fontSize="16px"
+                  fontWeight={500}
+                ><a href="/forgotPassword">Forgot Password?</a></Text>
+              </Box >
               <Center>
                 <Button
                   type="submit"
                   size={"lg"}
-                  bg="#422E8D"
+                  bg="#6B46C1"
                   w="48.25vw"
                   color="white"
                   // sx={{ width: "100%" }}

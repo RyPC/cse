@@ -72,9 +72,7 @@ export const Settings = () => {
                   variant="plain"
                   size="xs"
                   onClick={() =>
-                    console.log(
-                      "Change password functionality to be implemented"
-                    )
+                    window.location.assign("/forgotPassword")
                   }
                   p={0}
                 >
@@ -85,8 +83,11 @@ export const Settings = () => {
                     <Text
                       fontSize="16px"
                       fontWeight={500}
+                      
                     >
+                      <a href="/forgotPassword">
                       Change Password
+                      </a>
                     </Text>
                     <FaChevronRight fontSize="16px" />
                   </Flex>
