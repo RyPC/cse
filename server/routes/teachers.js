@@ -106,7 +106,7 @@ teachersRouter.get("/classes/:id", async (req, res) => {
             LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
             LEFT JOIN classes c ON c.id = ct.class_id
             INNER JOIN users u ON u.id = t.id
-            WHERE t.id = $1
+            WHERE t.id = $1;
             `,
       [teacherId]
     );
@@ -127,7 +127,7 @@ teachersRouter.get("/:id", async (req, res) => {
     const teacherId = req.params.id;
 
     const teacher = await db.query(
-      "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id WHERE Teachers.id = $1",
+      "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id WHERE Teachers.id = $1;",
       [teacherId]
     );
 
@@ -145,7 +145,7 @@ teachersRouter.get("/:id", async (req, res) => {
 teachersRouter.get("/", async (req, res) => {
   try {
     const teacher = await db.query(
-      "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id"
+      "SELECT * FROM Teachers INNER JOIN Users ON Users.id = Teachers.id;"
     );
 
     res.status(200).json(keysToCamel(teacher));

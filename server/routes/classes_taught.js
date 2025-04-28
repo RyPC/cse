@@ -27,15 +27,12 @@ classesTaughtRouter.post("/", async (req, res) => {
     const { teacherId, classId } = req.body;
 
     // Construct query with parameters
-    const query = `INSERT INTO classes_taught (teacher_id, class_id) VALUES ($1, $2);`;
+    const query = `INSERT INTO classes_taught (teacher_id, class_id) VALUES ($1, $2) RETURNING *;`;
     const params = [teacherId, classId];
 
-    await db.query(query, params);
+    const ret = await db.query(query, params);
 
-    res.status(201).json({
-      teacherId: teacherId,
-      classId: classId,
-    });
+    res.status(201).json(keysToCamel(ret));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -54,7 +51,7 @@ classesTaughtRouter.get("/instructor/:classId", async (req, res) => {
       WHERE ct.class_id = $1;
     `, [classId]);
 
-    res.status(200).json(result);
+    res.status(200).json(keysToCamel(result));
 
 
 

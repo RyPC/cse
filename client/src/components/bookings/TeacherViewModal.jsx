@@ -74,9 +74,9 @@ export const TeacherViewModal = ({
       }
       try {
         const res = await backend.get(`/classes-taught/instructor/${classData.id}`);
-        console.log("TESTISNG",res.data);
+        console.log("TESTING", res);
         if (res.data) {
-          const { firstName, lastName } = res.data;
+          const { firstName, lastName } = res.data[0];
           setInstructorName(`${firstName} ${lastName}`);
         }
       } catch (err) {

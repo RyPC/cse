@@ -107,13 +107,13 @@ export const CreateClassForm = memo(
           .catch((error) => console.log(error));
         
         // Add teacher to classes-taught on form post
-        await backend
-          .post(`/classes-taught/${modalData.classId}/${selectedInstructor.id}`, {
-          })
-          .then((response) =>
-            console.log(`Added teacher to classes-taught ${response}`))
-          .catch((error) => console.log(error));
-
+        const res = await backend
+          .post(`/classes-taught/`, { "classId": modalData.classId, "teacherId": selectedInstructor}, {
+          });
+          // .then((response) =>
+          //   console.log(`Added teacher to classes-taught ${response}`))
+          // .catch((error) => console.log(error));
+        console.log("Added teacher to classes-taught:", res);
         // For recurring classes, delete all existing scheduled classes and create new ones
         if (
           recurrencePattern !== "none" ||
@@ -192,6 +192,10 @@ export const CreateClassForm = memo(
         const response = await backend.post("/classes", classBody);
         console.log("Class created:", response);
         const classId = response?.data[0]?.id;
+        const res = await backend
+          .post(`/classes-taught/`, { classId: classId, teacherId: selectedInstructor}, {
+          });
+        console.log("Added teacher to classes-taught:", res);
 
         for (const classDate of classDates) {
           try {
