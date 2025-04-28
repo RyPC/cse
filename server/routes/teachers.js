@@ -6,16 +6,47 @@ import { db } from "../db/db-pgp"; // TODO: replace this db with
 export const teachersRouter = express.Router();
 teachersRouter.use(express.json());
 
-teachersRouter.get("/classes/", async (req, res) => {
+teachersRouter.get("/classes/count", async (req, res) => {
+  const { search } = req.query;
   try {
-    const teacherClasses = await db.query(
-      `
-            SELECT t.id as teacher_id, c.id as class_id, t.*, u.*, c.* FROM teachers t
-            LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
-            LEFT JOIN classes c ON c.id = ct.class_id
-            INNER JOIN users u ON u.id = t.id
-            `
-    );
+    const query = `
+      SELECT COUNT(DISTINCT t.id) AS count
+      FROM teachers t
+      LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
+      LEFT JOIN classes c ON c.id = ct.class_id
+      INNER JOIN users u ON u.id = t.id
+      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1 OR u.email ILIKE $1" : ""};
+    `;
+    const teacherClasses = await db.query(query, [`%${search}%`]);
+
+    res.status(200).json(keysToCamel(teacherClasses));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
+
+teachersRouter.get("/classes/", async (req, res) => {
+  const { search, page, reverse } = req.query;
+  const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
+  try {
+    const query = `
+      SELECT t.id as teacher_id, t.*, u.*, COUNT(class_id) AS class_count
+      FROM teachers t
+      LEFT JOIN classes_taught ct ON t.id = ct.teacher_id
+      LEFT JOIN classes c ON c.id = ct.class_id
+      INNER JOIN users u ON u.id = t.id
+      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1 OR u.email ILIKE $1" : ""}
+      GROUP BY t.id, u.id
+      ORDER BY LOWER(u.first_name) ${reverseSearch ? "DESC" : "ASC"}, LOWER(u.last_name) ${reverseSearch ? "DESC" : "ASC"}
+      LIMIT 10 OFFSET $2;
+    `;
+
+    const teacherClasses = await db.query(query, [`%${search}%`, 10 * pageNum]);
 
     res.status(200).json(keysToCamel(teacherClasses));
   } catch (err) {
@@ -51,7 +82,8 @@ teachersRouter.get("/notactivated", async (req, res) => {
             SELECT *
             FROM Teachers
              INNER JOIN Users ON Users.id = Teachers.id
-            WHERE Teachers.is_activated = False;`);
+            WHERE Teachers.is_activated = False 
+            AND Users.hidden = False;`);
 
     res.status(200).json(keysToCamel(teacher));
   } catch (err) {

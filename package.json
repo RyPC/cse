@@ -43,7 +43,10 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.2.5",
     "caniuse-lite": "^1.0.30001700",
-    "npo-template-merged": "file:"
+    "npo-template-merged": "file:",
+    "react-icons": "^5.5.0",
+    "recharts": "^2.15.2"
   }
 }

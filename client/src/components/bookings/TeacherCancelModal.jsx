@@ -9,6 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -20,17 +21,24 @@ export const TeacherCancelModal = ({
   classData,
 }) => {
   const { backend } = useBackendContext();
+  const toast = useToast();
 
   const onGoBack = () => {
     setCurrentModal("view");
   };
   const onConfirm = async () => {
     try {
-      await backend.delete(`/scheduled-classes/${classData.id}`);
       await backend.delete(`/classes/${classData.id}`);
       setCurrentModal("confirmation");
     } catch (error) {
       console.error("Error deleting class:", error);
+      console.log("Error deleting class:", error);
+      toast({
+        title: "Error deleting class",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
     }
   };
   return (

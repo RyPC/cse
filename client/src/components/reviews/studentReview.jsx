@@ -19,6 +19,7 @@ import { FaStar } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { color } from "framer-motion";
 
 const StudentReview = ({
   rating,
@@ -52,7 +53,7 @@ const StudentReview = ({
     setStarRating(value);
   };
   const colors = {
-    orange: "#F2C265",
+    purple: "#422E8D",
     grey: "a9a9a9",
   };
 
@@ -93,10 +94,11 @@ const StudentReview = ({
 
       const attendanceObject = attendance.data.find((a) => a.id === class_id)
 
-      setAttended(attendanceObject.attendance);
+      setAttended(attendanceObject ? attendanceObject.attendance : null);
     };
     fetchAttendance();
   }, [backend, class_id, student_id]);
+  
   return (
     <Card>
       <CardBody hidden={attended === null}>
@@ -117,7 +119,7 @@ const StudentReview = ({
                 onChange={(e) => setStarRating(e.target.value)}
                 color={
                   (hoverValue || starRating) > index
-                    ? colors.orange
+                    ? colors.purple
                     : colors.grey
                 }
                 onClick={() => handleClickStar(index + 1)}
@@ -134,10 +136,10 @@ const StudentReview = ({
           />
           <Button
             onClick={postReview}
-            colorScheme={isError ? "gray" : "blue"}
+            colorScheme={isError ? colors.purple : "blue"}
             disabled={isError}
           >
-            {editMode ? "Save" : "Post"}
+            {editMode ? "Save" : "Post Review"}
           </Button>
         </FormControl>
       </CardBody>

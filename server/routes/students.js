@@ -28,11 +28,16 @@ studentsRouter.get("/firebase/:firebaseUid", async (req, res) => {
 });
 
 studentsRouter.get("/count", async (req, res) => {
+  const { search } = req.query;
   try {
-    const students = await db.query(
-      `SELECT COUNT(*)
-       FROM students`
-    );
+    const query = `
+    SELECT COUNT(*)
+    FROM users u
+    JOIN students s ON u.id = s.id
+    ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1 OR u.email ILIKE $1" : ""};
+  `;
+
+    const students = await db.query(query, search ? [`%${search}%`] : []);
 
     res.status(200).json(keysToCamel(students));
   } catch (err) {
@@ -62,12 +67,21 @@ studentsRouter.get("/:id", async (req, res) => {
 });
 
 studentsRouter.get("/", async (req, res) => {
+  const { search, page, reverse } = req.query;
+  const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
+
   try {
-    const students = await db.query(
-      `SELECT u.id, u.first_name, u.last_name, u.role, u.user_role, u.email, u.firebase_uid, s.level
-       FROM users u
-       JOIN students s ON u.id = s.id`
-    );
+    const query = `
+      SELECT u.id, u.first_name, u.last_name, u.role, u.user_role, u.email, u.firebase_uid, s.level
+      FROM users u
+      JOIN students s ON u.id = s.id
+      ${search ? "WHERE u.first_name ILIKE $1 OR u.last_name ILIKE $1 OR u.email ILIKE $1" : ""}
+      ORDER BY LOWER(u.first_name) ${reverseSearch ? "DESC" : "ASC"}, LOWER(u.last_name) ${reverseSearch ? "DESC" : "ASC"}
+      LIMIT 10 OFFSET $2;
+    `;
+
+    const students = await db.query(query, [`%${search}%`, 10 * pageNum]);
 
     res.status(200).json(keysToCamel(students));
   } catch (err) {

@@ -10,4 +10,7 @@ const logout = async (redirectPath, navigate, cookies) => {
   window.location.reload(true);
 };
 
+
+
+
 export { logout };

@@ -5,6 +5,7 @@ import {
   Button,
   HStack,
   Image,
+  Flex,
   List,
   ListIcon,
   ListItem,
@@ -18,11 +19,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-
+import { FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import {formatDate} from "../../utils/formatDateTime";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function EventInfoModal({
@@ -115,6 +118,8 @@ function EventInfoModal({
     handleClose();
   };
 
+  
+
   useEffect(() => {
     if (isOpenProp && !imageSrc) {
       fetch("https://dog.ceo/api/breeds/image/random") // for fun
@@ -140,7 +145,9 @@ function EventInfoModal({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            {title}
+            <Flex justifyContent="center">
+              {title}
+            </Flex>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -150,8 +157,10 @@ function EventInfoModal({
             >
               <HStack width="100%">
                 {!isCorequisiteSignUp && (
-                  <Box>
-                    <Text as="b">Corequisites</Text>
+                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
+                    <Text as="b">
+                      Recommended
+                    </Text>
                     {!corequisites || corequisites.length === 0 ? (
                       <Text>No corequisites for this class</Text>
                     ) : (
@@ -162,7 +171,7 @@ function EventInfoModal({
                               as={
                                 coreq.enrolled
                                   ? FaCircleCheck
-                                  : FaCircleExclamation
+                                  : FaTimesCircle
                               }
                             />
                             {coreq.title}
@@ -197,14 +206,18 @@ function EventInfoModal({
                   <Text>{location}</Text>
                 </Box>
                 <Box>
-                  <Text fontWeight="bold">Date:</Text>
-                  <Text>{date}</Text>
+                  <Text fontWeight="bold">Date</Text>
+                  <Text>{formatDate(date)}</Text>
                 </Box>
               </HStack>
-
+              
               <Box width="100%">
+                <Box>
+                    <Text fontWeight="bold">Time</Text>
+                    <Text>need to pass in time prop</Text>
+                </Box>
                 <Text fontWeight="bold">Description:</Text>
-                <Text>{description}</Text>
+                <Text>{description}</Text> 
               </Box>
 
               <HStack
@@ -213,31 +226,38 @@ function EventInfoModal({
                 justifyContent={"space-between"}
               >
                 <Box>
-                  <Text fontWeight="bold">Capacity:</Text>
+                  <Text fontWeight="bold">Capacity</Text>
                   <Text>{capacity}</Text>
                 </Box>
                 <Box>
-                  <Text fontWeight="bold">Level:</Text>
+                  <Text fontWeight="bold">Level</Text>
                   <Text>{level}</Text>
                 </Box>
               </HStack>
 
               <HStack width={"100%"}>
                 <Box>
-                  <Text fontWeight="bold">Costume:</Text>
+                  <Text fontWeight="bold">Classes</Text>
                   <Text>{costume}</Text>
                 </Box>
               </HStack>
             </VStack>
           </ModalBody>
-          <ModalFooter>
-            <Button
-              colorScheme="teal"
-              onClick={eventSignUp}
-            >
-              Sign Up
-            </Button>
-          </ModalFooter>
+          <Flex justifyContent="center" width = "100%">
+            <ModalFooter>
+              <Flex justify = "center">
+                <Button
+                  width = "100%"
+                  p = {7}
+                  bg = "#422E8D" 
+                  color = "white"
+                  onClick={eventSignUp}
+                >
+                  Sign Up
+                </Button>
+              </Flex>
+            </ModalFooter>
+          </Flex>
         </ModalContent>
       </Modal>
     </>
