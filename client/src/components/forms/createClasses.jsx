@@ -241,7 +241,7 @@ export const CreateClassForm = memo(
         backend.get("/tags").then((response) => {
           setTags(response.data);
         });
-        backend.get("/teachers").then((response) => {
+        backend.get("/teachers/activated").then((response) => {
           setTeachers(response.data);
         });
       }

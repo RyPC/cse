@@ -26,6 +26,25 @@ teachersRouter.get("/classes/", async (req, res) => {
     });
   }
 });
+
+teachersRouter.get("/activated", async (req, res) => {
+  try {
+    const teacher = await db.query(`
+            SELECT *
+            FROM Teachers
+             INNER JOIN Users ON Users.id = Teachers.id
+            WHERE Teachers.is_activated = True;`);
+
+    res.status(200).json(keysToCamel(teacher));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});
+
 teachersRouter.get("/notactivated", async (req, res) => {
   try {
     const teacher = await db.query(`
