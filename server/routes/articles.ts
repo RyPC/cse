@@ -66,6 +66,26 @@ articlesRouter.get("/", async (req, res) => {
   }
 });
 
+// Articles search functionality
+articlesRouter.get("/with-tags/search/:name", async (req, res) => {
+    try {
+      const { name } = req.params;  
+      const data = await db.query(`
+        SELECT a.id, a.s3_url, a.description, a.media_url, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+        FROM articles a
+          LEFT JOIN article_tags g ON g.article_id = a.id
+          LEFT JOIN tags t ON t.id = g.tag_id
+        WHERE a.description ILIKE $1
+        GROUP BY a.id, a.s3_url, a.description, a.media_url
+        ORDER BY a.id;
+      `, [`%${name}%`]);
+  
+      res.status(200).json(keysToCamel(data));
+    } catch (err) {
+      res.status(500).send(err.message);
+    }
+});
+
 // POST /articles
 articlesRouter.post("/", async (req, res) => {
   try {
