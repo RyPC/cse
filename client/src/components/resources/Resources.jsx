@@ -18,6 +18,8 @@ export const Resources = () => {
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
+
   const {role} = useAuthContext();
 
   const handleInputChange = (e) => {
@@ -85,16 +87,40 @@ export const Resources = () => {
         const response = await backend.get("/classes-videos/with-tags");
         setVideos(response.data);
       } catch (error) {
-        console.error("Error fetching classes:", error);
+        console.error("Error fetching class videos:", error);
+      }
+    }
+  };
+
+  // allow search functionality for articles
+  const searchArticles = async () => {
+    if (searchInput) {
+      try {
+        const response = await backend.get(`/articles/with-tags/search/${searchInput}`);
+        setArticles(response.data);
+      } catch (error) {
+        console.error(`Error fetching articles with query '${searchInput}':`, error);
+      }
+    } else {
+      try {
+        const response = await backend.get("/articles/with-tags");
+        setArticles(response.data);
+      } catch (error) {
+        console.error("Error fetching articles:", error);
       }
     }
   };
 
   useEffect(() => {
-    searchVideos(); // Fetch videos initially
-    fetchNews();   // Fetch news initially
+    if (tabIndex == 0) { // only fetch videos
+      console.log(tabIndex);
+      searchVideos(); // Fetch videos initially
+    } else if (tabIndex == 1) {
+      searchArticles();
+    }
+    fetchNews(); // Fetch news initially
     fetchTags();   // Fetch tags initially
-  }, [searchInput]);
+  }, [searchInput, tabIndex]);
 
   return (
     <Box position="relative" pb="70px" minHeight="100vh">
@@ -128,7 +154,12 @@ export const Resources = () => {
       </Flex>
 
       {/* place Videos and News cards into separate tabs */}
-      <Tabs colorScheme="purple" mt={4}>
+      <Tabs
+        colorScheme="purple"
+        mt={4}
+        index={tabIndex}
+        onChange={(index) => setTabIndex(index)}>
+
         <TabList>
           <Tab fontWeight="bold">Videos</Tab>
           <Tab fontWeight="bold">Articles</Tab>
