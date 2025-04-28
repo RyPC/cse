@@ -1,4 +1,4 @@
-import { Badge, Box, Flex, IconButton, Input, InputGroup, InputLeftAddon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import { Badge, Box, Center, Flex, IconButton, Input, InputGroup, InputLeftAddon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { IoSearch } from "react-icons/io5";
 
@@ -165,15 +165,15 @@ export const Resources = () => {
         mt={4}
         index={tabIndex}
         onChange={(index) => setTabIndex(index)}>
-
+        <Center>
         <TabList>
           <Tab fontWeight="bold">Videos</Tab>
           <Tab fontWeight="bold">Articles</Tab>
         </TabList>
-
+        </Center>
         <TabPanels>
           <TabPanel>
-            <Text fontWeight="bold" mt={4}>Videos</Text>
+            <Text fontWeight="bold" mt={4} mb={2}>Videos</Text>
             <Flex wrap="wrap" gap={4}>
               {videos.map((video) => {
                 const isFilterActive = Object.values(tagFilter).some(Boolean);
@@ -197,7 +197,7 @@ export const Resources = () => {
             </Flex>
           </TabPanel>
           <TabPanel>
-            <Text fontWeight="bold" mt={4}>Articles</Text>
+            <Text fontWeight="bold" mt={4} mb={2}>Articles</Text>
             <Flex wrap="wrap" gap={4}>
               {articles.map((article) => {
                   const isFilterActive = Object.values(tagFilter).some(Boolean);
@@ -218,7 +218,9 @@ export const Resources = () => {
             </Flex>
           </TabPanel>
         </TabPanels>
+
       </Tabs>
+
 
       {/* <UploadComponent /> */}
     </Flex>
