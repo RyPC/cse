@@ -105,7 +105,7 @@ export const CreateEvent = ({
 
       // Using axios instead of fetch
       let response;
-      let tagResponse;
+      // let tagResponse;
       if (eventId) {
         // Edit event (PUT request)
         response = await backend.put(`/events/${eventId}/`, eventData);
@@ -113,23 +113,21 @@ export const CreateEvent = ({
         // Create new event (POST request)
           if (eventData.tag !== "") {
             const tagId = await backend.get(`/tags/${eventData.tag}`);
-
-            response = backend.post("/events/", eventData).then(async res => {
-              // console.log("event id", res.data[0].id);
-              // console.log("tag id ", tagId);
-              // console.log(res);
-              tagResponse = await backend.post("/event-tags/", {
-                eventId: res.data[0].id,
-                tagId: tagId.data[0].id,
-              });
-              return tagResponse;
+            response = await backend.post("/events/", eventData);
+            response = await backend.post("/event-tags/", {
+              eventId: response.data[0].id,
+              tagId: tagId.data[0].id,
             });
+
+
           } else {
             response = await backend.post("/events/", eventData);
           }
       }
 
-      if (response.status === 201 || response.status === 200) {
+      console.log("response", response.status, response?.data[0]);  
+
+      if (response?.status === 201 || response?.status === 200) {
         // Reset form or handle success
         setFormData({
           location: "",
@@ -150,9 +148,9 @@ export const CreateEvent = ({
         console.error("Failed to create/save event:", response.statusText);
       }
     } catch (error) {
-      console.error("Failed to create/save event:", error);
+      console.error("Failed to create/save event, error:", error);
     } finally {
-      triggerRefresh();
+      if (triggerRefresh) triggerRefresh();
       setIsSubmitting(false);
     }
   };
@@ -188,32 +186,6 @@ export const CreateEvent = ({
   useEffect(() => {
     fetchTags();
   }, []);
-
-  // const handleOnChange = (optionData) => {
-  //   handleChange(optionData);
-  //   let eventVal = optionData.target.value;
-  //   eventVal = eventVal[0].toLowerCase() + eventVal.slice(1);
-  //   setCurrentTag(eventVal);
-  //   console.log(currentTag);
-
-  // };
-
-  // const DynamicSelect = ({ options }) => {
-  //   // console.log("options", options);
-  //   return (
-  //     <Select
-  //       name="tag-select"
-  //       value={currentTag}
-  //       onChange={handleOnChange}
-  //       // isInvalid={errors.level}
-  //     >
-  //       <option value="Select Tag">Select Tag</option>
-  //       {Object.values(options).map((option) => {
-  //         return <option value={option}>{option}</option>;
-  //       })}
-  //     </Select>
-  //   );
-  // };
 
   return (
     <VStack

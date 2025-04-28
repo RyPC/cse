@@ -124,9 +124,10 @@ eventsRouter.post("/", async (req, res) => {
       call_time,
       costume,
       capacity,
+      is_draft
     } = req.body;
     const result = await db.query(
-      "INSERT INTO events (location, title, description, level, date, start_time, end_time, call_time, costume, capacity) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *;",
+      "INSERT INTO events (location, title, description, level, date, start_time, end_time, call_time, costume, capacity, is_draft) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;",
       [
         location,
         title,
@@ -138,6 +139,7 @@ eventsRouter.post("/", async (req, res) => {
         call_time,
         costume,
         capacity,
+        is_draft
       ]
     );
 

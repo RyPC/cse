@@ -774,8 +774,9 @@ export const Bookings = () => {
                   />
                 ) : (
                   <CreateEvent
+                    isOpen={isOpen}
                     onClose={onCloseModal}
-                    triggerRefresh={reloadClassesAndDrafts}
+                    // triggerRefresh={reloadClassesAndDrafts}
                   />
                 )}
               </ModalBody>
