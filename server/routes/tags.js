@@ -20,3 +20,21 @@ tagsRouter.get("/", async (req, res) => {
     });
   }
 });
+
+tagsRouter.get("/:tagName", async (req, res) => {
+  try {
+
+    const { tagName } = req.params;
+
+    const tagId = await db.query(
+      `SELECT id FROM tags WHERE tag = $1;`, [tagName]
+    );
+    res.status(200).json(keysToCamel(tagId));
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      status: "Failed",
+      msg: err.message,
+    });
+  }
+});

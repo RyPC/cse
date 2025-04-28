@@ -5,11 +5,18 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import App from "./App.tsx";
 
+import "@fontsource-variable/inter";
+
 const colors = {
   brand: {},
 };
 
-const theme = extendTheme({ colors });
+const fonts = {
+    body: `'inter', sans-serif`,
+    heading: `'inter', sans-serif`,
+}
+
+const theme = extendTheme({ colors, fonts });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

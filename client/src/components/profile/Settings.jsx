@@ -4,13 +4,19 @@ import {
   Center,
   Flex,
   Heading,
+  HStack,
   Image,
+  SimpleGrid,
+  Spacer,
   Text,
   VStack,
 } from "@chakra-ui/react";
 
+import { FaChevronRight } from "react-icons/fa";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { Navbar } from "../navbar/Navbar";
+import arrowImage from "./arrow.svg";
 
 export const Settings = () => {
   const { currentUser, role } = useAuthContext();
@@ -21,86 +27,77 @@ export const Settings = () => {
     ? `${currentUser.displayName}`
     : "First Last";
 
-    return (
-    <Box>
-      <Center>
-      <Flex
-        direction="column"
-        align="center"
-        height="80vh"
-        padding={4}
-        mt={10}
-        w={"100%"}
-      >
-        <Heading
-          size="lg"
-          mb={4}
-        >
-          Account Details
-        </Heading>
-        <Image
-          borderRadius="full"
-          boxSize="150px"
-          src={hardcodedProfilePic}
-          alt="Profile"
-          mb={4}
-        />
-
-        <Flex
-          direction="row"
-          height="40%"
-          width="100%"
-        >
-          <Flex
-            direction="column"
-            padding={2}
-            width="50%"
-            justify="space-between"
-            mt={4}
-          >
-            <Text>Name</Text>
-            <Text>Role</Text>
-            {/* <Text>ID Number</Text> */}
-            <Text>Email</Text>
-            <Text>Password</Text>
-          </Flex>
-
-          <Flex
-            direction="column"
-            padding={2}
-            width="50%"
-            justify="space-between"
-            mt={4}
-          >
-            <Text>{hardcodedName}</Text>
-            <Text>{role || "Not available"}</Text>
-            {/* <Text>{currentUser?.uid || "Not available"}</Text> */}
-            <Text>{currentUser?.email || "Not available"}</Text>
-            <Flex
-              direction="row"
-              justify="space-between"
-              align="center"
-            >
-              <Text>Change Password</Text>
-              <Button
-                variant="plain"
-                size="xs"
-                onClick={() =>
-                  console.log("Change password functionality to be implemented")
-                }
+  return (
+    <>
+      <Center h="90vh">
+        <VStack>
+          <Center>
+            <VStack>
+              <Heading
+                fontSize="28px"
+                fontWeight="500"
+                mb={4}
               >
-                <Image
-                  src="../Vector.png"
-                  alt="Profile"
-                  mt={1}
-                />
-              </Button>
-            </Flex>
-          </Flex>
-        </Flex>
-      </Flex>
+                Account Details
+              </Heading>
+              <Image
+                borderRadius="full"
+                boxSize="150px"
+                src={hardcodedProfilePic}
+                alt="Profile"
+                mb={4}
+                fit="cover"
+              />
+            </VStack>
+          </Center>
+
+          <Center>
+            <SimpleGrid
+              maxW="80vw"
+              columns={2}
+              spacing="40px"
+            >
+              <Text>Name</Text>
+              <Text>{currentUser?.displayName || "Not Available"}</Text>
+              <Text>Role</Text>
+              <Text>{role}</Text>
+              <Text>Student Number</Text>
+              <Text>{currentUser?.uid || "Not available"}</Text>
+              <Text>Email</Text>
+              <Text>{currentUser?.email || "Not available"}</Text>
+              <Text>Password</Text>
+              <Text>
+                <Button
+                  rounded={false}
+                  variant="plain"
+                  size="xs"
+                  onClick={() =>
+                    window.location.assign("/forgotPassword")
+                  }
+                  p={0}
+                >
+                  <Flex
+                    alignItems="center"
+                    gap="4vw"
+                  >
+                    <Text
+                      fontSize="16px"
+                      fontWeight={500}
+                      
+                    >
+                      <a href="/forgotPassword">
+                      Change Password
+                      </a>
+                    </Text>
+                    <FaChevronRight fontSize="16px" />
+                  </Flex>
+                </Button>
+              </Text>
+            </SimpleGrid>
+          </Center>
+        </VStack>
       </Center>
-      <Navbar></Navbar>
-    </Box>
+      <Navbar />
+    </>
   );
 };

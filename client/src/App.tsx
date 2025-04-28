@@ -26,6 +26,7 @@ import { TeacherInfoDashboard } from "./components/dashboard/teacherInfoDashboar
 import { Discovery } from "./components/discovery/Discovery";
 import { CreateEvent } from "./components/forms/createEvent";
 import { Login } from "./components/login/Login";
+import { Landing } from "./components/signup/Landing";
 import { L } from "./components/logout/Logout";
 import { Playground } from "./components/playground/Playground";
 import { Profile } from "./components/profile/Profile";
@@ -39,6 +40,8 @@ import { TeacherSignup } from "./components/teacher-signup/TeacherSignup";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BackendProvider } from "./contexts/BackendContext";
 import { RoleProvider } from "./contexts/RoleContext";
+import { ForgotPasswordConfirmation } from "./utils/auth/ForgotPasswordConfirmation"
+import { ForgotPassword } from "./utils/auth/ForgotPassword";
 
 const App = () => {
   return (
@@ -57,8 +60,20 @@ const App = () => {
                   element={<CreateEvent />}
                 />
                 <Route
+                  path="/forgotPassword"
+                  element={<ForgotPassword />}
+                />
+                <Route
+                  path="/forgotPasswordConfirmation"
+                  element={<ForgotPasswordConfirmation />}
+                />
+                <Route
                   path="/signup"
                   element={<Signup />}
+                />
+                <Route
+                  path="/landing"
+                  element={<Landing />}
                 />
                 <Route
                   path="/teacher-signup"
@@ -146,7 +161,7 @@ const App = () => {
                 />
                 <Route
                   path="/playground"
-                  element={<ProtectedRoute element={<Playground />} />}
+                  element={<Playground />} // <ProtectedRoute element={<Playground />}
                 />
 
                 <Route
@@ -172,7 +187,7 @@ const App = () => {
                   path="/"
                   element={
                     <Navigate
-                      to="/login"
+                      to="/landing"
                       replace
                     />
                   }
