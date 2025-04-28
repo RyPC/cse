@@ -16,6 +16,7 @@ import ClassDashboard, {
   OverallClassDashboard,
 } from "./components/dashboard/classDashboard/ClassDashboard";
 import ClassInfoDashboard from "./components/dashboard/classInfoDashboard/ClassInfoDashboard";
+import EventInfoDashboard from "./components/dashboard/eventInfoDashboard/EventInfoDashboard";
 import { Dashboard, DashboardHome } from "./components/dashboard/Dashboard";
 import SettingsDashboard from "./components/dashboard/settingsDashboard/SettingsDashboard";
 import { StudentDashboard } from "./components/dashboard/studentDashboard/StudentDashboard";
@@ -110,6 +111,10 @@ const App = () => {
                     <Route
                       path=":classId/:classDate"
                       element={<ClassInfoDashboard />}
+                    />
+                    <Route
+                      path="event/:eventId"
+                      element={<EventInfoDashboard />}
                     />
                   </Route>
                   <Route

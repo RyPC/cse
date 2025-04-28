@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -22,8 +22,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { debounce, set } from "lodash";
 import { FiTrash2 } from "react-icons/fi";
-import { LuFilter } from "react-icons/lu";
 import { PiArrowsDownUpFill } from "react-icons/pi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
@@ -42,42 +42,17 @@ export const TeacherDashboard = () => {
   const navigate = useNavigate();
 
   const [pageNum, setPageNum] = useState<number>(0);
-  const [teacherClasses, setTeacherClasses] = useState(new Map());
+  const [teachers, setTeachers] = useState([]);
+  const [numTeachers, setNumTeachers] = useState<number>(0);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [reverse, setReverse] = useState<boolean>(false);
   const notifRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await backend.get("/teachers/classes/");
-        // console.log(response.data);
-        setTeacherClasses(
-          response.data.reduce((acc, item) => {
-            const {
-              teacherId,
-              classId,
-              firstName,
-              lastName,
-              email,
-              isActivated,
-              title,
-            } = item;
-            const key = JSON.stringify({
-              id: teacherId,
-              firstName,
-              lastName,
-              email,
-              isActivated,
-            }); // teacher + user
-            // console.log(key);
-            const value = { id: classId, title }; // class
-            if (!acc.has(key))
-              if (classId) acc.set(key, [value]);
-              else acc.set(key, []);
-            else acc.get(key).push(value);
-            return acc;
-          }, new Map())
-        );
+        updateTeachers("", 0, false);
       } catch (error) {
         console.error("Error fetching teachers and classes:", error);
       }
@@ -85,6 +60,69 @@ export const TeacherDashboard = () => {
 
     fetchData();
   }, [backend]);
+
+  const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    updateTeachers(searchTerm, 0, false);
+    setReverse(false);
+    setPageNum(0);
+  };
+
+  const updateTeachers = async (
+    term: string,
+    page: number,
+    reverse: boolean
+  ) => {
+    try {
+      const response = await backend.get("/teachers/classes/", {
+        params: { search: term.trim(), page: page, reverse: reverse },
+      });
+      setTeachers(response.data);
+
+      const countResponse = await backend.get("/teachers/classes/count/", {
+        params: { search: term.trim() },
+      });
+      setNumTeachers(countResponse.data[0].count);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    debouncedSearch(e.target.value); // Only runs after not typing for 500ms
+  };
+
+  const incPage = () => {
+    if (pageNum * 10 + 10 < numTeachers) {
+      updateTeachers(searchTerm, pageNum + 1, reverse);
+      setPageNum(pageNum + 1);
+    }
+  };
+  const decPage = () => {
+    if (pageNum > 0) {
+      updateTeachers(searchTerm, pageNum - 1, reverse);
+      setPageNum(pageNum - 1);
+    }
+  };
+
+  const debouncedSearch = useCallback(
+    debounce((term) => {
+      if (term.length >= 2 || term.length === 0) {
+        updateTeachers(term, 0, false);
+        setReverse(false);
+        setPageNum(0);
+      }
+    }, 500),
+    []
+  );
+
+  const handleReverse = () => {
+    updateTeachers(searchTerm, 0, !reverse);
+    setReverse(!reverse);
+    setPageNum(0);
+  };
 
   return (
     <VStack>
@@ -123,64 +161,60 @@ export const TeacherDashboard = () => {
           onClose={onClose}
         />
       </Flex>
-      <HStack
-        w="100%"
-        pl={20}
+      <form
+        onSubmit={handleSearch}
+        style={{ width: "100%" }}
       >
-        <Input
-          flex={4}
-          h="36px"
-          borderRadius="18px"
-          placeholder="Search"
-          disabled
-        ></Input>
-        <Box flex={1} />
-        <HStack gap={0}>
-          <Text>
-            {pageNum * 10 + 1}
-            {" - "}
-            {pageNum * 10 + 10 < [...teacherClasses].length
-              ? pageNum * 10 + 10
-              : [...teacherClasses].length}
-            {" of "}
-            {[...teacherClasses].length}
-          </Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
-          >
-            <SlArrowLeft />
-          </Button>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() =>
-              setPageNum(
-                pageNum * 10 + 10 >= [...teacherClasses].length
-                  ? pageNum
-                  : pageNum + 1
-              )
-            }
-          >
-            <SlArrowRight />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <LuFilter />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <PiArrowsDownUpFill />
-          </Button>
+        <HStack
+          w="100%"
+          pl={20}
+        >
+          <Input
+            flex={4}
+            h="36px"
+            borderRadius="18px"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleChange}
+          ></Input>
+          <Box flex={1} />
+          <HStack gap={0}>
+            <Text>
+              {pageNum * 10 + 1}
+              {" - "}
+              {pageNum * 10 + 10 < teachers.length
+                ? pageNum * 10 + 10
+                : teachers.length}
+              {" of "}
+              {numTeachers}
+            </Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={decPage}
+              // disabled={pageNum === 0}
+            >
+              <SlArrowLeft />
+            </Button>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={incPage}
+              // disabled={pageNum * 10 + 10 >= numTeachers}
+            >
+              <SlArrowRight />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor={reverse ? "gray.300" : "transparent"}
+              p={0}
+              onClick={handleReverse}
+            >
+              <PiArrowsDownUpFill />
+            </Button>
+          </HStack>
         </HStack>
-      </HStack>
+      </form>
       <TableContainer
         w="100%"
         sx={{
@@ -234,44 +268,41 @@ export const TeacherDashboard = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {teacherClasses
-              ? [...teacherClasses]
-                  .slice(pageNum * 10, pageNum * 10 + 10)
-                  .map(([teacherString, classes], index) => {
-                    const teacher = JSON.parse(teacherString);
-                    return (
-                      <Tr
-                        key={teacher.id}
-                        onClick={() =>
-                          navigate(`/dashboard/teachers/${teacher.id}`)
-                        }
-                        backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
-                        _hover={{ bg: "gray.300", cursor: "pointer" }}
-                        color="gray.700"
-                      >
-                        <Td>
-                          {teacher.firstName} {teacher.lastName}
-                        </Td>
-                        <Td>{teacher.email}</Td>
-                        <Td>
-                          <StatusCard status={teacher.isActivated} />
-                        </Td>
-                        <Td>{classes.length}</Td>
-                        <Td>
-                          <Button
-                            backgroundColor="transparent"
-                            onClick={(e) => {
-                              e.stopPropagation(); // prevents earlier onclick
-                            }}
-                            m={-8} // overrides bounds of row
-                            fontSize="28px"
-                          >
-                            <FiTrash2 />
-                          </Button>
-                        </Td>
-                      </Tr>
-                    );
-                  })
+            {teachers
+              ? teachers.map((teacher, index) => {
+                  return (
+                    <Tr
+                      key={teacher.id}
+                      onClick={() =>
+                        navigate(`/dashboard/teachers/${teacher.id}`)
+                      }
+                      backgroundColor={index % 2 ? "white" : "gray.100"} // Striped row backgrounds
+                      _hover={{ bg: "gray.300", cursor: "pointer" }}
+                      color="gray.700"
+                    >
+                      <Td>
+                        {teacher.firstName} {teacher.lastName}
+                      </Td>
+                      <Td>{teacher.email}</Td>
+                      <Td>
+                        <StatusCard status={teacher.isActivated} />
+                      </Td>
+                      <Td>{teacher.classCount}</Td>
+                      <Td>
+                        <Button
+                          backgroundColor="transparent"
+                          onClick={(e) => {
+                            e.stopPropagation(); // prevents earlier onclick
+                          }}
+                          m={-8} // overrides bounds of row
+                          fontSize="28px"
+                        >
+                          <FiTrash2 />
+                        </Button>
+                      </Td>
+                    </Tr>
+                  );
+                })
               : null}
           </Tbody>
         </Table>

@@ -20,6 +20,23 @@ eventsRouter.get("/search/:name", async (req, res) => {
   }
 });
 
+eventsRouter.get("/count", async (req, res) => {
+  const { search } = req.query;
+  try {
+    const query = `
+      SELECT COUNT(*)
+      FROM events
+      ${search ? "WHERE title ILIKE $1" : ""};
+    `;
+
+    const eventCount = await db.query(query, search ? [`%${search}%`] : []);
+
+    res.status(200).json(keysToCamel(eventCount));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 eventsRouter.get("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -39,8 +56,9 @@ eventsRouter.get("/corequisites/:id", async (req, res) => {
 
 eventsRouter.get(`/drafts`, async (req, res) => {
   try {
-    const drafts = await db.query (
-      `select * from events where is_draft = true;`, []
+    const drafts = await db.query(
+      `SELECT * FROM events WHERE is_draft = true;`,
+      []
     );
     res.status(200).json(keysToCamel(drafts));
   } catch (err) {
@@ -48,10 +66,11 @@ eventsRouter.get(`/drafts`, async (req, res) => {
   }
 });
 
-eventsRouter.get('/published', async (req, res) => {
+eventsRouter.get("/published", async (req, res) => {
   try {
-    const drafts = await db.query (
-      `select * from events where is_draft = false;`, []
+    const drafts = await db.query(
+      `SELECT * FROM events WHERE is_draft = false;`,
+      []
     );
     res.status(200).json(keysToCamel(drafts));
   } catch (err) {
@@ -71,8 +90,21 @@ eventsRouter.get("/:id", async (req, res) => {
 });
 
 eventsRouter.get("/", async (req, res) => {
+  const { search, page, reverse } = req.query;
+  const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
+
   try {
-    const allEvents = await db.query("SELECT * FROM events;");
+    const query = `
+      SELECT *
+      FROM events
+      ${search ? "WHERE title ILIKE $1" : ""}
+      ORDER BY date ${reverseSearch ? "ASC" : "DESC"}, LOWER(title) ASC
+      LIMIT 10 OFFSET $2;
+    `;
+
+    const allEvents = await db.query(query, [`%${search}%`, 10 * pageNum]);
+
     res.status(200).json(keysToCamel(allEvents));
   } catch (err) {
     res.status(500).send(err.message);

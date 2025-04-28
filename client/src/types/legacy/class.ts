@@ -11,4 +11,5 @@ export type Class = {
   level: string;
   classType: string;
   performance: number;
+  teachers: string; //can be 1+ teachers, aggregated string
 };

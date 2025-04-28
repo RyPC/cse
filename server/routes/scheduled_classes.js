@@ -6,6 +6,60 @@ import { db } from "../db/db-pgp";
 const scheduledClassesRouter = express.Router();
 scheduledClassesRouter.use(express.json());
 
+scheduledClassesRouter.get("/teachers/count", async (req, res) => {
+  const { search } = req.query;
+
+  try {
+    const query = `
+      SELECT COUNT(*) AS count
+      FROM (
+        SELECT sc.date, c.id
+        FROM scheduled_classes sc
+        LEFT JOIN classes_taught ct ON ct.class_id = sc.class_id
+        LEFT JOIN teachers t ON t.id = ct.teacher_id
+        LEFT JOIN users u ON u.id = t.id
+        LEFT JOIN classes c ON c.id = sc.class_id
+        ${search ? "WHERE c.title ILIKE $1" : ""}
+        GROUP BY c.id, sc.date
+      ) AS subq;
+    `;
+
+    const data = await db.query(query, [`%${search}%`]);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+scheduledClassesRouter.get("/teachers", async (req, res) => {
+  const { search, page, reverse } = req.query;
+  const pageNum = page ? parseInt(page) : 0;
+  const reverseSearch = reverse && reverse === "true";
+
+  try {
+    const query = `
+      SELECT sc.date, c.*, 
+      COALESCE(STRING_AGG(u.first_name || ' ' || u.last_name, ', '),'') AS teachers
+      FROM scheduled_classes sc
+      LEFT JOIN classes_taught ct ON ct.class_id = sc.class_id
+      LEFT JOIN teachers t ON t.id = ct.teacher_id
+      LEFT JOIN users u ON u.id = t.id
+      LEFT JOIN classes c ON c.id = sc.class_id
+      ${search ? "WHERE c.title ILIKE $1" : ""}
+      GROUP BY c.id, sc.date
+      ORDER BY sc.date ${reverseSearch ? "ASC" : "DESC"}, LOWER(c.title) ASC
+      LIMIT 10 OFFSET $2;
+    `;
+
+    const data = await db.query(query, [`%${search}%`, 10 * pageNum]);
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 scheduledClassesRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -71,6 +125,28 @@ scheduledClassesRouter.put("/", async (req, res) => {
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+scheduledClassesRouter.delete("/:classId/:classDate", async (req, res) => {
+  try {
+    const { classId, classDate } = req.params;
+
+    const result = await db.query(
+      `DELETE FROM scheduled_classes 
+       WHERE class_id = $1
+       AND date = $2
+       RETURNING *;`,
+      [classId, classDate]
+    );
+
+    res.status(200).json({
+      message: `Deleted ${result.length} scheduled classes for class ID ${classId}`,
+      deleted: keysToCamel(result),
+    });
+  } catch (err) {
+    console.error("Error deleting scheduled classes:", err);
     res.status(500).send(err.message);
   }
 });

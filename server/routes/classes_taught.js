@@ -19,6 +19,7 @@ classesTaughtRouter.get("/", async (req, res) => {
   }
 });
 
+
 // Creates a new classes-taught entry in the classes taught table
 classesTaughtRouter.post("/", async (req, res) => {
   try {

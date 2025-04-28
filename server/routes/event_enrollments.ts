@@ -19,17 +19,6 @@ interface EventEnrollmentRequest {
   attendance?: boolean;
 }
 
-// GET /
-eventEnrollmentRouter.get("/", async (req, res) => {
-  try {
-    const events = await db.query("SELECT * FROM event_enrollments");
-    res.status(200).json(keysToCamel(events) as EventEnrollment[]);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-
 // test
 eventEnrollmentRouter.get("/test", async (req, res) => {
   const { student_id, event_id } = req.query;
@@ -105,6 +94,15 @@ eventEnrollmentRouter.get("/student/:student_id", async (req, res) => {
     res.json(keysToCamel(result));
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+eventEnrollmentRouter.get("/", async (req, res) => {
+  try {
+    const events = await db.query("SELECT * FROM event_enrollments");
+    res.status(200).json(keysToCamel(events) as EventEnrollment[]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
