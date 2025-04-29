@@ -47,6 +47,7 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -888,7 +889,11 @@ const ClassTeacherCard = memo(
             <HStack>
               <FaClock size={14} />
               <Text fontSize="sm">
-                {date ? date : "1/27/2025 @ 1 PM - 3 PM"}
+                  {
+                    date ? 
+                    `${formatDate(date)} @ ${formatTime(startTime)} - ${formatTime(endTime)}` : 
+                    "No date"
+                  }
               </Text>
             </HStack>
             <HStack>
