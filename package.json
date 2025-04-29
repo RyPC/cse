@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
+    "@types/dotenv": "^8.2.3",
     "@types/lint-staged": "^13.3.0",
     "concurrently": "^8.2.2",
     "eslint": "^9.9.0",
@@ -42,7 +43,10 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.2.5",
     "caniuse-lite": "^1.0.30001700",
-    "npo-template-merged": "file:"
+    "npo-template-merged": "file:",
+    "react-icons": "^5.5.0",
+    "recharts": "^2.15.2"
   }
 }

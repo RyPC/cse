@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -8,8 +8,6 @@ import {
   HStack,
   Image,
   Input,
-  Link,
-  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -22,8 +20,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { debounce } from "lodash";
 import { FiTrash2 } from "react-icons/fi";
-import { LuFilter } from "react-icons/lu";
 import { PiArrowsDownUpFill } from "react-icons/pi";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
@@ -37,19 +35,21 @@ export const StudentDashboard = () => {
   const navigate = useNavigate();
   const { backend } = useBackendContext();
   const [pageNum, setPageNum] = useState(0);
+  const [numStudents, setNumStudents] = useState(0);
+  const [reverse, setReverse] = useState(false);
   const [students, setStudents] = useState([]);
   const [classCount, setClassCount] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await backend.get("/students");
-        setStudents(response.data);
+        updateStudents(searchTerm, pageNum, reverse);
 
-        const countResponse = await backend.get(
+        const classCountResponse = await backend.get(
           "/class-enrollments/student-class-count"
         );
-        setClassCount(countResponse.data);
+        setClassCount(classCountResponse.data);
       } catch (error) {
         console.error("Error fetching students:", error);
       }
@@ -57,6 +57,66 @@ export const StudentDashboard = () => {
 
     fetchData();
   }, [backend]);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+
+    updateStudents(searchTerm, 0, false);
+    setReverse(false);
+    setPageNum(0);
+  };
+
+  const updateStudents = async (term, page, reverse) => {
+    try {
+      const response = await backend.get("/students", {
+        params: { search: term.trim(), page: page, reverse: reverse },
+      });
+      setStudents(response.data);
+
+      const studentCountResponse = await backend.get("/students/count", {
+        params: { search: term.trim() },
+      });
+      setNumStudents(studentCountResponse.data[0].count);
+      console.log(studentCountResponse.data[0].count);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    setSearchTerm(e.target.value);
+    debouncedSearch(e.target.value); // Only runs after not typing for 500ms
+  };
+
+  const incPage = () => {
+    if (pageNum * 10 + 10 < numStudents) {
+      updateStudents(searchTerm, pageNum + 1, reverse);
+      setPageNum(pageNum + 1);
+    }
+  };
+  const decPage = () => {
+    if (pageNum > 0) {
+      updateStudents(searchTerm, pageNum - 1, reverse);
+      setPageNum(pageNum - 1);
+    }
+  };
+
+  const debouncedSearch = useCallback(
+    debounce((term) => {
+      if (term.length >= 2 || term.length === 0) {
+        setPageNum(0);
+        setReverse(false);
+        updateStudents(term, 0, false);
+      }
+    }, 500),
+    []
+  );
+
+  const handleReverse = () => {
+    updateStudents(searchTerm, pageNum, !reverse);
+    setReverse(!reverse);
+    setPageNum(0);
+  };
 
   return (
     <VStack>
@@ -95,62 +155,56 @@ export const StudentDashboard = () => {
           onClose={onClose}
         />
       </Flex>
-      <HStack
-        w="100%"
-        pl={20}
+      <form
+        onSubmit={handleSearch}
+        style={{ width: "100%" }}
       >
-        <Input
-          flex={4}
-          h="36px"
-          borderRadius="18px"
-          placeholder="Search"
-          disabled
-        ></Input>
-        <Box flex={1} />
-        <HStack gap={0}>
-          <Text>
-            {pageNum * 10 + 1}
-            {" - "}
-            {pageNum * 10 + 10 < students.length
-              ? pageNum * 10 + 10
-              : students.length}
-            {" of "}
-            {students.length}
-          </Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() => setPageNum(pageNum <= 0 ? pageNum : pageNum - 1)}
-          >
-            <SlArrowLeft />
-          </Button>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-            onClick={() =>
-              setPageNum(
-                pageNum * 10 + 10 >= students.length ? pageNum : pageNum + 1
-              )
-            }
-          >
-            <SlArrowRight />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <LuFilter />
-          </Button>
-          <Text>|</Text>
-          <Button
-            backgroundColor="transparent"
-            p={0}
-          >
-            <PiArrowsDownUpFill />
-          </Button>
+        <HStack
+          w="100%"
+          pl={20}
+        >
+          <Input
+            flex={4}
+            h="36px"
+            borderRadius="18px"
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleChange}
+          ></Input>
+          <Box flex={1} />
+          <HStack gap={0}>
+            <Text>
+              {pageNum * 10 + 1}
+              {" - "}
+              {pageNum * 10 + students.length}
+              {" of "}
+              {numStudents}
+            </Text>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={decPage}
+            >
+              <SlArrowLeft />
+            </Button>
+            <Button
+              backgroundColor="transparent"
+              p={0}
+              onClick={incPage}
+            >
+              <SlArrowRight />
+            </Button>
+            <Text>|</Text>
+            <Button
+              backgroundColor={reverse ? "gray.300" : "transparent"}
+              p={0}
+              onClick={handleReverse}
+            >
+              <PiArrowsDownUpFill />
+            </Button>
+          </HStack>
         </HStack>
-      </HStack>
+      </form>
       <TableContainer
         w="100%"
         sx={{
@@ -196,7 +250,7 @@ export const StudentDashboard = () => {
           <Tbody>
             {students
               ? students
-                  .slice(pageNum * 10, pageNum * 10 + 10)
+                  // .slice(pageNum * 10, pageNum * 10 + 10)
                   .map((stud, index) => (
                     <Tr
                       key={stud.id}

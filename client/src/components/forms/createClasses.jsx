@@ -33,6 +33,10 @@ export const CreateClassForm = memo(
     const { backend } = useBackendContext();
     const [events, setEvents] = useState([]);
     const [tags, setTags] = useState([]);
+    const [teachers, setTeachers] = useState([]);
+    const [selectedInstructor, setSelectedInstructor] = useState(
+      modalData?.teachers?.[0] ?? ""
+    );
 
     const [title, setTitle] = useState(modalData?.title ?? "");
     const [location, setLocation] = useState(modalData?.location ?? "");
@@ -74,6 +78,8 @@ export const CreateClassForm = memo(
         recurrencePattern
       );
 
+      
+
       const baseClassBody = {
         location: location ?? "",
         description: description ?? "",
@@ -87,6 +93,8 @@ export const CreateClassForm = memo(
         recurrence_pattern: recurrencePattern,
         start_date: date,
         end_date: recurrencePattern !== "none" ? endDate : date,
+        instructor: selectedInstructor
+
       };
 
       if (modalData) {
@@ -97,7 +105,15 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
-
+        
+        // Add teacher to classes-taught on form post
+        const res = await backend
+          .post(`/classes-taught/`, { "classId": modalData.classId, "teacherId": selectedInstructor}, {
+          });
+          // .then((response) =>
+          //   console.log(`Added teacher to classes-taught ${response}`))
+          // .catch((error) => console.log(error));
+        console.log("Added teacher to classes-taught:", res);
         // For recurring classes, delete all existing scheduled classes and create new ones
         if (
           recurrencePattern !== "none" ||
@@ -176,6 +192,10 @@ export const CreateClassForm = memo(
         const response = await backend.post("/classes", classBody);
         console.log("Class created:", response);
         const classId = response?.data[0]?.id;
+        const res = await backend
+          .post(`/classes-taught/`, { classId: classId, teacherId: selectedInstructor}, {
+          });
+        console.log("Added teacher to classes-taught:", res);
 
         for (const classDate of classDates) {
           try {
@@ -224,6 +244,9 @@ export const CreateClassForm = memo(
         });
         backend.get("/tags").then((response) => {
           setTags(response.data);
+        });
+        backend.get("/teachers/activated").then((response) => {
+          setTeachers(response.data);
         });
       }
     }, [backend]);
@@ -369,6 +392,32 @@ export const CreateClassForm = memo(
               </FormControl>
             </HStack>
 
+            <FormControl>
+              <FormLabel>Instructor</FormLabel>
+              <Select
+                placeholder="Select an instructor"
+                required
+                value={selectedInstructor}
+                onChange={(e) => setSelectedInstructor(e.target.value)}
+                bg="white"
+                color="black"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
+              >
+                {teachers.map((teacher) => (
+                  <option key={teacher.id} value={teacher.id}>
+                      {teacher.firstName} {teacher.lastName}
+
+                  </option>
+                ))}
+              </Select>
+
+            </FormControl>
+
             <FormControl mt={4}>
               <FormLabel>Description</FormLabel>
               <Textarea
@@ -499,6 +548,7 @@ export const CreateClassForm = memo(
                 color="white"
                 border="1px solid black"
                 _hover={{ bg: "#5D2E8C" }}
+                onClick={()=>{setIsDraft(false)}}
               >
                 Publish
               </Button>
@@ -527,12 +577,12 @@ export const CreateClassForm = memo(
         <SaveClassAsDraftModal
           isOpen={isOpen}
           onClose={onClose}
-          postClass={postClass}
+          postClass={() => {postClass().then(reloadCallback)}}
         />
         <SaveClass
           isOpen={isConfirmationOpen}
           onClose={onConfirmationClose}
-          postClass={postClass}
+          postClass={() => {postClass().then(reloadCallback)}}
         />
       </Container>
     );

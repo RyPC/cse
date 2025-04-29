@@ -38,6 +38,8 @@ export const TeacherViewModal = ({
   const { backend } = useBackendContext();
   const [tagData, setTagData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [instructorName, setInstructorName] = useState("");
+
   useEffect(() => {
     const fetchTags = async () => {
       if (!classData?.id) {
@@ -47,7 +49,6 @@ export const TeacherViewModal = ({
       setLoading(true);
       try {
         const response = await backend.get(`/class-tags/tags/${classData.id}`);
-        console.log("Raw tag data:", response.data);
         
         if (response.data && response.data.length > 0) {
           // Extract tags from the response
@@ -67,8 +68,26 @@ export const TeacherViewModal = ({
         setLoading(false);
       }
     };
+    const fetchInstructor = async () => {
+      if (!classData?.id) {
+        return;
+      }
+      try {
+        const res = await backend.get(`/classes-taught/instructor/${classData.id}`);
+        console.log("TESTING", res);
+        if (res.data) {
+          const { firstName, lastName } = res.data[0];
+          setInstructorName(`${firstName} ${lastName}`);
+        }
+      } catch (err) {
+        console.error("Failed to fetch instructor:", err);
+        setInstructorName("Unavailable");
+      }
+    };
 
     fetchTags();
+    fetchInstructor();
+
   }, [backend, classData?.id]);
 
   const onCancel = () => {
@@ -221,6 +240,18 @@ export const TeacherViewModal = ({
                 `${formatTime(classData.startTime)} - ${formatTime(classData.endTime)}` : 
                 "-"
               }
+            </Text>
+          </Box>
+          <Box>
+            <Text
+              fontWeight="bold"
+              mb="1rem"
+              >
+              Instructor
+              
+              </Text>
+              <Text>
+              {instructorName || "Unavailable"}
             </Text>
           </Box>
           <Text

@@ -26,8 +26,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { DetailedClass } from "../../../types/scheduled_class";
-import { formatDate, formatTime } from "../../../utils/formatDateTime";
 import { NotificationPanel } from "../NotificationPanel";
+import { formatDate, formatTime } from "../../../utils/formatDateTime";
 
 type AttendanceRecord = {
   firstName: string;
@@ -36,13 +36,12 @@ type AttendanceRecord = {
   attendance: Date;
 };
 
-export default function ClassInfoDashboard() {
+export default function EventInfoDashboard() {
   const navigate = useNavigate();
-  const { classId, classDate } = useParams();
+  const { eventId } = useParams();
   const { backend } = useBackendContext();
-  const [currentClass, setCurrentClass] = useState<DetailedClass | undefined>();
+  const [currentEvent, setEvent] = useState<DetailedClass | undefined>();
   const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
-  const [performances, setPerformances] = useState<string[]>([]);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
@@ -50,39 +49,27 @@ export default function ClassInfoDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch class info
-        const classesResponse = await backend.get(
-          `/classes/scheduled/${classId}/${classDate}`
+        // Fetch event info
+        const response = await backend.get(
+          `/events/${eventId}`
         );
-        classesResponse.data[0].date = new Date(classDate || "");
-        setCurrentClass(classesResponse.data[0]);
+        response.data[0].date = new Date(response.data[0].date || "");
+        setEvent(response.data[0]);
 
-        // Fetch class attendances
+        // Fetch event attendances
         const attendanceResponse = await backend.get(
-          `class-enrollments/class/${classId}/${classDate}`
+          `/event-enrollments/event/${eventId}`
         );
+        console.log(attendanceResponse.data);
         setAttendance(attendanceResponse.data);
-        // console.log(attendanceResponse.data);
-
-        // Fetch performances from coreqs
-        const performancesResponse = await backend.get(
-          `classes/corequisites/${classId}`
-        );
-        setPerformances(
-          performancesResponse.data.map(
-            (performance: { title: string }) => performance.title
-          )
-        );
-        console.log(performancesResponse.data);
+        console.log(attendanceResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, [backend, classId]);
-
-  // const hardcodedCoreqs = ["Ballet I", "Contemporary I"]; // Hardcoded coreqs for now
+  }, [backend, eventId]);
 
   return (
     <VStack gap="30px">
@@ -107,7 +94,7 @@ export default function ClassInfoDashboard() {
           >
             <SlArrowLeft />
           </Button>
-          {currentClass?.title}
+          {currentEvent?.title}
         </Heading>
         <Image
           alignSelf={"flex-end"}
@@ -139,7 +126,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass?.title}
+          {currentEvent?.title}
         </Box>
         <Box
           flex={1}
@@ -153,7 +140,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass?.location}
+          {currentEvent?.location}
         </Box>
       </HStack>
       <HStack
@@ -174,21 +161,21 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass?.date.toLocaleDateString()}
+          {currentEvent?.date.toLocaleDateString()}
         </Box>
         <Box
           flex={1}
           fontWeight={700}
           fontSize={18}
         >
-          Performances
+          Costume
         </Box>
         <Box
           flex={1}
           textAlign="right"
           fontSize={18}
         >
-          {performances.join(", ")}
+          {currentEvent?.costume}
         </Box>
       </HStack>
       <HStack
@@ -209,7 +196,7 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass ? formatTime(currentClass.startTime) : ""}
+          {currentEvent ? formatTime(currentEvent.startTime) : ''}
         </Box>
         <Box
           flex={1}
@@ -223,7 +210,42 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass ? formatTime(currentClass.endTime) : ""}
+          {currentEvent ? formatTime(currentEvent.endTime) : ''}
+        </Box>
+      </HStack>
+      <HStack
+        w="100%"
+        pl="60px"
+        pr="160px"
+        gap="60px"
+      >
+        <Box
+          flex={1}
+          fontWeight={700}
+          fontSize={18}
+        >
+          Call Time
+        </Box>
+        <Box
+          flex={1}
+          textAlign="right"
+          fontSize={18}
+        >
+          {currentEvent ? formatTime(currentEvent.callTime) : ''}
+        </Box>
+        <Box
+          flex={1}
+          fontWeight={700}
+          fontSize={18}
+        >
+          Capacity
+        </Box>
+        <Box
+          flex={1}
+          textAlign="right"
+          fontSize={18}
+        >
+          {currentEvent?.capacity}
         </Box>
       </HStack>
       <HStack
@@ -244,43 +266,21 @@ export default function ClassInfoDashboard() {
           textAlign="right"
           fontSize={18}
         >
-          {currentClass?.level}
+          {currentEvent?.level}
         </Box>
         <Box
-          flex={2}
+          flex={1}
           fontWeight={700}
-          pr="60px"
           fontSize={18}
         >
           Description
         </Box>
-      </HStack>
-      <HStack
-        w="100%"
-        pl="60px"
-        pr="160px"
-        gap="60px"
-      >
         <Box
           flex={1}
-          fontWeight={700}
           fontSize={18}
-        >
-          Capacity
-        </Box>
-        <Box
-          flex={1}
           textAlign="right"
-          fontSize={18}
         >
-          {currentClass?.capacity}
-        </Box>
-        <Box
-          flex={2}
-          pr="60px"
-          fontSize={18}
-        >
-          {currentClass?.description}
+          {currentEvent?.description}
         </Box>
       </HStack>
 
@@ -355,7 +355,7 @@ export default function ClassInfoDashboard() {
                     {stud.firstName} {stud.lastName}
                   </Td>
                   <Td>{stud.attendance !== null ? "Yes" : "No"}</Td>
-                  <Td>{currentClass?.date.toLocaleDateString()}</Td>
+                  <Td>{currentEvent?.date.toLocaleDateString()}</Td>
                   <Td>{stud.email}</Td>
                 </Tr>
               ))}

@@ -1,72 +1,107 @@
-import { Button, Text, Stack, Box, Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+
+import { Box, Button, Flex, Stack, Text, useToast } from "@chakra-ui/react";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 
-export const TeacherNotification = ({id, firstName, lastName}) => {
-    const { backend } = useBackendContext();
+export const TeacherNotification = ({ id, firstName, lastName }) => {
+  const [handled, setHandled] = useState(false); // if the notificaiton has been dealt with (approved or denied)
+  const { backend } = useBackendContext();
+  const toast = useToast();
 
-    const handleApprove = async (id) => {
-        console.log("Approved teacher with id ", id);
-        try {
-            await backend.put(`/teachers/${id}`,  {
-                isActivated: true
-            });
-            alert("Successfully approved teacher");
-            // delete above alert later, just so testing devs know something happened
-        } catch (error) {
-            console.error("Error updating teacher's activation status: ", error);
-        }
-    };
+  const handleApprove = async (id) => {
+    console.log("Approved teacher with id ", id);
+    try {
+      await backend.put(`/teachers/${id}`, {
+        isActivated: true,
+      });
+      toast({
+        title: "Teacher request approved.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      setHandled(true);
+    } catch (error) {
+      toast({
+        title: "Unable to approve teacher.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      console.error("Error updating teacher's activation status: ", error);
+    }
+  };
 
-    const handleDecline = (id) => {
-        // for now, leave this task to be implemented later
-    };
-    
-    return (
-        <Box
-            h="140px"
-            w="300px"
-            borderWidth="1px"
-            p="2"
+  const handleDecline = async (id) => {
+    console.log("Declined teacher with id ", id);
+    try {
+      await backend.put("/users/hide", {
+        uid: id,
+      });
+      toast({
+        title: "Teacher request denied.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      setHandled(true);
+    } catch (error) {
+      toast({
+        title: "Unable to deny teacher.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      console.error("Error updating teacher's activation status: ", error);
+    }
+  };
+
+  if (handled) {
+    return null;
+  }
+
+  return (
+    <Box
+      h="140px"
+      w="300px"
+      p="2"
+      shadow="md"
+    >
+      <Stack>
+        <Flex
+          direction="column"
+          align="left"
+          p="3"
         >
-            <Stack>
-                <Flex
-                    direction="column"
-                    align="left"
-                    p="3"
-                >
-                    <Text
-                        fontWeight="bold"
-                    >
-                        New Teacher:
-                    </Text>
-                    <Text>
-                        {firstName} {lastName}
-                    </Text>
-                </Flex>
+          <Text fontWeight="bold">New Teacher:</Text>
+          <Text>
+            {firstName} {lastName}
+          </Text>
+        </Flex>
 
-                <Flex
-                    direction="row"
-                    align="center"
-                    justify="center"
-                >
-                    <Button
-                        width="50%"
-                        onClick={() => handleDecline(id)}
-                    >
-                        Decline
-                    </Button>
-                    <Button
-                        bg="gray.500"
-                        color="white"
-                        width="50%"
-                        onClick={() => handleApprove(id)}
-                    >
-                        Approve
-                    </Button>
-                </Flex>
-            </Stack>
-        </Box>
-    );
+        <Flex
+          direction="row"
+          align="center"
+          justify="center"
+        >
+          <Button
+            width="50%"
+            onClick={() => handleDecline(id)}
+          >
+            Deny
+          </Button>
+          <Button
+            bg="#422E8D"
+            color="white"
+            width="50%"
+            _hover={{ bg: "#2a1c5e" }}
+            onClick={() => handleApprove(id)}
+          >
+            Approve
+          </Button>
+        </Flex>
+      </Stack>
+    </Box>
+  );
 };

@@ -23,6 +23,22 @@ classEnrollmentsRouter.get("/test", async (req, res) => {
   }
 });
 
+classEnrollmentsRouter.get("/attendance", async (req, res) => {
+  try {
+    const query = `
+      SELECT SUM(CASE WHEN ce.attendance IS NULL THEN 1 ELSE 0 END) * 1.0 / COUNT(*) AS attendance_rate
+      FROM class_enrollments ce
+      INNER JOIN classes c ON ce.class_id = c.id
+      INNER JOIN scheduled_classes sc ON c.id = sc.class_id
+      WHERE sc.date >= CURRENT_DATE - INTERVAL '30 days';
+    `;
+    const result = await db.query(query);
+    res.status(200).send(keysToCamel(result));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 classEnrollmentsRouter.get("/student-class-count", async (req, res) => {
   try {
     const result = await db.query(
@@ -44,19 +60,6 @@ classEnrollmentsRouter.get("/statistics", async (req, res) => {
     res.status(200).send(keysToCamel(result));
   } catch (err) {
     res.status(500).json({ error: err.message });
-  }
-});
-
-classEnrollmentsRouter.get("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const classById = await db.query(
-      "SELECT * FROM class_enrollments WHERE id = $1;",
-      [id]
-    );
-    res.status(200).json(keysToCamel(classById));
-  } catch (err) {
-    res.status(500).send(err.message);
   }
 });
 
@@ -146,6 +149,19 @@ classEnrollmentsRouter.get(
     }
   }
 );
+
+classEnrollmentsRouter.get("/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const classById = await db.query(
+      "SELECT * FROM class_enrollments WHERE id = $1;",
+      [id]
+    );
+    res.status(200).json(keysToCamel(classById));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 
 classEnrollmentsRouter.post("/", async (req, res) => {
   const { studentId, classId, attendance } = req.body;

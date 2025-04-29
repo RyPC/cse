@@ -29,7 +29,7 @@ const ReviewCard = ({
   const [stars, setStars] = useState(Array(5).fill(0));
 
   const colors = {
-    orange: "#F2C265",
+    purple: "#422E8D",
     grey: "a9a9a9",
   };
 
@@ -57,7 +57,7 @@ const ReviewCard = ({
             <FaStar
               key={index}
               size={24}
-              color={rating > index ? colors.orange : colors.grey}
+              color={rating > index ? colors.purple : colors.grey}
             />
           ))}
         </HStack>

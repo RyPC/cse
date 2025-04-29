@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { Outlet, useNavigate } from "react-router-dom";
-import { ResponsiveContainer, Line, LineChart, XAxis, YAxis } from "recharts";
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 import cseLogo from "../../components/dashboard/cseLogo.png";
 import classesIcon from "../../components/dashboard/sidebarImgs/classes.svg";
@@ -36,11 +36,19 @@ interface StatCardProps {
   value: string | number;
 }
 
-
 const monthLabels = [
-  "Jan","Feb","Mar","Apr",
-  "May","June","July","Aug",
-  "Sep","Oct","Nov","Dec"
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "June",
+  "July",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
@@ -61,7 +69,7 @@ export const StatCard = ({ iconColor, label, value }: StatCardProps) => {
         mr={4}
       /> */}
       <Flex direction="column">
-        <Text 
+        <Text
           fontSize="xl"
           color="black"
         >
@@ -102,8 +110,20 @@ export const DashboardHome = () => {
   const [students, setStudents] = useState(0);
   const [classes, setClasses] = useState<Class[] | undefined>();
   const [attendance, setAttendance] = useState<Attendance[]>([]);
+  const [attendanceRate, setAttendanceRate] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const notifRef = useRef();
+
+  useEffect(() => {
+    const getAttendanceRate = async () => {
+      const response = await backend.get(`/class-enrollments/attendance`);
+
+      setAttendanceRate(Number(response.data[0].attendanceRate));
+      console.log(response.data[0].attendanceRate);
+    };
+
+    getAttendanceRate();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,15 +134,23 @@ export const DashboardHome = () => {
         const classesResponse = await backend.get("/classes");
         setClasses(classesResponse.data);
 
-        const attendanceResponse = await backend.get("/class-enrollments/statistics"); 
+        const attendanceResponse = await backend.get(
+          "/class-enrollments/statistics"
+        );
         const data = attendanceResponse.data;
         const graphInfo: Attendance[] = monthLabels.map((label) => {
-          const found = data.find((elem) => Number(elem.month) === (monthLabels.indexOf(label) +1));
-          return found ? { month: monthLabels[Number(found.month)-1], count: Number(found.count)} : { month: label, count: 0};
+          const found = data.find(
+            (elem) => Number(elem.month) === monthLabels.indexOf(label) + 1
+          );
+          return found
+            ? {
+                month: monthLabels[Number(found.month) - 1],
+                count: Number(found.count),
+              }
+            : { month: label, count: 0 };
         });
         console.log(graphInfo);
         setAttendance(graphInfo);
-
       } catch (error) {
         alert(error);
         console.error("Error fetching data:", error);
@@ -175,7 +203,7 @@ export const DashboardHome = () => {
             icon="email"
             iconColor="green.500"
             label="Attendance Rate"
-            value={"15%"} //to be changed
+            value={`${Math.round(attendanceRate * 100)}%`} //to be changed
           />
           <StatCard
             icon="email"
@@ -194,15 +222,15 @@ export const DashboardHome = () => {
             justifyContent="left"
             paddingLeft="35px"
             paddingTop="30px"
+          >
+            <Text
+              fontSize="xl"
+              color="black"
+              fontWeight="bold"
+              marginBottom="20px"
             >
-              <Text
-                fontSize="xl"
-                color="black"
-                fontWeight="bold"
-                marginBottom="20px"
-              >
-                Attendance Over Time
-              </Text>
+              Attendance Over Time
+            </Text>
           </Box>
           <Box
             w="100%"
@@ -214,13 +242,16 @@ export const DashboardHome = () => {
             justifyContent="center"
             paddingRight="20px"
           >
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer
+              width="100%"
+              height={300}
+            >
               <LineChart data={attendance}>
-                <Line 
-                  type="linear" 
-                  dataKey="count" 
-                  stroke="#422E8D" 
-                  dot={false} 
+                <Line
+                  type="linear"
+                  dataKey="count"
+                  stroke="#422E8D"
+                  dot={false}
                   strokeWidth={3}
                 />
                 <XAxis dataKey="month" />

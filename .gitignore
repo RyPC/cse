@@ -64,3 +64,6 @@ Desktop.ini
 
 # firebase sdk
 firebase-adminsdk.json
+
+# yarn lock and package lock
+package-lock.json
