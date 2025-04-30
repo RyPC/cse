@@ -4,9 +4,9 @@ import {
   Box,
   Button,
   Card,
+  Flex,
   HStack,
   Image,
-  Flex,
   List,
   ListIcon,
   ListItem,
@@ -21,8 +21,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { FaTimesCircle } from "react-icons/fa";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -120,31 +119,35 @@ function ClassInfoModal({
             >
               {!isCorequisiteSignUp && (
                 <HStack width="100%">
-                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
-                    <VStack align = "start" spacing={2}>
+                  <Box
+                    bg="#E8E7EF"
+                    borderRadius="md"
+                    width="100%"
+                    p={4}
+                  >
+                    <VStack
+                      align="start"
+                      spacing={2}
+                    >
                       <HStack align="center">
-                        <Text as="b">
-                          Recommended
-                        </Text>
+                        <Text as="b">Recommended</Text>
                       </HStack>
-                    {!corequisites || corequisites.length === 0 ? (
-                      <Text>No corequisites for this class</Text>
-                    ) : (
-                      <List>
-                        {corequisites.map((coreq, index) => (
-                          <ListItem key={index}>
-                            <ListIcon
-                              as={
-                                coreq.enrolled
-                                  ? FaCircleCheck
-                                  : FaTimesCircle
-                              }
-                            />
-                            {coreq.title}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
+                      {!corequisites || corequisites.length === 0 ? (
+                        <Text>No corequisites for this class</Text>
+                      ) : (
+                        <List>
+                          {corequisites.map((coreq, index) => (
+                            <ListItem key={index}>
+                              <ListIcon
+                                as={
+                                  coreq.enrolled ? FaCircleCheck : FaTimesCircle
+                                }
+                              />
+                              {coreq.title}
+                            </ListItem>
+                          ))}
+                        </List>
+                      )}
                     </VStack>
                   </Box>
                 </HStack>
@@ -181,8 +184,8 @@ function ClassInfoModal({
 
               <Box width="100%">
                 <Box>
-                    <Text fontWeight="bold">Time</Text>
-                    <Text>pass in time prop and use it</Text>
+                  <Text fontWeight="bold">Time</Text>
+                  <Text>pass in time prop and use it</Text>
                 </Box>
                 <Text fontWeight="bold">Description:</Text>
                 <Text>{description}</Text>
@@ -211,15 +214,20 @@ function ClassInfoModal({
               </HStack>
             </VStack>
           </ModalBody>
-          <Flex justifyContent="center" width = "100%">
+          <Flex
+            justifyContent="center"
+            width="100%"
+          >
             <ModalFooter>
               {role === "student" && (
                 <Button
-                  width = "100%"
-                  p = {7}
-                  bg = "#422E8D"
-                  color = "white"
-                  onClick={classSignUp}>Sign up
+                  width="100%"
+                  p={7}
+                  bg="#422E8D"
+                  color="white"
+                  onClick={classSignUp}
+                >
+                  Sign up
                 </Button>
               )}
             </ModalFooter>
