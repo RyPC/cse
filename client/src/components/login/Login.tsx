@@ -1,21 +1,21 @@
 import { useCallback, useEffect } from "react";
 
 import {
+  Box,
   Button,
   Center,
   Link as ChakraLink,
   FormControl,
-  FormLabel,
   FormErrorMessage,
   FormHelperText,
+  FormLabel,
   Heading,
   Image,
   Input,
   Stack,
+  Text,
   useToast,
   VStack,
-  Text,
-  Box,
 } from "@chakra-ui/react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,7 +27,6 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
-
 import logo from "./logo.png";
 
 const signinSchema = z.object({
@@ -71,33 +70,28 @@ export const Login = () => {
         email: data.email,
         password: data.password,
       });
-      const response = await backend.get('/teachers');
-        const teachers = response.data;
-        const teacher = teachers.find(teach =>
-            teach.email === data.email
-        );
+      const response = await backend.get("/teachers");
+      const teachers = response.data;
+      const teacher = teachers.find((teach) => teach.email === data.email);
 
-        if (teacher) {
-            if (teacher.isActivated) {
-                navigate('/bookings');
-            }
-            else {
-                navigate('/teacher-signup/pending');
-            }
+      if (teacher) {
+        if (teacher.isActivated) {
+          navigate("/bookings");
+        } else {
+          navigate("/teacher-signup/pending");
         }
-        else {
-          console.log("In else clause!")
-          const qrCodeRedirect = localStorage.getItem("qrcode_redirect");
-          console.log(qrCodeRedirect)
-          // return qrCodeRedirect ? navigate(qrCodeRedirect) : navigate('/discovery');
-          if(qrCodeRedirect) {
-            localStorage.removeItem("qrcode_redirect");
-            navigate(qrCodeRedirect);
-          } else {
-            navigate('/bookings');
-          }
+      } else {
+        console.log("In else clause!");
+        const qrCodeRedirect = localStorage.getItem("qrcode_redirect");
+        console.log(qrCodeRedirect);
+        // return qrCodeRedirect ? navigate(qrCodeRedirect) : navigate('/discovery');
+        if (qrCodeRedirect) {
+          localStorage.removeItem("qrcode_redirect");
+          navigate(qrCodeRedirect);
+        } else {
+          navigate("/bookings");
         }
-
+      }
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
@@ -138,29 +132,33 @@ export const Login = () => {
   }, [backend, handleRedirectResult, navigate, toast]);
 
   return (
-
     <Box mt={"15.10vh"}>
-
       <Center w="100vw">
         <VStack>
-          <Image src={logo} w="24.378vw" h="11.670vh" fit="contain"></Image>
+          <Image
+            src={logo}
+            w="24.378vw"
+            h="11.670vh"
+            fit="contain"
+          ></Image>
           {/* <Text fontSize="20px" sx={{fontWeight: "500" }}>Account created! Continue to log in.</Text> */}
         </VStack>
       </Center>
 
-      <Center mt={6} w="100vw">
+      <Center
+        mt={6}
+        w="100vw"
+      >
         <VStack
           spacing={8}
-          sx={{ width: 300, marginX: "auto" }}
+          sx={{ width: 324, marginX: "auto" }}
         >
-
           <form
             onSubmit={handleSubmit(handleLogin)}
             style={{ width: "100%" }}
           >
             <Stack spacing={2}>
-
-              <Box >
+              <Box>
                 <FormControl
                   isInvalid={!!errors.email}
                   w={"100%"}
@@ -205,30 +203,29 @@ export const Login = () => {
                   <ChakraLink
                     as={Link}
                     to="/signup"
-                  >
-                  </ChakraLink>
+                  ></ChakraLink>
                 </FormControl>
-
               </Box>
               <Box mb={5}>
                 <Text
                   color="#6B46C1"
                   fontSize="16px"
                   fontWeight={500}
-                ><a href="/forgotPassword">Forgot Password?</a></Text>
-              </Box >
+                >
+                  <a href="/forgotPassword">Forgot Password?</a>
+                </Text>
+              </Box>
               <Center>
                 <Button
                   type="submit"
                   size={"lg"}
                   bg="#6B46C1"
-                  w="48.25vw"
                   color="white"
-                  // sx={{ width: "100%" }}
+                  sx={{ width: "100%" }}
                   borderRadius="4px"
                   isDisabled={Object.keys(errors).length > 0}
                 >
-                  <Text>Submit</Text>
+                  <Text>Log In</Text>
                 </Button>
               </Center>
             </Stack>

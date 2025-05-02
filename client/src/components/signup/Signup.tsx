@@ -94,7 +94,7 @@ export const Signup = () => {
       <Center>
         <Image src={logo} w="24.378vw" h="11.670vh" fit="contain"></Image>
       </Center>
-    
+
       <VStack
         spacing={8}
         sx={{ width: 300, marginX: "auto" }}
