@@ -212,7 +212,7 @@ export const Login = () => {
                   fontSize="16px"
                   fontWeight={500}
                 >
-                  <a href="/forgotPassword">Forgot Password?</a>
+                  <Link to="/forgotPassword">Forgot Password?</Link>
                 </Text>
               </Box>
               <Center>
