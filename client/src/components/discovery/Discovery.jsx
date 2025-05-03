@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
 
-import { Box, Button, Flex, Input, InputGroup, InputLeftElement, VStack, Badge } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Button,
+  Flex,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  VStack,
+} from "@chakra-ui/react";
 
+import { FaSearch } from "react-icons/fa";
+
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
-import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-import { FaSearch } from "react-icons/fa";
 
 export const Discovery = () => {
   // Active Tab Logic
@@ -15,7 +25,6 @@ export const Discovery = () => {
   const [searchInput, setSearchInput] = useState("");
   const [refresh, setRefresh] = useState(0);
   const { currentUser } = useAuthContext();
-
 
   const toggleClasses = () => {
     setActiveTab("classes");
@@ -34,20 +43,21 @@ export const Discovery = () => {
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
 
-
   // this will be an array of users
   const [user, setUser] = useState(null);
   useEffect(() => {
-    const fetchUserData = () => {backend.get(`/users/${currentUser.uid}`).then(res => setUser(res))};
+    const fetchUserData = () => {
+      backend.get(`/users/${currentUser.uid}`).then((res) => setUser(res));
+    };
     fetchUserData();
-  }, [backend, currentUser])
-
+  }, [backend, currentUser]);
 
   useEffect(() => {
     const fetchData = async () => {
       // Fetch and Store Classes Information
       try {
         const response = await backend.get("/classes/scheduled");
+        console.log("Classes:", response.data);
         setClasses(response.data);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -76,17 +86,16 @@ export const Discovery = () => {
           initialTags[tag.id] =
             tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
         });
-  
+
         setTagFilter(initialTagFilter);
         setTags(initialTags);
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
     };
-  
+
     fetchTags();
   }, [backend]); // only run once or when `backend` changes
-  
 
   const searchEvents = async () => {
     if (searchInput) {
@@ -111,7 +120,6 @@ export const Discovery = () => {
     if (searchInput) {
       try {
         const response = await backend.get(`/classes/search/${searchInput}`);
-        // console.log("Search results:", response.data);
         setClasses(response.data);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -171,7 +179,7 @@ export const Discovery = () => {
     } catch (error) {
       console.error("Error fetching all events:", error);
     }
-  }
+  };
 
   const fetchClassesByTag = async (tagId) => {
     try {
@@ -190,9 +198,7 @@ export const Discovery = () => {
     } catch (error) {
       console.error("Error fetching all events:", error);
     }
-  }
-  
-  
+  };
 
   const handleKeyDown = async (e) => {
     if (e.key === "Enter") {
@@ -209,11 +215,11 @@ export const Discovery = () => {
         mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
       >
         <InputGroup>
-          <InputLeftElement pointerEvents='none'>
+          <InputLeftElement pointerEvents="none">
             <FaSearch color="gray.300" />
           </InputLeftElement>
           <Input
-            placeholder= "Search"
+            placeholder="Search"
             variant="filled"
             borderRadius="full"
             borderColor={"gray.300"}
@@ -225,7 +231,10 @@ export const Discovery = () => {
             onKeyDown={handleKeyDown}
           ></Input>
         </InputGroup>
-        <Box width="100%" px={2}>
+        <Box
+          width="100%"
+          px={2}
+        >
           {(activeTab === "events" || activeTab === "classes") && (
             <Flex
               wrap="wrap"
@@ -271,7 +280,8 @@ export const Discovery = () => {
                 toggleClasses();
               }}
             >
-              Classes</Button>
+              Classes
+            </Button>
             <Button
               variant="unstyled"
               borderBottom="2px solid"
@@ -284,7 +294,8 @@ export const Discovery = () => {
                 toggleEvents();
               }}
             >
-              Events</Button>
+              Events
+            </Button>
           </Flex>
         </Box>
 
