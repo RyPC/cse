@@ -151,7 +151,7 @@ export const Login = () => {
       >
         <VStack
           spacing={8}
-          sx={{ width: 324, marginX: "auto" }}
+          sx={{ width: 324  , marginX: "auto" }}
         >
           <form
             onSubmit={handleSubmit(handleLogin)}

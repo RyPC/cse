@@ -1,16 +1,16 @@
 import { useEffect } from "react";
 
 import {
+  Box,
   Button,
   Center,
   Link as ChakraLink,
   FormControl,
-  Box,
   FormErrorMessage,
-  Image,
   FormHelperText,
   FormLabel,
   Heading,
+  Image,
   Input,
   Select,
   Stack,
@@ -27,7 +27,6 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
-
 import logo from "./logo.png";
 
 const signupSchema = z.object({
@@ -90,9 +89,13 @@ export const Signup = () => {
 
   return (
     <Box mt={"15.10vh"}>
-
       <Center>
-        <Image src={logo} w="24.378vw" h="11.670vh" fit="contain"></Image>
+        <Image
+          src={logo}
+          w="24.378vw"
+          h="11.670vh"
+          fit="contain"
+        ></Image>
       </Center>
 
       <VStack
@@ -100,14 +103,13 @@ export const Signup = () => {
         sx={{ width: 300, marginX: "auto" }}
         mt={5}
       >
-
         <form
           onSubmit={handleSubmit(handleSignup)}
           style={{ width: "100%" }}
         >
           <Stack spacing={2}>
-          <Center>
-            <FormControl isInvalid={!!errors.firstName}>
+            <Center>
+              <FormControl isInvalid={!!errors.firstName}>
                 <FormLabel>First Name</FormLabel>
                 <Input
                   type="text"
@@ -121,8 +123,8 @@ export const Signup = () => {
               </FormControl>
             </Center>
             <Center>
-            <FormControl isInvalid={!!errors.lastName}>
-              <FormLabel>Last Name</FormLabel>
+              <FormControl isInvalid={!!errors.lastName}>
+                <FormLabel>Last Name</FormLabel>
                 <Input
                   type="text"
                   size={"lg"}
@@ -132,14 +134,14 @@ export const Signup = () => {
                   autoComplete="lastname"
                   h="3.661vh"
                 />
-                </FormControl>
-              </Center>
+              </FormControl>
+            </Center>
             <Center>
-            <FormControl
-              isInvalid={!!errors.email}
-              w={"100%"}
-            >
-              <FormLabel>Email Address</FormLabel>
+              <FormControl
+                isInvalid={!!errors.email}
+                w={"100%"}
+              >
+                <FormLabel>Email Address</FormLabel>
                 <Input
                   type="email"
                   size={"lg"}
@@ -149,23 +151,23 @@ export const Signup = () => {
                   autoComplete="email"
                   h="3.661vh"
                 />
-              <FormErrorMessage>
-                {errors.email?.message?.toString()}
-              </FormErrorMessage>
-            </FormControl>
+                <FormErrorMessage>
+                  {errors.email?.message?.toString()}
+                </FormErrorMessage>
+              </FormControl>
             </Center>
             <Center>
               <FormControl isInvalid={!!errors.password}>
                 <FormLabel>Password</FormLabel>
-                  <Input
-                    type="password"
-                    size={"lg"}
-                    {...register("password")}
-                    name="password"
-                    isRequired
-                    autoComplete="password"
-                    h="3.661vh"
-                  />
+                <Input
+                  type="password"
+                  size={"lg"}
+                  {...register("password")}
+                  name="password"
+                  isRequired
+                  autoComplete="password"
+                  h="3.661vh"
+                />
 
                 <FormErrorMessage>
                   {errors.password?.message?.toString()}
@@ -188,8 +190,7 @@ export const Signup = () => {
                 <ChakraLink
                   as={Link}
                   to="/login"
-                >
-                </ChakraLink>
+                ></ChakraLink>
               </Center>
             </FormControl>
 

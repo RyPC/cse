@@ -36,7 +36,7 @@ const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
   repeatPassword: z.string().min(6)
-}).refine((data) => data.password == data.repeatPassword, {
+}).refine((data) => data.password === data.repeatPassword, {
   message: "Passwords must match.",
   path: ["repeatPassword"],
 });
