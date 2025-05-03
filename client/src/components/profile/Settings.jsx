@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import { FaPencilAlt, FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -123,6 +124,8 @@ export const Settings = () => {
     }
   };
 
+  const navigate = useNavigate(); // Add this at the top with other hooks
+
   return (
     <>
       <VStack
@@ -220,26 +223,14 @@ export const Settings = () => {
             >
               Password
             </Text>
-            <InputGroup>
-              <Input
-                type="password"
-                value="********"
-                isReadOnly
-                variant="filled"
-              />
-              <InputRightElement
-                width="auto"
-                pr={2}
-              >
-                <Button
-                  rightIcon={<FaPencilAlt />}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => window.location.assign("/forgotPassword")}
-                  colorScheme="blue"
-                ></Button>
-              </InputRightElement>
-            </InputGroup>
+            <Button
+              w="full"
+              onClick={() => navigate("/forgotPassword")}
+              colorScheme="blue"
+              variant="outline"
+            >
+              Change Password
+            </Button>
           </Box>
 
           <Button
