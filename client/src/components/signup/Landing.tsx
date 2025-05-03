@@ -5,34 +5,28 @@ import {
   Divider,
   Flex,
   Text,
-  useDisclosure, // Import useDisclosure hook
+  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 
 import { useNavigate } from "react-router-dom";
 
 import { Login } from "../login/Login";
-import AuthorityModal from "./AuthorityModal"; // Assuming AuthorityModal is in the same directory or adjust path
+import AuthorityModal from "./AuthorityModal";
 
 export const Landing = () => {
   const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Use Chakra's disclosure hook for modal state
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // This function will be called when an authority is selected in the modal
   const handleSelectAuthority = (authority: "student" | "teacher") => {
     onClose();
     if (authority === "student") {
-      navigate("/signup"); // Navigate to student signup page
+      navigate("/signup");
     } else if (authority === "teacher") {
-      navigate("/teacher-signup"); // Navigate to teacher signup page
+      navigate("/teacher-signup");
     }
   };
-
-  // This function now opens the modal instead of navigating directly
-  const handleSignupClick = () => {
-    onOpen();
-  };
-
+  const handleSignupClick = onOpen;
   return (
     <>
       <VStack
@@ -40,7 +34,6 @@ export const Landing = () => {
         alignItems="center"
         height={"100vh"}
       >
-        {/* Showing the login page directly */}
         <Login />
         <Flex
           alignItems="center"
@@ -58,20 +51,19 @@ export const Landing = () => {
           <Divider borderColor="gray.300" />
         </Flex>
         <Button
-          type="button" // Changed from submit as it's not submitting a form here
+          type="button"
           size={"lg"}
           bg="#E2E8F0"
           w={"48.2587vw"}
           color="white"
           mt={4}
-          onClick={handleSignupClick} // Call the function to open the modal
+          onClick={handleSignupClick}
           textColor={"#71717A"}
         >
           Signup
         </Button>
       </VStack>
 
-      {/* Render the AuthorityModal */}
       <AuthorityModal
         isOpen={isOpen}
         onClose={onClose}
