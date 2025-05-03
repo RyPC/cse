@@ -95,7 +95,6 @@ export const Login = () => {
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
-      console.error("Error code:", errorCode);
       switch (errorCode) {
         case "auth/wrong-password":
         case "auth/invalid-credential":

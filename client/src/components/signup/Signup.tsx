@@ -70,7 +70,7 @@ export const Signup = () => {
       if (user) {
         navigate("/discovery");
       }
-    } catch  (err) {
+    } catch (err) {
       if (err instanceof Error) {
         toast({
           title: "An error occurred",
