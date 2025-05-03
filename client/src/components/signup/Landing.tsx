@@ -22,9 +22,9 @@ export const Landing = () => {
   const handleSelectAuthority = (authority: "student" | "teacher") => {
     onClose();
     if (authority === "student") {
-      navigate("/signup/student"); // Navigate to student signup page
+      navigate("/signup"); // Navigate to student signup page
     } else if (authority === "teacher") {
-      navigate("/signup/teacher"); // Navigate to teacher signup page
+      navigate("/teacher-signup"); // Navigate to teacher signup page
     }
   };
 

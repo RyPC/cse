@@ -62,13 +62,13 @@ const AuthorityModal: React.FC<AuthorityModalProps> = ({
         color={isActive ? "purple.600" : "gray.800"}
         bg={isActive ? "purple.50" : "white"}
         _hover={{ bg: isActive ? "purple.100" : "gray.100" }}
-        height="60px"
+        height="90px"
         width="100%"
         rounded="md"
         justifyContent="flex-start"
         leftIcon={<Image src={icon} boxSize="24px" />}
       >
-        <Text fontSize="lg" fontWeight="medium">
+        <Text fontSize="4xl" fontWeight="medium">
           {label}
         </Text>
       </Button>
