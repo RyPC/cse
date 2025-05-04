@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardBody,
   CardHeader,
@@ -6,7 +7,6 @@ import {
   HStack,
   Text,
   VStack,
-  Button,
   CardFooter,
   useDisclosure
 } from "@chakra-ui/react";
@@ -89,9 +89,12 @@ export const EventCard = ({
   // console.log(user);
   return (
     <>
+    <Box onClick={handleClickModal} cursor="pointer">
     <Card
       w={{ base: "90%", md: "30em" }}
-      bg="#FFFFFF"
+      border = "1px"
+      borderColor="gray.300"
+      bg="gray.50"
     >
       <CardHeader pb={0}>
         <Heading
@@ -106,6 +109,24 @@ export const EventCard = ({
           align="stretch"
           spacing={2}
         >
+          <HStack
+              position="absolute"
+              height = "15%"
+              top="10%"
+              right="5%"
+              bg="purple.50"
+              px={3}
+              py={1}
+              borderRadius="full"
+              border="1px"
+              borderColor="purple.600"
+              color="black"
+              fontSize="sm"
+            >
+              <Text>
+                {attendeeCount} {attendeeCount === 1 ? "person" : "people"} Enrolled
+              </Text>
+            </HStack>
           <HStack>
             <FaClock size={14} />
             <Text fontSize="sm">
@@ -117,25 +138,6 @@ export const EventCard = ({
             <FaMapMarkerAlt size={14} />
             <Text fontSize="sm">{location}</Text>
           </HStack>
-
-          <HStack>
-            <FaUser size={14} />
-            <Text fontSize="sm">
-              {attendeeCount} {attendeeCount === 1 ? "person" : "people"} RSVP'd
-            </Text>
-          </HStack>
-          <Button
-            alignSelf="flex-end"
-            variant="solid"
-            size="sm"
-            bg="#422E8D"
-            color="white"
-            _hover={{ bg: "gray.700" }}
-            mt={2}
-            onClick={handleClickModal}
-          >
-            View Details &gt;
-          </Button>
         </VStack>
       </CardBody>
 
@@ -172,6 +174,7 @@ export const EventCard = ({
           />
       </CardFooter>
     </Card>
+    </Box>
     </>
   );
 };

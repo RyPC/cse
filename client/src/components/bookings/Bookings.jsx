@@ -575,10 +575,13 @@ export const Bookings = () => {
                       key={tag}
                       onClick={handleClassFilterToggle(tag)}
                       rounded="xl"
+                      border = "1px"
+                      borderColor="gray.300"
                       px={4}
                       py={1}
-                      colorScheme={tagFilter[tag] ? "green" : "red"}
+                      colorScheme={tagFilter[tag] ? "gray" : "white"}
                       textTransform="none"
+                      cursor = "pointer"
                     >
                       {tags[tag]}
                     </Badge>
@@ -611,6 +614,8 @@ export const Bookings = () => {
                       key={classItem.id}
                       {...classItem}
                       onClick={() => updateModal(classItem)}
+                      triggerRefresh={triggerRefresh}
+                      onCloseModal={onCloseModal}
                     />
                   ))
                 ) : (
@@ -624,12 +629,15 @@ export const Bookings = () => {
                   {Object.keys(tags).map((tag) => (
                     <Badge
                       key={tag}
-                      onClick={handleFilterToggle(tag)}
+                      onClick={handleClassFilterToggle(tag)}
                       rounded="xl"
+                      border = "1px"
+                      borderColor="gray.300"
                       px={4}
                       py={1}
-                      colorScheme={tagFilter[tag] ? "green" : "red"}
+                      colorScheme={tagFilter[tag] ? "gray" : "white"}
                       textTransform="none"
+                      cursor = "pointer"
                     >
                       {tags[tag]}
                     </Badge>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
-  Button,
+  Box,
   Card,
   CardBody,
   CardFooter,
@@ -72,9 +72,19 @@ export const ClassCard = ({
 
   return (
     <>
+    <Box onClick={() => {
+                if (pathname === "/bookings") {
+                  onClick();
+                } else {
+                  setOpenRootModal(true);
+                }
+              }} 
+          cursor="pointer">
       <Card
         w={{ base: "90%", md: "30em" }}
-        bg="##FFFFFF"
+        border = "1px"
+        borderColor="gray.300"
+        bg="gray.50"
       >
         <CardHeader pb={0}>
           <Heading
@@ -89,6 +99,24 @@ export const ClassCard = ({
             align="stretch"
             spacing={2}
           >
+            <HStack
+              position="absolute"
+              height = "15%"
+              top="10%"
+              right="5%"
+              bg="purple.50"
+              px={3}
+              py={1}
+              borderRadius="full"
+              border="1px"
+              borderColor="purple.600"
+              color="black"
+              fontSize="sm"
+            >
+              <Text>
+                {attendeeCount} {attendeeCount === 1 ? "person" : "people"} Enrolled
+              </Text>
+            </HStack>
             <HStack>
               <FaClock size={14} />
               <Text fontSize="sm">
@@ -102,32 +130,6 @@ export const ClassCard = ({
               <FaMapMarkerAlt size={14} />
               <Text fontSize="sm">{location}</Text>
             </HStack>
-
-            <HStack>
-              <FaUser size={14} />
-              <Text fontSize="sm">
-                {attendeeCount} {attendeeCount === 1 ? "person" : "people"}{" "}
-                RSVP'd
-              </Text>
-            </HStack>
-            <Button
-              alignSelf="flex-end"
-              variant="solid"
-              size="sm"
-              bg="#422E8D"
-              color="white"
-              _hover={{ bg: "gray.700" }}
-              mt={2}
-              onClick={() => {
-                if (pathname === "/bookings") {
-                  onClick();
-                } else {
-                  setOpenRootModal(true);
-                }
-              }}
-            >
-              View Details &gt;
-            </Button>
           </VStack>
         </CardBody>
 
@@ -151,6 +153,7 @@ export const ClassCard = ({
           />
         </CardFooter>
       </Card>
+      </Box>
     </>
   );
 };
