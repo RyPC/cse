@@ -124,7 +124,7 @@ export const EventCard = ({
               fontSize="sm"
             >
               <Text>
-                {attendeeCount} {attendeeCount === 1 ? "person" : "people"} Enrolled
+                {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
               </Text>
             </HStack>
           <HStack>

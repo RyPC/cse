@@ -877,9 +877,94 @@ const ClassTeacherCard = memo(
     onOpen,
   }) => {
     return (
+    <Box onClick={
+      isDraft
+        ? () => {
+            const modalData = {
+              id,
+              title,
+              location,
+              date,
+              description,
+              capacity,
+              level,
+              costume,
+              performances: performance,
+              isRecurring,
+              recurrencePattern,
+              startDate,
+              endDate,
+              isDraft,
+              rsvpCount,
+              startTime,
+              endTime,
+            };
+            setSelectedCard(modalData);
+            onOpen({
+              id,
+              title,
+              location,
+              date,
+              description,
+              capacity,
+              isRecurring,
+              recurrencePattern,
+              startDate,
+              endDate,
+              level,
+              costume,
+              isDraft,
+              startTime,
+              endTime,
+            });
+          }
+        : () => {
+            const modalData = {
+              id,
+              title,
+              location,
+              date,
+              description,
+              capacity,
+              level,
+              costume,
+              isRecurring,
+              recurrencePattern,
+              performances: performance,
+              isDraft,
+              startDate,
+              endDate,
+              rsvpCount,
+              startTime,
+              endTime,
+            };
+            setSelectedCard(modalData);
+            onOpen({
+              id,
+              title,
+              location,
+              date,
+              description,
+              capacity,
+              level,
+              isRecurring,
+              recurrencePattern,
+              costume,
+              startDate,
+              endDate,
+              isDraft,
+              startTime,
+              endTime,
+            });
+          }
+      // : () => navigate(`/dashboard/classes/${classId}`)
+    }
+  cursor="pointer">
       <Card
         w={{ base: "90%", md: "30em" }}
-        bg="gray.200"
+        border = "1px"
+        borderColor="gray.300"
+        bg="gray.50"
       >
         <CardHeader pb={0}>
           <Heading
@@ -894,6 +979,24 @@ const ClassTeacherCard = memo(
             align="stretch"
             spacing={2}
           >
+            <HStack
+              position="absolute"
+              height = "15%"
+              top="10%"
+              right="5%"
+              bg="purple.50"
+              px={3}
+              py={1}
+              borderRadius="full"
+              border="1px"
+              borderColor="purple.600"
+              color="black"
+              fontSize="sm"
+            >
+              <Text>
+                {rsvpCount} {rsvpCount === 1 ? "Person" : "People"} Enrolled
+              </Text>
+            </HStack>
             <HStack>
               <FaClock size={14} />
               <Text fontSize="sm">
@@ -908,109 +1011,11 @@ const ClassTeacherCard = memo(
               <FaMapMarkerAlt size={14} />
               <Text fontSize="sm">{location ? location : "Irvine"}</Text>
             </HStack>
-            <HStack>
-              <FaUser size={14} />
-              <Text fontSize="sm">
-                {rsvpCount ? rsvpCount : 10}{" "}
-                {rsvpCount === 1 ? "person" : "people"} RSVP'd
-              </Text>
-            </HStack>
-            <Button
-              alignSelf="flex-end"
-              variant="solid"
-              size="sm"
-              bg="#422E8D"
-              color="white"
-              _hover={{ bg: "gray.700" }}
-              mt={2}
-              onClick={
-                isDraft
-                  ? () => {
-                      const modalData = {
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        level,
-                        costume,
-                        performances: performance,
-                        isRecurring,
-                        recurrencePattern,
-                        startDate,
-                        endDate,
-                        isDraft,
-                        rsvpCount,
-                        startTime,
-                        endTime,
-                      };
-                      setSelectedCard(modalData);
-                      onOpen({
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        isRecurring,
-                        recurrencePattern,
-                        startDate,
-                        endDate,
-                        level,
-                        costume,
-                        isDraft,
-                        startTime,
-                        endTime,
-                      });
-                    }
-                  : () => {
-                      const modalData = {
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        level,
-                        costume,
-                        isRecurring,
-                        recurrencePattern,
-                        performances: performance,
-                        isDraft,
-                        startDate,
-                        endDate,
-                        rsvpCount,
-                        startTime,
-                        endTime,
-                      };
-                      setSelectedCard(modalData);
-                      onOpen({
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        level,
-                        isRecurring,
-                        recurrencePattern,
-                        costume,
-                        startDate,
-                        endDate,
-                        isDraft,
-                        startTime,
-                        endTime,
-                      });
-                    }
-                // : () => navigate(`/dashboard/classes/${classId}`)
-              }
-            >
-              {isDraft ? "Edit" : "View Details >"}
-            </Button>
           </VStack>
         </CardBody>
       </Card>
+    </Box>
+
     );
   }
 );

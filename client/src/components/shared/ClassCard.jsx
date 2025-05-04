@@ -114,9 +114,10 @@ export const ClassCard = ({
               fontSize="sm"
             >
               <Text>
-                {attendeeCount} {attendeeCount === 1 ? "person" : "people"} Enrolled
+                {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
               </Text>
             </HStack>
+            
             <HStack>
               <FaClock size={14} />
               <Text fontSize="sm">
