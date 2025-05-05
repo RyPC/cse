@@ -585,7 +585,16 @@ export const Bookings = () => {
 
           <TabPanels>
             <TabPanel>
-              <Flex gap={3}>
+              <Flex
+                gap={3}
+                overflow={"auto"}
+                sx={{
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                }}
+                width="100%"
+              >
                 {Object.keys(tags).map((tag) => (
                   <Badge
                     key={tag}
@@ -1008,7 +1017,7 @@ const ClassTeacherCard = memo(
           bg="gray.50"
         >
           <HStack>
-            <Box p="30px">{getIcon()}</Box>
+            <Box p="20px">{getIcon()}</Box>
             <Box>
               <CardHeader pb={0}>
                 <HStack
