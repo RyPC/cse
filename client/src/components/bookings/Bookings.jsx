@@ -28,12 +28,27 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { FaClock, FaMapMarkerAlt, FaSearch, FaUser } from "react-icons/fa";
+import {
+  FaClock,
+  FaMapMarkerAlt,
+  FaMicrophoneAlt,
+  FaMusic,
+  FaSearch,
+  FaUser,
+} from "react-icons/fa";
+import {
+  GiAbstract001,
+  GiBallerinaShoes,
+  GiBoombox,
+  GiCartwheel,
+  GiTambourine,
+} from "react-icons/gi";
 import { MdAdd, MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import { CreateClassForm } from "../forms/createClasses";
 import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
@@ -47,7 +62,6 @@ import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
-import { formatDate, formatTime } from "../../utils/formatDateTime";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -202,13 +216,13 @@ export const Bookings = () => {
     } catch (error) {
       console.error("Error fetching all events:", error);
     }
-  }
+  };
 
   const fetchClassesByTag = async (tagId) => {
     try {
       const res = await backend.get(`/class-tags/classes/${tagId}`);
-      const classes = res.data;
-      setClasses(classes);
+      console.log(res.data);
+      setClasses(res.data);
     } catch (error) {
       console.error("Error fetching events for specified tag:", error);
     }
@@ -221,7 +235,7 @@ export const Bookings = () => {
     } catch (error) {
       console.error("Error fetching all events:", error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchTags();
@@ -367,7 +381,9 @@ export const Bookings = () => {
   const reloadClassesAndDrafts = async () => {
     try {
       if (searchInput) {
-        backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
+        backend
+          .get(`/events/search/${searchInput}`)
+          .then((res) => setEvents(res.data));
         backend.get(`/classes/search/${searchInput}`).then((res) => {
           setClasses(res.data);
         });
@@ -569,24 +585,24 @@ export const Bookings = () => {
 
           <TabPanels>
             <TabPanel>
-            <Flex gap={3}>
-                  {Object.keys(tags).map((tag) => (
-                    <Badge
-                      key={tag}
-                      onClick={handleClassFilterToggle(tag)}
-                      rounded="xl"
-                      border = "1px"
-                      borderColor="gray.300"
-                      px={4}
-                      py={1}
-                      colorScheme={tagFilter[tag] ? "gray" : "white"}
-                      textTransform="none"
-                      cursor = "pointer"
-                    >
-                      {tags[tag]}
-                    </Badge>
-                  ))}
-                </Flex>
+              <Flex gap={3}>
+                {Object.keys(tags).map((tag) => (
+                  <Badge
+                    key={tag}
+                    onClick={handleClassFilterToggle(tag)}
+                    rounded="xl"
+                    border="1px"
+                    borderColor="gray.300"
+                    px={4}
+                    py={1}
+                    colorScheme={tagFilter[tag] ? "gray" : "white"}
+                    textTransform="none"
+                    cursor="pointer"
+                  >
+                    {tags[tag]}
+                  </Badge>
+                ))}
+              </Flex>
               <VStack
                 spacing={4}
                 width="100%"
@@ -625,24 +641,24 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
-                <Flex gap={3}>
-                  {Object.keys(tags).map((tag) => (
-                    <Badge
-                      key={tag}
-                      onClick={handleClassFilterToggle(tag)}
-                      rounded="xl"
-                      border = "1px"
-                      borderColor="gray.300"
-                      px={4}
-                      py={1}
-                      colorScheme={tagFilter[tag] ? "gray" : "white"}
-                      textTransform="none"
-                      cursor = "pointer"
-                    >
-                      {tags[tag]}
-                    </Badge>
-                  ))}
-                </Flex>
+              <Flex gap={3}>
+                {Object.keys(tags).map((tag) => (
+                  <Badge
+                    key={tag}
+                    onClick={handleClassFilterToggle(tag)}
+                    rounded="xl"
+                    border="1px"
+                    borderColor="gray.300"
+                    px={4}
+                    py={1}
+                    colorScheme={tagFilter[tag] ? "gray" : "white"}
+                    textTransform="none"
+                    cursor="pointer"
+                  >
+                    {tags[tag]}
+                  </Badge>
+                ))}
+              </Flex>
               <VStack
                 spacing={4}
                 width="100%"
@@ -874,148 +890,175 @@ const ClassTeacherCard = memo(
     endTime,
     navigate,
     setSelectedCard,
+    tagId,
     onOpen,
   }) => {
+    const getIcon = () => {
+      const iconSize = 60;
+      switch (tagId) {
+        case 1:
+          return <FaMusic size={iconSize} />;
+        case 2:
+          return <GiBallerinaShoes size={iconSize} />;
+        case 3:
+          return <FaMicrophoneAlt size={iconSize} />;
+        case 4:
+          return <GiBoombox size={iconSize} />;
+        case 5:
+          return <GiAbstract001 size={iconSize} />;
+        case 6:
+          return <GiCartwheel size={iconSize} />;
+        case 7:
+          return <GiTambourine size={iconSize} />;
+        default:
+          return <FaMusic size={iconSize} />;
+      }
+    };
     return (
-    <Box onClick={
-      isDraft
-        ? () => {
-            const modalData = {
-              id,
-              title,
-              location,
-              date,
-              description,
-              capacity,
-              level,
-              costume,
-              performances: performance,
-              isRecurring,
-              recurrencePattern,
-              startDate,
-              endDate,
-              isDraft,
-              rsvpCount,
-              startTime,
-              endTime,
-            };
-            setSelectedCard(modalData);
-            onOpen({
-              id,
-              title,
-              location,
-              date,
-              description,
-              capacity,
-              isRecurring,
-              recurrencePattern,
-              startDate,
-              endDate,
-              level,
-              costume,
-              isDraft,
-              startTime,
-              endTime,
-            });
-          }
-        : () => {
-            const modalData = {
-              id,
-              title,
-              location,
-              date,
-              description,
-              capacity,
-              level,
-              costume,
-              isRecurring,
-              recurrencePattern,
-              performances: performance,
-              isDraft,
-              startDate,
-              endDate,
-              rsvpCount,
-              startTime,
-              endTime,
-            };
-            setSelectedCard(modalData);
-            onOpen({
-              id,
-              title,
-              location,
-              date,
-              description,
-              capacity,
-              level,
-              isRecurring,
-              recurrencePattern,
-              costume,
-              startDate,
-              endDate,
-              isDraft,
-              startTime,
-              endTime,
-            });
-          }
-      // : () => navigate(`/dashboard/classes/${classId}`)
-    }
-  cursor="pointer">
-      <Card
-        w={{ base: "90%", md: "30em" }}
-        border = "1px"
-        borderColor="gray.300"
-        bg="gray.50"
+      <Box
+        onClick={
+          isDraft
+            ? () => {
+                const modalData = {
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  level,
+                  costume,
+                  performances: performance,
+                  isRecurring,
+                  recurrencePattern,
+                  startDate,
+                  endDate,
+                  isDraft,
+                  rsvpCount,
+                  startTime,
+                  endTime,
+                };
+                setSelectedCard(modalData);
+                onOpen({
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  isRecurring,
+                  recurrencePattern,
+                  startDate,
+                  endDate,
+                  level,
+                  costume,
+                  isDraft,
+                  startTime,
+                  endTime,
+                });
+              }
+            : () => {
+                const modalData = {
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  level,
+                  costume,
+                  isRecurring,
+                  recurrencePattern,
+                  performances: performance,
+                  isDraft,
+                  startDate,
+                  endDate,
+                  rsvpCount,
+                  startTime,
+                  endTime,
+                };
+                setSelectedCard(modalData);
+                onOpen({
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  level,
+                  isRecurring,
+                  recurrencePattern,
+                  costume,
+                  startDate,
+                  endDate,
+                  isDraft,
+                  startTime,
+                  endTime,
+                });
+              }
+          // : () => navigate(`/dashboard/classes/${classId}`)
+        }
+        cursor="pointer"
       >
-        <CardHeader pb={0}>
-          <Heading
-            size="md"
-            fontWeight="bold"
-          >
-            {title ? title : "Placeholder Title"}
-          </Heading>
-        </CardHeader>
-        <CardBody>
-          <VStack
-            align="stretch"
-            spacing={2}
-          >
-            <HStack
-              position="absolute"
-              height = "15%"
-              top="10%"
-              right="5%"
-              bg="purple.50"
-              px={3}
-              py={1}
-              borderRadius="full"
-              border="1px"
-              borderColor="purple.600"
-              color="black"
-              fontSize="sm"
-            >
-              <Text>
-                {rsvpCount} {rsvpCount === 1 ? "Person" : "People"} Enrolled
-              </Text>
-            </HStack>
-            <HStack>
-              <FaClock size={14} />
-              <Text fontSize="sm">
-                  {
-                    date ? 
-                    `${formatDate(date)} @ ${formatTime(startTime)} - ${formatTime(endTime)}` : 
-                    "No date"
-                  }
-              </Text>
-            </HStack>
-            <HStack>
-              <FaMapMarkerAlt size={14} />
-              <Text fontSize="sm">{location ? location : "Irvine"}</Text>
-            </HStack>
-          </VStack>
-        </CardBody>
-      </Card>
-    </Box>
-
+        <Card
+          w={{ base: "90%", md: "30em" }}
+          border="1px"
+          borderColor="gray.300"
+          bg="gray.50"
+        >
+          <HStack>
+            <Box p="30px">{getIcon()}</Box>
+            <Box>
+              <CardHeader pb={0}>
+                <Heading
+                  size="md"
+                  fontWeight="bold"
+                >
+                  {title ? title : "Placeholder Title"}
+                </Heading>
+              </CardHeader>
+              <CardBody>
+                <VStack
+                  align="stretch"
+                  spacing={2}
+                >
+                  <HStack
+                    position="absolute"
+                    height="15%"
+                    top="10%"
+                    right="5%"
+                    bg="purple.50"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    border="1px"
+                    borderColor="purple.600"
+                    color="black"
+                    fontSize="sm"
+                  >
+                    <Text>
+                      {rsvpCount} {rsvpCount === 1 ? "Person" : "People"}{" "}
+                      Enrolled
+                    </Text>
+                  </HStack>
+                  <HStack>
+                    <FaClock size={14} />
+                    <Text fontSize="sm">
+                      {date
+                        ? `${formatDate(date)} @ ${formatTime(startTime)} - ${formatTime(endTime)}`
+                        : "No date"}
+                    </Text>
+                  </HStack>
+                  <HStack>
+                    <FaMapMarkerAlt size={14} />
+                    <Text fontSize="sm">{location ? location : "Irvine"}</Text>
+                  </HStack>
+                </VStack>
+              </CardBody>
+            </Box>
+          </HStack>
+        </Card>
+      </Box>
     );
   }
 );
