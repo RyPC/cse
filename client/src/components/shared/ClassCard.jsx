@@ -72,14 +72,16 @@ export const ClassCard = ({
 
   return (
     <>
-    <Box onClick={() => {
-                if (pathname === "/bookings") {
-                  onClick();
-                } else {
-                  setOpenRootModal(true);
-                }
-              }} 
-          cursor="pointer">
+    <Box 
+      w={{ base: "90%", md: "30em" }}
+      onClick={() => {
+        if (pathname === "/bookings") {
+          onClick();
+        } else {
+          setOpenRootModal(true);
+        }
+      }} 
+      cursor="pointer">
       <Card
         w={{ base: "90%", md: "30em" }}
         border = "1px"
@@ -87,36 +89,37 @@ export const ClassCard = ({
         bg="gray.50"
       >
         <CardHeader pb={0}>
-          <Heading
-            size="md"
-            fontWeight="bold"
+          <HStack
+            position="absolute"
+            height = "15%"
+            top="10%"
+            right="5%"
+            bg="purple.50"
+            px={3}
+            py={1}
+            borderRadius="full"
+            border="1px"
+            borderColor="purple.600"
+            color="black"
+            fontSize="sm"
           >
-            {title}
-          </Heading>
+            <Text>
+              {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
+            </Text>
+          </HStack>
         </CardHeader>
         <CardBody>
           <VStack
             align="stretch"
             spacing={2}
           >
-            <HStack
-              position="absolute"
-              height = "15%"
-              top="10%"
-              right="5%"
-              bg="purple.50"
-              px={3}
-              py={1}
-              borderRadius="full"
-              border="1px"
-              borderColor="purple.600"
-              color="black"
-              fontSize="sm"
+            <Text
+              fontSize="1.5rem"
+              fontWeight="bold"
             >
-              <Text>
-                {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
-              </Text>
-            </HStack>
+              {title}
+            </Text>
+            
             
             <HStack>
               <FaClock size={14} />
@@ -154,7 +157,7 @@ export const ClassCard = ({
           />
         </CardFooter>
       </Card>
-      </Box>
+    </Box>
     </>
   );
 };

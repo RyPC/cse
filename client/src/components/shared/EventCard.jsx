@@ -89,91 +89,98 @@ export const EventCard = ({
   // console.log(user);
   return (
     <>
-    <Box onClick={handleClickModal} cursor="pointer">
-    <Card
-      w={{ base: "90%", md: "30em" }}
-      border = "1px"
-      borderColor="gray.300"
-      bg="gray.50"
-    >
-      <CardHeader pb={0}>
-        <Heading
-          size="md"
-          fontWeight="bold"
-        >
-          {title}
-        </Heading>
-      </CardHeader>
-      <CardBody>
-        <VStack
-          align="stretch"
-          spacing={2}
-        >
+    <Box 
+         w={{ base: "100%", md: "30em" }}
+         onClick={handleClickModal} 
+         cursor="pointer">
+      <Card
+        w={{ base: "90%", md: "30em" }}
+        border = "1px"
+        borderColor="gray.300"
+        bg="gray.50"
+      >
+        <CardHeader pb={0}>
+
           <HStack
-              position="absolute"
-              height = "15%"
-              top="10%"
-              right="5%"
-              bg="purple.50"
-              px={3}
-              py={1}
-              borderRadius="full"
-              border="1px"
-              borderColor="purple.600"
-              color="black"
-              fontSize="sm"
-            >
-              <Text>
-                {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
-              </Text>
-            </HStack>
-          <HStack>
-            <FaClock size={14} />
-            <Text fontSize="sm">
-              {formattedDate} @ {formattedStartTime} - {formattedEndTime}
+            position="absolute"
+            height = "15%"
+            top="10%"
+            right="5%"
+            bg="purple.50"
+            px={3}
+            py={1}
+            borderRadius="full"
+            border="1px"
+            borderColor="purple.600"
+            color="black"
+            fontSize="sm"
+          >
+            <Text>
+              {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
             </Text>
           </HStack>
+        </CardHeader>
+        <CardBody>
+          <Box
+            display="flex"
+            justifyContent="center"> 
+          <VStack
+            alignItems="flex-start"
+            spacing={2}
+          >
+            <Text
+            fontSize="1.5rem"
+            fontWeight="bold"
+          >
+            {title}
+          </Text>
 
-          <HStack>
-            <FaMapMarkerAlt size={14} />
-            <Text fontSize="sm">{location}</Text>
-          </HStack>
-        </VStack>
-      </CardBody>
+            <HStack>
+              <Text fontSize="1.2rem">{location}</Text>
+            </HStack>
 
-      <CardFooter justifyContent="right" hidden>
-          {/* <Text>Required Class ID: {classId}</Text> */}
-          <SignUpController
-            event_id={id}
-            title={title}
-            description={description}
-            location={location}
-            capacity={"might remove for events"}
-            level={level}
-            costume={costume}
-            date={date}
-            setOpenRootModal={setOpenRootModal}
-            openRootModal={openRootModal}
-            user={user}
-          />
-          <TeacherEventViewModal
-            isOpenProp={openTeacherModal}
-            handleClose={closeTeacherModal}
-            id = {id}
-            location = {location}
-            title = {title}
-            description = {description}
-            level = {level}
-            date = {date}
-            startTime = {startTime}
-            endTime = {endTime}
-            callTime = {callTime}
-            costume = {costume}
-            capacity = {capacity}
-            triggerRefresh = {triggerRefresh}
-          />
-      </CardFooter>
-    </Card>
+            <HStack>
+              <Text fontSize="sm">
+                {formattedDate} · {formattedStartTime} - {formattedEndTime}
+              </Text>
+            </HStack>
+          </VStack>
+          </Box>
+        </CardBody>
+
+        <CardFooter justifyContent="right" hidden>
+            {/* <Text>Required Class ID: {classId}</Text> */}
+            <SignUpController
+              event_id={id}
+              title={title}
+              description={description}
+              location={location}
+              capacity={"might remove for events"}
+              level={level}
+              costume={costume}
+              date={date}
+              setOpenRootModal={setOpenRootModal}
+              openRootModal={openRootModal}
+              user={user}
+            />
+            <TeacherEventViewModal
+              isOpenProp={openTeacherModal}
+              handleClose={closeTeacherModal}
+              id = {id}
+              location = {location}
+              title = {title}
+              description = {description}
+              level = {level}
+              date = {date}
+              startTime = {startTime}
+              endTime = {endTime}
+              callTime = {callTime}
+              costume = {costume}
+              capacity = {capacity}
+              triggerRefresh = {triggerRefresh}
+            />
+        </CardFooter>
+      </Card>
     </Box>
     </>
   );
