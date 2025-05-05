@@ -13,14 +13,10 @@ export const QRCode = ({ id, type, date}) => {
       align="center"
       p={4}
     >
-      <Text
-        fontSize="xl"
-        fontWeight="bold"
-      >
-        {type} Check-in QR Code
-      </Text>
       <Box
         bg="white"
+        border = "3px"
+        borderColor="black"
         p={4}
         borderRadius="md"
         boxShadow="md"
@@ -31,12 +27,6 @@ export const QRCode = ({ id, type, date}) => {
           level="H"
         />
       </Box>
-      <Text
-        fontSize="sm"
-        color="gray.600"
-      >
-        Scan this code to check in to the {type}
-      </Text>
     </VStack>
   );
 };

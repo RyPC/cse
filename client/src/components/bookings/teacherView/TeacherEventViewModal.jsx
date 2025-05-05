@@ -317,7 +317,7 @@ function TeacherEventViewModal({
 
               <VStack>
                 <Box
-                  bg="gray.200"
+                  bg="white"
                   h="100%"
                   w="100%"
                   mt="4"
@@ -325,7 +325,7 @@ function TeacherEventViewModal({
                   p="4"
                 >
                   <Box
-                    bg="gray"
+                    bg="white"
                     h="100%"
                     w="100%"
                     p="4"
@@ -351,20 +351,20 @@ function TeacherEventViewModal({
                     width="100%"
                     align="center"
                   >
-                    <Text fontWeight="bold">
+                    <Text fontSize = "1.5rem" fontWeight="bold">
                       {" "}
-                      {rsvpnum ? rsvpnum : 0} RSVPs
+                      {rsvpnum ? rsvpnum : 0} People Enrolled
                     </Text>
                     <Button
                       onClick={onOpen}
                       variant="unstyled"
-                      fontSize="lg"
+                      fontSize="1.2rem"
                       fontWeight="normal"
-                      color="purple"
+                      color="black"
                       textDecoration="underline"
                       _focus={{ boxShadow: "none" }}
                     >
-                      View attendees &gt;
+                      <u>View Attendees</u>
                     </Button>
                     <EventRSVP
                       isOpen={isOpen}
