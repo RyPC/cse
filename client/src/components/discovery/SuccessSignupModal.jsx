@@ -26,10 +26,10 @@ function SuccessSignupModal({
 
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
-        onClose();
-        if (!isCorequisiteSignUp) navigate("/bookings");
-      }, 2000);
+      // setTimeout(() => {
+      //   onClose();
+      //   if (!isCorequisiteSignUp) navigate("/bookings");
+      // }, 2000);
     }
   }, [isCorequisiteSignUp, isOpen, navigate, onClose]);
 
@@ -51,22 +51,28 @@ function SuccessSignupModal({
             justify= {"center"}
           >
             <VStack
-              spacing={4}
               marginTop="5rem"
             >
               <img src={CompletedIndicator} alt="Completed Indicator" />
+              <Text textAlign={"center"} fontWeight="bold" fontSize="xl" mt="2rem">
+                Thanks for Signing Up!
+              </Text>
               <Text textAlign={"center"}>
-                You've successfully signed up for <Box as="b">{title}</Box>
+                You've successfully signed up for...
+              </Text>
+              <Text textAlign={"center"}>
+                Insert What They Signed Up For Here
               </Text>
             </VStack>
 
             {!isCorequisiteSignUp && (
               <Button
-                bg="#422E8D"
-                color = "#FFFFFF"
+                bg="#6B46C1"
+                color="#FFFFFF"
                 onClick={onClose}
+                width="100%"
               >
-                View Booked Events
+                Find Upcoming Events
               </Button>
             )}
           </VStack>
