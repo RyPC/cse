@@ -49,6 +49,7 @@ function SuccessSignupModal({
             spacing={10}
             minh = {"100vh"}
             justify= {"center"}
+            marginBottom={"10vh"}
           >
             <VStack
               marginTop="5rem"
