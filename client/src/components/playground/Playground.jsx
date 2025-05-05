@@ -1,3 +1,7 @@
+import ConfirmationModal from "../bookings/ConfirmationModal";
+
 export const Playground = () => {
-  return <div>Hello, world!</div>
+  return <div>
+    <ConfirmationModal isOpen={true} onClose={() => {}}/>
+  </div>
 };

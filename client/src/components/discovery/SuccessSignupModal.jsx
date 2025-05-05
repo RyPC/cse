@@ -47,7 +47,7 @@ function SuccessSignupModal({
         >
           <VStack 
             spacing={10}
-            minh = {"100vh"}
+            minH = {"100vh"}
             justify= {"center"}
             marginBottom={"10vh"}
           >
