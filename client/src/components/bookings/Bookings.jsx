@@ -877,7 +877,9 @@ const ClassTeacherCard = memo(
     onOpen,
   }) => {
     return (
-    <Box onClick={
+    <Box 
+      w={{ base: "100%", md: "30em" }}
+      onClick={
       isDraft
         ? () => {
             const modalData = {
@@ -967,51 +969,57 @@ const ClassTeacherCard = memo(
         bg="gray.50"
       >
         <CardHeader pb={0}>
-          <Heading
-            size="md"
-            fontWeight="bold"
+          <HStack
+            position="absolute"
+            height = "15%"
+            top="10%"
+            right="5%"
+            bg="purple.50"
+            px={3}
+            py={1}
+            borderRadius="full"
+            border="1px"
+            borderColor="purple.600"
+            color="black"
+            fontSize="sm"
           >
-            {title ? title : "Placeholder Title"}
-          </Heading>
+            <Text>
+              {rsvpCount} {rsvpCount === 1 ? "Person" : "People"} Enrolled
+            </Text>
+          </HStack>
         </CardHeader>
         <CardBody>
+          <Box
+            display="flex"
+            justifyContent="center"
+          > 
           <VStack
-            align="stretch"
+            alignItems="flex-start"
             spacing={2}
           >
-            <HStack
-              position="absolute"
-              height = "15%"
-              top="10%"
-              right="5%"
-              bg="purple.50"
-              px={3}
-              py={1}
-              borderRadius="full"
-              border="1px"
-              borderColor="purple.600"
-              color="black"
-              fontSize="sm"
+            <Text
+              fontSize="1.5rem"
+              fontWeight="bold"
             >
-              <Text>
-                {rsvpCount} {rsvpCount === 1 ? "Person" : "People"} Enrolled
-              </Text>
-            </HStack>
+              {title ? title : "Placeholder Title"}
+            </Text>
+            
+            
             <HStack>
-              <FaClock size={14} />
+              <Text fontSize="1.2rem">{location ? location : "Irvine"}</Text>
+            </HStack>
+
+            <HStack>
               <Text fontSize="sm">
                   {
                     date ? 
-                    `${formatDate(date)} @ ${formatTime(startTime)} - ${formatTime(endTime)}` : 
+                    `${formatDate(date)} · ${formatTime(startTime)} - ${formatTime(endTime)}` : 
                     "No date"
                   }
               </Text>
             </HStack>
-            <HStack>
-              <FaMapMarkerAlt size={14} />
-              <Text fontSize="sm">{location ? location : "Irvine"}</Text>
-            </HStack>
           </VStack>
+          </Box>
         </CardBody>
       </Card>
     </Box>
