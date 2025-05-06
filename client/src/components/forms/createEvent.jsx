@@ -83,7 +83,10 @@ export const CreateEvent = ({
       const eventData = {
         ...formData,
         level: formData.level === "" ? "beginner" : formData.level,
-        tag: formData.tag === "Select Tag" ? "" : formData.tag[0].toLowerCase() + formData.tag.slice(1),
+        tag:
+          formData.tag === "Select Tag"
+            ? ""
+            : formData.tag[0].toLowerCase() + formData.tag.slice(1),
         date: formData.date === "" ? new Date() : formData.date,
         start_time:
           formData.startTime === ""
@@ -111,21 +114,19 @@ export const CreateEvent = ({
         response = await backend.put(`/events/${eventId}/`, eventData);
       } else {
         // Create new event (POST request)
-          if (eventData.tag !== "") {
-            const tagId = await backend.get(`/tags/${eventData.tag}`);
-            response = await backend.post("/events/", eventData);
-            response = await backend.post("/event-tags/", {
-              eventId: response.data[0].id,
-              tagId: tagId.data[0].id,
-            });
-
-
-          } else {
-            response = await backend.post("/events/", eventData);
-          }
+        if (eventData.tag !== "") {
+          const tagId = await backend.get(`/tags/${eventData.tag}`);
+          response = await backend.post("/events/", eventData);
+          response = await backend.post("/event-tags/", {
+            eventId: response.data[0].id,
+            tagId: tagId.data[0].id,
+          });
+        } else {
+          response = await backend.post("/events/", eventData);
+        }
       }
 
-      console.log("response", response.status, response?.data[0]);  
+      console.log("response", response.status, response?.data[0]);
 
       if (response?.status === 201 || response?.status === 200) {
         // Reset form or handle success
@@ -173,7 +174,6 @@ export const CreateEvent = ({
         initialTags[tag.id] =
           tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
       });
-
 
       // setTagFilter(initialTagFilter);
       setTags(initialTags);
@@ -233,7 +233,7 @@ export const CreateEvent = ({
 
       <Box>
         <Text>Tags</Text>
-          <Select
+        <Select
           name="tag"
           value={formData.tag}
           // onChange={handleOnChange}

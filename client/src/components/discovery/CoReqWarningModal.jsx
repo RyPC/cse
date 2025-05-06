@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 import ClassInfoModal from "./ClassInfoModal";
+// import { modalTheme } from "./confirmationModalStyle";
 import EventInfoModal from "./EventInfoModal";
 
 function CoReqWarningModal({
@@ -82,43 +83,79 @@ function CoReqWarningModal({
 
       <Modal
         isOpen={isOpenProp}
-        size="full"
+        size="xl"
         onClose={() => {}}
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalBody
-            display={"flex"}
-            justifyContent={"center"}
-          >
-            <VStack spacing={10}>
+          <ModalBody>
+            <Box>
               <VStack
-                spacing={4}
-                marginTop="5rem"
+                spacing={7}
+                sx={{ border: "2px solid green" }}
               >
-                <Text>You still need to sign up for...</Text>
+                <Box>
+                  <VStack
+                    spacing="8px"
+                    sx={{ border: "2px solid yellow " }}
+                  >
+                    <Text
+                      fontWeight="bold"
+                      fontSize="18px"
+                    >
+                      Performance Participation Recommended
+                    </Text>
 
-                <Text fontWeight="bold">
-                  {lstCorequisites && lstCorequisites.length > 0
-                    ? coreq?.title
-                    : ""}
-                </Text>
-              </VStack>
-              <VStack>
-                <Button
-                  colorScheme="teal"
-                  onClick={signup}
+                    <Text>
+                      {/* handle multiple performances grammar */}
+                      To enroll in Ballet A, it is recommended that you
+                      participate in the end-of-session performance&nbsp;
+                      <Text
+                        as="span"
+                        fontWeight="bold"
+                      >
+                        {lstCorequisites && lstCorequisites.length > 0
+                          ? coreq?.title
+                          : ""}
+                      </Text>
+                      .
+                    </Text>
+                    <Text>Do you agree to take part in the performance?</Text>
+                  </VStack>
+                </Box>
+                <Box
+                  sx={{ border: "2px solid blue" }}
+                  w="full"
                 >
-                  Sign up
-                </Button>
-                <Button
-                  colorScheme="teal"
-                  onClick={cancelSignUp}
-                >
-                  Cancel
-                </Button>
+                  {/* work on responsive button height */}
+                  <VStack spacing="8px">
+                    <Button
+                      w="full"
+                      bg="purple.100"
+                      color="white"
+                      onClick={signup}
+                    >
+                      Yes, Enroll & Join Performance
+                    </Button>
+                    <Button
+                      w="full"
+                      bg="#CBD5E0"
+                      color="#4A5568"
+                      onClick={console.log("Enroll in class only button")}
+                    >
+                      No, Enroll in Class Only
+                    </Button>
+                  </VStack>
+                </Box>
               </VStack>
-            </VStack>
+              {/* <Button
+                bg="purple.100"
+                color="white"
+                onClick={cancelSignUp}
+              >
+                Cancel
+              </Button> */}
+            </Box>
           </ModalBody>
         </ModalContent>
       </Modal>
