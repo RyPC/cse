@@ -51,7 +51,7 @@ const SettingsDashboard: React.FC = () => {
           >
             <SlArrowLeft />
           </Button>
-          Settings
+          Settings 
         </Heading>
         <Image
           alignSelf={"flex-end"}
