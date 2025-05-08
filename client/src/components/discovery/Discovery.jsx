@@ -204,7 +204,7 @@ export const Discovery = () => {
   return (
     <Box>
       <VStack
-        mx="10%"
+        mx="5%"
         my={5}
         mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
       >
@@ -228,10 +228,16 @@ export const Discovery = () => {
         <Box width="100%" px={2}>
           {(activeTab === "events" || activeTab === "classes") && (
             <Flex
-              wrap="wrap"
-              gap={2}
-              align="flex-start"
-              mb={3}
+              gap={3} 
+              maxWidth="100%" 
+              overflowX="auto"
+              css={{
+                '&::-webkit-scrollbar': {
+                  display: 'none'
+                },
+                '-ms-overflow-style': 'none',
+                'scrollbar-width': 'none'
+              }}
             >
               {Object.keys(tags).map((tag) => (
                 <Badge
