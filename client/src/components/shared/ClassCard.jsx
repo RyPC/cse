@@ -73,7 +73,6 @@ export const ClassCard = ({
   return (
     <>
     <Box 
-      w={{ base: "90%", md: "30em" }}
       onClick={() => {
         if (pathname === "/bookings") {
           onClick();

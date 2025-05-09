@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Center,
+  Divider,
   Flex,
   Heading,
   HStack,
@@ -51,6 +52,7 @@ import { CreateEvent } from "../../forms/createEvent";
 import { EventRSVP } from "../../rsvp/eventRsvp";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
 import { QRCode } from "./qrcode/QRCode.jsx";
+import { AiOutlineArrowLeft } from  "react-icons/ai";
 
 function TeacherEventViewModal({
   isOpenProp,
@@ -267,14 +269,14 @@ function TeacherEventViewModal({
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>
+            <ModalHeader bg = "gray.50">
               <HStack justify="space-between">
-                <MdArrowBackIosNew onClick={handleClose} />
-                <Heading size="lg">{title ? title : "N/A"}</Heading>
+                <AiOutlineArrowLeft cursor="pointer" onClick={handleClose} />
                 <Menu>
                   <MenuButton
+                    bg = "gray.50"
                     as={IconButton}
-                    icon={<MdMoreHoriz />}
+                    icon={<MdMoreHoriz/>}
                   />
                   <MenuList
                     backgroundColor="gray.100"
@@ -303,7 +305,7 @@ function TeacherEventViewModal({
                 </Menu>
               </HStack>
             </ModalHeader>
-            <ModalBody>
+            <ModalBody bg="gray.50">
               {/* <HStack padding={3}>
               <Box width="60%">
                 <Text fontWeight="bold">Location:</Text>
@@ -320,33 +322,18 @@ function TeacherEventViewModal({
                   bg="white"
                   h="100%"
                   w="100%"
-                  mt="4"
                   mb="4"
                   p="4"
+                  boxShadow="md"
+                  borderRadius="lg"
                 >
-                  <Box
-                    bg="white"
-                    h="100%"
-                    w="100%"
-                    p="4"
-                    mt="4"
-                    color="white"
-                  >
+                 
                     <Center>
                       <QRCode
                         id={id}
                         type="Event"
                       ></QRCode>
                     </Center>
-                    <Center>
-                      <Button
-                        colorScheme="blue"
-                        mr={3}
-                      >
-                        Share
-                      </Button>
-                    </Center>
-                  </Box>
                   <Box
                     width="100%"
                     align="center"
@@ -379,44 +366,49 @@ function TeacherEventViewModal({
                 spacing={4}
                 align="center"
               >
-                <HStack
-                  spacing={4}
-                  width={"100%"}
-                  justifyContent={"space-around"}
+                <Box 
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
                 >
-                  <Box width="60%">
-                    <Text
-                      fontWeight="bold"
-                      fontSize={20}
-                    >
-                      Location
-                    </Text>
-                    <Text>{location ? location : "N/A"}</Text>
-                  </Box>
-                  <Box width="40%">
-                    <Text
-                      fontWeight="bold"
-                      fontSize={20}
-                    >
-                      Date
-                    </Text>
-                    <Text>{formattedDate ? formattedDate : "N/A"}</Text>
-                  </Box>
-                </HStack>
-
-                <Box width="100%">
-                  <Text
+                  <Text 
+                    fontSize="1.8rem"
                     fontWeight="bold"
-                    fontSize={20}
                   >
-                    Event Time
+                    {title}
                   </Text>
-                  <Text>
-                    {formattedStartTime ? formattedStartTime : "TBD"} to{" "}
+                </Box>
+                <Box 
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                >
+                  <Text fontSize="16px"
+                  >
+                    Taught by *pass in teacher prop here*
+                  </Text>
+                </Box>
+                <Box 
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                >
+                  <Text fontSize="16px"
+                  >
+                    {description}
+                  </Text>
+                </Box>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+                <Box width="100%">
+                  <Text color='purple.700' fontWeight="bold" fontSize="16px">
+                    {formattedDate} ·{" "}
+                    {formattedStartTime ? formattedStartTime : "TBD"} -{" "}
                     {formattedEndTime ? formattedEndTime : "TBD"}
                   </Text>
                 </Box>
-
+                <Box width="100%">
+                    <Text fontSize="16px">{location ? location : "N/A"}</Text>
+                </Box>
                 <Box width="100%">
                   <Text
                     fontWeight="bold"

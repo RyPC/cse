@@ -27,6 +27,7 @@ import { useState, useEffect } from "react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 import { ClassRSVP } from "../rsvp/classRsvp.jsx"
+import { AiOutlineArrowLeft } from "react-icons/ai";
 
 export const TeacherViewModal = ({
   isOpen,
@@ -115,21 +116,16 @@ export const TeacherViewModal = ({
           position="relative"
         >
           <IconButton
+            bg = "gray.50"
             onClick={onClose}
-            icon={<BsChevronLeft />}
+            icon={<AiOutlineArrowLeft />}
             position="absolute"
             left={5}
             backgroundColor="white"
           />
-          <ModalHeader
-            flex={1}
-            textAlign="center"
-            marginTop="10px"
-          >
-            {classData?.title ? classData.title : " "}
-          </ModalHeader>
-          <Menu>
+          <Menu bg = "gray.50">
             <MenuButton
+              bg = "gray.50"
               as={Button}
               position="absolute"
               right={5}
@@ -137,7 +133,7 @@ export const TeacherViewModal = ({
               ...
             </MenuButton>
             <MenuList
-              backgroundColor="gray.100"
+              backgroundColor="gray.50"
               p={0}
               minW="auto"
               w="110px" 
@@ -163,19 +159,13 @@ export const TeacherViewModal = ({
             </MenuList>
           </Menu>
         </Flex>
-        <ModalBody>
+        <ModalBody bg="gray.50">
           
           <VStack>
-            <Box
-              bg="gray.200"
-              h="100%"
-              w="100%"
-              mt="4"
-              mb="4"
-              p="4"
-            >
               <Box
-                bg="gray"
+                bg="white"
+                boxShadow="md"
+                borderRadius="lg"
                 h="100%"
                 w="100%"
                 p="4"
@@ -190,31 +180,22 @@ export const TeacherViewModal = ({
                   >
                   </QRCode>
                 </Center>
-                <Center>
-                  <Button
-                    colorScheme="blue"
-                    mr={3}
-                  >
-                    Share
-                  </Button>
-                </Center>
               </Box>
               <Box width="100%" align="center">
-                <Text fontWeight="bold"> {classData?.rsvpCount ? classData?.rsvpCount : 0} RSVPs</Text>
+                <Text fontWeight="bold"> {classData?.rsvpCount ? classData?.rsvpCount : 0} People Enrolled</Text>
                 <Button
                   onClick={onRSVPOpen}
                   variant="unstyled"
                   fontSize="lg"
                   fontWeight="normal"
-                  color="purple"
+                  color="black"
                   textDecoration="underline"
                   _focus={{ boxShadow: "none" }}
                 >
-                  View attendees &gt;
+                  <u>View Attendees</u>
                 </Button>
                 <ClassRSVP isOpen={isRSVPOpen} onClose={onRSVPClose} card={{id: classData?.id, name: classData?.title, date: classData?.date}}/>
               </Box>
-            </Box>
           </VStack>
 
           <HStack width="100%" justify="space-between" align="start" mt={4}>

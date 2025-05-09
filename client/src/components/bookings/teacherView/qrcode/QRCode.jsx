@@ -15,11 +15,10 @@ export const QRCode = ({ id, type, date}) => {
     >
       <Box
         bg="white"
-        border = "3px"
-        borderColor="black"
         p={4}
         borderRadius="md"
-        boxShadow="md"
+        border="4px"
+        borderColor="black" //
       >
         <QRCodeReact
           value={qrUrl}
