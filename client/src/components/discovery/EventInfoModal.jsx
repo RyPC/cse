@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Flex,
   HStack,
   Image,
-  Flex,
   List,
   ListIcon,
   ListItem,
@@ -19,13 +19,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { FaTimesCircle } from "react-icons/fa";
-import { FaCheckCircle } from "react-icons/fa";
+
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import {formatDate} from "../../utils/formatDateTime";
+import { formatDate } from "../../utils/formatDateTime";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function EventInfoModal({
@@ -42,6 +42,8 @@ function EventInfoModal({
   costume,
   isCorequisiteSignUp,
   corequisites,
+  modalIdentity,
+  setModalIdentity,
   handleResolveCoreq = () => {},
 }) {
   const { backend } = useBackendContext();
@@ -73,29 +75,24 @@ function EventInfoModal({
   //   }
   // }, [backend, id, user?.data, isOpenProp]);
 
-
   const enrollInEvent = async () => {
     // Check if already checked into event
-    const currentCheckIn = await backend.get(
-      `/event-enrollments/test`,
-      {
-        params:{
-          student_id: user.data[0].id,
-          event_id: id
-        }
-      }
-    );
+    const currentCheckIn = await backend.get(`/event-enrollments/test`, {
+      params: {
+        student_id: user.data[0].id,
+        event_id: id,
+      },
+    });
     if (user.data[0] && !currentCheckIn.data.exists) {
       const req = await backend.post(`/event-enrollments/`, {
         student_id: user.data[0].id,
         event_id: id,
-        attendance: null
+        attendance: null,
       });
       if (req.status === 201) {
         setOpenSuccessModal(true);
       }
-    }
-    else {
+    } else {
       console.log("Already signed up for this event!");
     }
   };
@@ -107,6 +104,8 @@ function EventInfoModal({
     }
 
     if (corequisites.some((coreq) => !coreq.enrolled)) {
+      // let coReqWarningModal know that it should programatically display an event info modal version
+      setModalIdentity("event");
       handleResolveCoreq();
     } else {
       enrollInEvent();
@@ -118,7 +117,9 @@ function EventInfoModal({
     handleClose();
   };
 
-  
+  useEffect(() => {
+    console.log(corequisites);
+  }, [corequisites]);
 
   useEffect(() => {
     if (isOpenProp && !imageSrc) {
@@ -145,9 +146,7 @@ function EventInfoModal({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <Flex justifyContent="center">
-              {title}
-            </Flex>
+            <Flex justifyContent="center">{title}</Flex>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -157,21 +156,31 @@ function EventInfoModal({
             >
               <HStack width="100%">
                 {!isCorequisiteSignUp && (
-                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
-                    <Text as="b">
-                      Recommended
-                    </Text>
+                  <Box
+                    bg="#E8E7EF"
+                    borderRadius="md"
+                    width="100%"
+                    p={4}
+                  >
+                    <Text as="b">Recommended</Text>
                     {!corequisites || corequisites.length === 0 ? (
-                      <Text>No corequisites for this class</Text>
+                      <Text>
+                        No corequisites for this{" "}
+                        <Text
+                          as="span"
+                          fontWeight="bold"
+                          color="red"
+                        >
+                          event
+                        </Text>
+                      </Text>
                     ) : (
                       <List>
                         {corequisites.map((coreq, index) => (
                           <ListItem key={index}>
                             <ListIcon
                               as={
-                                coreq.enrolled
-                                  ? FaCircleCheck
-                                  : FaTimesCircle
+                                coreq.enrolled ? FaCircleCheck : FaTimesCircle
                               }
                             />
                             {coreq.title}
@@ -210,14 +219,14 @@ function EventInfoModal({
                   <Text>{formatDate(date)}</Text>
                 </Box>
               </HStack>
-              
+
               <Box width="100%">
                 <Box>
-                    <Text fontWeight="bold">Time</Text>
-                    <Text>need to pass in time prop</Text>
+                  <Text fontWeight="bold">Time</Text>
+                  <Text>need to pass in time prop</Text>
                 </Box>
                 <Text fontWeight="bold">Description:</Text>
-                <Text>{description}</Text> 
+                <Text>{description}</Text>
               </Box>
 
               <HStack
@@ -243,14 +252,17 @@ function EventInfoModal({
               </HStack>
             </VStack>
           </ModalBody>
-          <Flex justifyContent="center" width = "100%">
+          <Flex
+            justifyContent="center"
+            width="100%"
+          >
             <ModalFooter>
-              <Flex justify = "center">
+              <Flex justify="center">
                 <Button
-                  width = "100%"
-                  p = {7}
-                  bg = "#422E8D" 
-                  color = "white"
+                  width="100%"
+                  p={7}
+                  bg="#422E8D"
+                  color="white"
                   onClick={eventSignUp}
                 >
                   Sign Up

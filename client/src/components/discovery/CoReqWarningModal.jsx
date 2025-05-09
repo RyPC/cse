@@ -24,6 +24,16 @@ function CoReqWarningModal({
   isOpenProp,
   classId,
   lstCorequisites,
+  title,
+  location,
+  description,
+  level,
+  date,
+  id,
+  capacity,
+  costume,
+  modalIdentity,
+  setModalIdentity,
   handleClose = () => {},
   killModal = () => {},
 }) {
@@ -138,24 +148,47 @@ function CoReqWarningModal({
                       fontWeight="bold"
                       fontSize="18px"
                     >
-                      Performance Participation Recommended
+                      {modalIdentity === "class" ? (
+                        <Text as="span">Class </Text>
+                      ) : (
+                        <Text as="span">Event </Text>
+                      )}
+                      Participation Recommended
                     </Text>
 
-                    <Text>
-                      {/* handle multiple performances grammar */}
-                      To enroll in Ballet A, it is recommended that you
-                      participate in the end-of-session performance&nbsp;
-                      <Text
-                        as="span"
-                        fontWeight="bold"
-                      >
-                        {lstCorequisites && lstCorequisites.length > 0
-                          ? coreq?.title
-                          : ""}
+                    {modalIdentity === "class" ? (
+                      <Text>
+                        {/* handle multiple performances grammar */}
+                        To enroll in {title}, it is recommended that you
+                        participate in the end-of-session performance&nbsp;
+                        <Text
+                          as="span"
+                          fontWeight="bold"
+                        >
+                          {lstCorequisites && lstCorequisites.length > 0
+                            ? coreq?.title
+                            : ""}
+                        </Text>
+                        .
                       </Text>
-                      .
-                    </Text>
-                    <Text>Do you agree to take part in the performance?</Text>
+                    ) : (
+                      <Text>
+                        {/* handle multiple performances grammar */}
+                        To join {title}, it is recommended that you enroll in
+                        the prerequisite class&nbsp;
+                        <Text
+                          as="span"
+                          fontWeight="bold"
+                        >
+                          {lstCorequisites && lstCorequisites.length > 0
+                            ? coreq?.title
+                            : ""}
+                        </Text>
+                        .
+                      </Text>
+                    )}
+
+                    <Text>Do you agree to take part in the class?</Text>
                   </VStack>
                 </Box>
                 <Box

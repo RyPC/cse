@@ -23,6 +23,8 @@ function SignUpController({
   const { currentUser } = useAuthContext();
   const [openCoreqModal, setOpenCoreqModal] = useState(false);
   const [corequisites, setCorequisites] = useState([]);
+  // Is null as a initial state in this case okay? Semantically it makes sense to me.
+  const [modalIdentity, setModalIdentity] = useState(null);
 
   const fetchCorequirements = useCallback(async () => {
     const id = class_id !== null ? class_id : event_id;
@@ -86,6 +88,10 @@ function SignUpController({
     }
   }, [fetchCorequirements, openRootModal]);
 
+  useEffect(() => {
+    console.log(modalIdentity);
+  }, [modalIdentity]);
+
   if (class_id !== null && event_id !== null) {
     throw new Error("Cannot have both class_id and event_id");
   }
@@ -101,6 +107,8 @@ function SignUpController({
           handleClose={toggleRootModal}
           handleResolveCoreq={toggleCoreqModal}
           user={user}
+          modalIdentity={modalIdentity}
+          setModalIdentity={setModalIdentity}
         />
       ) : (
         <EventInfoModal
@@ -112,6 +120,8 @@ function SignUpController({
           handleClose={toggleRootModal}
           handleResolveCoreq={toggleCoreqModal}
           user={user}
+          modalIdentity={modalIdentity}
+          setModalIdentity={setModalIdentity}
         />
       )}
 
@@ -119,9 +129,12 @@ function SignUpController({
         origin={class_id ? "CLASS" : "EVENT"}
         isOpenProp={openCoreqModal}
         classId={class_id}
+        {...infoProps}
         lstCorequisites={corequisites}
         handleClose={toggleCoreqModal}
         killModal={() => setOpenCoreqModal(false)}
+        modalIdentity={modalIdentity}
+        setModalIdentity={setModalIdentity}
       />
 
       {/* <Button onClick={() => setOpenRootModal(true)}>View Details</Button> */}

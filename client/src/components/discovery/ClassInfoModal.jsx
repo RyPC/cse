@@ -45,6 +45,8 @@ function ClassInfoModal({
   isCorequisiteSignUp,
   corequisites,
   handleClose,
+  modalIdentity,
+  setModalIdentity,
   handleResolveCoreq = () => {},
 }) {
   const { currentUser, role } = useAuthContext();
@@ -88,6 +90,8 @@ function ClassInfoModal({
     // if there exisits a coreq and not enrolled in a coreq,
     if (corequisites.some((coreq) => !coreq.enrolled)) {
       console.log("In handleResolveCoreq clause");
+      // let coReqWarningModal know that it should programatically display an event info modal version
+      setModalIdentity("class");
       handleResolveCoreq();
     } else {
       console.log("In else clause (enrollInClass())");
