@@ -864,7 +864,7 @@ export const Bookings = () => {
           borderRadius="50%"
           width="66px"
           height="66px"
-          bg="#422E8D"
+          bg="#6B46C1"
           color="white"
           _hover={{ bg: "blue.700" }}
           fontSize="4xl"
