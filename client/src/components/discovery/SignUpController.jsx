@@ -129,6 +129,7 @@ function SignUpController({
         origin={class_id ? "CLASS" : "EVENT"}
         isOpenProp={openCoreqModal}
         classId={class_id}
+        eventId={event_id}
         {...infoProps}
         lstCorequisites={corequisites}
         handleClose={toggleCoreqModal}

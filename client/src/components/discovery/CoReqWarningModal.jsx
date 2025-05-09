@@ -34,6 +34,7 @@ function CoReqWarningModal({
   costume,
   modalIdentity,
   setModalIdentity,
+  eventId,
   handleClose = () => {},
   killModal = () => {},
 }) {
@@ -63,7 +64,7 @@ function CoReqWarningModal({
   };
 
   const signupWithoutCorequisite = async () => {
-    // enroll in class
+    // enroll in event
     const userData = await backend.get(`users/${currentUser.uid}`);
     const studentId = userData.data[0].id;
 
@@ -73,6 +74,34 @@ function CoReqWarningModal({
     });
 
     setOpenCoreq(true);
+    killModal();
+  };
+
+  const signupWithCorequisiteEventVersion = async () => {
+    const userData = await backend.get(`users/${currentUser.uid}`);
+    const studentId = userData.data[0].id;
+
+    // enroll in corequisite class(es)
+
+    // enroll in event
+    await backend.post("class-enrollments/", {
+      studentId: studentId,
+      classId: classId,
+    });
+
+    setOpenCoreq(true);
+    killModal();
+  };
+
+  const signupWithoutCorequisiteEventVersion = async () => {
+    const userData = await backend.get(`users/${currentUser.uid}`);
+    const studentId = userData.data[0].id;
+
+    await backend.post("event-enrollments/", {
+      student_id: studentId,
+      event_id: eventId,
+    });
+
     killModal();
   };
 
@@ -195,25 +224,45 @@ function CoReqWarningModal({
                   // sx={{ border: "2px solid blue" }}
                   w="full"
                 >
-                  {/* work on responsive button height */}
-                  <VStack spacing="8px">
-                    <Button
-                      w="full"
-                      bg="purple.100"
-                      color="white"
-                      onClick={signupWithCorequisite}
-                    >
-                      Yes, Enroll & Join Performance
-                    </Button>
-                    <Button
-                      w="full"
-                      bg="#CBD5E0"
-                      color="#4A5568"
-                      onClick={signupWithoutCorequisite}
-                    >
-                      No, Enroll in Class Only
-                    </Button>
-                  </VStack>
+                  {modalIdentity === "class" ? (
+                    <VStack spacing="8px">
+                      <Button
+                        w="full"
+                        bg="purple.100"
+                        color="white"
+                        onClick={signupWithCorequisite}
+                      >
+                        Yes, Enroll & Join Performance
+                      </Button>
+                      <Button
+                        w="full"
+                        bg="#CBD5E0"
+                        color="#4A5568"
+                        onClick={signupWithoutCorequisite}
+                      >
+                        No, Enroll in Class Only
+                      </Button>
+                    </VStack>
+                  ) : (
+                    <VStack spacing="8px">
+                      <Button
+                        w="full"
+                        bg="purple.100"
+                        color="white"
+                        onClick={signupWithCorequisiteEventVersion}
+                      >
+                        Yes, Join & Enroll in Class
+                      </Button>
+                      <Button
+                        w="full"
+                        bg="#CBD5E0"
+                        color="#4A5568"
+                        onClick={signupWithoutCorequisiteEventVersion}
+                      >
+                        No, Join Performance Only
+                      </Button>
+                    </VStack>
+                  )}
                 </Box>
               </VStack>
               <Button
