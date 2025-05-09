@@ -118,6 +118,7 @@ function SignUpController({
       <CoReqWarningModal
         origin={class_id ? "CLASS" : "EVENT"}
         isOpenProp={openCoreqModal}
+        classId={class_id}
         lstCorequisites={corequisites}
         handleClose={toggleCoreqModal}
         killModal={() => setOpenCoreqModal(false)}

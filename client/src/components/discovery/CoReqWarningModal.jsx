@@ -13,6 +13,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import ClassInfoModal from "./ClassInfoModal";
 // import { modalTheme } from "./confirmationModalStyle";
 import EventInfoModal from "./EventInfoModal";
@@ -20,14 +22,46 @@ import EventInfoModal from "./EventInfoModal";
 function CoReqWarningModal({
   origin,
   isOpenProp,
+  classId,
   lstCorequisites,
   handleClose = () => {},
   killModal = () => {},
 }) {
+  const { backend } = useBackendContext();
+  const { currentUser } = useAuthContext();
   const [openCoreq, setOpenCoreq] = useState(false);
   const [coreq, setCoreq] = useState(null);
 
-  const signup = () => {
+  const signupWithCorequisite = async () => {
+    // enroll in corequisite
+    const userData = await backend.get(`users/${currentUser.uid}`);
+    const studentId = userData.data[0].id;
+
+    await backend.post("event-enrollments/", {
+      student_id: studentId,
+      event_id: coreq.id,
+    });
+
+    // enroll in class
+    await backend.post("class-enrollments/", {
+      studentId: studentId,
+      classId: classId,
+    });
+
+    setOpenCoreq(true);
+    killModal();
+  };
+
+  const signupWithoutCorequisite = async () => {
+    // enroll in class
+    const userData = await backend.get(`users/${currentUser.uid}`);
+    const studentId = userData.data[0].id;
+
+    await backend.post("class-enrollments/", {
+      studentId: studentId,
+      classId: classId,
+    });
+
     setOpenCoreq(true);
     killModal();
   };
@@ -89,15 +123,16 @@ function CoReqWarningModal({
         <ModalOverlay />
         <ModalContent>
           <ModalBody>
-            <Box>
+            {/* fix font */}
+            <Box color="#2D3748">
               <VStack
                 spacing={7}
-                sx={{ border: "2px solid green" }}
+                // sx={{ border: "2px solid green" }}
               >
                 <Box>
                   <VStack
                     spacing="8px"
-                    sx={{ border: "2px solid yellow " }}
+                    // sx={{ border: "2px solid yellow " }}
                   >
                     <Text
                       fontWeight="bold"
@@ -124,7 +159,7 @@ function CoReqWarningModal({
                   </VStack>
                 </Box>
                 <Box
-                  sx={{ border: "2px solid blue" }}
+                  // sx={{ border: "2px solid blue" }}
                   w="full"
                 >
                   {/* work on responsive button height */}
@@ -133,7 +168,7 @@ function CoReqWarningModal({
                       w="full"
                       bg="purple.100"
                       color="white"
-                      onClick={signup}
+                      onClick={signupWithCorequisite}
                     >
                       Yes, Enroll & Join Performance
                     </Button>
@@ -141,20 +176,20 @@ function CoReqWarningModal({
                       w="full"
                       bg="#CBD5E0"
                       color="#4A5568"
-                      onClick={console.log("Enroll in class only button")}
+                      onClick={signupWithoutCorequisite}
                     >
                       No, Enroll in Class Only
                     </Button>
                   </VStack>
                 </Box>
               </VStack>
-              {/* <Button
+              <Button
                 bg="purple.100"
                 color="white"
                 onClick={cancelSignUp}
               >
                 Cancel
-              </Button> */}
+              </Button>
             </Box>
           </ModalBody>
         </ModalContent>
