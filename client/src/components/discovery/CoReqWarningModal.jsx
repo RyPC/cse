@@ -82,14 +82,20 @@ function CoReqWarningModal({
     const studentId = userData.data[0].id;
 
     // enroll in corequisite class(es)
-
-    // enroll in event
-    await backend.post("class-enrollments/", {
-      studentId: studentId,
-      classId: classId,
+    lstCorequisites.forEach(async (corequisite) => {
+      await backend
+        .post("class-enrollments", {
+          studentId: studentId,
+          classId: corequisite.id,
+        })
+        .then((res) => console.log(res));
     });
 
-    setOpenCoreq(true);
+    // enroll in event
+    await backend.post("event-enrollments/", {
+      student_id: studentId,
+      event_id: eventId,
+    });
     killModal();
   };
 
@@ -97,6 +103,7 @@ function CoReqWarningModal({
     const userData = await backend.get(`users/${currentUser.uid}`);
     const studentId = userData.data[0].id;
 
+    // enroll in event
     await backend.post("event-enrollments/", {
       student_id: studentId,
       event_id: eventId,
@@ -178,9 +185,9 @@ function CoReqWarningModal({
                       fontSize="18px"
                     >
                       {modalIdentity === "class" ? (
-                        <Text as="span">Class </Text>
-                      ) : (
                         <Text as="span">Event </Text>
+                      ) : (
+                        <Text as="span">Class </Text>
                       )}
                       Participation Recommended
                     </Text>
@@ -204,7 +211,13 @@ function CoReqWarningModal({
                       <Text>
                         {/* handle multiple performances grammar */}
                         To join {title}, it is recommended that you enroll in
-                        the prerequisite class&nbsp;
+                        the prerequisite{" "}
+                        {lstCorequisites.length > 1 ? (
+                          <Text as="span">classes </Text>
+                        ) : (
+                          <Text as="span">class</Text>
+                        )}
+                        &nbsp;
                         <Text
                           as="span"
                           fontWeight="bold"
@@ -217,7 +230,14 @@ function CoReqWarningModal({
                       </Text>
                     )}
 
-                    <Text>Do you agree to take part in the class?</Text>
+                    <Text>
+                      Do you agree to take part in{" "}
+                      {lstCorequisites.length > 1 ? (
+                        <Text as="span">these classes?</Text>
+                      ) : (
+                        <Text as="span">the class?</Text>
+                      )}
+                    </Text>
                   </VStack>
                 </Box>
                 <Box
@@ -251,7 +271,12 @@ function CoReqWarningModal({
                         color="white"
                         onClick={signupWithCorequisiteEventVersion}
                       >
-                        Yes, Join & Enroll in Class
+                        Yes, Join & Enroll in&nbsp;
+                        {lstCorequisites.length > 1 ? (
+                          <Text as="span">Classes</Text>
+                        ) : (
+                          <Text as="span">Class</Text>
+                        )}
                       </Button>
                       <Button
                         w="full"
