@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Center,
   List,
   ListItem,
   Modal,
@@ -12,6 +13,8 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+
+import { FaX, FaXmark } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -130,6 +133,11 @@ function CoReqWarningModal({
     return null;
   }
   return (
+    // <Box
+    //   h="100vh"
+    //   sx={{ border: "1px solid red" }}
+    // >
+    // <Center>
     <Box>
       {origin.toUpperCase() === "CLASS" ? (
         <EventInfoModal
@@ -163,145 +171,158 @@ function CoReqWarningModal({
 
       <Modal
         isOpen={isOpenProp}
-        size="xl"
         onClose={() => {}}
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalBody>
-            {/* fix font */}
-            <Box color="#2D3748">
-              <VStack
-                spacing={7}
-                // sx={{ border: "2px solid green" }}
-              >
-                <Box>
+        <ModalContent w="90vw">
+          <ModalBody p={5}>
+            <Box
+            // sx={{ border: "1px solid red" }}
+            >
+              <VStack spacing={5}>
+                <Box
+                  w="full"
+                  // sx={{ border: "1px solid yellow" }}
+                  display="flex"
+                  justifyContent="flex-end"
+                >
+                  <FaX onClick={cancelSignUp} />
+                </Box>
+                {/* fix font */}
+                <Box
+                  color="#2D3748"
+                  // sx={{ border: "2px solid green" }}
+                >
                   <VStack
-                    spacing="8px"
-                    // sx={{ border: "2px solid yellow " }}
+                    spacing={7}
+                    // sx={{ border: "2px solid green" }}
                   >
-                    <Text
-                      fontWeight="bold"
-                      fontSize="18px"
+                    <Box
+                    // sx={{ border: "1px solid blue" }}
+                    >
+                      <VStack
+                        spacing="8px"
+                        // sx={{ border: "2px solid yellow " }}
+                      >
+                        <Text
+                          fontWeight="bold"
+                          fontSize="18px"
+                        >
+                          {modalIdentity === "class" ? (
+                            <Text as="span">Event </Text>
+                          ) : (
+                            <Text as="span">Class </Text>
+                          )}
+                          Participation Recommended
+                        </Text>
+
+                        {modalIdentity === "class" ? (
+                          <Text>
+                            {/* handle multiple performances grammar */}
+                            To enroll in {title}, it is recommended that you
+                            participate in the end-of-session performance&nbsp;
+                            <Text
+                              as="span"
+                              fontWeight="bold"
+                            >
+                              {lstCorequisites && lstCorequisites.length > 0
+                                ? coreq?.title
+                                : ""}
+                            </Text>
+                            .
+                          </Text>
+                        ) : (
+                          <Text>
+                            {/* handle multiple performances grammar */}
+                            To join {title}, it is recommended that you enroll
+                            in the prerequisite{" "}
+                            {lstCorequisites.length > 1 ? (
+                              <Text as="span">classes</Text>
+                            ) : (
+                              <Text as="span">class</Text>
+                            )}
+                            &nbsp;
+                            <Text
+                              as="span"
+                              fontWeight="bold"
+                            >
+                              {lstCorequisites && lstCorequisites.length > 0
+                                ? coreq?.title
+                                : ""}
+                            </Text>
+                            .
+                          </Text>
+                        )}
+
+                        <Text>
+                          Do you agree to take part in{" "}
+                          {lstCorequisites.length > 1 ? (
+                            <Text as="span">these classes?</Text>
+                          ) : (
+                            <Text as="span">the class?</Text>
+                          )}
+                        </Text>
+                      </VStack>
+                    </Box>
+                    <Box
+                      // sx={{ border: "2px solid blue" }}
+                      w="full"
                     >
                       {modalIdentity === "class" ? (
-                        <Text as="span">Event </Text>
+                        <VStack spacing="8px">
+                          <Button
+                            w="full"
+                            bg="purple.100"
+                            color="white"
+                            onClick={signupWithCorequisite}
+                          >
+                            Yes, Enroll & Join Performance
+                          </Button>
+                          <Button
+                            w="full"
+                            bg="#CBD5E0"
+                            color="#4A5568"
+                            onClick={signupWithoutCorequisite}
+                          >
+                            No, Enroll in Class Only
+                          </Button>
+                        </VStack>
                       ) : (
-                        <Text as="span">Class </Text>
+                        <VStack spacing="8px">
+                          <Button
+                            w="full"
+                            bg="purple.100"
+                            color="white"
+                            onClick={signupWithCorequisiteEventVersion}
+                          >
+                            Yes, Join & Enroll in&nbsp;
+                            {lstCorequisites.length > 1 ? (
+                              <Text as="span">Classes</Text>
+                            ) : (
+                              <Text as="span">Class</Text>
+                            )}
+                          </Button>
+                          <Button
+                            w="full"
+                            bg="#CBD5E0"
+                            color="#4A5568"
+                            onClick={signupWithoutCorequisiteEventVersion}
+                          >
+                            No, Join Performance Only
+                          </Button>
+                        </VStack>
                       )}
-                      Participation Recommended
-                    </Text>
-
-                    {modalIdentity === "class" ? (
-                      <Text>
-                        {/* handle multiple performances grammar */}
-                        To enroll in {title}, it is recommended that you
-                        participate in the end-of-session performance&nbsp;
-                        <Text
-                          as="span"
-                          fontWeight="bold"
-                        >
-                          {lstCorequisites && lstCorequisites.length > 0
-                            ? coreq?.title
-                            : ""}
-                        </Text>
-                        .
-                      </Text>
-                    ) : (
-                      <Text>
-                        {/* handle multiple performances grammar */}
-                        To join {title}, it is recommended that you enroll in
-                        the prerequisite{" "}
-                        {lstCorequisites.length > 1 ? (
-                          <Text as="span">classes </Text>
-                        ) : (
-                          <Text as="span">class</Text>
-                        )}
-                        &nbsp;
-                        <Text
-                          as="span"
-                          fontWeight="bold"
-                        >
-                          {lstCorequisites && lstCorequisites.length > 0
-                            ? coreq?.title
-                            : ""}
-                        </Text>
-                        .
-                      </Text>
-                    )}
-
-                    <Text>
-                      Do you agree to take part in{" "}
-                      {lstCorequisites.length > 1 ? (
-                        <Text as="span">these classes?</Text>
-                      ) : (
-                        <Text as="span">the class?</Text>
-                      )}
-                    </Text>
+                    </Box>
                   </VStack>
                 </Box>
-                <Box
-                  // sx={{ border: "2px solid blue" }}
-                  w="full"
-                >
-                  {modalIdentity === "class" ? (
-                    <VStack spacing="8px">
-                      <Button
-                        w="full"
-                        bg="purple.100"
-                        color="white"
-                        onClick={signupWithCorequisite}
-                      >
-                        Yes, Enroll & Join Performance
-                      </Button>
-                      <Button
-                        w="full"
-                        bg="#CBD5E0"
-                        color="#4A5568"
-                        onClick={signupWithoutCorequisite}
-                      >
-                        No, Enroll in Class Only
-                      </Button>
-                    </VStack>
-                  ) : (
-                    <VStack spacing="8px">
-                      <Button
-                        w="full"
-                        bg="purple.100"
-                        color="white"
-                        onClick={signupWithCorequisiteEventVersion}
-                      >
-                        Yes, Join & Enroll in&nbsp;
-                        {lstCorequisites.length > 1 ? (
-                          <Text as="span">Classes</Text>
-                        ) : (
-                          <Text as="span">Class</Text>
-                        )}
-                      </Button>
-                      <Button
-                        w="full"
-                        bg="#CBD5E0"
-                        color="#4A5568"
-                        onClick={signupWithoutCorequisiteEventVersion}
-                      >
-                        No, Join Performance Only
-                      </Button>
-                    </VStack>
-                  )}
-                </Box>
               </VStack>
-              <Button
-                bg="purple.100"
-                color="white"
-                onClick={cancelSignUp}
-              >
-                Cancel
-              </Button>
             </Box>
           </ModalBody>
         </ModalContent>
       </Modal>
     </Box>
+    //   </Center>
+    // </Box>
   );
 }
 
