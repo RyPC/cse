@@ -41,6 +41,7 @@ export const CardModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      size="full"
     >
       <ModalOverlay />
       <ModalContent>

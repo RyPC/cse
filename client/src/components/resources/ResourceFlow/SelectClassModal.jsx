@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 
 import {
+  Box,
   Button,
   Card,
   CardBody,
+  Flex,
+  IconButton,
   Input,
   Modal,
   ModalBody,
@@ -13,7 +16,10 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Text,
 } from "@chakra-ui/react";
+
+import { AiOutlineArrowLeft } from "react-icons/ai";
 
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { ProgressBar } from "./ProgressBar";
@@ -76,14 +82,28 @@ export const SelectClassModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      size="full"
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>
-          Select Class
+        <ModalHeader p={4}>
+          <Flex
+            align="center"
+            position="relative"
+            justify="center"
+          >
+            <IconButton
+              aria-label="Back"
+              variant="ghost"
+              icon={<AiOutlineArrowLeft />}
+              position="absolute"
+              left={0}
+              onClick={onClose}
+            />
+            <Text fontSize="xl">Select a class</Text>
+          </Flex>
           <ProgressBar currStep={1} />
         </ModalHeader>
-        <ModalCloseButton />
         <ModalBody>
           <Input
             placeholder="Search for a class..."
@@ -115,6 +135,26 @@ export const SelectClassModal = ({
             <option disabled>No classes available</option>
           )}
         </ModalBody>
+        <ModalFooter
+          position="fixed"
+          bottom={0}
+          left={0}
+          right={0}
+          bg="white"
+          borderTop="1px solid"
+          borderColor="gray.200"
+          p={4}
+          display="flex"
+          justifyContent="center"
+        >
+          <Button
+            colorScheme="purple"
+            w="50%"
+            onClick={{}}
+          >
+            Next
+          </Button>
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
