@@ -118,10 +118,10 @@ export const Resources = () => {
   };
 
   useEffect(() => {
-    if (tabIndex == 0) { // only fetch videos
+    if (tabIndex === 0) { // only fetch videos
       console.log(tabIndex);
       searchVideos(); // Fetch videos initially
-    } else if (tabIndex == 1) {
+    } else if (tabIndex === 1) {
       searchArticles();
     }
     fetchNews(); // Fetch news initially
@@ -143,7 +143,18 @@ export const Resources = () => {
         />
       </InputGroup>
       
-      <Flex gap={3}>
+      <Flex 
+        gap={3} 
+        maxWidth="100%" 
+        overflowX="auto"
+        css={{
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          },
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none'
+        }}
+      >
         {Object.keys(tags).map((tag) => (
           <Badge
             key={tag}
