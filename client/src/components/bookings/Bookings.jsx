@@ -42,6 +42,7 @@ import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { InfoModal } from "./InfoModal";
+import { SearchBar } from "./SearchBar";
 import { TeacherCancelModal } from "./TeacherCancelModal";
 import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
@@ -70,9 +71,6 @@ export const Bookings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
-  const [searchInput, setSearchInput] = useState("");
-  const [tags, setTags] = useState({});
-  const [tagFilter, setTagFilter] = useState({});
 
   const [refresh, setRefresh] = useState(0);
 
@@ -165,67 +163,6 @@ export const Bookings = () => {
 
     fetchCoreqId();
   }, [backend, selectedCard, isOpen]);
-
-  const fetchTags = async () => {
-    try {
-      const tagsResponse = await backend.get("/tags");
-      const initialTagFilter = {};
-      const initialTags = {};
-      tagsResponse.data.forEach((tag) => {
-        initialTagFilter[tag.id] = false;
-        initialTags[tag.id] =
-          tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
-      });
-
-      setTagFilter(initialTagFilter);
-      setTags(initialTags);
-      // console.log(initialTags);
-    } catch (error) {
-      console.error("Error fetching tags:", error);
-    }
-  };
-
-  const fetchEventsByTag = async (tagId) => {
-    try {
-      const res = await backend.get(`/event-tags/events/${tagId}`);
-      const events = res.data;
-      setEvents(events);
-    } catch (error) {
-      console.error("Error fetching events for specified tag:", error);
-    }
-  };
-
-  const fetchAllEvents = async () => {
-    try {
-      const res = await backend.get("/events/published");
-      setEvents(res.data);
-    } catch (error) {
-      console.error("Error fetching all events:", error);
-    }
-  }
-
-  const fetchClassesByTag = async (tagId) => {
-    try {
-      const res = await backend.get(`/class-tags/classes/${tagId}`);
-      const classes = res.data;
-      setClasses(classes);
-    } catch (error) {
-      console.error("Error fetching events for specified tag:", error);
-    }
-  };
-
-  const fetchAllClasses = async () => {
-    try {
-      const res = await backend.get("/classes/published");
-      setClasses(res.data);
-    } catch (error) {
-      console.error("Error fetching all events:", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchTags();
-  }, [searchInput]);
 
   const onCloseModal = () => {
     setSelectedCard(null);
@@ -323,33 +260,7 @@ export const Bookings = () => {
     }
   };
 
-  const isFilterActive = Object.values(tagFilter).some(Boolean);
-
-  const handleFilterToggle = (id) => () => {
-    console.log(`Tag ${id} has been toggled!`);
-    setTagFilter((prev) => {
-      const updatedFilter = { ...prev, [id]: !prev[id] };
-      return updatedFilter;
-    });
-    if (tagFilter[id]) {
-      fetchAllEvents();
-    } else {
-      fetchEventsByTag(id);
-    }
-  };
-
-  const handleClassFilterToggle = (id) => () => {
-    console.log(`Tag ${id} has been toggled!`);
-    setTagFilter((prev) => {
-      const updatedFilter = { ...prev, [id]: !prev[id] };
-      return updatedFilter;
-    });
-    if (tagFilter[id]) {
-      fetchAllClasses();
-    } else {
-      fetchClassesByTag(id);
-    }
-  };
+  // const isFilterActive = Object.values(tagFilter).some(Boolean);
 
   const loadCorequisites = async (classId) => {
     try {
@@ -366,19 +277,12 @@ export const Bookings = () => {
 
   const reloadClassesAndDrafts = async () => {
     try {
-      if (searchInput) {
-        backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
-        backend.get(`/classes/search/${searchInput}`).then((res) => {
-          setClasses(res.data);
-        });
-      } else {
-        backend.get(`/events/published`).then((res) => setEvents(res.data));
-        backend.get(`/classes/published`).then((res) => {
-          setClasses(res.data);
-        });
-      }
-      backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
-      backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
+      await Promise.all([
+        backend.get(`/events/published`).then((res) => setEvents(res.data)),
+        backend.get(`/classes/published`).then((res) => setClasses(res.data)),
+        backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data)),
+        backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data))
+      ]);
 
       const attendedClasses = classes.filter((c) => c.attendance !== null);
       const attendedEvents = events.filter((e) => e.attendance !== null);
@@ -391,36 +295,31 @@ export const Bookings = () => {
   };
 
   const reloadClasses = async () => {
-    if (searchInput) {
-      backend.get(`/classes/search/${searchInput}`).then((res) => {
+      await backend.get(`/classes/published`).then((res) => {
         setClasses(res.data);
       });
-    } else {
-      backend.get(`/classes/published`).then((res) => {
-        setClasses(res.data);
-      });
-    }
 
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
-    loadCorequisites(selectedCard.id);
+
+    if (selectedCard) {
+      loadCorequisites(selectedCard.id);
+    }
   };
 
   const reloadEvents = async () => {
-    if (searchInput) {
-      backend.get(`/events/search/${searchInput}`).then((res) => {
+    await backend.get(`/events/published`).then((res) => {
         setEvents(res.data);
       });
-    } else {
-      backend.get(`/events/published`).then((res) => {
-        setEvents(res.data);
-      });
-    }
+
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
-    loadCorequisites(selectedCard.id);
+
+    if (selectedCard) {
+      loadCorequisites(selectedCard.id);
+    }
   };
 
   // useEffect(() => {
@@ -481,52 +380,12 @@ export const Bookings = () => {
     return d;
   };
 
-  const handleKeyDown = async (e) => {
-    if (e.key === "Enter") {
-      if (tabIndex === 0) {
-        console.log("hay");
-        await reloadClasses();
-        toggleClasses();
-      } else if (tabIndex === 1) {
-        await reloadEvents();
-        toggleEvents();
-      }
-    }
-  };
-
-  // console.log("draft classes", draftClasses);
-  // console.log("events", events);
-  // console.log("attended", classes);
-  // console.log("selected card", selectedCard);
   return (
     <Box pt={2}>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
-        <Box
-          px={4}
-          width="100%"
-          pt={4}
-        >
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <FaSearch color="gray.300" />
-            </InputLeftElement>
-            <Input
-              placeholder="Search"
-              variant="filled"
-              borderRadius="full"
-              borderColor={"gray.300"}
-              bg="white.100"
-              _hover={{ bg: "gray.200" }}
-              _focus={{ bg: "white", borderColor: "gray.300" }}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </InputGroup>
-        </Box>
 
         <Tabs
           width="100%"
@@ -569,21 +428,11 @@ export const Bookings = () => {
 
           <TabPanels>
             <TabPanel>
-            <Flex gap={3}>
-                  {Object.keys(tags).map((tag) => (
-                    <Badge
-                      key={tag}
-                      onClick={handleClassFilterToggle(tag)}
-                      rounded="xl"
-                      px={4}
-                      py={1}
-                      colorScheme={tagFilter[tag] ? "green" : "red"}
-                      textTransform="none"
-                    >
-                      {tags[tag]}
-                    </Badge>
-                  ))}
-                </Flex>
+              <SearchBar
+                  onSearch={setClasses}
+                  type="classes"
+                  backend={backend}
+              />
               <VStack
                 spacing={4}
                 width="100%"
@@ -620,21 +469,11 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
-                <Flex gap={3}>
-                  {Object.keys(tags).map((tag) => (
-                    <Badge
-                      key={tag}
-                      onClick={handleFilterToggle(tag)}
-                      rounded="xl"
-                      px={4}
-                      py={1}
-                      colorScheme={tagFilter[tag] ? "green" : "red"}
-                      textTransform="none"
-                    >
-                      {tags[tag]}
-                    </Badge>
-                  ))}
-                </Flex>
+              <SearchBar
+                onSearch={setEvents}
+                type="events"
+                backend={backend}
+              />
               <VStack
                 spacing={4}
                 width="100%"
