@@ -529,120 +529,120 @@ export const Bookings = () => {
           <TabList justifyContent="center">
             <Tab
               _selected={{
-                color: "black",
                 borderBottom: "2px",
                 borderColor: "purple.600",
                 fontWeight: "bold",
-                color: "purple.600"
+                color: "purple.600",
               }}
             >
               Classes
             </Tab>
             <Tab
               _selected={{
-                color: "black",
                 borderBottom: "2px",
                 borderColor: "purple.600",
                 fontWeight: "bold",
-                color: "purple.600"
+                color: "purple.600",
               }}
             >
               Events
             </Tab>
             <Tab
               _selected={{
-                color: "black",
                 borderBottom: "2px",
                 borderColor: "purple.600",
                 fontWeight: "bold",
-                color: "purple.600"
+                color: "purple.600",
               }}
             >
               {role !== "student" ? "Drafts" : "Attended"}
             </Tab>
           </TabList>
           <Box
-          px={4}
-          width="100%"
-          pt={4}
-        >
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <FaSearch color="gray.300" />
-            </InputLeftElement>
-            <Input
-              placeholder="Search"
-              variant="filled"
-              borderRadius="full"
-              borderColor={"gray.300"}
-              bg="white.100"
-              _hover={{ bg: "gray.200" }}
-              _focus={{ bg: "white", borderColor: "gray.300" }}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </InputGroup>
-            </Box>
-              <TabPanels>
-                <TabPanel>
-                  <Flex
-                    gap={3}
-                    overflow={"auto"}
-                    sx={{
-                      "&::-webkit-scrollbar": {
-                        display: "none",
-                      },
+            px={4}
+            width="100%"
+            pt={4}
+          >
+            <InputGroup>
+              <InputLeftElement pointerEvents="none">
+                <FaSearch color="gray.300" />
+              </InputLeftElement>
+              <Input
+                placeholder="Search"
+                variant="filled"
+                borderRadius="full"
+                borderColor={"gray.300"}
+                bg="white.100"
+                _hover={{ bg: "gray.200" }}
+                _focus={{ bg: "white", borderColor: "gray.300" }}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </InputGroup>
+          </Box>
+          <TabPanels>
+            <TabPanel>
+              <Flex
+                gap={3}
+                overflow={"auto"}
+                sx={{
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                }}
+                width="100%"
+              >
+                {Object.keys(tags).map((tag) => (
+                  <Badge
+                    key={tag}
+                    onClick={handleClassFilterToggle(tag)}
+                    rounded="xl"
+                    border="1px"
+                    borderColor="gray.300"
+                    px={4}
+                    py={1}
+                    colorScheme={tagFilter[tag] ? "gray" : "white"}
+                    textTransform="none"
+                    cursor="pointer"
+                  >
+                    {tags[tag]}
+                  </Badge>
+                ))}
+              </Flex>
+              <VStack
+                spacing={4}
+                width="100%"
+                my={5}
+                mb={20}
+              >
+                {isTeacher && (
+                  <Box
+                    w={{ base: "90%", md: "30em" }}
+                    cursor="pointer"
+                    onClick={() => {
+                      setSelectedCard(null);
+                      setCurrentModal("create");
+                      onOpen();
                     }}
-                    width="100%"
                   >
-                    {Object.keys(tags).map((tag) => (
-                      <Badge
-                        key={tag}
-                        onClick={handleClassFilterToggle(tag)}
-                        rounded="xl"
-                        border="1px"
-                        borderColor="gray.300"
-                        px={4}
-                        py={1}
-                        colorScheme={tagFilter[tag] ? "gray" : "white"}
-                        textTransform="none"
-                        cursor="pointer"
-                      >
-                        {tags[tag]}
-                      </Badge>
-                    ))}
-                  </Flex>
-                  <VStack
-                    spacing={4}
-                    width="100%"
-                    my={5}
-                    mb={20}
-                  >
-                    {isTeacher && (
-                      <Box
-                        w={{ base: "90%", md: "30em" }}
-                        cursor="pointer"
-                        onClick={() => {
-                          setSelectedCard(null);
-                          setCurrentModal("create");
-                          onOpen();
-                        }}
-                      >
-                        <Card
-                          w="100%"
-                          border = "1px"
-                          borderColor="gray.300"
-                          bg="gray.50"
-                          _hover={{ bg: "gray.60" }}
+                    <Card
+                      w="100%"
+                      border="1px"
+                      borderColor="gray.300"
+                      bg="gray.50"
+                      _hover={{ bg: "gray.60" }}
+                    >
+                      <CardBody textAlign="center">
+                        <Text
+                          fontSize="xl"
+                          fontWeight="semibold"
                         >
-                          <CardBody textAlign="center">
-                            <Text fontSize="xl" fontWeight="semibold">
-                              Add a Class +
-                            </Text>
-                          </CardBody>
-                        </Card>
-                      </Box>
+                          Add a Class +
+                        </Text>
+                      </CardBody>
+                    </Card>
+                  </Box>
                 )}
                 {role !== "student" ? (
                   classes.length > 0 ? (
@@ -661,7 +661,12 @@ export const Bookings = () => {
                   )
                 ) : classes.length > 0 ? (
                   classes.map((classItem) => (
-                    <Box key={classItem.id} display="flex" justifyContent="center" w="100%">
+                    <Box
+                      key={classItem.id}
+                      display="flex"
+                      justifyContent="center"
+                      w="100%"
+                    >
                       <ClassCard
                         {...classItem}
                         onClick={() => updateModal(classItem)}
@@ -713,13 +718,16 @@ export const Bookings = () => {
                   >
                     <Card
                       w="100%"
-                      border = "1px"
+                      border="1px"
                       borderColor="gray.300"
                       bg="gray.50"
                       _hover={{ bg: "gray.60" }}
                     >
                       <CardBody textAlign="center">
-                        <Text fontSize="xl" fontWeight="semibold">
+                        <Text
+                          fontSize="xl"
+                          fontWeight="semibold"
+                        >
                           Add an Event +
                         </Text>
                       </CardBody>
@@ -806,7 +814,6 @@ export const Bookings = () => {
             </TabPanel>
           </TabPanels>
         </Tabs>
-        
       </VStack>
       {role !== "student" ? (
         currentModal === "view" ? (
@@ -1087,7 +1094,9 @@ const ClassTeacherCard = memo(
                   color="black"
                   fontSize="sm"
                 >
-                  <Text>{(rsvpCount ?? 0)} {(rsvpCount ?? 0) === 1 ? "Person" : "People"} Enrolled
+                  <Text>
+                    {rsvpCount ?? 0}{" "}
+                    {(rsvpCount ?? 0) === 1 ? "Person" : "People"} Enrolled
                   </Text>
                 </HStack>
               </CardHeader>
