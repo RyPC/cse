@@ -151,13 +151,23 @@ export const SearchBar = ( { onSearch, type="classes", backend }) => {
             ))}
         </Flex> */}
 
-        <Flex gap={3}>
-            {Object.keys(tags).map((tag) => (
-            <Badge
-                key={tag}
-                onClick={handleClassFilterToggle(tag)}
-                rounded="xl"
-                px={4}
+        <Flex gap={3}
+              maxWidth="100%" 
+              overflowX="auto"
+              css={{
+                '&::-webkit-scrollbar': {
+                  display: 'none'
+                },
+                '-ms-overflow-style': 'none',
+                'scrollbar-width': 'none'
+              }}
+            >
+              {Object.keys(tags).map((tag) => (
+                <Badge
+                  key={tag}
+                  onClick={handleClassFilterToggle(tag)}
+                  rounded="xl"
+                  px={4}
                 py={1}
                 colorScheme={tagFilter[tag] ? "green" : "red"}
                 textTransform="none"
