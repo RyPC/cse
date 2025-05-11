@@ -42,7 +42,7 @@ import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { InfoModal } from "./InfoModal";
-import { SearchBar } from "./SearchBar";
+import { SearchBar } from "../searchbar/SearchBar";
 import { TeacherCancelModal } from "./TeacherCancelModal";
 import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
@@ -71,6 +71,9 @@ export const Bookings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
+  const [tags, setTags] = useState([]);
+  const [tagFilter, setTagFilter] = useState({});
+  const [lastToggledTag, setLastToggledTag] = useState(null);
 
   const [refresh, setRefresh] = useState(0);
 
@@ -138,6 +141,110 @@ export const Bookings = () => {
     setAttended([...attendedClasses, ...attendedEvents]);
     setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+        try {
+          const tagsResponse = await backend.get("/tags");
+          const initialTagFilter = {};
+          const initialTags = {};
+          tagsResponse.data.forEach((tag) => {
+            initialTagFilter[tag.id] = false;
+            initialTags[tag.id] =
+              tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
+          });
+    
+          setTagFilter(initialTagFilter);
+          setTags(initialTags);
+          // console.log(initialTags);
+        } catch (error) {
+          console.error("Error fetching tags:", error);
+        }
+      };
+      fetchTags();
+ }, []);
+
+ const fetchEventsByTag = async (tagId) => {
+    try {
+      const res = await backend.get(`/event-tags/events/${tagId}`);
+      const events = res.data;
+      setEvents(events);
+    } catch (error) {
+      console.error("Error fetching events for specified tag:", error);
+    }
+  };
+
+  const fetchAllEvents = async () => {
+    try {
+      const res = await backend.get("/events/published");
+      setEvents(res.data);
+    } catch (error) {
+      console.error("Error fetching all events:", error);
+    }
+  }
+
+  const fetchClassesByTag = async (tagId) => {
+    try {
+      const res = await backend.get(`/class-tags/classes/${tagId}`);
+      const classes = res.data;
+      setClasses(classes);
+    } catch (error) {
+      console.error("Error fetching events for specified tag:", error);
+    }
+  };
+
+  const fetchAllClasses = async () => {
+    try {
+      const res = await backend.get("/classes/published");
+      setClasses(res.data);
+    } catch (error) {
+      console.error("Error fetching all events:", error);
+    }
+  }
+
+  const handleFilterToggle = (id) => {
+    setTagFilter((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+    setLastToggledTag(id);
+  };
+
+  useEffect(() => {
+    if (lastToggledTag === null) {
+      return;
+    }
+  
+    const active = tagFilter[lastToggledTag];
+  
+    if (active) {
+      fetchEventsByTag(lastToggledTag);
+    } else {
+      fetchAllEvents();
+    }
+  }, [tagFilter, lastToggledTag]);
+
+  const handleClassFilterToggle = (id) => () => {
+    setTagFilter((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+    setLastToggledTag(id);
+  };
+
+  useEffect(() => {
+    if (lastToggledTag === null) {
+      return;
+    }
+  
+    const active = tagFilter[lastToggledTag];
+  
+    if (active) {
+      fetchClassesByTag(lastToggledTag);
+    } else {
+      fetchAllClasses();
+    }
+  }, [tagFilter, lastToggledTag]);
 
   useEffect(() => {
     const fetchCoreqId = async () => {
@@ -274,6 +381,16 @@ export const Bookings = () => {
       console.error("Error fetching corequisite enrollment:", error);
     }
   };
+
+  const handleClassSearch = async (query) => {
+    const res = await backend.get(`/classes/search/${query}`);
+    setClasses(res.data);
+  }
+
+  const handleEventSearch = async (query) => {
+    const res = await backend.get(`/events/search/${query}`);
+    setEvents(res.data);
+  }
 
   const reloadClassesAndDrafts = async () => {
     try {
@@ -429,9 +546,10 @@ export const Bookings = () => {
           <TabPanels>
             <TabPanel>
               <SearchBar
-                  onSearch={setClasses}
-                  type="classes"
-                  backend={backend}
+                  onSearch={handleClassSearch}
+                  tags={tags}
+                  tagFilter={tagFilter}
+                  onTag={handleClassFilterToggle}
               />
               <VStack
                 spacing={4}
@@ -470,10 +588,11 @@ export const Bookings = () => {
 
             <TabPanel>
               <SearchBar
-                onSearch={setEvents}
-                type="events"
-                backend={backend}
-              />
+                onSearch={handleEventSearch}
+                tags={tags}
+                tagFilter={tagFilter}
+                onTag={handleFilterToggle}
+            />
               <VStack
                 spacing={4}
                 width="100%"
