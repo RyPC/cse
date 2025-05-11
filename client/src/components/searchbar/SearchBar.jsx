@@ -6,6 +6,7 @@ import {
     Input,
     Flex,
     Badge,
+    VStack,
 } from "@chakra-ui/react";
 
 import { FaSearch } from "react-icons/fa";
@@ -20,7 +21,7 @@ export const SearchBar = ( { onSearch, tags = {}, tagFilter = {}, onTag }) => {
       }
 
   return (
-    <>
+    <VStack spacing={4} align="stretch">
         <InputGroup>
             <InputLeftElement pointerEvents="none">
                 <FaSearch color="gray.300" />
@@ -55,7 +56,6 @@ export const SearchBar = ( { onSearch, tags = {}, tagFilter = {}, onTag }) => {
                 <Badge
                   key={id}
                   onClick={() => {
-                    console.log("clickity clack")
                     onTag(id)();
                   }}
                   rounded="xl"
@@ -70,6 +70,6 @@ export const SearchBar = ( { onSearch, tags = {}, tagFilter = {}, onTag }) => {
             ))}
         </Flex>
       )}
-    </>
+    </VStack>
   )
 }

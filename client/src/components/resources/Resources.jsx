@@ -146,7 +146,7 @@ export const Resources = () => {
 
   return (
     <Box position="relative" pb="70px" minHeight="100vh">
-    <Flex direction="column" p={4} gap={4}>
+    <Flex direction="column" p={4}>
       <SearchBar
         onSearch={handleSearch}
         tags={tags}
