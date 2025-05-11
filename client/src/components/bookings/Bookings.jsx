@@ -963,7 +963,7 @@ const ClassTeacherCard = memo(
     onOpen,
   }) => {
     const getIcon = () => {
-      const iconSize = 60;
+      const iconSize = 50;
       switch (tagId) {
         case 1:
           return <FaMusic size={iconSize} />;
@@ -984,8 +984,11 @@ const ClassTeacherCard = memo(
       }
     };
     return (
-      <Box
+      <Card
         w={{ base: "100%", md: "30em" }}
+        border="1px"
+        borderColor="gray.300"
+        bg="gray.50"
         onClick={
           isDraft
             ? () => {
@@ -1068,74 +1071,55 @@ const ClassTeacherCard = memo(
               }
           // : () => navigate(`/dashboard/classes/${classId}`)
         }
-        cursor="pointer"
       >
-        <Card
-          w={{ base: "90%", md: "30em" }}
-          border="1px"
-          borderColor="gray.300"
-          bg="gray.50"
-        >
+        <CardBody px={0}>
+          <Box
+            position="absolute"
+            textAlign="center"
+            justifyContent="center"
+            alignItems="center"
+            display="flex"
+            height="20px"
+            top="10px"
+            right="5%"
+            px="16px"
+            py="2px"
+            borderRadius="full"
+            border="0.2px solid"
+            borderColor="purple.600"
+            color="purple.700"
+            backgroundColor="purple.50"
+            fontSize="10px"
+          >
+            <Text>
+              {rsvpCount ?? 0} {(rsvpCount ?? 0) === 1 ? "Person" : "People"}{" "}
+              Enrolled
+            </Text>
+          </Box>
           <HStack>
-            <Box p="20px">{getIcon()}</Box>
-            <Box>
-              <CardHeader pb={0}>
-                <HStack
-                  position="absolute"
-                  height="15%"
-                  top="10%"
-                  right="5%"
-                  bg="purple.50"
-                  px={3}
-                  py={1}
-                  borderRadius="full"
-                  border="1px"
-                  borderColor="purple.600"
-                  color="black"
-                  fontSize="sm"
-                >
-                  <Text>
-                    {rsvpCount ?? 0}{" "}
-                    {(rsvpCount ?? 0) === 1 ? "Person" : "People"} Enrolled
-                  </Text>
-                </HStack>
-              </CardHeader>
-              <CardBody>
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                >
-                  <VStack
-                    alignItems="flex-start"
-                    spacing={2}
-                  >
-                    <Text
-                      fontSize="1.5rem"
-                      fontWeight="bold"
-                    >
-                      {title ? title : "Placeholder Title"}
-                    </Text>
+            <Box px="20px">{getIcon()}</Box>
+            <VStack
+              alignItems="flex-start"
+              py="1rem"
+            >
+              <Text
+                fontSize="1.125rem"
+                fontWeight="bold"
+              >
+                {title ? title : "Title Not Available"}
+              </Text>
 
-                    <HStack>
-                      <Text fontSize="1.2rem">
-                        {location ? location : "Irvine"}
-                      </Text>
-                    </HStack>
-
-                    <HStack>
-                      <Text fontSize="sm">
-                        {date
-                          ? `${formatDate(date)} · ${formatTime(startTime)} - ${formatTime(endTime)}`
-                          : "No date"}
-                      </Text>
-                    </HStack>
-                  </VStack>
-                </Box>
-              </CardBody>
-            </Box>
+              <Text fontSize="0.875rem">
+                {location ? location : "No Location Available"}
+                <br />
+                {date
+                  ? `${formatDate(date)} · ${formatTime(startTime)} - ${formatTime(endTime)}`
+                  : "No date"}
+              </Text>
+            </VStack>
           </HStack>
-        </Card>
-      </Box>
+        </CardBody>
+      </Card>
     );
   }
 );
