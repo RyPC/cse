@@ -268,17 +268,6 @@ export const CreateClassForm = memo(
 
     return (
       <Container>
-        <Text
-          fontSize="2xl"
-          textAlign="center"
-          mb={4}
-        >
-          {!isSubmitted
-            ? modalData
-              ? "Edit Class"
-              : "New Class"
-            : `${title} ${isDraft ? "Draft" : "Published"}`}
-        </Text>
         {!isSubmitted ? (
           <form
             onSubmit={(e) => {
@@ -287,26 +276,37 @@ export const CreateClassForm = memo(
             }}
           >
             <FormControl>
-              <FormLabel>Class Title</FormLabel>
+              <FormLabel fontWeight="bold">Class Title</FormLabel>
               <Input
+                placeholder = "Class Title"
+                _placeholder={{ color: 'gray.400' }}
+                border = '1px'
+                borderColor="gray.200"
+                boxShadow="sm"
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 bg="white"
                 color="black"
+                
               />
             </FormControl>
 
             <FormControl>
-              <FormLabel>Location</FormLabel>
+              <FormLabel fontWeight="bold">Location</FormLabel>
               <Input
+                placeholder = "Location"
+                _placeholder={{ color: 'gray.400' }}
+                border = '1px'
+                borderColor="gray.200"
                 type="text"
                 required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 bg="white"
                 color="black"
+                boxShadow="sm"
               />
             </FormControl>
 
@@ -315,20 +315,41 @@ export const CreateClassForm = memo(
               align="flex-start"
             >
               <FormControl width={"50%"}>
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel fontWeight="bold">Start Date</FormLabel>
                 <Input
+                  border="1px"
+                  borderColor="gray.200"
                   type="date"
                   required
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   bg="white"
                   color="black"
+                  boxShadow="sm"
+                  sx={{
+                    '&::-webkit-calendar-picker-indicator': {
+                      backgroundColor: 'gray.100',
+                      padding: '2px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }
+                  }}
                 />
               </FormControl>
 
               <FormControl width={"50%"}>
-                <FormLabel>End Date</FormLabel>
+                <FormLabel fontWeight="bold">End Date</FormLabel>
                 <Input
+                  sx={{
+                    '&::-webkit-calendar-picker-indicator': {
+                      backgroundColor: 'gray.100',
+                      padding: '2px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }
+                  }}
+                  border="1px"
+                  borderColor="gray.400"
                   type="date"
                   required={recurrencePattern !== "none"}
                   value={endDate}
@@ -338,38 +359,21 @@ export const CreateClassForm = memo(
                   opacity={recurrencePattern === "none" ? 0.4 : 1}
                   bg="white"
                   color="black"
+                  boxShadow="sm"
                 />
               </FormControl>
             </HStack>
-
-            <FormControl mt={4}>
-              <FormLabel>Recurrence Pattern</FormLabel>
-              <Select
-                value={recurrencePattern}
-                onChange={(e) => setRecurrencePattern(e.target.value)}
-                bg="white"
-                color="black"
-                sx={{
-                  "& option": {
-                    bg: "white",
-                    color: "black",
-                  },
-                }}
-              >
-                <option value="none">None</option>
-                <option value="weekly">Weekly</option>
-                <option value="biweekly">Bi-Weekly</option>
-                <option value="monthly">Monthly</option>
-              </Select>
-            </FormControl>
 
             <HStack
               mt={4}
               align="flex-start"
             >
               <FormControl>
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel fontWeight="bold">Start Time</FormLabel>
                 <Input
+                  border="1px"
+                  borderColor="gray.200"
+                  boxShadow="sm"
                   type="time"
                   required
                   value={startTime}
@@ -380,8 +384,11 @@ export const CreateClassForm = memo(
               </FormControl>
 
               <FormControl>
-                <FormLabel>End Time</FormLabel>
+                <FormLabel fontWeight="bold">End Time</FormLabel>
                 <Input
+                  border="1px"
+                  borderColor="gray.200"
+                  boxShadow="sm"
                   type="time"
                   required
                   value={endTime}
@@ -392,10 +399,37 @@ export const CreateClassForm = memo(
               </FormControl>
             </HStack>
 
-            <FormControl>
-              <FormLabel>Instructor</FormLabel>
+            <FormControl mt={4}>
+              <FormLabel fontWeight="bold">Recurrence</FormLabel>
               <Select
-                placeholder="Select an instructor"
+                border="1px"
+                borderColor="gray.200"
+                boxShadow="sm"
+                value={recurrencePattern}
+                onChange={(e) => setRecurrencePattern(e.target.value)}
+                bg="white"
+                sx={{
+                  "& option": {
+                    bg: "white",
+                    color: "black",
+                  },
+                }}
+              >
+                <option>Recurrence</option>
+                <option value="none">None</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-Weekly</option>
+                <option value="monthly">Monthly</option>
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel fontWeight="bold">Instructor</FormLabel>
+              <Select
+                border = '1px'
+                borderColor="gray.200"
+                boxShadow="sm"
+                type="text"
                 required
                 value={selectedInstructor}
                 onChange={(e) => setSelectedInstructor(e.target.value)}
@@ -403,15 +437,20 @@ export const CreateClassForm = memo(
                 color="black"
                 sx={{
                   "& option": {
-                    bg: "white",
+                    color: "black",
+                    backgroundColor: "white",
+                  },
+                  "& option[disabled]": {
                     color: "black",
                   },
                 }}
               >
+                <option>
+                  Instructor
+                </option>
                 {teachers.map((teacher) => (
                   <option key={teacher.id} value={teacher.id}>
-                      {teacher.firstName} {teacher.lastName}
-
+                    {teacher.firstName} {teacher.lastName}
                   </option>
                 ))}
               </Select>
@@ -419,34 +458,69 @@ export const CreateClassForm = memo(
             </FormControl>
 
             <FormControl mt={4}>
-              <FormLabel>Description</FormLabel>
+              <FormLabel fontWeight="bold">Description</FormLabel>
               <Textarea
+                placeholder = "Description"
+                _placeholder={{ color: 'gray.400' }}
+                border = '1px'
+                borderColor="gray.200"
+                boxShadow="sm"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 bg="white"
                 color="black"
               />
             </FormControl>
+            <HStack>
+              <FormControl>
+                <FormLabel fontWeight="bold">Capacity</FormLabel>
+                <NumberInput min={0}>
+                  <NumberInputField
+                    placeholder = "Capacity"
+                    _placeholder={{ color: 'gray.400' }}
+                    border = '1px'
+                    borderColor="gray.200"
+                    boxShadow="sm"
+                    required
+                    value={capacity}
+                    onChange={(e) => setCapacity(e.target.value)}
+                    bg="white"
+                    color="black"
+                  />
+                </NumberInput>
+              </FormControl>
+              <FormControl>
+                <FormLabel fontWeight="bold">Level</FormLabel>
+                  <Select
+                    border = '1px'
+                    borderColor="gray.200"
+                    boxShadow="sm"
+                    required
+                    value={level}
+                    onChange={(e) => setLevel(e.target.value)}
+                    bg="white"
+                    color="black"
+                    sx={{
+                      "& option": {
+                        bg: "white",
+                        color: "black",
+                      },
+                    }}
+                  >
+                    <option>Level</option>
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                  </Select>
+              </FormControl>
+            </HStack>
 
             <FormControl>
-              <FormLabel>Capacity</FormLabel>
-              <NumberInput min={0}>
-                <NumberInputField
-                  required
-                  value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
-                  bg="white"
-                  color="black"
-                />
-              </NumberInput>
-            </FormControl>
-
-            <FormControl>
-              <FormLabel>Level</FormLabel>
+              <FormLabel fontWeight="bold">Class Type</FormLabel>
               <Select
                 required
-                value={level}
-                onChange={(e) => setLevel(e.target.value)}
+                value={classType}
+                onChange={(e) => setClassType(e.target.value)}
                 bg="white"
                 color="black"
                 sx={{
@@ -456,15 +530,27 @@ export const CreateClassForm = memo(
                   },
                 }}
               >
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
+                {tags
+                  ? tags.map((tag, ind) => (
+                      <option
+                        key={ind}
+                        value={tag.id}
+                      >
+                        {tag.tag}
+                      </option>
+                    ))
+                  : null}
               </Select>
             </FormControl>
 
             <FormControl>
-              <FormLabel>Performance</FormLabel>
+              <FormLabel fontWeight="bold">Performances</FormLabel>
               <Select
+                placeholder="Performances"
+                _placeholder={{ color: 'gray.400' }}
+                border = '1px'
+                borderColor="gray.200"
+                boxShadow="sm"
                 required
                 value={performance}
                 onChange={(e) => setPerformance(e.target.value)}
@@ -495,33 +581,7 @@ export const CreateClassForm = memo(
                   : null}
               </Select>
             </FormControl>
-            <FormControl>
-              <FormLabel>Class Type</FormLabel>
-              <Select
-                required
-                value={classType}
-                onChange={(e) => setClassType(e.target.value)}
-                bg="white"
-                color="black"
-                sx={{
-                  "& option": {
-                    bg: "white",
-                    color: "black",
-                  },
-                }}
-              >
-                {tags
-                  ? tags.map((tag, ind) => (
-                      <option
-                        key={ind}
-                        value={tag.id}
-                      >
-                        {tag.tag}
-                      </option>
-                    ))
-                  : null}
-              </Select>
-            </FormControl>
+
 
             <Stack
               direction="row"
@@ -530,21 +590,24 @@ export const CreateClassForm = memo(
             >
               {((!isSubmitted && !modalData) || modalData?.isDraft) && (
                 <Button
+                  paddingRight="10%"
+                  paddingLeft="10%"
                   onClick={() => {
                     onOpen();
                     setIsDraft(true);
                   }}
-                  bg="#D8BFD8"
+                  bg="gray.100"
                   color="black"
-                  border="1px solid black"
                   _hover={{ bg: "#C8A9C8" }}
                 >
-                  Save as Draft
+                  Save Draft
                 </Button>
               )}
               <Button
+                paddingRight="10%"
+                paddingLeft="10%"
                 type="submit"
-                bg="#663399"
+                bg="purple.600"
                 color="white"
                 border="1px solid black"
                 _hover={{ bg: "#5D2E8C" }}

@@ -853,7 +853,7 @@ export const Bookings = () => {
                 <HStack justify="space-between">
                   <MdArrowBackIosNew onClick={onCloseModal} />
                   <Heading size="lg">
-                    {tabIndex === 0 ? "Create a Class" : "Create an Event"}
+                    {tabIndex === 0 ? "New Class" : "New Event"}
                   </Heading>{" "}
                   {/* Will add from prop */}
                   <MdMoreHoriz opacity={0} />
@@ -910,28 +910,6 @@ export const Bookings = () => {
           handleEvent={() => handleCancelEnrollment(selectedCard.id)}
           type={cardType}
         />
-      )}
-      {isTeacher && tabIndex !== 2 && (
-        <Button
-          onClick={() => {
-            setSelectedCard(null);
-            setCurrentModal("create");
-            onOpen();
-          }}
-          position="fixed"
-          bottom="90px"
-          right="20px"
-          borderRadius="50%"
-          width="66px"
-          height="66px"
-          bg="#6B46C1"
-          color="white"
-          _hover={{ bg: "blue.700" }}
-          fontSize="4xl"
-          zIndex={999}
-        >
-          <MdAdd size={40} />
-        </Button>
       )}
       <Navbar />
     </Box>
