@@ -65,7 +65,7 @@ export const Profile = () => {
             target="_blank"
             borderRadius="5px"
             color="white"
-            bg="#422E8D"
+            bg="#6B46C1"
             height="6.407vh"
             // width calculated from figma hi-fi
             w="82.33vw"
@@ -77,7 +77,7 @@ export const Profile = () => {
             colorScheme="gray"
             borderRadius="5px"
             color="white"
-            bg="#422E8D"
+            bg="#6B46C1"
             height="6.407vh"
             // width calculated from figma hi-fi
             w="82.33vw"

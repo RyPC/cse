@@ -446,7 +446,7 @@ export const TeacherEditModal = ({
             <Button flex="1" onClick={onSaveAsDraft}>
               Save Draft
             </Button>
-            <Button bg= "#422E8D"  color = "white" flex="1" onClick={onPublish}>
+            <Button bg="#6B46C1"  color = "white" flex="1" onClick={onPublish}>
               Publish
             </Button>
           </Flex>
