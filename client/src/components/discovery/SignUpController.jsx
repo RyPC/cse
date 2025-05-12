@@ -23,6 +23,8 @@ function SignUpController({
   const { currentUser } = useAuthContext();
   const [openCoreqModal, setOpenCoreqModal] = useState(false);
   const [corequisites, setCorequisites] = useState([]);
+  const [ tag, setTags ] = useState([]);
+  const [ teacherName, setTeacherName ] = useState('');
 
   const fetchCorequirements = useCallback(async () => {
     const id = class_id !== null ? class_id : event_id;
@@ -69,6 +71,20 @@ function SignUpController({
     const response = await backend.get(COREQUESITE_ROUTE);
     const coreq = response.data.map((coreq) => ({ ...coreq, enrolled: false }));
     setCorequisites(coreq);
+
+    const teacherName = await backend.get(`/classes-taught/instructor/${id}`)
+    if (teacherName.data.length != 0) {
+      setTeacherName(teacherName.data[0].firstName)
+    }
+
+    let tags_arr = []
+    const tags = await backend.get(`/class-tags/tags/${id}`)
+    console.log(tags.data)
+    for (let i=0; i<tags.data.length; i++) {
+      tags_arr.push(tags.data[i].tag)
+    }
+    setTags(tags_arr)
+    
     await fetchEnrollments(coreq);
   }, [backend, class_id, event_id, currentUser.uid]);
 
