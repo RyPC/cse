@@ -78,6 +78,16 @@ eventsRouter.get("/published", async (req, res) => {
   }
 });
 
+eventsRouter.get("/all", async (req, res) => {
+  try {
+    const eventID = await db.query("SELECT * FROM events;");
+
+    res.status(200).json(keysToCamel(eventID));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 eventsRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;

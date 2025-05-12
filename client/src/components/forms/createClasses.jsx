@@ -105,6 +105,7 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
+        await backend.put(`/corequisites/${modalData.classId}`+`/${performance}`)
         
         // Add teacher to classes-taught on form post
         const res = await backend
@@ -197,6 +198,7 @@ export const CreateClassForm = memo(
           });
         console.log("Added teacher to classes-taught:", res);
 
+        await backend.put(`/corequisites/${classId}`+`/${performance}`)
         for (const classDate of classDates) {
           try {
             // const response = await backend.post("/classes", classBody);
@@ -239,7 +241,7 @@ export const CreateClassForm = memo(
 
     useMemo(() => {
       if (backend) {
-        backend.get("/events").then((response) => {
+        backend.get("/events/all").then((response) => {
           setEvents(response.data);
         });
         backend.get("/tags").then((response) => {

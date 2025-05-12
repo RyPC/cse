@@ -23,6 +23,7 @@ import ClassInfoModal from "./ClassInfoModal";
 import EventInfoModal from "./EventInfoModal";
 
 function CoReqWarningModal({
+  user,
   origin,
   isOpenProp,
   classId,
@@ -141,6 +142,7 @@ function CoReqWarningModal({
     <Box>
       {origin.toUpperCase() === "CLASS" ? (
         <EventInfoModal
+          user={user}
           isOpenProp={openCoreq}
           id={coreq.id}
           title={coreq.title}
@@ -155,6 +157,7 @@ function CoReqWarningModal({
         />
       ) : (
         <ClassInfoModal
+          user={user}
           isOpenProp={openCoreq}
           title={coreq.title}
           description={coreq.description}
