@@ -307,6 +307,8 @@ export const TeacherViewModal = ({
               <Text key={performance.id}>{performance.title}</Text>
             ))}
           </Box>
+          <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+          <PublishedReviews classId={classData?.id} />
         </VStack>
         </ModalBody>
       </ModalContent>

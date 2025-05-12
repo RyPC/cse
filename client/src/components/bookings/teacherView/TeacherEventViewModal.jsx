@@ -408,6 +408,7 @@ function TeacherEventViewModal({
                 <Box width="100%">
                     <Text fontSize="16px">{location ? location : "N/A"}</Text>
                 </Box>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
                 <Box width="100%">
                   <Text
                     fontWeight="bold"
@@ -417,16 +418,7 @@ function TeacherEventViewModal({
                   </Text>
                   <Text>{formattedCallTime ? formattedCallTime : "TBD"}</Text>
                 </Box>
-
-                <Box width="100%">
-                  <Text
-                    fontWeight="bold"
-                    fontSize={20}
-                  >
-                    Description
-                  </Text>
-                  <Text>{description ? description : "TBD"}</Text>
-                </Box>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
 
                 <HStack
                   spacing={4}
@@ -452,6 +444,7 @@ function TeacherEventViewModal({
                     <Text>{level ? level : "TBD"}</Text>
                   </Box>
                 </HStack>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
 
                 <HStack width={"100%"}>
                   <Box>
