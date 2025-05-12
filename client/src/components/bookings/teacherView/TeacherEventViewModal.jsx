@@ -92,6 +92,7 @@ function TeacherEventViewModal({
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
+
   // disclosure for rsvp
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -184,6 +185,8 @@ function TeacherEventViewModal({
         .then((data) => setImageSrc(data.message));
     }
   }, [imageSrc, isOpenProp]);
+
+
 
   return (
     <>
@@ -383,10 +386,6 @@ function TeacherEventViewModal({
                   justifyContent="flex-start"
                   width="100%"
                 >
-                  <Text fontSize="16px"
-                  >
-                    Taught by *pass in teacher prop here*
-                  </Text>
                 </Box>
                 <Box 
                   display="flex"
@@ -472,10 +471,11 @@ function TeacherEventViewModal({
                         as="b"
                         fontSize={20}
                       >
-                        Class Corequisites
+                        Event Prerequisites
                       </Text>
+                      <Text color = "gray.600">We recommend taking these classes before enrolling in this event</Text>
                       {!corequisites || corequisites.length === 0 ? (
-                        <Text>No corequisites for this class</Text>
+                        <Text>No corequisites for this event</Text>
                       ) : (
                         <List>
                           {corequisites.map((coreq, index) => (

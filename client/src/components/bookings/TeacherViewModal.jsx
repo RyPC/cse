@@ -3,6 +3,7 @@ import {
   Button,
   Center,
   Container,
+  Divider,
   Flex,
   IconButton,
   Menu,
@@ -28,6 +29,8 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 import { ClassRSVP } from "../rsvp/classRsvp.jsx"
 import { AiOutlineArrowLeft } from "react-icons/ai";
+import PublishedReviews from "../reviews/classReview";
+
 
 export const TeacherViewModal = ({
   isOpen,
@@ -114,6 +117,7 @@ export const TeacherViewModal = ({
           align="center"
           w="100%"
           position="relative"
+          pt={4}
         >
           <IconButton
             bg = "gray.50"
@@ -160,29 +164,31 @@ export const TeacherViewModal = ({
           </Menu>
         </Flex>
         <ModalBody bg="gray.50">
-          
           <VStack>
-              <Box
-                bg="white"
-                boxShadow="md"
-                borderRadius="lg"
-                h="100%"
-                w="100%"
-                p="4"
-                mt="4"
-                color="white"
-              >
+            <Box
+              bg="white"
+              h="100%"
+              w="100%"
+              mb="4"
+              p="4"
+              boxShadow="md"
+              borderRadius="lg"
+            >
+              
                 <Center>
                   <QRCode
                     id={classData?.id}
-                    type="Class"
-                    date={classData?.date}
-                  >
-                  </QRCode>
+                    type="Event"
+                  ></QRCode>
                 </Center>
-              </Box>
-              <Box width="100%" align="center">
-                <Text fontWeight="bold"> {classData?.rsvpCount ? classData?.rsvpCount : 0} People Enrolled</Text>
+              <Box
+                width="100%"
+                align="center"
+              >
+                <Text fontSize = "1.5rem" fontWeight="bold">
+                  {" "}
+                  {classData?.rsvpCount ? classData?.rsvpCount : 0} People Enrolled
+                </Text>
                 <Button
                   onClick={onRSVPOpen}
                   variant="unstyled"
@@ -194,93 +200,114 @@ export const TeacherViewModal = ({
                 >
                   <u>View Attendees</u>
                 </Button>
-                <ClassRSVP isOpen={isRSVPOpen} onClose={onRSVPClose} card={{id: classData?.id, name: classData?.title, date: classData?.date}}/>
+                
               </Box>
+            </Box>
           </VStack>
 
+          
+        <VStack
+          spacing={4}
+          align="center"
+        >
+          <Flex 
+            pt={4}
+            width="100%" 
+            justifyContent="flex-start"
+          >
+            <Box 
+              border="1px"
+              borderColor="gray.300"
+              borderRadius="2xl"
+              px={4}
+            >
+              <Text fontSize="0.8rem">
+                {tagData[0]?.name ? tagData[0].name.charAt(0).toUpperCase() + tagData[0].name.slice(1) : "No tag available"}
+              </Text>
+            </Box>
+          </Flex>
+          <Box 
+            display="flex"
+            justifyContent="flex-start"
+            width="100%"
+          >
+            <Text 
+              fontSize="1.8rem"
+              fontWeight="bold"
+            >
+              {classData?.title}
+            </Text>
+          </Box>
+          <Box 
+            display="flex"
+            justifyContent="flex-start"
+            width="100%"
+          >
+            <Text fontSize="16px"
+            >
+              Taught by {instructorName} 
+            </Text>
+          </Box>
+
+          <Box 
+            display="flex"
+            justifyContent="flex-start"
+            width="100%"
+          >
+            <Text fontSize="16px"
+            >
+              {classData?.description}
+            </Text>
+          </Box>
+          <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+
+          <Box width="100%">
+            <Text color='purple.700' fontWeight="bold" fontSize="16px">
+              {formatDate(classData?.date)} ·{" "}
+              {classData?.startTime ? formatTime(classData?.startTime): "TBD"} -{" "}
+              {classData?.endTime ? formatTime(classData?.endTime) : "TBD"}
+            </Text>
+          </Box>
+          <Box 
+            display="flex"
+            justifyContent="flex-start"
+            width="100%"
+          >
+            <Text fontSize="16px"
+            >
+              {classData?.location}
+            </Text>
+          </Box>
+          <Divider borderColor="gray.400" borderWidth="1px" my={4} />
           <HStack width="100%" justify="space-between" align="start" mt={4}>
             <Box>
-              <Text fontWeight="bold" mb="0.5rem">Location</Text>
-              <Text>{classData?.location}</Text>
+              <Text fontWeight="bold" mb="0.5rem">Level</Text>
+              <Text fontSize="16px"
+              >
+                {classData?.level.charAt(0).toUpperCase() + classData?.level.slice(1)}
+              </Text>
             </Box>
             <Box>
-              <Text fontWeight="bold" mb="0.5rem">Date</Text>
-              <Text>{formatDate(classData?.date)}</Text>
+              <Text mr="20" fontWeight="bold" mb = "0.5rem">Capacity</Text>
+              <Text fontSize="16px"
+              >
+                {classData?.capacity}
+              </Text>
             </Box>
           </HStack>
+          <Divider borderColor="gray.400" borderWidth="1px" my={4} />
           <Box>
-            <Text
-              fontWeight="bold"
-              mb="1rem"
-            >
-              Time
-            </Text>
-            <Text>
-              {
-                classData && classData.startTime && classData.endTime ?
-                `${formatTime(classData.startTime)} - ${formatTime(classData.endTime)}` : 
-                "-"
-              }
-            </Text>
+            <Text mr="20" fontWeight="bold" mb = "0.5rem">Recommended Prerequisites(s)</Text>
+            <Text>We recommend taking these classes before enrolling in this series.</Text>
           </Box>
           <Box>
-            <Text
-              fontWeight="bold"
-              mb="1rem"
-              >
-              Instructor
-              
-              </Text>
-              <Text>
-              {instructorName || "Unavailable"}
-            </Text>
-          </Box>
-          <Text
-              fontWeight="bold"
-              mb="1rem"
-            >
-              Type
-            </Text>
-            <Text>
-            {tagData.length > 0 
-              ? tagData.map(tag => tag.name).join(", ")
-              : "No tags available"}
-              
-          </Text>
-          <Box>
-            
-          </Box>
-          <Box>
-            <Text
-              fontWeight="bold"
-              mb="1rem"
-            >
-              Description
-            </Text>
-            <Text>{classData?.description}</Text>
-          </Box>
-          <HStack width="100%" justify="space-between" align="start" mt={6}>
-          <Box>
-            <Text fontWeight="bold" mb="0.5rem">Capacity</Text>
-            <Text>{classData?.capacity}</Text>
-          </Box>
-          <Box>
-            <Text fontWeight="bold" mb="0.5rem">Level</Text>
-            <Text>{classData?.level}</Text>
-          </Box>
-        </HStack>
-          <Box>
-            <Text
-              fontWeight="bold"
-              mb="0.5rem"
-            >
-              Performance(s)
-            </Text>
+            <Text mr="20" fontWeight="bold" mb = "0.5rem">Performance(s)</Text>
+            <Text>At the end of the class period, students will perform in a final performance.</Text>
             {performances.map((performance) => (
               <Text key={performance.id}>{performance.title}</Text>
             ))}
-            <Text></Text>
           </Box>
+        </VStack>
         </ModalBody>
       </ModalContent>
     </Modal>
