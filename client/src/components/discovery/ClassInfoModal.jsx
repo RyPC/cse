@@ -37,13 +37,13 @@ function ClassInfoModal({
   isOpenProp,
   title,
   location,
-  description,
-  level,
+  // description,
+  // level,
   date,
   // startTime,
   // endTime,
   id,
-  capacity,
+  // capacity,
   costume,
   isCorequisiteSignUp,
   corequisites,
@@ -60,14 +60,19 @@ function ClassInfoModal({
   const [tags, setTags] = useState([]);
   const [teacherName, setTeacherName] = useState("");
   const [startTime, setStartTime] = useState("");
+  const [description, setDescription] = useState("");
+  const [capacity, setCapacity] = useState("");
+  const [level, setLevel] = useState("");
 
   const getTags = async () => {
-    let tags_arr = []
+    let tags_arr = [];
     const tags = await backend.get(`/class-tags/tags/${id}`)
     console.log("TAGS from GETTAGS")
     console.log(tags.data)
     for (let i=0; i<tags.data.length; i++) {
-      tags_arr.push(tags.data[i].tag)
+      if (!tags_arr.includes(tags.data[i].tag)) {
+        tags_arr.push(tags.data[i].tag)
+      }
     }
     setTags(tags_arr)
   }
@@ -80,13 +85,9 @@ function ClassInfoModal({
   }
 
   const getStartTime = async() => {
-    const data = await backend.get(`/classes/${id}`)
+    const data = await backend.get(`/scheduled-classes/${id}`)
     setStartTime(data.data[0].startTime)
   }
-
-  getTags();
-  getTeacherName();
-  getStartTime();
 
   const enrollInClass = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
@@ -119,11 +120,29 @@ function ClassInfoModal({
     }
   };
 
+  const initClass = async() => {
+    const classData = await backend.get(`/classes/${id}`)
+    setDescription(classData.data[0].description)
+    setCapacity(classData.data[0].capacity)
+    setLevel(classData.data[0].level)
+  }
+
+  const getPerformance = async() => {
+    const performanceData = await backend.get(`/corequisites/${id}`)
+    console.log("performance data")
+    console.log(performanceData.data)
+  }
+
   useEffect(() => {
     if (isOpenProp && !imageSrc) {
       fetch("https://dog.ceo/api/breeds/image/random") // for fun
         .then((res) => res.json())
         .then((data) => setImageSrc(data.message));
+      getTags();
+      getTeacherName();
+      getStartTime();
+      initClass();
+      getPerformance()
     }
   }, [imageSrc, isOpenProp]);
 
