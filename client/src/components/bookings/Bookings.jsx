@@ -985,6 +985,7 @@ const ClassTeacherCard = memo(
     };
     return (
       <Card
+        key={id}
         w={{ base: "100%", md: "30em" }}
         border="1px"
         borderColor="gray.300"
