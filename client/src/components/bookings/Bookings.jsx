@@ -846,7 +846,7 @@ export const Bookings = () => {
                 <HStack justify="space-between">
                   <MdArrowBackIosNew onClick={onCloseModal} />
                   <Heading size="lg">
-                    {tabIndex === 0 ? "Create a Class" : "Create an Event"}
+                    {tabIndex === 0 ? "New Class" : "New Event"}
                   </Heading>{" "}
                   {/* Will add from prop */}
                   <MdMoreHoriz opacity={0} />
