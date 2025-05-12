@@ -911,28 +911,6 @@ export const Bookings = () => {
           type={cardType}
         />
       )}
-      {isTeacher && tabIndex !== 2 && (
-        <Button
-          onClick={() => {
-            setSelectedCard(null);
-            setCurrentModal("create");
-            onOpen();
-          }}
-          position="fixed"
-          bottom="90px"
-          right="20px"
-          borderRadius="50%"
-          width="66px"
-          height="66px"
-          bg="#6B46C1"
-          color="white"
-          _hover={{ bg: "blue.700" }}
-          fontSize="4xl"
-          zIndex={999}
-        >
-          <MdAdd size={40} />
-        </Button>
-      )}
       <Navbar />
     </Box>
   );
