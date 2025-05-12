@@ -86,14 +86,16 @@ function CoReqWarningModal({
     const studentId = userData.data[0].id;
 
     // enroll in corequisite class(es)
-    lstCorequisites.forEach(async (corequisite) => {
-      await backend
-        .post("class-enrollments", {
-          studentId: studentId,
-          classId: corequisite.id,
-        })
-        .then((res) => console.log(res));
-    });
+    await Promise.all(
+      lstCorequisites.map((corequisite) =>
+        backend
+          .post("class-enrollments", {
+            studentId: studentId,
+            classId: corequisite.id,
+          })
+          .then((res) => console.log(res))
+      )
+    );
 
     // enroll in event
     await backend.post("event-enrollments/", {
