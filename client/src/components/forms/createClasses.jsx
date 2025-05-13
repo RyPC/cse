@@ -77,7 +77,7 @@ export const CreateClassForm = memo(
     const validationSchema = {
       title: !title,
       capacity:
-        capacity && (capacity < 0 || capacity >= 2147483647),
+        capacity && (capacity < 0 || capacity > 2147483647),
     };
     const validateForm = () => {
       if (validationSchema.title) {
@@ -108,7 +108,7 @@ export const CreateClassForm = memo(
         location: location ?? "",
         description: description ?? "",
         level: level ?? "",
-        capacity: capacity === "" ? 0 : capacity,
+        capacity: capacity === "" ? 0 : Math.min(parseInt(capacity), 2147483647),
         classType: classType ?? "",
         performance: performance ?? "",
         isDraft,
@@ -463,7 +463,7 @@ export const CreateClassForm = memo(
 
             <FormControl isInvalid={isDraft && validationSchema.capacity}>
               <FormLabel id="capacity">Capacity</FormLabel>
-              <NumberInput min={0}>
+              <NumberInput min={0} max={2147483647} clampValueOnBlur>
                 <NumberInputField
                   required
                   value={capacity}
@@ -588,6 +588,7 @@ export const CreateClassForm = memo(
                 _hover={{ bg: "#5D2E8C" }}
                 onClick={() => {
                   setIsDraft(false);
+
                 }}
               >
                 Publish
