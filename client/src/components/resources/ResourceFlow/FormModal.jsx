@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Badge,
@@ -11,7 +11,6 @@ import {
   Input,
   Modal,
   ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -24,17 +23,9 @@ import {
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { IoCloseSharp } from "react-icons/io5";
 
+import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { ProgressBar } from "./ProgressBar";
 import { UploadComponent } from "./UploadComponent";
-
-const TAGS = [
-  "Classical Ballet",
-  "K-pop",
-  "Hip-hop",
-  "Contemporary",
-  "Tumbling",
-  "Folklore",
-];
 
 export const FormModal = ({
   isOpen,
@@ -48,15 +39,26 @@ export const FormModal = ({
   setLink,
   s3URL,
   setS3URL,
+  tags,
+  setTags,
+  allTags,
 }) => {
-  const [tagFilter, setTagFilter] = useState(
-    Object.fromEntries(TAGS.map((tag) => [tag, false]))
-  );
+  const { backend } = useBackendContext();
+
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Add/remove tags from the tags array
   const handleClassFilterToggle = (tag) => () => {
-    setTagFilter((prev) => ({ ...prev, [tag]: !prev[tag] }));
+    const tagId = allTags[tag];
+    setTags((prev) => {
+      if (prev.includes(tagId)) {
+        return prev.filter((id) => id !== tagId);
+      } else {
+        return [...prev, tagId];
+      }
+    });
   };
 
   const isLink = (link) => {
@@ -196,15 +198,17 @@ export const FormModal = ({
                 flexWrap="wrap"
                 width="100%"
               >
-                {TAGS.map((tag, _) => (
+                {Object.keys(allTags).map((tag) => (
                   <Badge
                     key={tag}
                     onClick={handleClassFilterToggle(tag)}
                     rounded="full"
-                    border={tagFilter[tag] ? "none" : "1px solid"}
+                    border={tags.includes(allTags[tag]) ? "none" : "1px solid"}
                     borderColor="gray.300"
-                    color={tagFilter[tag] ? "purple.800" : "gray.600"}
-                    bg={tagFilter[tag] ? "purple.100" : "white"}
+                    color={
+                      tags.includes(allTags[tag]) ? "purple.800" : "gray.600"
+                    }
+                    bg={tags.includes(allTags[tag]) ? "purple.100" : "white"}
                     textTransform="none"
                     cursor="pointer"
                     transition="all 0.2s ease-in-out"
@@ -212,11 +216,14 @@ export const FormModal = ({
                     <HStack>
                       <Text
                         p={1}
-                        fontWeight={tagFilter[tag] ? "bold" : "normal"}
+                        fontWeight={
+                          tags.includes(allTags[tag]) ? "bold" : "normal"
+                        }
                       >
-                        {tag}
+                        {tag.charAt(0).toUpperCase() +
+                          tag.slice(1).toLowerCase()}
                       </Text>
-                      {tagFilter[tag] && (
+                      {tags.includes(allTags[tag]) && (
                         <IconButton
                           bg="transparent"
                           aria-label="Close"
