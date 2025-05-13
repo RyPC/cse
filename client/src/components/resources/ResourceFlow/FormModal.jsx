@@ -70,6 +70,54 @@ export const FormModal = ({
     return !!pattern.test(link);
   };
 
+  const fetchS3URL = async () => {
+    try {
+      const URLResponse = await backend.get("/s3/url");
+      console.log(URLResponse);
+      return URLResponse.data.url;
+    } catch (error) {
+      console.error("Error fetching S3 URL:", error);
+    }
+  };
+
+  const uploadFile = async () => {
+    if (!file) {
+      setMessage("Please select file to upload");
+      return;
+    }
+
+    setUploading(true);
+    setMessage("Uploading...");
+
+    try {
+      // Get S3 URL from server backend
+      const url = await fetchS3URL();
+
+      console.log(setS3URL);
+
+      // Upload file to S3 bucket
+      const uploadResponse = await fetch(url, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      if (uploadResponse.ok) {
+        setMessage("File uploaded successfully!");
+        setS3URL["setS3URL"](url);
+      } else {
+        throw new Error("Failed to upload file.");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      setMessage("Upload failed, please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -99,34 +147,44 @@ export const FormModal = ({
         <ModalBody mt={4}>
           <form>
             <FormControl>
-              <FormLabel>Enter title</FormLabel>
+              <FormLabel mb={1}>Enter title</FormLabel>
               <Input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Title"
+                border="none"
+                borderRadius={0}
+                boxShadow="0px 1px 3px rgba(0, 0, 0, 0.1)"
               />
             </FormControl>
-            <FormControl>
+            <br />
+            <FormControl mb={1}>
               <FormLabel>Enter a description</FormLabel>
               <Textarea
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Description"
+                boxShadow="0px 1px 3px rgba(0, 0, 0, 0.1)"
               />
             </FormControl>
-            <FormControl>
+            <br />
+            <FormControl mb={1}>
               <FormLabel>Enter a link</FormLabel>
               <Input
                 required
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
                 placeholder="Link"
+                border="none"
+                borderRadius={0}
+                boxShadow="0px 1px 3px rgba(0, 0, 0, 0.1)"
               />
             </FormControl>
-            <FormControl>
+            <br />
+            <FormControl mb={1}>
               <FormLabel>Select tags</FormLabel>
               <Flex
                 gap={3}
@@ -176,7 +234,8 @@ export const FormModal = ({
                 ))}
               </Flex>
             </FormControl>
-            <FormControl>
+            <br />
+            <FormControl mb={1}>
               <FormLabel>Select thumbnail</FormLabel>
               <UploadComponent setS3URL={setS3URL} />
             </FormControl>
