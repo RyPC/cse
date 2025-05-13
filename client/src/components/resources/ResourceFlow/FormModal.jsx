@@ -52,7 +52,9 @@ export const FormModal = ({
   const [tagFilter, setTagFilter] = useState(
     Object.fromEntries(TAGS.map((tag) => [tag, false]))
   );
-
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
   const handleClassFilterToggle = (tag) => () => {
     setTagFilter((prev) => ({ ...prev, [tag]: !prev[tag] }));
   };
@@ -83,7 +85,7 @@ export const FormModal = ({
   const uploadFile = async () => {
     if (!file) {
       setMessage("Please select file to upload");
-      return;
+      return false;
     }
 
     setUploading(true);
@@ -107,12 +109,15 @@ export const FormModal = ({
       if (uploadResponse.ok) {
         setMessage("File uploaded successfully!");
         setS3URL["setS3URL"](url);
+        return true;
       } else {
         throw new Error("Failed to upload file.");
+        return false;
       }
     } catch (error) {
       console.error("Upload error:", error);
       setMessage("Upload failed, please try again.");
+      return false;
     } finally {
       setUploading(false);
     }
@@ -237,7 +242,11 @@ export const FormModal = ({
             <br />
             <FormControl mb={1}>
               <FormLabel>Select thumbnail</FormLabel>
-              <UploadComponent setS3URL={setS3URL} />
+              <UploadComponent
+                file={file}
+                setFile={setFile}
+                message={message}
+              />
             </FormControl>
             <br />
           </form>
@@ -251,14 +260,19 @@ export const FormModal = ({
               bg="purple.500"
               color="white"
               px={16}
-              onClick={() => {
+              isDisabled={uploading}
+              onClick={async () => {
                 if (title === "" || description === "" || link === "") {
-                  alert("Please fill out every fields");
+                  setMessage("Please fill out every fields");
                 } else if (!isLink(link)) {
-                  alert("Please enter a valid link");
-                } else if (s3URL === "") {
-                  alert("Please upload a file");
+                  setMessage("Please enter a valid link");
+                } else if (!file) {
+                  setMessage("Please select a file");
                 } else {
+                  const uploaded = await uploadFile();
+                  if (!uploaded) {
+                    return;
+                  }
                   setCurrentModal("card");
                 }
               }}

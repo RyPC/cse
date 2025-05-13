@@ -1,18 +1,10 @@
 import { useState } from "react";
 
-import { Box, Button, Flex, Icon, Input, Text } from "@chakra-ui/react";
+import { Box, Button, Icon, Input, Text } from "@chakra-ui/react";
 
 import { FiPaperclip } from "react-icons/fi";
 
-import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
-
-export const UploadComponent = (setS3URL) => {
-  const { backend } = useBackendContext();
-
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
-
+export const UploadComponent = ({ file, setFile, message }) => {
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
