@@ -5,6 +5,8 @@ import {
   Button,
   Flex,
   Input,
+  NumberInput,
+  NumberInputField,
   Select,
   Text,
   Textarea,
@@ -74,9 +76,20 @@ export const CreateEvent = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateDraft = () => {
+    const newErrors = {};
+
+    // Validate required fields
+    if (!formData.title) newErrors.title = "Title is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // add in call to events router here!
   const handleSubmit = async (isDraft) => {
-    if (!isDraft || !validateForm()) return;
+    if (!isDraft && !validateForm()) { console.log("what the heck", errors); return;}
+    if (isDraft && !validateDraft()) { return; }
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
@@ -103,7 +116,7 @@ export const CreateEvent = ({
         capacity:
           formData.capacity === "" &&
           (parseInt(formData.capacity) < 0 ||
-            parseInt(formData.capacity) >= 2147483647)
+            parseInt(formData.capacity) > 2147483647)
             ? 0
             : formData.capacity,
         is_draft: isDraft,
@@ -316,12 +329,18 @@ export const CreateEvent = ({
 
       <Box>
         <Text>Capacity</Text>
-        <Input
+        <NumberInput min={0} max={2147483647}>
+          <NumberInputField 
+          bg='white' color='black' value={formData.capacity} 
+          onChange={(valueString) => setFormData((prev) => ({ ...prev, capacity: Math.min(parseInt(valueString.target.value), 2147483647) }))} 
+          required/>
+        </NumberInput>
+        {/* <Input
           type="number"
           name="capacity"
           value={formData.capacity}
           onChange={handleChange}
-        />
+        /> */}
       </Box>
 
       <Box>
