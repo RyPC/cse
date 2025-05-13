@@ -57,11 +57,11 @@ export const UploadFileModal = ({
               colorScheme="gray"
               mr={3}
               onClick={() => {
-                // if (s3URL === "") {
-                //   alert("You must upload a file first!");
-                // } else {
-                setCurrentModal("card");
-                // }
+                if (s3URL === "") {
+                  alert("You must upload a file first!");
+                } else {
+                  setCurrentModal("card");
+                }
               }}
             >
               Next

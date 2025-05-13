@@ -61,19 +61,18 @@ export const SelectClassModal = ({
           ...cls,
           rsvp: cls.rsvp ?? 0,
         }));
-        console.log(formattedClasses);
-        const classEnrollmentResp = await backend.get("/class-enrollments");
-        const classEnrollmentRespData = classEnrollmentResp.data;
 
-        for (let i = 0; i < classEnrollmentRespData.length; i++) {
-          const classEnrollment = classEnrollmentRespData[i];
-          //  console.log(classEnrollment)
-          for (let j = 0; j < formattedClasses.length; j++) {
-            if (formattedClasses[j].id === classEnrollment.classId) {
-              formattedClasses[j].rsvp++;
-            }
-          }
-        }
+        // const classEnrollmentResp = await backend.get("/class-enrollments");
+        // const classEnrollmentRespData = classEnrollmentResp.data;
+        // for (let i = 0; i < classEnrollmentRespData.length; i++) {
+        //   const classEnrollment = classEnrollmentRespData[i];
+        //   //  console.log(classEnrollment)
+        //   for (let j = 0; j < formattedClasses.length; j++) {
+        //     if (formattedClasses[j].id === classEnrollment.classId) {
+        //       formattedClasses[j].rsvp++;
+        //     }
+        //   }
+        // }
 
         // setClassesObject(temp)
         // console.log(classesObject)
@@ -191,7 +190,7 @@ export const SelectClassModal = ({
                       </Text>
                     </Box>
                     <HStack>
-                      <Box px="20px">{getIcon()}</Box>
+                      <Box px="20px">{getIcon(cls.tagId)}</Box>
                       <VStack
                         alignItems="flex-start"
                         py="1rem"

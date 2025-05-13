@@ -34,7 +34,7 @@ export const CardModal = ({
   ajax,
 }) => {
   const onGoBack = () => {
-    setCurrentModal("upload-photo");
+    setCurrentModal("form");
   };
 
   return (
@@ -58,14 +58,25 @@ export const CardModal = ({
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Card maxW="sm">
+          <Card
+            maxW="sm"
+            bg="gray.50"
+            border="0.5px solid"
+            borderColor="gray.300"
+          >
             <CardBody>
               <Image
                 src={s3URL}
                 alt=""
                 borderRadius="lg"
               />
-              <Heading>{title}</Heading>
+              <Heading
+                fontSize="18px"
+                color="gray.700"
+                fontWeight={500}
+              >
+                {title}
+              </Heading>
               <p>{description}</p>
               <p>Link: {link}</p>
             </CardBody>

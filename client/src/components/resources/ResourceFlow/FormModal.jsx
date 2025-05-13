@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 import {
+  Badge,
   Button,
   Flex,
   FormControl,
@@ -19,9 +22,19 @@ import {
 } from "@chakra-ui/react";
 
 import { AiOutlineArrowLeft } from "react-icons/ai";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
 
 import { ProgressBar } from "./ProgressBar";
+import { UploadComponent } from "./UploadComponent";
+
+const TAGS = [
+  "Classical Ballet",
+  "K-pop",
+  "Hip-hop",
+  "Contemporary",
+  "Tumbling",
+  "Folklore",
+];
 
 export const FormModal = ({
   isOpen,
@@ -33,7 +46,17 @@ export const FormModal = ({
   setDescription,
   link,
   setLink,
+  s3URL,
+  setS3URL,
 }) => {
+  const [tagFilter, setTagFilter] = useState(
+    Object.fromEntries(TAGS.map((tag) => [tag, false]))
+  );
+
+  const handleClassFilterToggle = (tag) => () => {
+    setTagFilter((prev) => ({ ...prev, [tag]: !prev[tag] }));
+  };
+
   const isLink = (link) => {
     const pattern = new RegExp(
       "^(https?:\\/\\/)?" + // protocol
@@ -73,32 +96,89 @@ export const FormModal = ({
           </Flex>
           <ProgressBar currStep={2} />
         </ModalHeader>
-        <ModalBody>
+        <ModalBody mt={4}>
           <form>
             <FormControl>
-              <FormLabel>Resource Title</FormLabel>
+              <FormLabel>Enter title</FormLabel>
               <Input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                placeholder="Title"
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Enter a description</FormLabel>
               <Textarea
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description"
               />
             </FormControl>
             <FormControl>
-              <FormLabel>Media Link</FormLabel>
+              <FormLabel>Enter a link</FormLabel>
               <Input
                 required
                 value={link}
                 onChange={(e) => setLink(e.target.value)}
+                placeholder="Link"
               />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Select tags</FormLabel>
+              <Flex
+                gap={3}
+                flexWrap="wrap"
+                width="100%"
+              >
+                {TAGS.map((tag, _) => (
+                  <Badge
+                    key={tag}
+                    onClick={handleClassFilterToggle(tag)}
+                    rounded="full"
+                    border={tagFilter[tag] ? "none" : "1px solid"}
+                    borderColor="gray.300"
+                    color={tagFilter[tag] ? "purple.800" : "gray.600"}
+                    bg={tagFilter[tag] ? "purple.100" : "white"}
+                    textTransform="none"
+                    cursor="pointer"
+                    transition="all 0.2s ease-in-out"
+                  >
+                    <HStack>
+                      <Text
+                        p={1}
+                        fontWeight={tagFilter[tag] ? "bold" : "normal"}
+                      >
+                        {tag}
+                      </Text>
+                      {tagFilter[tag] && (
+                        <IconButton
+                          bg="transparent"
+                          aria-label="Close"
+                          icon={
+                            <IoCloseSharp
+                              color="purple.800"
+                              opacity={0.5}
+                            />
+                          }
+                          variant="unstyled"
+                          minW={0}
+                          h="auto"
+                          p={0}
+                          m={0}
+                          ml={-2}
+                        />
+                      )}
+                    </HStack>
+                  </Badge>
+                ))}
+              </Flex>
+            </FormControl>
+            <FormControl>
+              <FormLabel>Select thumbnail</FormLabel>
+              <UploadComponent setS3URL={setS3URL} />
             </FormControl>
             <br />
           </form>
@@ -109,14 +189,18 @@ export const FormModal = ({
             sx={{ maxWidth: "100%", marginX: "auto" }}
           >
             <Button
-              colorScheme="gray"
+              bg="purple.500"
+              color="white"
+              px={16}
               onClick={() => {
-                if (title == "" || description == "" || link == "") {
+                if (title === "" || description === "" || link === "") {
                   alert("Please fill out every fields");
                 } else if (!isLink(link)) {
                   alert("Please enter a valid link");
+                } else if (s3URL === "") {
+                  alert("Please upload a file");
                 } else {
-                  setCurrentModal("select-tag");
+                  setCurrentModal("card");
                 }
               }}
             >

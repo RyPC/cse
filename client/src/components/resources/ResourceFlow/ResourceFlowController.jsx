@@ -193,6 +193,8 @@ export const ControllerModal = ({ autoOpen = true }) => {
           setDescription={setDescription}
           link={link}
           setLink={setLink}
+          s3URL={s3URL}
+          setS3URL={setS3URL}
         />
       );
     }
