@@ -12,6 +12,7 @@ import profileImg from "./profile_img.svg";
 import resourcesImg from "./resources_img.svg";
 import dashboardImg from "./dashboard_img.svg";
 export const Navbar = () => {
+  const { role: user_role } = useAuthContext();
   const { role } = useRoleContext();
   console.log("role from navbar:", role);
 
@@ -49,7 +50,7 @@ export const Navbar = () => {
             src={profileImg}
           ></Image>
         </Link>
-        {role !== "teacher" && (
+        {(user_role !== "teacher" || role === "admin") && (
           <Link to="/discovery">
             <Image
               maxWidth="2rem"
