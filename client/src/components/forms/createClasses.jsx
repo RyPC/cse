@@ -77,7 +77,7 @@ export const CreateClassForm = memo(
     const validationSchema = {
       title: !title,
       capacity:
-        capacity && (capacity < 0 || capacity > Number.MAX_SAFE_INTEGER),
+        capacity && (capacity < 0 || capacity >= 2147483647),
     };
     const validateForm = () => {
       if (validationSchema.title) {

@@ -103,7 +103,7 @@ export const CreateEvent = ({
         capacity:
           formData.capacity === "" &&
           (parseInt(formData.capacity) < 0 ||
-            parseInt(formData.capacity) > Number.MAX_SAFE_INTEGER)
+            parseInt(formData.capacity) >= 2147483647)
             ? 0
             : formData.capacity,
         is_draft: isDraft,
