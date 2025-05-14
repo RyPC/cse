@@ -24,7 +24,10 @@ import {
 import { IoIosCheckmarkCircle } from "react-icons/io";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { calculateRecurringDates } from "../../utils/formatDateTime";
+import {
+  calculateRecurringDates,
+  getDefaultDate,
+} from "../../utils/formatDateTime";
 import SaveClass from "./modals/saveClass";
 import SaveClassAsDraftModal from "./modals/saveClassAsDraft";
 
@@ -71,20 +74,41 @@ export const CreateClassForm = memo(
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isDraft, setIsDraft] = useState(false);
 
+    const validationSchema = {
+      title: !title,
+      capacity:
+        capacity && (capacity < 0 || capacity > 2147483647),
+    };
+    const validateForm = () => {
+      if (validationSchema.title) {
+        window.location.href = "#title";
+        return false;
+      }
+      if (validationSchema.capacity) {
+        window.location.href = "#capacity";
+        return false;
+      }
+      return true;
+    };
     const postClass = async () => {
+      if (date === "") {
+        setDate(getDefaultDate());
+      }
+      if (endDate === "") {
+        setEndDate(getDefaultDate());
+      }
+      console.log(date, endDate);
       const classDates = calculateRecurringDates(
         date,
         endDate,
         recurrencePattern
       );
 
-      
-
       const baseClassBody = {
         location: location ?? "",
         description: description ?? "",
         level: level ?? "",
-        capacity: capacity === "" ? 0 : capacity,
+        capacity: capacity === "" ? 0 : Math.min(parseInt(capacity), 2147483647),
         classType: classType ?? "",
         performance: performance ?? "",
         isDraft,
@@ -93,8 +117,7 @@ export const CreateClassForm = memo(
         recurrence_pattern: recurrencePattern,
         start_date: date,
         end_date: recurrencePattern !== "none" ? endDate : date,
-        instructor: selectedInstructor
-
+        instructor: selectedInstructor,
       };
 
       if (modalData) {
@@ -105,14 +128,16 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
-        
+
         // Add teacher to classes-taught on form post
-        const res = await backend
-          .post(`/classes-taught/`, { "classId": modalData.classId, "teacherId": selectedInstructor}, {
-          });
-          // .then((response) =>
-          //   console.log(`Added teacher to classes-taught ${response}`))
-          // .catch((error) => console.log(error));
+        const res = await backend.post(
+          `/classes-taught/`,
+          { classId: modalData.classId, teacherId: selectedInstructor },
+          {}
+        );
+        // .then((response) =>
+        //   console.log(`Added teacher to classes-taught ${response}`))
+        // .catch((error) => console.log(error));
         console.log("Added teacher to classes-taught:", res);
         // For recurring classes, delete all existing scheduled classes and create new ones
         if (
@@ -192,9 +217,11 @@ export const CreateClassForm = memo(
         const response = await backend.post("/classes", classBody);
         console.log("Class created:", response);
         const classId = response?.data[0]?.id;
-        const res = await backend
-          .post(`/classes-taught/`, { classId: classId, teacherId: selectedInstructor}, {
-          });
+        const res = await backend.post(
+          `/classes-taught/`,
+          { classId: classId, teacherId: selectedInstructor },
+          {}
+        );
         console.log("Added teacher to classes-taught:", res);
 
         for (const classDate of classDates) {
@@ -275,8 +302,8 @@ export const CreateClassForm = memo(
               onConfirmationOpen();
             }}
           >
-            <FormControl>
-              <FormLabel fontWeight="bold">Class Title</FormLabel>
+            <FormControl isInvalid={isDraft && validationSchema.title}>
+              <FormLabel id="title" fontWeight="bold">Class Title</FormLabel>
               <Input
                 placeholder = "Class Title"
                 _placeholder={{ color: 'gray.400' }}
@@ -291,6 +318,11 @@ export const CreateClassForm = memo(
                 color="black"
                 
               />
+              {isDraft && validationSchema.title && (
+                <FormHelperText color="red.500">
+                  Class title is required
+                </FormHelperText>
+              )}
             </FormControl>
 
             <FormControl>
@@ -454,7 +486,6 @@ export const CreateClassForm = memo(
                   </option>
                 ))}
               </Select>
-
             </FormControl>
 
             <FormControl mt={4}>
@@ -472,15 +503,10 @@ export const CreateClassForm = memo(
               />
             </FormControl>
             <HStack>
-              <FormControl>
-                <FormLabel fontWeight="bold">Capacity</FormLabel>
-                <NumberInput min={0}>
+              <FormControl isInvalid={isDraft && validationSchema.capacity}>
+                <FormLabel id="capacity">Capacity</FormLabel>
+                <NumberInput min={0} max={2147483647} clampValueOnBlur>
                   <NumberInputField
-                    placeholder = "Capacity"
-                    _placeholder={{ color: 'gray.400' }}
-                    border = '1px'
-                    borderColor="gray.200"
-                    boxShadow="sm"
                     required
                     value={capacity}
                     onChange={(e) => setCapacity(e.target.value)}
@@ -488,6 +514,9 @@ export const CreateClassForm = memo(
                     color="black"
                   />
                 </NumberInput>
+                {isDraft && validationSchema.capacity && (
+                  <FormHelperText color="red.500">Ain't no way</FormHelperText>
+                )}
               </FormControl>
               <FormControl>
                 <FormLabel fontWeight="bold">Level</FormLabel>
@@ -593,8 +622,10 @@ export const CreateClassForm = memo(
                   paddingRight="10%"
                   paddingLeft="10%"
                   onClick={() => {
-                    onOpen();
                     setIsDraft(true);
+                    if (validateForm()) {
+                      onOpen();
+                    }
                   }}
                   bg="gray.100"
                   color="black"
@@ -611,7 +642,10 @@ export const CreateClassForm = memo(
                 color="white"
                 border="1px solid black"
                 _hover={{ bg: "#5D2E8C" }}
-                onClick={()=>{setIsDraft(false)}}
+                onClick={() => {
+                  setIsDraft(false);
+
+                }}
               >
                 Publish
               </Button>
@@ -640,12 +674,16 @@ export const CreateClassForm = memo(
         <SaveClassAsDraftModal
           isOpen={isOpen}
           onClose={onClose}
-          postClass={() => {postClass().then(reloadCallback)}}
+          postClass={() => {
+            postClass().then(reloadCallback);
+          }}
         />
         <SaveClass
           isOpen={isConfirmationOpen}
           onClose={onConfirmationClose}
-          postClass={() => {postClass().then(reloadCallback)}}
+          postClass={() => {
+            postClass().then(reloadCallback);
+          }}
         />
       </Container>
     );

@@ -6,6 +6,19 @@ export const formatDate = (dateString: string) => {
   });
 };
 
+// Default date constant (Unix epoch)
+export const DEFAULT_DATE = "1970-01-01";
+
+// Function to get a default date value
+export const getDefaultDate = (dateString?: string) => {
+  if (!dateString) return DEFAULT_DATE;
+  return dateString;
+};
+
+export const isDefaultDate = (date: string) => {
+  return date.split("T")[0] === "1970-01-01";
+};
+
 export const formatTime = (timeString: string) => {
   if (!timeString) return "";
   return new Date(`1970-01-01T${timeString}`).toLocaleTimeString("en-US", {

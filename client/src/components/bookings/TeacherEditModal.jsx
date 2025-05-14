@@ -22,7 +22,10 @@ import {
 import { BsChevronLeft } from "react-icons/bs";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { calculateRecurringDates } from "../../utils/formatDateTime";
+import {
+  calculateRecurringDates,
+  isDefaultDate,
+} from "../../utils/formatDateTime";
 
 const stringToDate = (dateString) => {
   // Split string and convert to numbers
@@ -227,12 +230,18 @@ export const TeacherEditModal = ({
   const [classTitle, setClassTitle] = useState(classData?.title);
   const [location, setLocation] = useState(classData?.location);
   const [startDate, setStartDate] = useState(
-    classData?.startDate
-      ? formatDate(classData.startDate)
-      : formatDate(classData.date)
+    isDefaultDate(classData?.startDate) || isDefaultDate(classData?.date)
+      ? ""
+      : classData?.startDate
+        ? formatDate(classData.startDate)
+        : formatDate(classData.date)
   );
   const [endDate, setEndDate] = useState(
-    classData?.endDate ? formatDate(classData.endDate) : ""
+    isDefaultDate(classData?.endDate)
+      ? ""
+      : classData?.endDate
+        ? formatDate(classData.endDate)
+        : ""
   );
   const [startTime, setStartTime] = useState(classData?.startTime);
   const [endTime, setEndTime] = useState(classData?.endTime);
@@ -262,7 +271,7 @@ export const TeacherEditModal = ({
   const onEndTimeChange = (e) => setEndTime(e.target.value);
 
   useEffect(() => {
-    console.log(classData);
+    console.log();
   }, []);
   return (
     <Modal

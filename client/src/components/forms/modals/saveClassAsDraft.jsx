@@ -32,7 +32,8 @@ const SaveClassAsDraftModal = ({ isOpen, onClose, postClass }) => {
             width="100%"
           >
             <Button
-              colorScheme="blue"
+              colorScheme="purple"
+              bgColor="purple.600"
               mr={3}
               onClick={onClose}
             >
