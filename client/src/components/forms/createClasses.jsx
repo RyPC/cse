@@ -504,7 +504,7 @@ export const CreateClassForm = memo(
             </FormControl>
             <HStack>
               <FormControl isInvalid={isDraft && validationSchema.capacity}>
-                <FormLabel id="capacity">Capacity</FormLabel>
+                <FormLabel id="capacity" fontWeight={"bold"}>Capacity</FormLabel>
                 <NumberInput min={0} max={2147483647} clampValueOnBlur>
                   <NumberInputField
                     required

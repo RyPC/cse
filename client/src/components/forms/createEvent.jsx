@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Flex,
+  FormControl,
   HStack,
   Input,
   NumberInput,
@@ -280,41 +281,37 @@ export const CreateEvent = ({
         {errors.date && <Text color="red.500">{errors.date}</Text>}
       </Box>
       
-      <Flex
-        alignItems="center"
-      >
-        <HStack align="flex-start" spacing={8}>
-          <Box>
-            <Text fontWeight="bold">Start Time</Text>
-            <Input
-              border="1px"
-              borderColor="gray.200"
-              boxShadow="sm"
-              type="time"
-              name="startTime"
-              value={formData.startTime}
-              onChange={handleChange}
-              isInvalid={errors.startTime}
-            />
-            {errors.startTime && <Text color="red.500">{errors.startTime}</Text>}
-          </Box>
+      <HStack align="flex-start">
+        <FormControl>
+          <Text fontWeight="bold">Start Time</Text>
+          <Input
+            border="1px"
+            borderColor="gray.200"
+            boxShadow="sm"
+            type="time"
+            name="startTime"
+            value={formData.startTime}
+            onChange={handleChange}
+            isInvalid={errors.startTime}
+          />
+          {errors.startTime && <Text color="red.500">{errors.startTime}</Text>}
+        </FormControl>
 
-          <Box>
-            <Text fontWeight="bold">End Time</Text>
-            <Input
-              border="1px"
-              borderColor="gray.200"
-              boxShadow="sm"
-              type="time"
-              name="endTime"
-              value={formData.endTime}
-              onChange={handleChange}
-              isInvalid={errors.endTime}
-            />
-            {errors.endTime && <Text color="red.500">{errors.endTime}</Text>}
-          </Box>
-        </HStack>
-    </Flex>
+        <FormControl>
+          <Text fontWeight="bold">End Time</Text>
+          <Input
+            border="1px"
+            borderColor="gray.200"
+            boxShadow="sm"
+            type="time"
+            name="endTime"
+            value={formData.endTime}
+            onChange={handleChange}
+            isInvalid={errors.endTime}
+          />
+          {errors.endTime && <Text color="red.500">{errors.endTime}</Text>}
+        </FormControl>
+      </HStack>
           
 
       <Box>

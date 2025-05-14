@@ -312,6 +312,7 @@ export const TeacherViewModal = ({
       </ModalContent>
       </ModalOverlay>
     </Modal>
+    <ClassRSVP isOpen={isRSVPOpen} onClose={onRSVPClose} card={{id: classData?.id, name: classData?.title, date: classData?.date}}/>
     </>
   );
 };
