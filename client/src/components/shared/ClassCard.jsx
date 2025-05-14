@@ -73,6 +73,9 @@ export const ClassCard = ({
   return (
     <>
     <Box 
+      display="flex"
+      justifyContent="center"
+      w={{ base: "100%", md: "30em" }}
       onClick={() => {
         if (pathname === "/bookings") {
           onClick();
@@ -103,13 +106,17 @@ export const ClassCard = ({
             fontSize="sm"
           >
             <Text>
-              {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
+              {attendeeCount} {parseInt(attendeeCount) === 1 ? "Person" : "People"} Enrolled
             </Text>
           </HStack>
         </CardHeader>
         <CardBody>
+          <Box 
+            display="flex" 
+            justifyContent="start"
+          >
           <VStack
-            align="stretch"
+            alignItems="flex-start"
             spacing={2}
           >
             <Text
@@ -119,21 +126,18 @@ export const ClassCard = ({
               {title}
             </Text>
             
-            
             <HStack>
-              <FaClock size={14} />
+              <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
+            </HStack>
+            <HStack>
               <Text fontSize="sm">
-                {formattedDate
-                  ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
-                  : "No date"}
+                  {formattedDate
+                    ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
+                    : "No date"}
               </Text>
             </HStack>
-
-            <HStack>
-              <FaMapMarkerAlt size={14} />
-              <Text fontSize="sm">{location}</Text>
-            </HStack>
           </VStack>
+          </Box>
         </CardBody>
 
         <CardFooter

@@ -30,6 +30,7 @@ import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 import { ClassRSVP } from "../rsvp/classRsvp.jsx"
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import PublishedReviews from "../reviews/classReview";
+import { MdMoreHoriz } from "react-icons/md";
 
 
 export const TeacherViewModal = ({
@@ -106,38 +107,36 @@ export const TeacherViewModal = ({
   const { isOpen: isRSVPOpen, onOpen: onRSVPOpen, onClose: onRSVPClose } = useDisclosure();
 
   return (
+    <>
     <Modal
       size="full"
       isOpen={isOpen}
       onClose={onClose}
     >
-      <ModalOverlay />
+      <ModalOverlay>
       <ModalContent>
-        <Flex
-          align="center"
-          w="100%"
-          position="relative"
-          pt={4}
-        >
-          <IconButton
+        <ModalHeader>
+        <HStack justify="space-between">
+          <AiOutlineArrowLeft cursor="pointer" onClick={onClose}/>
+          {/* <IconButton
             bg = "gray.50"
             onClick={onClose}
             icon={<AiOutlineArrowLeft />}
             position="absolute"
             left={5}
             backgroundColor="white"
-          />
+          /> */}
           <Menu bg = "gray.50">
             <MenuButton
               bg = "gray.50"
-              as={Button}
-              position="absolute"
-              right={5}
-            >
-              ...
-            </MenuButton>
+              as={IconButton}
+              // position="absolute"
+              // right={5}
+              icon={<MdMoreHoriz/>}
+            />
+              {/* ... */}
             <MenuList
-              backgroundColor="gray.50"
+              backgroundColor="gray.100"
               p={0}
               minW="auto"
               w="110px" 
@@ -147,8 +146,6 @@ export const TeacherViewModal = ({
                 value="edit"
                 onClick={enterEditMode}
                 background="transparent"
-                
-                
               >
                 <BiSolidEdit style={{ marginRight: "6px" }} />Edit
               </MenuItem>
@@ -162,7 +159,8 @@ export const TeacherViewModal = ({
               </MenuItem>
             </MenuList>
           </Menu>
-        </Flex>
+        </HStack>
+        </ModalHeader>
         <ModalBody bg="gray.50">
           <VStack>
             <Box
@@ -312,6 +310,8 @@ export const TeacherViewModal = ({
         </VStack>
         </ModalBody>
       </ModalContent>
+      </ModalOverlay>
     </Modal>
+    </>
   );
 };

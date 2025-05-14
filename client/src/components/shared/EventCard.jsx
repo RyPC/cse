@@ -90,9 +90,11 @@ export const EventCard = ({
   return (
     <>
     <Box 
-         w={{ base: "100%", md: "30em" }}
-         onClick={handleClickModal} 
-         cursor="pointer">
+      display="flex"
+      justifyContent="center"
+      w={{ base: "100%", md: "30em" }}
+      onClick={handleClickModal} 
+      cursor="pointer">
       <Card
         w={{ base: "90%", md: "30em" }}
         border = "1px"
@@ -100,7 +102,6 @@ export const EventCard = ({
         bg="gray.50"
       >
         <CardHeader pb={0}>
-
           <HStack
             position="absolute"
             height = "15%"
@@ -116,16 +117,16 @@ export const EventCard = ({
             fontSize="sm"
           >
             <Text>
-              {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
+              {attendeeCount} {parseInt(attendeeCount) === 1 ? "Person" : "People"} Enrolled
             </Text>
           </HStack>
         </CardHeader>
         <CardBody>
           <Box
             display="flex"
-            justifyContent="center"> 
+            justifyContent="start"> 
           <VStack
-            alignItems="flex-start"
+            alignItems="self-start"
             spacing={2}
           >
             <Text
@@ -136,14 +137,17 @@ export const EventCard = ({
           </Text>
 
             <HStack>
-              <Text fontSize="1.2rem">{location}</Text>
+              <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
             </HStack>
-
             <HStack>
               <Text fontSize="sm">
-                {formattedDate} · {formattedStartTime} - {formattedEndTime}
+                  {formattedDate
+                    ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
+                    : "No date"}
               </Text>
             </HStack>
+
+
           </VStack>
           </Box>
         </CardBody>

@@ -615,8 +615,9 @@ export const Bookings = () => {
                 width="100%"
                 my={5}
                 mb={20}
+                justifyContent="center"
               >
-                {isTeacher && (
+                {role !== "student" && (
                   <Box
                     w={{ base: "90%", md: "30em" }}
                     cursor="pointer"
@@ -682,7 +683,16 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
-              <Flex gap={3}>
+              <Flex
+                gap={3}
+                overflow={"auto"}
+                sx={{
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                }}
+                width="100%"
+              >
                 {Object.keys(tags).map((tag) => (
                   <Badge
                     key={tag}
@@ -705,8 +715,9 @@ export const Bookings = () => {
                 width="100%"
                 my={5}
                 mb={20}
+                justifyContent="center"
               >
-                {isTeacher && (
+                {role !== "student" && (
                   <Box
                     w={{ base: "90%", md: "30em" }}
                     cursor="pointer"
@@ -756,6 +767,7 @@ export const Bookings = () => {
                 width="100%"
                 my={5}
                 mb={20}
+                justifyContent={"center"}
               >
                 {role !== "student" ? (
                   drafts.length > 0 ? (
@@ -940,6 +952,9 @@ const ClassTeacherCard = memo(
     tagId,
     onOpen,
   }) => {
+    const formattedDate = date ? formatDate(date) : null;
+    const formattedStartTime = startTime ? formatTime(startTime) : null;
+    const formattedEndTime = endTime ? formatTime(endTime) : null;
     const getIcon = () => {
       const iconSize = 50;
       switch (tagId) {
@@ -962,9 +977,16 @@ const ClassTeacherCard = memo(
       }
     };
     return (
+      <Box
+       display="flex"
+       justifyContent="center"
+       w={{ base: "100%", md: "30em" }}
+      >
+
       <Card
+        cursor="pointer"
         key={id}
-        w={{ base: "100%", md: "30em" }}
+        w={{ base: "90%", md: "30em" }}
         border="1px"
         borderColor="gray.300"
         bg="gray.50"
@@ -1082,23 +1104,27 @@ const ClassTeacherCard = memo(
               py="1rem"
             >
               <Text
-                fontSize="1.125rem"
+                fontSize="1.5rem"
                 fontWeight="bold"
               >
-                {title ? title : "Title Not Available"}
+                {title}
               </Text>
 
-              <Text fontSize="0.875rem">
-                {location ? location : "No Location Available"}
-                <br />
-                {date
-                  ? `${formatDate(date)} · ${formatTime(startTime)} - ${formatTime(endTime)}`
-                  : "No date"}
-              </Text>
+              <HStack>
+                <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
+              </HStack>
+              <HStack>
+                <Text fontSize="sm">
+                    {formattedDate
+                      ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
+                      : "No date"}
+                </Text>
+              </HStack>
             </VStack>
           </HStack>
         </CardBody>
       </Card>
+      </Box>
     );
   }
 );
