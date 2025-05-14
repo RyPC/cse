@@ -32,13 +32,14 @@ const SaveClass = ({ isOpen, onClose, postClass }) => {
                         width="100%"
                     >
                         <Button
-                            colorScheme="blue"
+                            // colorScheme="blue"
+                            bg="#EDF2F7"
                             mr={3}
                             onClick={onClose}
                         >
                             Close
                         </Button>
-                        <Button onClick={postClass}>Save Class</Button>
+                        <Button onClick={postClass} bg="#6B46C1">Save Class</Button>
                     </Stack>
                 </ModalFooter>
             </ModalContent>
