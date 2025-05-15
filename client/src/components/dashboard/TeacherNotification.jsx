@@ -92,7 +92,7 @@ export const TeacherNotification = ({ id, firstName, lastName }) => {
             Deny
           </Button>
           <Button
-            bg="#422E8D"
+            bg="#6B46C1"
             color="white"
             width="50%"
             _hover={{ bg: "#2a1c5e" }}

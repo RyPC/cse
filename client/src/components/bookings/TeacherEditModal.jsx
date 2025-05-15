@@ -1,13 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { Button, Flex, Input, Modal, ModalOverlay, ModalHeader, ModalContent, ModalBody, ModalFooter,
-  Select, Text, IconButton, FormControl, FormLabel, Textarea ,   useToast,
+import {
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  Text,
+  Textarea,
+  useToast,
 } from "@chakra-ui/react";
 
 import { BsChevronLeft } from "react-icons/bs";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { calculateRecurringDates } from "../../utils/formatDateTime";
+import {
+  calculateRecurringDates,
+  isDefaultDate,
+} from "../../utils/formatDateTime";
 
 const stringToDate = (dateString) => {
   // Split string and convert to numbers
@@ -49,21 +67,20 @@ export const TeacherEditModal = ({
   setRefresh,
   coreqId,
 }) => {
-
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
   const [recurrencePattern, setRecurrencePattern] = useState(
     classData?.recurrencePattern ?? "none"
   );
   const [teachers, setTeachers] = useState([]);
-  const [selectedInstructor, setSelectedInstructor] = useState(classData?.instructor ?? "");
+  const [selectedInstructor, setSelectedInstructor] = useState(
+    classData?.instructor ?? ""
+  );
   const formRef = useRef(null);
   const [tags, setTags] = useState([]);
   const toast = useToast();
 
-  const [classType, setClassType] = useState(
-    classData?.classType ?? "1"
-  );
+  const [classType, setClassType] = useState(classData?.classType ?? "1");
 
   useMemo(() => {
     if (backend) {
@@ -71,7 +88,7 @@ export const TeacherEditModal = ({
         setTags(response.data);
       });
       backend.get("/teachers/activated").then((response) => {
-        setTeachers(response.data)
+        setTeachers(response.data);
       });
     }
   }, [backend]);
@@ -102,8 +119,7 @@ export const TeacherEditModal = ({
         classId: classData.id,
         teacherId: selectedInstructor,
       });
-      console.log(
-        "Updating instructor",classData.id, selectedInstructor  );
+      console.log("Updating instructor", classData.id, selectedInstructor);
       if (performanceId) {
         await backend.put(
           `/corequisites/${classData.id}/${performanceId}`,
@@ -196,7 +212,6 @@ export const TeacherEditModal = ({
       isClosable: true,
       position: "top",
       colorScheme: "purple",
-
     });
     // defer validation for isPublishing to update
     setTimeout(() => {
@@ -207,18 +222,26 @@ export const TeacherEditModal = ({
 
       onSave(false); // publishes, swithes is_draft to false
     }, 0);
+
+    setCurrentModal("view");
   };
 
   // input values
   const [classTitle, setClassTitle] = useState(classData?.title);
   const [location, setLocation] = useState(classData?.location);
   const [startDate, setStartDate] = useState(
-    classData?.startDate
-      ? formatDate(classData.startDate)
-      : formatDate(classData.date)
+    isDefaultDate(classData?.startDate) || isDefaultDate(classData?.date)
+      ? ""
+      : classData?.startDate
+        ? formatDate(classData.startDate)
+        : formatDate(classData.date)
   );
   const [endDate, setEndDate] = useState(
-    classData?.endDate ? formatDate(classData.endDate) : ""
+    isDefaultDate(classData?.endDate)
+      ? ""
+      : classData?.endDate
+        ? formatDate(classData.endDate)
+        : ""
   );
   const [startTime, setStartTime] = useState(classData?.startTime);
   const [endTime, setEndTime] = useState(classData?.endTime);
@@ -248,7 +271,7 @@ export const TeacherEditModal = ({
   const onEndTimeChange = (e) => setEndTime(e.target.value);
 
   useEffect(() => {
-    console.log(classData);
+    console.log();
   }, []);
   return (
     <Modal
@@ -367,7 +390,6 @@ export const TeacherEditModal = ({
                 placeholder="Enter end time..."
               />
             </FormControl>
-
             {/* editing teachers */}
             <FormControl mb={4}>
               <FormLabel>Instructor</FormLabel>
@@ -380,14 +402,15 @@ export const TeacherEditModal = ({
                 color="black"
               >
                 {teachers.map((teacher) => (
-                  <option key={teacher.id} value={teacher.id}>
+                  <option
+                    key={teacher.id}
+                    value={teacher.id}
+                  >
                     {teacher.firstName} {teacher.lastName}
                   </option>
                 ))}
               </Select>
             </FormControl>
-
-
             <FormControl mb={4}>
               <FormLabel>Description</FormLabel>
               <Textarea
@@ -442,12 +465,24 @@ export const TeacherEditModal = ({
         </ModalBody>
 
         <ModalFooter>
-          <Flex justifyContent="center" w="100%" gap={3}>
-            <Button flex="1" onClick={onSaveAsDraft}>
-              Save Draft
+          <Flex
+            justifyContent="center"
+            w="100%"
+            gap={3}
+          >
+            <Button
+              flex="1"
+              onClick={onBack}
+            >
+              Discard Edits
             </Button>
-            <Button bg= "#422E8D"  color = "white" flex="1" onClick={onPublish}>
-              Publish
+            <Button
+              bg="#6B46C1"
+              color="white"
+              flex="1"
+              onClick={onPublish}
+            >
+              Save Changes
             </Button>
           </Flex>
         </ModalFooter>

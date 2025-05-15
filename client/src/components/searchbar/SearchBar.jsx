@@ -61,7 +61,9 @@ export const SearchBar = ( { onSearch, tags = {}, tagFilter = {}, onTag }) => {
                   rounded="xl"
                   px={4}
                   py={1}
-                  colorScheme={tagFilter[id] ? "green" : "red"}
+                  border={"1px"}
+                  borderColor="gray.300"
+                  colorScheme={tagFilter[id] ? "gray" : "white"}
                   textTransform="none"
                   cursor="pointer"
             >

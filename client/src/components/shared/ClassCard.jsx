@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
-  Button,
+  Box,
   Card,
   CardBody,
   CardFooter,
@@ -72,63 +72,72 @@ export const ClassCard = ({
 
   return (
     <>
+    <Box 
+      display="flex"
+      justifyContent="center"
+      w={{ base: "100%", md: "30em" }}
+      onClick={() => {
+        if (pathname === "/bookings") {
+          onClick();
+        } else {
+          setOpenRootModal(true);
+        }
+      }} 
+      cursor="pointer">
       <Card
         w={{ base: "90%", md: "30em" }}
-        bg="##FFFFFF"
+        border = "1px"
+        borderColor="gray.300"
+        bg="gray.50"
       >
         <CardHeader pb={0}>
-          <Heading
-            size="md"
-            fontWeight="bold"
+          <HStack
+            position="absolute"
+            height = "15%"
+            top="10%"
+            right="5%"
+            bg="purple.50"
+            px={3}
+            py={1}
+            borderRadius="full"
+            border="1px"
+            borderColor="purple.600"
+            color="black"
+            fontSize="sm"
           >
-            {title}
-          </Heading>
+            <Text>
+              {attendeeCount} {parseInt(attendeeCount) === 1 ? "Person" : "People"} Enrolled
+            </Text>
+          </HStack>
         </CardHeader>
         <CardBody>
+          <Box 
+            display="flex" 
+            justifyContent="start"
+          >
           <VStack
-            align="stretch"
+            alignItems="flex-start"
             spacing={2}
           >
-            <HStack>
-              <FaClock size={14} />
-              <Text fontSize="sm">
-                {formattedDate
-                  ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
-                  : "No date"}
-              </Text>
-            </HStack>
-
-            <HStack>
-              <FaMapMarkerAlt size={14} />
-              <Text fontSize="sm">{location}</Text>
-            </HStack>
-
-            <HStack>
-              <FaUser size={14} />
-              <Text fontSize="sm">
-                {attendeeCount} {attendeeCount === 1 ? "person" : "people"}{" "}
-                RSVP'd
-              </Text>
-            </HStack>
-            <Button
-              alignSelf="flex-end"
-              variant="solid"
-              size="sm"
-              bg="#422E8D"
-              color="white"
-              _hover={{ bg: "gray.700" }}
-              mt={2}
-              onClick={() => {
-                if (pathname === "/bookings") {
-                  onClick();
-                } else {
-                  setOpenRootModal(true);
-                }
-              }}
+            <Text
+              fontSize="1.5rem"
+              fontWeight="bold"
             >
-              View Details &gt;
-            </Button>
+              {title}
+            </Text>
+            
+            <HStack>
+              <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
+            </HStack>
+            <HStack>
+              <Text fontSize="sm">
+                  {formattedDate
+                    ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
+                    : "No date"}
+              </Text>
+            </HStack>
           </VStack>
+          </Box>
         </CardBody>
 
         <CardFooter
@@ -151,6 +160,7 @@ export const ClassCard = ({
           />
         </CardFooter>
       </Card>
+    </Box>
     </>
   );
 };

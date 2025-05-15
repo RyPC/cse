@@ -201,23 +201,13 @@ export const Discovery = () => {
   return (
     <Box>
       <VStack
-        mx="5%"
+        // mx="5%"
+        marginX={"auto"}
+        maxWidth="100%"
         my={5}
         mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
       >
         <Box width="100%" px={2}>
-          <SearchBar
-            onSearch={(query) => {
-              if (activeTab === "events") {
-                searchEvents(query);
-              } else {
-                searchClasses(query);
-              }
-            }}
-            tags={tags}
-            tagFilter={tagFilter}
-            onTag={activeTab === "events" ? handleFilterToggle : handleClassFilterToggle}
-          />
           <Flex
             gap="5"
             justify="center"
@@ -253,6 +243,21 @@ export const Discovery = () => {
           </Flex>
         </Box>
 
+        <Box width={"90%"}>
+          <SearchBar
+            onSearch={(query) => {
+              if (activeTab === "events") {
+                searchEvents(query);
+              } else {
+                searchClasses(query);
+              }
+            }}
+            tags={tags}
+            tagFilter={tagFilter}
+            onTag={activeTab === "events" ? handleFilterToggle : handleClassFilterToggle}
+          />
+        </Box>
+
         <Box my="14px">
           <Flex
             display={activeTab === "events" ? "none" : "flex"}
@@ -285,7 +290,7 @@ export const Discovery = () => {
             align="center"
             justify="center"
             gap={5}
-            mt={5}
+            // mt={5}
             wrap="wrap"
           >
             {events.map((eventItem, index) => (
