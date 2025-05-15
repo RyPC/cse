@@ -74,6 +74,8 @@ export const Bookings = () => {
   const [tags, setTags] = useState([]);
   const [tagFilter, setTagFilter] = useState({});
   const [lastToggledTag, setLastToggledTag] = useState(null);
+  const [classTagsMap, setClassTagsMap] = useState({});
+  const [eventTagsMap, setEventTagsMap] = useState({});
 
   const [refresh, setRefresh] = useState(0);
 
@@ -104,8 +106,22 @@ export const Bookings = () => {
 
           backend
             .get(`/class-enrollments/student/${userId}`)
-            .then((res) => {
-              setClasses(res.data);
+            .then(async (res) => {
+              const enrolledClasses = res.data;
+              setClasses(enrolledClasses);
+
+              const tagsPromises = enrolledClasses.map(cls => 
+                backend.get(`/class-tags/tags/${cls.id}`)
+              );
+
+              const tagsResults = await Promise.all(tagsPromises);
+              const newClassTagsMap = {};
+              
+              enrolledClasses.forEach((cls, index) => {
+                newClassTagsMap[cls.id] = tagsResults[index].data.map(tag => tag.id);
+              });
+
+              setClassTagsMap(newClassTagsMap);
             })
             .catch((err) => {
               console.log("Error fetching class enrollments:", err);
@@ -113,17 +129,22 @@ export const Bookings = () => {
 
           backend
             .get(`/event-enrollments/student/${userId}`)
-            .then((res) => {
-              setEvents(res.data);
-            })
-            .catch((err) => {
-              console.log("Error fetching event enrollments:", err);
-            });
+            .then(async (res) => {
+              const enrolledEvents = res.data;
+              setEvents(enrolledEvents);
 
-          backend
-            .get(`/event-enrollments/student/${userId}`)
-            .then((res) => {
-              setEvents(res.data);
+              const tagsPromises = enrolledEvents.map(evt => 
+                backend.get(`/event-tags/tags/${evt.id}`)
+              );
+
+              const tagsResults = await Promise.all(tagsPromises);
+              const newEventTagsMap = {};
+              
+              enrolledEvents.forEach((evt, index) => {
+                newEventTagsMap[evt.id] = tagsResults[index].data.map(tag => tag.id);
+              });
+
+              setEventTagsMap(newEventTagsMap);
             })
             .catch((err) => {
               console.log("Error fetching event enrollments:", err);
@@ -164,87 +185,12 @@ export const Bookings = () => {
       fetchTags();
  }, []);
 
- const fetchEventsByTag = async (tagId) => {
-    try {
-      const res = await backend.get(`/event-tags/events/${tagId}`);
-      const events = res.data;
-      setEvents(events);
-    } catch (error) {
-      console.error("Error fetching events for specified tag:", error);
-    }
-  };
-
-  const fetchAllEvents = async () => {
-    try {
-      const res = await backend.get("/events/published");
-      setEvents(res.data);
-    } catch (error) {
-      console.error("Error fetching all events:", error);
-    }
-  }
-
-  const fetchClassesByTag = async (tagId) => {
-    try {
-      const res = await backend.get(`/class-tags/classes/${tagId}`);
-      const classes = res.data;
-      setClasses(classes);
-    } catch (error) {
-      console.error("Error fetching events for specified tag:", error);
-    }
-  };
-
-  const fetchAllClasses = async () => {
-    try {
-      const res = await backend.get("/classes/published");
-      setClasses(res.data);
-    } catch (error) {
-      console.error("Error fetching all events:", error);
-    }
-  }
-
-  const handleFilterToggle = (id) => {
+ const handleFilterToggle = (id) => {
     setTagFilter((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-    setLastToggledTag(id);
   };
-
-  useEffect(() => {
-    if (lastToggledTag === null) {
-      return;
-    }
-  
-    const active = tagFilter[lastToggledTag];
-  
-    if (active) {
-      fetchEventsByTag(lastToggledTag);
-    } else {
-      fetchAllEvents();
-    }
-  }, [tagFilter, lastToggledTag]);
-
-  const handleClassFilterToggle = (id) => () => {
-    setTagFilter((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-    setLastToggledTag(id);
-  };
-
-  useEffect(() => {
-    if (lastToggledTag === null) {
-      return;
-    }
-  
-    const active = tagFilter[lastToggledTag];
-  
-    if (active) {
-      fetchClassesByTag(lastToggledTag);
-    } else {
-      fetchAllClasses();
-    }
-  }, [tagFilter, lastToggledTag]);
 
   useEffect(() => {
     const fetchCoreqId = async () => {
@@ -383,13 +329,41 @@ export const Bookings = () => {
   };
 
   const handleClassSearch = async (query) => {
-    const res = await backend.get(`/classes/search/${query}`);
-    setClasses(res.data);
+    if (currentUser && role === "student") {
+      // For students, search within their enrolled classes
+      const enrolledRes = await backend.get(`/class-enrollments/student/${user_id}`);
+      const allEnrolledClasses = enrolledRes.data;
+      
+      // Client-side search filtering
+      const filteredClasses = allEnrolledClasses.filter(cls => 
+        cls.title.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      setClasses(filteredClasses);
+    } else {
+      // For teachers/admin, keep the existing server-side search
+      const searchRes = await backend.get(`/classes/search/${query}`);
+      setClasses(searchRes.data);
+    }
   }
 
   const handleEventSearch = async (query) => {
-    const res = await backend.get(`/events/search/${query}`);
-    setEvents(res.data);
+    if (currentUser && role === "student") {
+      // For students, search within their enrolled events
+      const enrolledRes = await backend.get(`/event-enrollments/student/${user_id}`);
+      const allEnrolledEvents = enrolledRes.data;
+      
+      // Client-side search filtering
+      const filteredEvents = allEnrolledEvents.filter(evt => 
+        evt.title.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      setEvents(filteredEvents);
+    } else {
+      // For teachers/admin, keep the existing server-side search
+      const searchRes = await backend.get(`/events/search/${query}`);
+      setEvents(searchRes.data);
+    }
   }
 
   const reloadClassesAndDrafts = async () => {
@@ -549,7 +523,7 @@ export const Bookings = () => {
                   onSearch={handleClassSearch}
                   tags={tags}
                   tagFilter={tagFilter}
-                  onTag={handleClassFilterToggle}
+                  onTag={handleFilterToggle}
               />
               <VStack
                 spacing={4}
@@ -573,13 +547,21 @@ export const Bookings = () => {
                     <Text>No classes available.</Text>
                   )
                 ) : classes.length > 0 ? (
-                  classes.map((classItem) => (
-                    <ClassCard
-                      key={classItem.id}
-                      {...classItem}
-                      onClick={() => updateModal(classItem)}
-                    />
-                  ))
+                  classes.map((classItem) => {
+                    const isFilterActive = Object.values(tagFilter).some(Boolean);
+                    const classTags = classTagsMap[classItem.id] || [];
+                    
+                    if (!isFilterActive || classTags.some(tagId => tagFilter[tagId])) {
+                      return (
+                        <ClassCard
+                          key={classItem.id}
+                          {...classItem}
+                          onClick={() => updateModal(classItem)}
+                        />
+                      );
+                    }
+                    return null;
+                  })
                 ) : (
                   <Text>No classes booked.</Text>
                 )}
@@ -600,15 +582,23 @@ export const Bookings = () => {
                 mb={20}
               >
                 {events.length > 0 ? (
-                  events.map((eventItem) => (
-                    <EventCard
-                      key={eventItem.id}
-                      {...eventItem}
-                      onClick={() => updateModal(eventItem)}
-                      triggerRefresh={triggerRefresh}
-                      onCloseModal={onCloseModal}
-                    />
-                  ))
+                  events.map((eventItem) => {
+                    const isFilterActive = Object.values(tagFilter).some(Boolean);
+                    const eventTags = eventTagsMap[eventItem.id] || [];
+                    
+                    if (!isFilterActive || eventTags.some(tagId => tagFilter[tagId])) {
+                      return (
+                        <EventCard
+                          key={eventItem.id}
+                          {...eventItem}
+                          onClick={() => updateModal(eventItem)}
+                          triggerRefresh={triggerRefresh}
+                          onCloseModal={onCloseModal}
+                        />
+                      );
+                    }
+                    return null;
+                  })
                 ) : (
                   <Text>No events booked.</Text>
                 )}
