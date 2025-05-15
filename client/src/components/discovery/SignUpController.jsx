@@ -61,41 +61,6 @@ function SignUpController({
   };
 
   useEffect(() => {
-    const fetchEnrollments = async (coreq) => {
-      try {
-        const enrollment = await backend
-          .get(ENROLLMENT_ROUTE)
-          .then((res) => res.data);
-
-        const user = await backend
-          .get(`/users/${currentUser.uid}`)
-          .then((res) => res.data[0]);
-
-        const userEnrollments = enrollment
-          .filter((event) => event.studentId === user.id)
-          .map((event) => {
-            if (class_id === null) {
-              return event.classId;
-            } else {
-              return event.eventId;
-            }
-          });
-
-        const corequisitesWithEnrollmentStatus = coreq.map((coreq) => {
-          if (userEnrollments.includes(coreq.id)) {
-            return { ...coreq, enrolled: true };
-          }
-          return coreq;
-        });
-        setCorequisites(corequisitesWithEnrollmentStatus);
-      } catch (error) {
-        console.error("Error fetching enrolled events or users:", error);
-      }
-    };
-
-    const ENROLLMENT_ROUTE =
-      class_id === null ? "/class-enrollments" : "/event-enrollments";
-
     if (coReqResponse) {
       const coreq = coReqResponse.data.map((coreq) => ({
         ...coreq,
