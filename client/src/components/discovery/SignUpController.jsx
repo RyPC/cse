@@ -102,8 +102,28 @@ function SignUpController({
         enrolled: false,
       }));
       setCorequisites(coreq);
-      fetchEnrollments(coreq);
-      console.log(coreq);
+      // go through and check if enrolled
+      const coreqs = coReqResponse.data.map((coreq) => {
+        const userId = user.data[0].id;
+        // console.log(userId);
+        // console.log(coreq.studentID);
+        if (userId === coreq.studentId) {
+          return {
+            ...coreq,
+            enrolled: true,
+          };
+        } else {
+          return {
+            ...coreq,
+            enrolled: false,
+          };
+        }
+      });
+      // console.log(coReqResponse);
+      setCorequisites(coreqs);
+      // don't need this anymore
+      // fetchEnrollments(coreq);
+      // console.log(coreq);
     }
   }, [coReqResponse]);
 
