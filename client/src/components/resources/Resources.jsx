@@ -24,6 +24,7 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { NewsCard } from "./NewsCard";
 import { ControllerModal } from "./ResourceFlow/ResourceFlowController";
+import { SearchBar } from "../searchbar/SearchBar";
 import { UploadComponent } from "./UploadComponent";
 import { VideoCard } from "./VideoCard";
 
@@ -36,6 +37,7 @@ export const Resources = () => {
   const [tagFilter, setTagFilter] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+  const [tab, setTab] = useState();
 
   const { role } = useAuthContext();
 
@@ -139,65 +141,42 @@ export const Resources = () => {
     }
   };
 
+  const handleSearch = async (query) => {
+    try {
+      if (tabIndex === 0) {
+        const res = await backend.get(`/classes-videos/with-tags/search/${query}`);
+        setVideos(res.data);
+      } else if (tabIndex === 1) {
+        const res = await backend.get(`/articles/with-tags/search/${query}`);
+        setArticles(res.data);
+      }
+    } catch (err) {
+      console.log("Error fetching search:", err);
+    }
+  }
+
   useEffect(() => {
     if (tabIndex == 0) {
       // only fetch videos
       console.log(tabIndex);
       searchVideos(); // Fetch videos initially
-    } else if (tabIndex == 1) {
+    } else if (tabIndex === 1) {
       searchArticles();
     }
     fetchNews(); // Fetch news initially
-    fetchTags(); // Fetch tags initially
-  }, [searchInput, tabIndex]);
+    fetchTags();   // Fetch tags initially
+  }, [tabIndex]);
 
   return (
-    <Box
-      position="relative"
-      pb="70px"
-      minHeight="100vh"
-    >
-      <Flex
-        direction="column"
-        p={4}
-        gap={4}
-      >
-        <InputGroup mt={10}>
-          <InputLeftAddon>
-            <IoSearch />
-          </InputLeftAddon>
-          <Input
-            placeholder="Search"
-            rounded="3xl"
-            value={searchInput}
-            onChange={handleInputChange}
-          />
-        </InputGroup>
-
-        <Flex
-          overflow={"auto"}
-          gap={3}
-          sx={{
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-          }}
-          width="100%"
-        >
-          {Object.keys(tags).map((tag) => (
-            <Badge
-              key={tag}
-              onClick={handleFilterToggle(tag)}
-              rounded="xl"
-              px={4}
-              py={1}
-              colorScheme={tagFilter[tag] ? "green" : "red"}
-              textTransform="none"
-            >
-              {tags[tag]}
-            </Badge>
-          ))}
-        </Flex>
+    <Box position="relative" pb="70px" minHeight="100vh">
+    <Flex direction="column" p={4}>
+      <SearchBar
+        onSearch={handleSearch}
+        tags={tags}
+        tagFilter={tagFilter}
+        backend={backend}
+        onTag={handleFilterToggle}
+      />
 
         {/* place Videos and News cards into separate tabs */}
         <Tabs
