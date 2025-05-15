@@ -25,17 +25,42 @@ function SignUpController({
   const [corequisites, setCorequisites] = useState([]);
   // Is null as a initial state in this case okay? Semantically it makes sense to me.
   const [modalIdentity, setModalIdentity] = useState(null);
+  const [coReqResponse, setCoreqResponse] = useState(null);
 
   const fetchCorequirements = useCallback(async () => {
     const id = class_id !== null ? class_id : event_id;
-    const COREQUESITE_ROUTE =
-      class_id !== null
-        ? `/classes/corequisites/${id}`
-        : `/events/corequisites/${id}`;
+    // const COREQUISITE_ROUTE =
+    //   class_id !== null
+    //     ? `/classes/corequisites/${id}`
+    //     : `/events/corequisites/${id}`;
 
-    const ENROLLMENT_ROUTE =
-      class_id === null ? "/class-enrollments" : "/event-enrollments";
+    // const response = await backend.get(COREQUISITE_ROUTE);
+    if (class_id !== null) {
+      // gets associated event of class. At most 1 event coreq per class
+      const res = await backend.get(`/classes/corequisites/${id}`);
+      const eventCoReqId = res.data[0].id;
 
+      const classCoReqs = await backend.get(
+        `/events/corequisites/${eventCoReqId}`
+      );
+      setCoreqResponse(classCoReqs);
+      // console.log(classCoReqs.data);
+    } else {
+      await backend.get(`/events/corequisites/${id}`).then((res) => {
+        setCoreqResponse(res.data);
+      });
+    }
+  }, [backend, class_id, event_id, currentUser.uid]);
+
+  const toggleRootModal = () => {
+    setOpenRootModal(!openRootModal);
+  };
+  const toggleCoreqModal = () => {
+    toggleRootModal();
+    setOpenCoreqModal(true);
+  };
+
+  useEffect(() => {
     const fetchEnrollments = async (coreq) => {
       try {
         const enrollment = await backend
@@ -68,19 +93,19 @@ function SignUpController({
       }
     };
 
-    const response = await backend.get(COREQUESITE_ROUTE);
-    const coreq = response.data.map((coreq) => ({ ...coreq, enrolled: false }));
-    setCorequisites(coreq);
-    await fetchEnrollments(coreq);
-  }, [backend, class_id, event_id, currentUser.uid]);
+    const ENROLLMENT_ROUTE =
+      class_id === null ? "/class-enrollments" : "/event-enrollments";
 
-  const toggleRootModal = () => {
-    setOpenRootModal(!openRootModal);
-  };
-  const toggleCoreqModal = () => {
-    toggleRootModal();
-    setOpenCoreqModal(true);
-  };
+    if (coReqResponse) {
+      const coreq = coReqResponse.data.map((coreq) => ({
+        ...coreq,
+        enrolled: false,
+      }));
+      setCorequisites(coreq);
+      fetchEnrollments(coreq);
+      console.log(coreq);
+    }
+  }, [coReqResponse]);
 
   useEffect(() => {
     if (openRootModal) {
