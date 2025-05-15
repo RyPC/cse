@@ -222,6 +222,8 @@ export const TeacherEditModal = ({
 
       onSave(false); // publishes, swithes is_draft to false
     }, 0);
+
+    setCurrentModal("view");
   };
 
   // input values
@@ -470,17 +472,17 @@ export const TeacherEditModal = ({
           >
             <Button
               flex="1"
-              onClick={onSaveAsDraft}
+              onClick={onBack}
             >
-              Save Draft
+              Discard Edits
             </Button>
             <Button
-              bg="#422E8D"
+              bg="#6B46C1"
               color="white"
               flex="1"
               onClick={onPublish}
             >
-              Publish
+              Save Changes
             </Button>
           </Flex>
         </ModalFooter>

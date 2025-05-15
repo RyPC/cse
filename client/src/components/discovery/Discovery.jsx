@@ -242,9 +242,11 @@ export const Discovery = () => {
                       : handleClassFilterToggle(tag)
                   }
                   rounded="xl"
+                  border = "1px"
+                  borderColor="gray.300"
                   px={4}
                   py={1}
-                  colorScheme={tagFilter[tag] ? "green" : "red"}
+                  colorScheme={tagFilter[tag] ? "gray" : "white"}
                   textTransform="none"
                   cursor="pointer"
                 >

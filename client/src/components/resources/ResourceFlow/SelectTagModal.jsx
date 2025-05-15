@@ -90,6 +90,7 @@ export const SelectTagModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      size="full"
     >
       <ModalOverlay />
       <ModalContent>

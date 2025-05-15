@@ -53,8 +53,8 @@ const StudentReview = ({
     setStarRating(value);
   };
   const colors = {
-    purple: "#422E8D",
-    grey: "a9a9a9",
+    purple: "#6B46C1",
+    grey: "#A9A9A9",
   };
 
   const isError = review === "" || starRating === 0;
