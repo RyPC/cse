@@ -52,16 +52,61 @@ function CoReqWarningModal({
     const userData = await backend.get(`users/${currentUser.uid}`);
     const studentId = userData.data[0].id;
 
-    await backend.post("event-enrollments/", {
-      student_id: studentId,
-      event_id: coreq.id,
+    // // for certain one event
+    // await backend.post("event-enrollments/", {
+    //   student_id: studentId,
+    //   event_id: coreq.id,
+    // });
+
+    // // enroll in the class associated with the card the user is currently on.
+    // await backend.post("class-enrollments/", {
+    //   studentId: studentId,
+    //   classId: classId,
+    // });
+
+    // should I bundle all of these requests with Promise.all to ensure everything get's trhough rather than having an inconsistenty with one?
+
+    // REFACTOR. Enroll in EVERYTHING, check class or event and make the associated backend call.
+    let requests = [];
+    console.log("lstcorequisites", lstCorequisites);
+    lstCorequisites.map((coreq) => {
+      console.log(coreq.isEvent);
+      if (coreq.isEvent === false) {
+        const req = backend
+          .post("class-enrollments/", {
+            studentId: studentId,
+            classId: classId,
+          })
+          .then(() => {
+            lstCorequisites.map((lstCoreq) => {
+              console.log("Match");
+              // setcoreqs somehow
+              return lstCoreq.id === coreq.id && { ...coreq, enrolled: true };
+            });
+          });
+        requests.push(() => req);
+      } else if (coreq.isEvent === true) {
+        const req = backend
+          .post("event-enrollments/", {
+            student_id: studentId,
+            event_id: coreq.id,
+          })
+          .then(() => {
+            lstCorequisites.map((lstCoreq) => {
+              console.log("Match");
+              return lstCoreq.id === coreq.id && { ...coreq, enrolled: true };
+            });
+          });
+        requests.push(() => req);
+      }
     });
 
-    // enroll in class
-    await backend.post("class-enrollments/", {
-      studentId: studentId,
-      classId: classId,
-    });
+    console.log("Requests: ", requests);
+    await Promise.all(requests.map((request) => request())).then((res) =>
+      console.log("Promise.all() response: ", res)
+    );
+
+    console.log("lstCorequisites", lstCorequisites);
 
     setOpenCoreq(true);
     killModal();
@@ -214,7 +259,11 @@ function CoReqWarningModal({
                           fontSize="18px"
                         >
                           {modalIdentity === "class" ? (
-                            <Text as="span">Event </Text>
+                            lstCorequisites.length === 1 ? (
+                              <Text as="span">Event </Text>
+                            ) : (
+                              <Text as="span">Multiple Corequisites </Text>
+                            )
                           ) : (
                             <Text as="span">Class </Text>
                           )}
@@ -231,7 +280,13 @@ function CoReqWarningModal({
                               fontWeight="bold"
                             >
                               {lstCorequisites && lstCorequisites.length > 0
-                                ? coreq?.title
+                                ? lstCorequisites.map((coreq) => {
+                                    return (
+                                      <Text as="span">
+                                        {coreq?.title}&nbsp;
+                                      </Text>
+                                    );
+                                  })
                                 : ""}
                             </Text>
                             .

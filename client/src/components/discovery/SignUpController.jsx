@@ -37,14 +37,20 @@ function SignUpController({
     // const response = await backend.get(COREQUISITE_ROUTE);
     if (class_id !== null) {
       // gets associated event of class. At most 1 event coreq per class
-      const res = await backend.get(`/classes/corequisites/${id}`);
+      let res = await backend.get(`/classes/corequisites/${id}`);
       const eventCoReqId = res.data[0].id;
 
       const classCoReqs = await backend.get(
         `/events/corequisites/${eventCoReqId}`
       );
-      setCoreqResponse(classCoReqs);
+      // setCoreqResponse(classCoReqs);
       // console.log(classCoReqs.data);
+
+      // TODO: get event coreq and setCoreqResponse with Promise.all
+      res = res.data[0];
+      console.log({ ...classCoReqs.data, res });
+      console.log(classCoReqs);
+      setCoreqResponse([...classCoReqs.data, res]);
     } else {
       await backend.get(`/events/corequisites/${id}`).then((res) => {
         setCoreqResponse(res.data);
@@ -62,33 +68,38 @@ function SignUpController({
 
   useEffect(() => {
     if (coReqResponse) {
-      const coreq = coReqResponse.data.map((coreq) => ({
-        ...coreq,
-        enrolled: false,
-      }));
-      setCorequisites(coreq);
-      // go through and check if enrolled
-      const coreqs = coReqResponse.data.map((coreq) => {
+      const filteredCoreqs = coReqResponse.filter((coreq) => {
+        if (class_id) {
+          return class_id !== coreq.id;
+        }
+
+        if (event_id) {
+          return class_id !== coreq.id;
+        }
+      });
+
+      // is this check to see an event okay? Will classes get call times in the future?
+      const coreqs = filteredCoreqs.map((coreq) => {
         const userId = user.data[0].id;
-        // console.log(userId);
-        // console.log(coreq.studentID);
+
         if (userId === coreq.studentId) {
           return {
             ...coreq,
             enrolled: true,
+            isEvent: coreq.callTime ? true : false,
           };
         } else {
           return {
             ...coreq,
             enrolled: false,
+            isEvent: coreq.callTime ? true : false,
           };
         }
       });
-      // console.log(coReqResponse);
+
+      console.log("Coreqs: ", coreqs);
+
       setCorequisites(coreqs);
-      // don't need this anymore
-      // fetchEnrollments(coreq);
-      // console.log(coreq);
     }
   }, [coReqResponse]);
 
