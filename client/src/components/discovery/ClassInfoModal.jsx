@@ -47,6 +47,7 @@ function ClassInfoModal({
   handleClose,
   modalIdentity,
   setModalIdentity,
+  filteredCorequisites,
   handleResolveCoreq = () => {},
 }) {
   const { currentUser, role } = useAuthContext();
@@ -149,7 +150,7 @@ function ClassInfoModal({
                         <Text>No corequisites for this class</Text>
                       ) : (
                         <List>
-                          {corequisites.map((coreq, index) => (
+                          {filteredCorequisites.map((coreq, index) => (
                             <ListItem key={index}>
                               <ListIcon
                                 as={

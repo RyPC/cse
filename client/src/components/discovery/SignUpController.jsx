@@ -26,6 +26,7 @@ function SignUpController({
   // Is null as a initial state in this case okay? Semantically it makes sense to me.
   const [modalIdentity, setModalIdentity] = useState(null);
   const [coReqResponse, setCoreqResponse] = useState(null);
+  const [filteredCorequisites, setFilteredCorequisites] = useState([]);
 
   const fetchCorequirements = useCallback(async () => {
     const id = class_id !== null ? class_id : event_id;
@@ -68,18 +69,8 @@ function SignUpController({
 
   useEffect(() => {
     if (coReqResponse) {
-      const filteredCoreqs = coReqResponse.filter((coreq) => {
-        if (class_id) {
-          return class_id !== coreq.id;
-        }
-
-        if (event_id) {
-          return class_id !== coreq.id;
-        }
-      });
-
       // is this check to see an event okay? Will classes get call times in the future?
-      const coreqs = filteredCoreqs.map((coreq) => {
+      const coreqs = coReqResponse.map((coreq) => {
         const userId = user.data[0].id;
 
         if (userId === coreq.studentId) {
@@ -97,9 +88,21 @@ function SignUpController({
         }
       });
 
+      // filter out the class associated with the card the user is currently on.
+      const filteredCoreqs = coreqs.filter((coreq) => {
+        if (class_id) {
+          return class_id !== coreq.id;
+        }
+
+        if (event_id) {
+          return event_id !== coreq.id;
+        }
+      });
+
       console.log("Coreqs: ", coreqs);
 
       setCorequisites(coreqs);
+      setFilteredCorequisites(filteredCoreqs);
     }
   }, [coReqResponse]);
 
@@ -124,6 +127,7 @@ function SignUpController({
           id={class_id}
           {...infoProps}
           corequisites={corequisites}
+          filteredCorequisites={filteredCorequisites}
           isCorequisiteSignUp={false}
           handleClose={toggleRootModal}
           handleResolveCoreq={toggleCoreqModal}

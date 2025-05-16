@@ -38,6 +38,8 @@ function CoReqWarningModal({
   costume,
   modalIdentity,
   setModalIdentity,
+  filteredCorequisites,
+  setFilteredCorequisites,
   eventId,
   handleClose = () => {},
   killModal = () => {},
@@ -48,25 +50,9 @@ function CoReqWarningModal({
   const [coreq, setCoreq] = useState(null);
 
   const signupWithCorequisite = async () => {
-    // enroll in corequisite
     const userData = await backend.get(`users/${currentUser.uid}`);
     const studentId = userData.data[0].id;
 
-    // // for certain one event
-    // await backend.post("event-enrollments/", {
-    //   student_id: studentId,
-    //   event_id: coreq.id,
-    // });
-
-    // // enroll in the class associated with the card the user is currently on.
-    // await backend.post("class-enrollments/", {
-    //   studentId: studentId,
-    //   classId: classId,
-    // });
-
-    // should I bundle all of these requests with Promise.all to ensure everything get's trhough rather than having an inconsistenty with one?
-
-    // REFACTOR. Enroll in EVERYTHING, check class or event and make the associated backend call.
     let requests = [];
     console.log("lstcorequisites", lstCorequisites);
     lstCorequisites.map((coreq) => {
@@ -75,14 +61,10 @@ function CoReqWarningModal({
         const req = backend
           .post("class-enrollments/", {
             studentId: studentId,
-            classId: classId,
+            classId: coreq.id,
           })
-          .then(() => {
-            lstCorequisites.map((lstCoreq) => {
-              console.log("Match");
-              // setcoreqs somehow
-              return lstCoreq.id === coreq.id && { ...coreq, enrolled: true };
-            });
+          .then((res) => {
+            return res;
           });
         requests.push(() => req);
       } else if (coreq.isEvent === true) {
@@ -91,11 +73,8 @@ function CoReqWarningModal({
             student_id: studentId,
             event_id: coreq.id,
           })
-          .then(() => {
-            lstCorequisites.map((lstCoreq) => {
-              console.log("Match");
-              return lstCoreq.id === coreq.id && { ...coreq, enrolled: true };
-            });
+          .then((res) => {
+            return res;
           });
         requests.push(() => req);
       }
