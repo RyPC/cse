@@ -43,6 +43,15 @@ function CoReqWarningModal({
   const [openCoreq, setOpenCoreq] = useState(false);
   const [coreq, setCoreq] = useState(null);
 
+  // filteredCorequisites = filteredCorequisites.map((coreq) => {
+  //   if (!coreq.enrolled) {
+  //     return coreq;
+    
+  //   } else {
+  //     return null;
+  //   }
+  // });
+
   const signupWithCorequisite = async () => {
     const userData = await backend.get(`users/${currentUser.uid}`);
     const studentId = userData.data[0].id;
@@ -233,7 +242,7 @@ function CoReqWarningModal({
                           fontSize="18px"
                         >
                           {modalIdentity === "class" ? (
-                            lstCorequisites.length === 1 ? (
+                            filteredCorequisites.length === 1 ? (
                               <Text as="span">Event </Text>
                             ) : (
                               <Text as="span">Multiple Coreqs </Text>
@@ -253,14 +262,20 @@ function CoReqWarningModal({
                               as="span"
                               fontWeight="bold"
                             >
-                              {lstCorequisites && lstCorequisites.length > 0
-                                ? lstCorequisites.map((coreq, index) => (
-                                  <Text as="span" key={index}>
-                                    {coreq?.title}
-                                    {index < lstCorequisites.length - 1 ? ", " : ""}
-                                  </Text>
-                                ))
-                                : ""}
+                              {filteredCorequisites && filteredCorequisites.length > 0
+                                ? filteredCorequisites.map((coreq, index) => {
+                                  //if (coreq.enrolled === true) { this kinda works but commenting out for now
+                                    return (
+                                      <Text as="span" key={index}>
+                                        {coreq?.title}
+                                        {index < filteredCorequisites.length - 1 ? ", " : ""}
+                                      </Text>
+                                    );
+                                  //} else {
+                                  //  return null;
+                                  //}
+                                })
+                                    : ""}
                             </Text>
                             .
                           </Text>
@@ -309,7 +324,7 @@ function CoReqWarningModal({
                             color="white"
                             onClick={signupWithCorequisite}
                           >
-                            {lstCorequisites.length > 1 ? (
+                            {filteredCorequisites.length > 1 ? (
                               <Text as="span">
                                 Yes, Enroll in All Coreqs
                               </Text>
@@ -335,7 +350,7 @@ function CoReqWarningModal({
                             onClick={signupWithCorequisiteEventVersion}
                           >
                             Yes, Join & Enroll in&nbsp;
-                            {lstCorequisites.length > 1 ? (
+                            {filteredCorequisites.length > 1 ? (
                               <Text as="span">Classes</Text>
                             ) : (
                               <Text as="span">Class</Text>

@@ -162,6 +162,7 @@ function SignUpController({
         killModal={() => setOpenCoreqModal(false)}
         modalIdentity={modalIdentity}
         setModalIdentity={setModalIdentity}
+        filteredCorequisites={filteredCorequisites}
       />
 
       {/* <Button onClick={() => setOpenRootModal(true)}>View Details</Button> */}
