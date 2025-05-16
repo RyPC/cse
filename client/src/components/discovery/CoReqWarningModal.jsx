@@ -246,7 +246,7 @@ function CoReqWarningModal({
                           ) : (
                             <Text as="span">Class </Text>
                           )}
-                          Participation Recommended
+                          Recommended
                         </Text>
 
                         {modalIdentity === "class" ? (
@@ -296,9 +296,9 @@ function CoReqWarningModal({
                         <Text>
                           Do you agree to take part in{" "}
                           {lstCorequisites.length > 1 ? (
-                            <Text as="span">these classes?</Text>
+                            <Text as="span">these corequisites?</Text>
                           ) : (
-                            <Text as="span">the class?</Text>
+                            <Text as="span">this corequisite?</Text>
                           )}
                         </Text>
                       </VStack>
@@ -315,7 +315,13 @@ function CoReqWarningModal({
                             color="white"
                             onClick={signupWithCorequisite}
                           >
-                            Yes, Enroll & Join Performance
+                            {lstCorequisites.length > 1 ? (
+                              <Text as="span">
+                                Yes, Enroll in All Corequisites
+                              </Text>
+                            ) : (
+                              <Text as="span">Yes, Enroll in Corequisite</Text>
+                            )}
                           </Button>
                           <Button
                             w="full"
