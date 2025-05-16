@@ -12,6 +12,7 @@ import {
   ModalOverlay,
   Text,
   VStack,
+  Stack
 } from "@chakra-ui/react";
 
 import { FaX, FaXmark } from "react-icons/fa6";
@@ -29,13 +30,6 @@ function CoReqWarningModal({
   classId,
   lstCorequisites,
   title,
-  location,
-  description,
-  level,
-  date,
-  id,
-  capacity,
-  costume,
   modalIdentity,
   setModalIdentity,
   filteredCorequisites,
@@ -229,8 +223,9 @@ function CoReqWarningModal({
                     <Box
                     // sx={{ border: "1px solid blue" }}
                     >
-                      <VStack
+                      <Stack
                         spacing="8px"
+                        marginRight="5vw"
                         // sx={{ border: "2px solid yellow " }}
                       >
                         <Text
@@ -241,7 +236,7 @@ function CoReqWarningModal({
                             lstCorequisites.length === 1 ? (
                               <Text as="span">Event </Text>
                             ) : (
-                              <Text as="span">Multiple Corequisites </Text>
+                              <Text as="span">Multiple Coreqs </Text>
                             )
                           ) : (
                             <Text as="span">Class </Text>
@@ -259,13 +254,12 @@ function CoReqWarningModal({
                               fontWeight="bold"
                             >
                               {lstCorequisites && lstCorequisites.length > 0
-                                ? lstCorequisites.map((coreq) => {
-                                    return (
-                                      <Text as="span">
-                                        {coreq?.title}&nbsp;
-                                      </Text>
-                                    );
-                                  })
+                                ? lstCorequisites.map((coreq, index) => (
+                                  <Text as="span" key={index}>
+                                    {coreq?.title}
+                                    {index < lstCorequisites.length - 1 ? ", " : ""}
+                                  </Text>
+                                ))
                                 : ""}
                             </Text>
                             .
@@ -301,7 +295,7 @@ function CoReqWarningModal({
                             <Text as="span">this corequisite?</Text>
                           )}
                         </Text>
-                      </VStack>
+                      </Stack>
                     </Box>
                     <Box
                       // sx={{ border: "2px solid blue" }}
@@ -317,10 +311,10 @@ function CoReqWarningModal({
                           >
                             {lstCorequisites.length > 1 ? (
                               <Text as="span">
-                                Yes, Enroll in All Corequisites
+                                Yes, Enroll in All Coreqs
                               </Text>
                             ) : (
-                              <Text as="span">Yes, Enroll in Corequisite</Text>
+                              <Text as="span">Yes, Enroll in Coreq</Text>
                             )}
                           </Button>
                           <Button

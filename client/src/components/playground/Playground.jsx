@@ -1,7 +1,7 @@
-import ConfirmationModal from "../bookings/ConfirmationModal";
+import CoreqWarningModal from "../discovery/CoReqWarningModal";
 
 export const Playground = () => {
   return <div>
-    <ConfirmationModal isOpen={true} onClose={() => {}}/>
+    <CoreqWarningModal isOpen={true} onClose={() => {}}/>
   </div>
 };
