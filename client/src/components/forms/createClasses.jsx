@@ -76,8 +76,7 @@ export const CreateClassForm = memo(
 
     const validationSchema = {
       title: !title,
-      capacity:
-        capacity && (capacity < 0 || capacity > 2147483647),
+      capacity: capacity && (capacity < 0 || capacity > 2147483647),
     };
     const validateForm = () => {
       if (validationSchema.title) {
@@ -108,7 +107,8 @@ export const CreateClassForm = memo(
         location: location ?? "",
         description: description ?? "",
         level: level ?? "",
-        capacity: capacity === "" ? 0 : Math.min(parseInt(capacity), 2147483647),
+        capacity:
+          capacity === "" ? 0 : Math.min(parseInt(capacity), 2147483647),
         classType: classType ?? "",
         performance: performance ?? "",
         isDraft,
@@ -262,6 +262,7 @@ export const CreateClassForm = memo(
       onConfirmationClose();
       onClose();
       reloadCallback();
+      closeModal();
     };
 
     useMemo(() => {
@@ -295,261 +296,252 @@ export const CreateClassForm = memo(
 
     return (
       <Container>
-        {!isSubmitted ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onConfirmationOpen();
-            }}
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onConfirmationOpen();
+          }}
+        >
+          <FormControl isInvalid={isDraft && validationSchema.title}>
+            <FormLabel
+              id="title"
+              fontWeight="bold"
+            >
+              Class Title
+            </FormLabel>
+            <Input
+              placeholder="Class Title"
+              _placeholder={{ color: "gray.400" }}
+              border="1px"
+              borderColor="gray.200"
+              boxShadow="sm"
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              bg="white"
+              color="black"
+            />
+            {isDraft && validationSchema.title && (
+              <FormHelperText color="red.500">
+                Class title is required
+              </FormHelperText>
+            )}
+          </FormControl>
+
+          <FormControl>
+            <FormLabel fontWeight="bold">Location</FormLabel>
+            <Input
+              placeholder="Location"
+              _placeholder={{ color: "gray.400" }}
+              border="1px"
+              borderColor="gray.200"
+              type="text"
+              required
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              bg="white"
+              color="black"
+              boxShadow="sm"
+            />
+          </FormControl>
+
+          <HStack
+            mt={4}
+            align="flex-start"
           >
-            <FormControl isInvalid={isDraft && validationSchema.title}>
-              <FormLabel id="title" fontWeight="bold">Class Title</FormLabel>
+            <FormControl width={"50%"}>
+              <FormLabel fontWeight="bold">Start Date</FormLabel>
               <Input
-                placeholder = "Class Title"
-                _placeholder={{ color: 'gray.400' }}
-                border = '1px'
+                border="1px"
                 borderColor="gray.200"
-                boxShadow="sm"
-                type="text"
+                type="date"
                 required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
                 bg="white"
                 color="black"
-                
+                boxShadow="sm"
+                sx={{
+                  "&::-webkit-calendar-picker-indicator": {
+                    backgroundColor: "gray.100",
+                    padding: "2px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  },
+                }}
               />
-              {isDraft && validationSchema.title && (
-                <FormHelperText color="red.500">
-                  Class title is required
-                </FormHelperText>
-              )}
+            </FormControl>
+
+            <FormControl width={"50%"}>
+              <FormLabel fontWeight="bold">End Date</FormLabel>
+              <Input
+                sx={{
+                  "&::-webkit-calendar-picker-indicator": {
+                    backgroundColor: "gray.100",
+                    padding: "2px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                  },
+                }}
+                border="1px"
+                borderColor="gray.400"
+                type="date"
+                required={recurrencePattern !== "none"}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                min={date}
+                isDisabled={recurrencePattern === "none"}
+                opacity={recurrencePattern === "none" ? 0.4 : 1}
+                bg="white"
+                color="black"
+                boxShadow="sm"
+              />
+            </FormControl>
+          </HStack>
+
+          <HStack
+            mt={4}
+            align="flex-start"
+          >
+            <FormControl>
+              <FormLabel fontWeight="bold">Start Time</FormLabel>
+              <Input
+                border="1px"
+                borderColor="gray.200"
+                boxShadow="sm"
+                type="time"
+                required
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                bg="white"
+                color="black"
+              />
             </FormControl>
 
             <FormControl>
-              <FormLabel fontWeight="bold">Location</FormLabel>
+              <FormLabel fontWeight="bold">End Time</FormLabel>
               <Input
-                placeholder = "Location"
-                _placeholder={{ color: 'gray.400' }}
-                border = '1px'
+                border="1px"
                 borderColor="gray.200"
-                type="text"
+                boxShadow="sm"
+                type="time"
                 required
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
                 bg="white"
                 color="black"
-                boxShadow="sm"
               />
             </FormControl>
+          </HStack>
 
-            <HStack
-              mt={4}
-              align="flex-start"
+          <FormControl mt={4}>
+            <FormLabel fontWeight="bold">Recurrence</FormLabel>
+            <Select
+              border="1px"
+              borderColor="gray.200"
+              boxShadow="sm"
+              value={recurrencePattern}
+              onChange={(e) => setRecurrencePattern(e.target.value)}
+              bg="white"
+              sx={{
+                "& option": {
+                  bg: "white",
+                  color: "black",
+                },
+              }}
             >
-              <FormControl width={"50%"}>
-                <FormLabel fontWeight="bold">Start Date</FormLabel>
-                <Input
-                  border="1px"
-                  borderColor="gray.200"
-                  type="date"
-                  required
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  bg="white"
-                  color="black"
-                  boxShadow="sm"
-                  sx={{
-                    '&::-webkit-calendar-picker-indicator': {
-                      backgroundColor: 'gray.100',
-                      padding: '2px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }
-                  }}
-                />
-              </FormControl>
+              <option>Recurrence</option>
+              <option value="none">None</option>
+              <option value="weekly">Weekly</option>
+              <option value="biweekly">Bi-Weekly</option>
+              <option value="monthly">Monthly</option>
+            </Select>
+          </FormControl>
 
-              <FormControl width={"50%"}>
-                <FormLabel fontWeight="bold">End Date</FormLabel>
-                <Input
-                  sx={{
-                    '&::-webkit-calendar-picker-indicator': {
-                      backgroundColor: 'gray.100',
-                      padding: '2px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }
-                  }}
-                  border="1px"
-                  borderColor="gray.400"
-                  type="date"
-                  required={recurrencePattern !== "none"}
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  min={date}
-                  isDisabled={recurrencePattern === "none"}
-                  opacity={recurrencePattern === "none" ? 0.4 : 1}
-                  bg="white"
-                  color="black"
-                  boxShadow="sm"
-                />
-              </FormControl>
-            </HStack>
-
-            <HStack
-              mt={4}
-              align="flex-start"
+          <FormControl>
+            <FormLabel fontWeight="bold">Instructor</FormLabel>
+            <Select
+              border="1px"
+              borderColor="gray.200"
+              boxShadow="sm"
+              type="text"
+              required
+              value={selectedInstructor}
+              onChange={(e) => setSelectedInstructor(e.target.value)}
+              bg="white"
+              color="black"
+              sx={{
+                "& option": {
+                  color: "black",
+                  backgroundColor: "white",
+                },
+                "& option[disabled]": {
+                  color: "black",
+                },
+              }}
             >
-              <FormControl>
-                <FormLabel fontWeight="bold">Start Time</FormLabel>
-                <Input
-                  border="1px"
-                  borderColor="gray.200"
-                  boxShadow="sm"
-                  type="time"
+              <option>Instructor</option>
+              {teachers.map((teacher) => (
+                <option
+                  key={teacher.id}
+                  value={teacher.id}
+                >
+                  {teacher.firstName} {teacher.lastName}
+                </option>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl mt={4}>
+            <FormLabel fontWeight="bold">Description</FormLabel>
+            <Textarea
+              placeholder="Description"
+              _placeholder={{ color: "gray.400" }}
+              border="1px"
+              borderColor="gray.200"
+              boxShadow="sm"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              bg="white"
+              color="black"
+            />
+          </FormControl>
+          <HStack>
+            <FormControl isInvalid={isDraft && validationSchema.capacity}>
+              <FormLabel
+                id="capacity"
+                fontWeight={"bold"}
+              >
+                Capacity
+              </FormLabel>
+              <NumberInput
+                min={0}
+                max={2147483647}
+                clampValueOnBlur
+              >
+                <NumberInputField
                   required
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
                   bg="white"
                   color="black"
                 />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel fontWeight="bold">End Time</FormLabel>
-                <Input
-                  border="1px"
-                  borderColor="gray.200"
-                  boxShadow="sm"
-                  type="time"
-                  required
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  bg="white"
-                  color="black"
-                />
-              </FormControl>
-            </HStack>
-
-            <FormControl mt={4}>
-              <FormLabel fontWeight="bold">Recurrence</FormLabel>
+              </NumberInput>
+              {isDraft && validationSchema.capacity && (
+                <FormHelperText color="red.500">Ain't no way</FormHelperText>
+              )}
+            </FormControl>
+            <FormControl>
+              <FormLabel fontWeight="bold">Level</FormLabel>
               <Select
                 border="1px"
                 borderColor="gray.200"
                 boxShadow="sm"
-                value={recurrencePattern}
-                onChange={(e) => setRecurrencePattern(e.target.value)}
-                bg="white"
-                sx={{
-                  "& option": {
-                    bg: "white",
-                    color: "black",
-                  },
-                }}
-              >
-                <option>Recurrence</option>
-                <option value="none">None</option>
-                <option value="weekly">Weekly</option>
-                <option value="biweekly">Bi-Weekly</option>
-                <option value="monthly">Monthly</option>
-              </Select>
-            </FormControl>
-
-            <FormControl>
-              <FormLabel fontWeight="bold">Instructor</FormLabel>
-              <Select
-                border = '1px'
-                borderColor="gray.200"
-                boxShadow="sm"
-                type="text"
                 required
-                value={selectedInstructor}
-                onChange={(e) => setSelectedInstructor(e.target.value)}
-                bg="white"
-                color="black"
-                sx={{
-                  "& option": {
-                    color: "black",
-                    backgroundColor: "white",
-                  },
-                  "& option[disabled]": {
-                    color: "black",
-                  },
-                }}
-              >
-                <option>
-                  Instructor
-                </option>
-                {teachers.map((teacher) => (
-                  <option key={teacher.id} value={teacher.id}>
-                    {teacher.firstName} {teacher.lastName}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl mt={4}>
-              <FormLabel fontWeight="bold">Description</FormLabel>
-              <Textarea
-                placeholder = "Description"
-                _placeholder={{ color: 'gray.400' }}
-                border = '1px'
-                borderColor="gray.200"
-                boxShadow="sm"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                bg="white"
-                color="black"
-              />
-            </FormControl>
-            <HStack>
-              <FormControl isInvalid={isDraft && validationSchema.capacity}>
-                <FormLabel id="capacity" fontWeight={"bold"}>Capacity</FormLabel>
-                <NumberInput min={0} max={2147483647} clampValueOnBlur>
-                  <NumberInputField
-                    required
-                    value={capacity}
-                    onChange={(e) => setCapacity(e.target.value)}
-                    bg="white"
-                    color="black"
-                  />
-                </NumberInput>
-                {isDraft && validationSchema.capacity && (
-                  <FormHelperText color="red.500">Ain't no way</FormHelperText>
-                )}
-              </FormControl>
-              <FormControl>
-                <FormLabel fontWeight="bold">Level</FormLabel>
-                  <Select
-                    border = '1px'
-                    borderColor="gray.200"
-                    boxShadow="sm"
-                    required
-                    value={level}
-                    onChange={(e) => setLevel(e.target.value)}
-                    bg="white"
-                    color="black"
-                    sx={{
-                      "& option": {
-                        bg: "white",
-                        color: "black",
-                      },
-                    }}
-                  >
-                    <option>Level</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                  </Select>
-              </FormControl>
-            </HStack>
-
-            <FormControl>
-              <FormLabel fontWeight="bold">Class Type</FormLabel>
-              <Select
-                required
-                value={classType}
-                onChange={(e) => setClassType(e.target.value)}
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
                 bg="white"
                 color="black"
                 sx={{
@@ -559,117 +551,119 @@ export const CreateClassForm = memo(
                   },
                 }}
               >
-                {tags
-                  ? tags.map((tag, ind) => (
-                      <option
-                        key={ind}
-                        value={tag.id}
-                      >
-                        {tag.tag}
-                      </option>
-                    ))
-                  : null}
+                <option>Level</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
               </Select>
             </FormControl>
+          </HStack>
 
-            <FormControl>
-              <FormLabel fontWeight="bold">Performances</FormLabel>
-              <Select
-                placeholder="Performances"
-                _placeholder={{ color: 'gray.400' }}
-                border = '1px'
-                borderColor="gray.200"
-                boxShadow="sm"
-                required
-                value={performance}
-                onChange={(e) => setPerformance(e.target.value)}
-                bg="white"
-                color="black"
-                sx={{
-                  "& option": {
-                    bg: "white",
-                    color: "black",
-                  },
-                }}
-              >
-                <option
-                  key={null}
-                  value={null}
-                >
-                  No Performance Required
-                </option>
-                {events
-                  ? events.map((evt, ind) => (
-                      <option
-                        key={ind}
-                        value={evt.id}
-                      >
-                        {evt.title}
-                      </option>
-                    ))
-                  : null}
-              </Select>
-            </FormControl>
-
-
-            <Stack
-              direction="row"
-              justifyContent="center"
-              mt={4}
+          <FormControl>
+            <FormLabel fontWeight="bold">Class Type</FormLabel>
+            <Select
+              required
+              value={classType}
+              onChange={(e) => setClassType(e.target.value)}
+              bg="white"
+              color="black"
+              sx={{
+                "& option": {
+                  bg: "white",
+                  color: "black",
+                },
+              }}
             >
-              {((!isSubmitted && !modalData) || modalData?.isDraft) && (
-                <Button
-                  paddingRight="10%"
-                  paddingLeft="10%"
-                  onClick={() => {
-                    setIsDraft(true);
-                    if (validateForm()) {
-                      onOpen();
-                    }
-                  }}
-                  bg="gray.100"
-                  color="black"
-                  _hover={{ bg: "#C8A9C8" }}
-                >
-                  Save Draft
-                </Button>
-              )}
+              {tags
+                ? tags.map((tag, ind) => (
+                    <option
+                      key={ind}
+                      value={tag.id}
+                    >
+                      {tag.tag}
+                    </option>
+                  ))
+                : null}
+            </Select>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel fontWeight="bold">Performances</FormLabel>
+            <Select
+              placeholder="Performances"
+              _placeholder={{ color: "gray.400" }}
+              border="1px"
+              borderColor="gray.200"
+              boxShadow="sm"
+              required
+              value={performance}
+              onChange={(e) => setPerformance(e.target.value)}
+              bg="white"
+              color="black"
+              sx={{
+                "& option": {
+                  bg: "white",
+                  color: "black",
+                },
+              }}
+            >
+              <option
+                key={null}
+                value={null}
+              >
+                No Performance Required
+              </option>
+              {events
+                ? events.map((evt, ind) => (
+                    <option
+                      key={ind}
+                      value={evt.id}
+                    >
+                      {evt.title}
+                    </option>
+                  ))
+                : null}
+            </Select>
+          </FormControl>
+
+          <Stack
+            direction="row"
+            justifyContent="center"
+            mt={4}
+          >
+            {((!isSubmitted && !modalData) || modalData?.isDraft) && (
               <Button
                 paddingRight="10%"
                 paddingLeft="10%"
-                type="submit"
-                bg="purple.600"
-                color="white"
-                border="1px solid black"
-                _hover={{ bg: "#5D2E8C" }}
                 onClick={() => {
-                  setIsDraft(false);
-
+                  setIsDraft(true);
+                  if (validateForm()) {
+                    onOpen();
+                  }
                 }}
+                bg="gray.100"
+                color="black"
+                _hover={{ bg: "#C8A9C8" }}
               >
-                Publish
+                Save Draft
               </Button>
-            </Stack>
-          </form>
-        ) : (
-          <VStack>
-            <IoIosCheckmarkCircle size={100} />
-            <Heading
-              as="h3"
-              size="xl"
-            >
-              {isDraft ? "Draft" : "Class"}{" "}
-              {modalData ? "Updated" : "Submitted"}!
-            </Heading>{" "}
-            <br />
+            )}
             <Button
-              colorScheme="blue"
-              onClick={closeModal}
+              paddingRight="10%"
+              paddingLeft="10%"
+              type="submit"
+              bg="purple.600"
+              color="white"
+              border="1px solid black"
+              _hover={{ bg: "#5D2E8C" }}
+              onClick={() => {
+                setIsDraft(false);
+              }}
             >
-              Return to Classes Page
+              Publish
             </Button>
-          </VStack>
-        )}
+          </Stack>
+        </form>
 
         <SaveClassAsDraftModal
           isOpen={isOpen}

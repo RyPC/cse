@@ -25,6 +25,7 @@ import {
   Tabs,
   Text,
   useDisclosure,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 
@@ -52,12 +53,12 @@ import { formatDate, formatTime } from "../../utils/formatDateTime";
 import { CreateClassForm } from "../forms/createClasses";
 import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
+import { SearchBar } from "../searchbar/SearchBar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { InfoModal } from "./InfoModal";
-import { SearchBar } from "../searchbar/SearchBar";
 import { TeacherCancelModal } from "./TeacherCancelModal";
 import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
@@ -65,6 +66,7 @@ import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
 
 export const Bookings = () => {
+  const toast = useToast();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { currentUser, role } = useAuthContext();
@@ -124,15 +126,17 @@ export const Bookings = () => {
               const enrolledClasses = res.data;
               setClasses(enrolledClasses);
 
-              const tagsPromises = enrolledClasses.map(cls => 
+              const tagsPromises = enrolledClasses.map((cls) =>
                 backend.get(`/class-tags/tags/${cls.id}`)
               );
 
               const tagsResults = await Promise.all(tagsPromises);
               const newClassTagsMap = {};
-              
+
               enrolledClasses.forEach((cls, index) => {
-                newClassTagsMap[cls.id] = tagsResults[index].data.map(tag => tag.id);
+                newClassTagsMap[cls.id] = tagsResults[index].data.map(
+                  (tag) => tag.id
+                );
               });
 
               setClassTagsMap(newClassTagsMap);
@@ -147,15 +151,17 @@ export const Bookings = () => {
               const enrolledEvents = res.data;
               setEvents(enrolledEvents);
 
-              const tagsPromises = enrolledEvents.map(evt => 
+              const tagsPromises = enrolledEvents.map((evt) =>
                 backend.get(`/event-tags/tags/${evt.id}`)
               );
 
               const tagsResults = await Promise.all(tagsPromises);
               const newEventTagsMap = {};
-              
+
               enrolledEvents.forEach((evt, index) => {
-                newEventTagsMap[evt.id] = tagsResults[index].data.map(tag => tag.id);
+                newEventTagsMap[evt.id] = tagsResults[index].data.map(
+                  (tag) => tag.id
+                );
               });
 
               setEventTagsMap(newEventTagsMap);
@@ -179,27 +185,27 @@ export const Bookings = () => {
 
   useEffect(() => {
     const fetchTags = async () => {
-        try {
-          const tagsResponse = await backend.get("/tags");
-          const initialTagFilter = {};
-          const initialTags = {};
-          tagsResponse.data.forEach((tag) => {
-            initialTagFilter[tag.id] = false;
-            initialTags[tag.id] =
-              tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
-          });
-    
-          setTagFilter(initialTagFilter);
-          setTags(initialTags);
-          // console.log(initialTags);
-        } catch (error) {
-          console.error("Error fetching tags:", error);
-        }
-      };
-      fetchTags();
- }, []);
+      try {
+        const tagsResponse = await backend.get("/tags");
+        const initialTagFilter = {};
+        const initialTags = {};
+        tagsResponse.data.forEach((tag) => {
+          initialTagFilter[tag.id] = false;
+          initialTags[tag.id] =
+            tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
+        });
 
- const handleFilterToggle = (id) => {
+        setTagFilter(initialTagFilter);
+        setTags(initialTags);
+        // console.log(initialTags);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+    fetchTags();
+  }, []);
+
+  const handleFilterToggle = (id) => {
     setTagFilter((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -236,6 +242,14 @@ export const Bookings = () => {
     setCurrentModal("view");
     onClose();
     reloadClassesAndDrafts();
+    toast({
+      title: "Class Published.",
+      description: "Class is visible to students.",
+      status: "success",
+      duration: 9000,
+      isClosable: true,
+      position: "top"
+    });
   };
   const onOpenModal = (data) => {
     setClassData(data);
@@ -345,40 +359,44 @@ export const Bookings = () => {
   const handleClassSearch = async (query) => {
     if (currentUser && role === "student") {
       // For students, search within their enrolled classes
-      const enrolledRes = await backend.get(`/class-enrollments/student/${user_id}`);
+      const enrolledRes = await backend.get(
+        `/class-enrollments/student/${user_id}`
+      );
       const allEnrolledClasses = enrolledRes.data;
-      
+
       // Client-side search filtering
-      const filteredClasses = allEnrolledClasses.filter(cls => 
+      const filteredClasses = allEnrolledClasses.filter((cls) =>
         cls.title.toLowerCase().includes(query.toLowerCase())
       );
-      
+
       setClasses(filteredClasses);
     } else {
       // For teachers/admin, keep the existing server-side search
       const searchRes = await backend.get(`/classes/search/${query}`);
       setClasses(searchRes.data);
     }
-  }
+  };
 
   const handleEventSearch = async (query) => {
     if (currentUser && role === "student") {
       // For students, search within their enrolled events
-      const enrolledRes = await backend.get(`/event-enrollments/student/${user_id}`);
+      const enrolledRes = await backend.get(
+        `/event-enrollments/student/${user_id}`
+      );
       const allEnrolledEvents = enrolledRes.data;
-      
+
       // Client-side search filtering
-      const filteredEvents = allEnrolledEvents.filter(evt => 
+      const filteredEvents = allEnrolledEvents.filter((evt) =>
         evt.title.toLowerCase().includes(query.toLowerCase())
       );
-      
+
       setEvents(filteredEvents);
     } else {
       // For teachers/admin, keep the existing server-side search
       const searchRes = await backend.get(`/events/search/${query}`);
       setEvents(searchRes.data);
     }
-  }
+  };
 
   const reloadClassesAndDrafts = async () => {
     try {
@@ -386,7 +404,7 @@ export const Bookings = () => {
         backend.get(`/events/published`).then((res) => setEvents(res.data)),
         backend.get(`/classes/published`).then((res) => setClasses(res.data)),
         backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data)),
-        backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data))
+        backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data)),
       ]);
 
       const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -400,9 +418,9 @@ export const Bookings = () => {
   };
 
   const reloadClasses = async () => {
-      await backend.get(`/classes/published`).then((res) => {
-        setClasses(res.data);
-      });
+    await backend.get(`/classes/published`).then((res) => {
+      setClasses(res.data);
+    });
 
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
@@ -415,8 +433,8 @@ export const Bookings = () => {
 
   const reloadEvents = async () => {
     await backend.get(`/events/published`).then((res) => {
-        setEvents(res.data);
-      });
+      setEvents(res.data);
+    });
 
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
@@ -491,7 +509,6 @@ export const Bookings = () => {
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
-
         <Tabs
           width="100%"
           variant="line"
@@ -556,10 +573,10 @@ export const Bookings = () => {
           <TabPanels>
             <TabPanel>
               <SearchBar
-                  onSearch={handleClassSearch}
-                  tags={tags}
-                  tagFilter={tagFilter}
-                  onTag={handleFilterToggle}
+                onSearch={handleClassSearch}
+                tags={tags}
+                tagFilter={tagFilter}
+                onTag={handleFilterToggle}
               />
               <VStack
                 spacing={4}
@@ -613,10 +630,14 @@ export const Bookings = () => {
                   )
                 ) : classes.length > 0 ? (
                   classes.map((classItem) => {
-                    const isFilterActive = Object.values(tagFilter).some(Boolean);
+                    const isFilterActive =
+                      Object.values(tagFilter).some(Boolean);
                     const classTags = classTagsMap[classItem.id] || [];
-                    
-                    if (!isFilterActive || classTags.some(tagId => tagFilter[tagId])) {
+
+                    if (
+                      !isFilterActive ||
+                      classTags.some((tagId) => tagFilter[tagId])
+                    ) {
                       return (
                         <Box
                           key={classItem.id}
@@ -647,7 +668,7 @@ export const Bookings = () => {
                 tags={tags}
                 tagFilter={tagFilter}
                 onTag={handleFilterToggle}
-            />
+              />
               <VStack
                 spacing={4}
                 width="100%"
@@ -685,10 +706,14 @@ export const Bookings = () => {
                 )}
                 {events.length > 0 ? (
                   events.map((eventItem) => {
-                    const isFilterActive = Object.values(tagFilter).some(Boolean);
+                    const isFilterActive =
+                      Object.values(tagFilter).some(Boolean);
                     const eventTags = eventTagsMap[eventItem.id] || [];
-                    
-                    if (!isFilterActive || eventTags.some(tagId => tagFilter[tagId])) {
+
+                    if (
+                      !isFilterActive ||
+                      eventTags.some((tagId) => tagFilter[tagId])
+                    ) {
                       return (
                         <EventCard
                           key={eventItem.id}
@@ -924,152 +949,153 @@ const ClassTeacherCard = memo(
     };
     return (
       <Box
-       display="flex"
-       justifyContent="center"
-       w={{ base: "100%", md: "30em" }}
+        display="flex"
+        justifyContent="center"
+        w={{ base: "100%", md: "30em" }}
       >
-
-      <Card
-        cursor="pointer"
-        key={id}
-        w={{ base: "90%", md: "30em" }}
-        border="1px"
-        borderColor="gray.300"
-        bg="gray.50"
-        onClick={
-          isDraft
-            ? () => {
-                const modalData = {
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  level,
-                  costume,
-                  performances: performance,
-                  isRecurring,
-                  recurrencePattern,
-                  startDate,
-                  endDate,
-                  isDraft,
-                  rsvpCount,
-                  startTime,
-                  endTime,
-                };
-                setSelectedCard(modalData);
-                onOpen({
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  isRecurring,
-                  recurrencePattern,
-                  startDate,
-                  endDate,
-                  level,
-                  costume,
-                  isDraft,
-                  startTime,
-                  endTime,
-                });
-              }
-            : () => {
-                const modalData = {
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  level,
-                  costume,
-                  isRecurring,
-                  recurrencePattern,
-                  performances: performance,
-                  isDraft,
-                  startDate,
-                  endDate,
-                  rsvpCount,
-                  startTime,
-                  endTime,
-                };
-                setSelectedCard(modalData);
-                onOpen({
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  level,
-                  isRecurring,
-                  recurrencePattern,
-                  costume,
-                  startDate,
-                  endDate,
-                  isDraft,
-                  startTime,
-                  endTime,
-                });
-              }
-          // : () => navigate(`/dashboard/classes/${classId}`)
-        }
-      >
-        <CardBody px={0}>
-          <Box
-            position="absolute"
-            textAlign="center"
-            justifyContent="center"
-            alignItems="center"
-            display="flex"
-            height="20px"
-            top="10px"
-            right="5%"
-            px="16px"
-            py="2px"
-            borderRadius="full"
-            border="0.2px solid"
-            borderColor="purple.600"
-            color="purple.700"
-            backgroundColor="purple.50"
-            fontSize="10px"
-          >
-            <Text>
-              {rsvpCount ?? 0} {(rsvpCount ?? 0) === 1 ? "Person" : "People"}{" "}
-              Enrolled
-            </Text>
-          </Box>
-          <HStack>
-            <Box px="20px">{getIcon()}</Box>
-            <VStack
-              alignItems="flex-start"
-              py="1rem"
+        <Card
+          cursor="pointer"
+          key={id}
+          w={{ base: "90%", md: "30em" }}
+          border="1px"
+          borderColor="gray.300"
+          bg="gray.50"
+          onClick={
+            isDraft
+              ? () => {
+                  const modalData = {
+                    id,
+                    title,
+                    location,
+                    date,
+                    description,
+                    capacity,
+                    level,
+                    costume,
+                    performances: performance,
+                    isRecurring,
+                    recurrencePattern,
+                    startDate,
+                    endDate,
+                    isDraft,
+                    rsvpCount,
+                    startTime,
+                    endTime,
+                  };
+                  setSelectedCard(modalData);
+                  onOpen({
+                    id,
+                    title,
+                    location,
+                    date,
+                    description,
+                    capacity,
+                    isRecurring,
+                    recurrencePattern,
+                    startDate,
+                    endDate,
+                    level,
+                    costume,
+                    isDraft,
+                    startTime,
+                    endTime,
+                  });
+                }
+              : () => {
+                  const modalData = {
+                    id,
+                    title,
+                    location,
+                    date,
+                    description,
+                    capacity,
+                    level,
+                    costume,
+                    isRecurring,
+                    recurrencePattern,
+                    performances: performance,
+                    isDraft,
+                    startDate,
+                    endDate,
+                    rsvpCount,
+                    startTime,
+                    endTime,
+                  };
+                  setSelectedCard(modalData);
+                  onOpen({
+                    id,
+                    title,
+                    location,
+                    date,
+                    description,
+                    capacity,
+                    level,
+                    isRecurring,
+                    recurrencePattern,
+                    costume,
+                    startDate,
+                    endDate,
+                    isDraft,
+                    startTime,
+                    endTime,
+                  });
+                }
+            // : () => navigate(`/dashboard/classes/${classId}`)
+          }
+        >
+          <CardBody px={0}>
+            <Box
+              position="absolute"
+              textAlign="center"
+              justifyContent="center"
+              alignItems="center"
+              display="flex"
+              height="20px"
+              top="10px"
+              right="5%"
+              px="16px"
+              py="2px"
+              borderRadius="full"
+              border="0.2px solid"
+              borderColor="purple.600"
+              color="purple.700"
+              backgroundColor="purple.50"
+              fontSize="10px"
             >
-              <Text
-                fontSize="1.5rem"
-                fontWeight="bold"
-              >
-                {title}
+              <Text>
+                {rsvpCount ?? 0} {(rsvpCount ?? 0) === 1 ? "Person" : "People"}{" "}
+                Enrolled
               </Text>
+            </Box>
+            <HStack>
+              <Box px="20px">{getIcon()}</Box>
+              <VStack
+                alignItems="flex-start"
+                py="1rem"
+              >
+                <Text
+                  fontSize="1.5rem"
+                  fontWeight="bold"
+                >
+                  {title}
+                </Text>
 
-              <HStack>
-                <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
-              </HStack>
-              <HStack>
-                <Text fontSize="sm">
+                <HStack>
+                  <Text fontSize="sm">
+                    {location ? `${location}` : "No location"}
+                  </Text>
+                </HStack>
+                <HStack>
+                  <Text fontSize="sm">
                     {formattedDate
                       ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
                       : "No date"}
-                </Text>
-              </HStack>
-            </VStack>
-          </HStack>
-        </CardBody>
-      </Card>
+                  </Text>
+                </HStack>
+              </VStack>
+            </HStack>
+          </CardBody>
+        </Card>
       </Box>
     );
   }
