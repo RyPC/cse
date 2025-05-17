@@ -71,8 +71,6 @@ export const CreateEvent = ({
     if (!formData.startTime) newErrors.startTime = "Start time is required";
     if (!formData.endTime) newErrors.endTime = "End time is required";
     if (!formData.callTime) newErrors.callTime = "Call time is required";
-    if (!formData.costume)
-      newErrors.costume = "Costume information is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -163,7 +161,7 @@ export const CreateEvent = ({
           costume: "",
           capacity: "",
         });
-        if (onClose) onClose();
+        if (onClose) onClose(1); // 1 == "event"
         if (triggerRefresh) triggerRefresh();
       } else {
         console.error("Failed to create/save event:", response.statusText);
@@ -280,7 +278,7 @@ export const CreateEvent = ({
         />
         {errors.date && <Text color="red.500">{errors.date}</Text>}
       </Box>
-      
+
       <HStack align="flex-start">
         <FormControl>
           <Text fontWeight="bold">Start Time</Text>
@@ -312,7 +310,7 @@ export const CreateEvent = ({
           {errors.endTime && <Text color="red.500">{errors.endTime}</Text>}
         </FormControl>
       </HStack>
-          
+
 
       <Box>
         <Text fontWeight="bold">Call Time</Text>
@@ -328,7 +326,7 @@ export const CreateEvent = ({
         />
         {errors.callTime && <Text color="red.500">{errors.callTime}</Text>}
       </Box>
-      
+
       <HStack>
         <Box>
           <Text fontWeight="bold">Capacity</Text>

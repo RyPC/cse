@@ -262,7 +262,7 @@ export const CreateClassForm = memo(
       onConfirmationClose();
       onClose();
       reloadCallback();
-      closeModal();
+      closeModal(0); // 0 == "class"
     };
 
     useMemo(() => {

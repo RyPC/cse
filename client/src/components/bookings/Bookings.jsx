@@ -237,14 +237,14 @@ export const Bookings = () => {
     fetchCoreqId();
   }, [backend, selectedCard, isOpen]);
 
-  const onCloseModal = () => {
+  const onCloseModal = (type) => {
     setSelectedCard(null);
     setCurrentModal("view");
     onClose();
     reloadClassesAndDrafts();
     toast({
-      title: "Class Published.",
-      description: "Class is visible to students.",
+      title: type == 0 ? "Class Published." : "Event Published.", // 0 == "class" || 1 == "event"
+      description: type == 0 ? "Class is visible to students." : "Event is visible to students.",
       status: "success",
       duration: 9000,
       isClosable: true,
