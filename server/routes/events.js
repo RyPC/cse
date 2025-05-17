@@ -41,7 +41,7 @@ eventsRouter.get("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const corequisites = await db.query(
-      `SELECT c.*, ce.student_id
+      `SELECT DISTINCT c.*, ce.student_id
        FROM classes c
        JOIN corequisites co ON c.id = co.class_id
        FULL OUTER JOIN class_enrollments ce ON ce.class_id = c.id

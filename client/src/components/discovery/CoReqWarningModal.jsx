@@ -42,20 +42,17 @@ function CoReqWarningModal({
   const { currentUser } = useAuthContext();
   const [openCoreq, setOpenCoreq] = useState(false);
   const [coreq, setCoreq] = useState(null);
-
-  // filteredCorequisites = filteredCorequisites.map((coreq) => {
-  //   if (!coreq.enrolled) {
-  //     return coreq;
-    
-  //   } else {
-  //     return null;
-  //   }
-  // });
+  console.log("Filtered coreqs in coreq warning modal: ", filteredCorequisites);
+  // All corequisites excluding the current card that the user is not enrolled in
+  const notEnrolledFilteredCorequisites = filteredCorequisites.filter(
+    (coreq) => !coreq.enrolled
+  );
+  console.log("Not Enrolled Filtered coreqs in coreq warning modal: ", notEnrolledFilteredCorequisites);
 
   const signupWithCorequisite = async () => {
     const userData = await backend.get(`users/${currentUser.uid}`);
     const studentId = userData.data[0].id;
-
+    console.log("sign up with corequisite yay")
     let requests = [];
     console.log("lstcorequisites", lstCorequisites);
     lstCorequisites.map((coreq) => {
@@ -242,7 +239,7 @@ function CoReqWarningModal({
                           fontSize="18px"
                         >
                           {modalIdentity === "class" ? (
-                            filteredCorequisites.length === 1 ? (
+                            notEnrolledFilteredCorequisites.length === 1 ? (
                               <Text as="span">Event </Text>
                             ) : (
                               <Text as="span">Multiple Coreqs </Text>
@@ -256,26 +253,27 @@ function CoReqWarningModal({
                         {modalIdentity === "class" ? (
                           <Text>
                             {/* handle multiple performances grammar */}
-                            To enroll in {title}, it is recommended that you
-                            participate in the end-of-session performance&nbsp;
+                            To enroll in {title}, it is recommended that you participate in &nbsp;
                             <Text
                               as="span"
                               fontWeight="bold"
                             >
-                              {filteredCorequisites && filteredCorequisites.length > 0
-                                ? filteredCorequisites.map((coreq, index) => {
-                                  //if (coreq.enrolled === true) { this kinda works but commenting out for now
+                              {notEnrolledFilteredCorequisites && notEnrolledFilteredCorequisites.length > 0 && (
+                                <Text as="span">
+                                  {notEnrolledFilteredCorequisites.map((coreq, index) => {
+                                    const isLast = index === notEnrolledFilteredCorequisites.length - 1;
+                                    const isSecondToLast = index === notEnrolledFilteredCorequisites.length - 2;
+
                                     return (
-                                      <Text as="span" key={index}>
-                                        {coreq?.title}
-                                        {index < filteredCorequisites.length - 1 ? ", " : ""}
-                                      </Text>
+                                      <span key={index}>
+                                        {coreq.title}
+                                        {isSecondToLast ? " and " : !isLast ? ", " : ""}
+                                      </span>
                                     );
-                                  //} else {
-                                  //  return null;
-                                  //}
-                                })
-                                    : ""}
+                                  })}
+                                </Text>
+                              )}
+
                             </Text>
                             .
                           </Text>
@@ -284,7 +282,7 @@ function CoReqWarningModal({
                             {/* handle multiple performances grammar */}
                             To join {title}, it is recommended that you enroll
                             in the prerequisite{" "}
-                            {lstCorequisites.length > 1 ? (
+                            {notEnrolledFilteredCorequisites.length > 1 ? (
                               <Text as="span">classes</Text>
                             ) : (
                               <Text as="span">class</Text>
@@ -294,7 +292,7 @@ function CoReqWarningModal({
                               as="span"
                               fontWeight="bold"
                             >
-                              {lstCorequisites && lstCorequisites.length > 0
+                              {notEnrolledFilteredCorequisites && notEnrolledFilteredCorequisites.length > 0
                                 ? coreq?.title
                                 : ""}
                             </Text>
@@ -304,7 +302,7 @@ function CoReqWarningModal({
 
                         <Text>
                           Do you agree to take part in{" "}
-                          {lstCorequisites.length > 1 ? (
+                          {notEnrolledFilteredCorequisites.length > 1 ? (
                             <Text as="span">these corequisites?</Text>
                           ) : (
                             <Text as="span">this corequisite?</Text>
@@ -324,7 +322,7 @@ function CoReqWarningModal({
                             color="white"
                             onClick={signupWithCorequisite}
                           >
-                            {filteredCorequisites.length > 1 ? (
+                            {notEnrolledFilteredCorequisites.length > 1 ? (
                               <Text as="span">
                                 Yes, Enroll in All Coreqs
                               </Text>
@@ -350,7 +348,7 @@ function CoReqWarningModal({
                             onClick={signupWithCorequisiteEventVersion}
                           >
                             Yes, Join & Enroll in&nbsp;
-                            {filteredCorequisites.length > 1 ? (
+                            {notEnrolledFilteredCorequisites.length > 1 ? (
                               <Text as="span">Classes</Text>
                             ) : (
                               <Text as="span">Class</Text>

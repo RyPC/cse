@@ -118,7 +118,7 @@ function EventInfoModal({
   };
 
   useEffect(() => {
-    console.log(corequisites);
+    // console.log(corequisites);
   }, [corequisites]);
 
   useEffect(() => {

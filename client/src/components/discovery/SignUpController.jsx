@@ -45,12 +45,9 @@ function SignUpController({
         `/events/corequisites/${eventCoReqId}`
       );
       // setCoreqResponse(classCoReqs);
-      // console.log(classCoReqs.data);
 
       // TODO: get event coreq and setCoreqResponse with Promise.all
       res = res.data[0];
-      console.log({ ...classCoReqs.data, res });
-      console.log(classCoReqs);
       setCoreqResponse([...classCoReqs.data, res]);
     } else {
       await backend.get(`/events/corequisites/${id}`).then((res) => {
@@ -100,8 +97,9 @@ function SignUpController({
       });
 
       console.log("Coreqs: ", coreqs);
-
+      console.log("Filtered Coreqs: ", filteredCoreqs);
       setCorequisites(coreqs);
+    
       setFilteredCorequisites(filteredCoreqs);
     }
   }, [coReqResponse]);
@@ -113,7 +111,7 @@ function SignUpController({
   }, [fetchCorequirements, openRootModal]);
 
   useEffect(() => {
-    console.log(modalIdentity);
+    // console.log(modalIdentity);
   }, [modalIdentity]);
 
   if (class_id !== null && event_id !== null) {
