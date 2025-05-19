@@ -831,7 +831,7 @@ export const Bookings = () => {
           borderRadius="50%"
           width="66px"
           height="66px"
-          bg="#422E8D"
+          bg="purple.600"
           color="white"
           _hover={{ bg: "blue.700" }}
           fontSize="4xl"
@@ -911,7 +911,7 @@ const ClassTeacherCard = memo(
               alignSelf="flex-end"
               variant="solid"
               size="sm"
-              bg="#422E8D"
+              bg="purple.600"
               color="white"
               _hover={{ bg: "gray.700" }}
               mt={2}

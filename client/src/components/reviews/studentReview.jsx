@@ -53,7 +53,7 @@ const StudentReview = ({
     setStarRating(value);
   };
   const colors = {
-    purple: "#422E8D",
+    purple: "purple.600",
     grey: "a9a9a9",
   };
 

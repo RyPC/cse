@@ -60,7 +60,7 @@ import {
               <Button backgroundColor="#D9D9D9" mr={3} w= "100px" onClick={onGoBack}>
               <Text>Cancel</Text>
               </Button>
-              <Button bg="#422E8D" mr={3} w= "100px" onClick={onConfirm}>
+              <Button bg="purple.600" mr={3} w= "100px" onClick={onConfirm}>
                 <Text fontWeight="bold" color="white">Delete</Text>
               </Button>
             </Flex>

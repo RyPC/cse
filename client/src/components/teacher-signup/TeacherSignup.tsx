@@ -238,7 +238,7 @@ export const TeacherSignup = () => {
               size={"lg"}
               // sx={{ width: "100%" }}
               isDisabled={Object.keys(errors).length > 0}
-              bg="#422e8d"
+              bg="purple.600"
               color="white"
               w="200px"
               h="55px"

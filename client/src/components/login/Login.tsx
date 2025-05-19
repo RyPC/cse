@@ -132,7 +132,7 @@ export const Login = () => {
 
   return (
     <Box mt={"15.10vh"}>
-      <Center w="100vw">
+      <Center w="100%">
         <VStack>
           <Image
             src={logo}
@@ -146,7 +146,7 @@ export const Login = () => {
 
       <Center
         mt={6}
-        w="100vw"
+        w="100%"
       >
         <VStack
           spacing={8}

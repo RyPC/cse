@@ -344,7 +344,7 @@ export const CreateEvent = ({
         <Button
           onClick={() => handleSubmit(false)} // false = publish
           isLoading={isSubmitting}
-          bg="#422E8D"
+          bg="purple.600"
           color="white"
           flex="1"
         >

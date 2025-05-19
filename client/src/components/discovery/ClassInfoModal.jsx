@@ -156,6 +156,7 @@ function ClassInfoModal({
       />
 
       <Modal
+        size={"full"}
         isOpen={isOpenProp}
         onClose={handleClose}
       >
@@ -289,7 +290,7 @@ function ClassInfoModal({
                 <Button
                   width = "100%"
                   p = {7}
-                  bg = "#422E8D"
+                  bg = "purple.600"
                   color = "white"
                   onClick={classSignUp}>Sign up
                 </Button>

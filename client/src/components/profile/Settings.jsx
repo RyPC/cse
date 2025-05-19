@@ -226,7 +226,7 @@ export const Settings = () => {
             <Button
               w="full"
               onClick={() => navigate("/forgotPassword")}
-              colorScheme="blue"
+              colorScheme="purple"
               variant="outline"
             >
               Change Password
@@ -234,7 +234,7 @@ export const Settings = () => {
           </Box>
 
           <Button
-            colorScheme="blue"
+            colorScheme="purple"
             size="lg"
             mt={6}
             w="full"

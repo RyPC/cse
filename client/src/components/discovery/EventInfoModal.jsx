@@ -249,7 +249,7 @@ function EventInfoModal({
                 <Button
                   width = "100%"
                   p = {7}
-                  bg = "#422E8D" 
+                  bg = "purple.600" 
                   color = "white"
                   onClick={eventSignUp}
                 >

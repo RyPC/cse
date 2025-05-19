@@ -62,7 +62,7 @@ function SuccessSignupModal({
 
             {!isCorequisiteSignUp && (
               <Button
-                bg="#422E8D"
+                bg="purple.600"
                 color = "#FFFFFF"
                 onClick={onClose}
               >

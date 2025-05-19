@@ -34,7 +34,7 @@ export const ProgressBar = ({currStep}) => {
   
     return (
       <Box position='relative'>
-        <Stepper size='sm' index={activeStep} gap='0' colorScheme="purple" sx={{ "--chakra-colors-purple-500": "#422E8D"}}>
+        <Stepper size='sm' index={activeStep} gap='0' colorScheme="purple" sx={{ "--chakra-colors-purple-500": "purple.600"}}>
           {steps.map((step, index) => (
             <Step key={index} gap='0'>
               <StepIndicator bg='white'>
@@ -51,7 +51,7 @@ export const ProgressBar = ({currStep}) => {
           top='10px'
           zIndex={-1} 
           colorScheme="purple"
-          sx={{"--chakra-colors-purple-500": "#422E8D"}}
+          sx={{"--chakra-colors-purple-500": "purple.600"}}
         />
       </Box>
     )

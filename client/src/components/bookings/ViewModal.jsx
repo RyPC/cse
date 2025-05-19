@@ -128,7 +128,7 @@ export const ViewModal = ({
             <Button
               width = "60%"
               size="sm"
-              background="#422E8D"
+              background="purple.600"
               color="white"
               mr={3}
               onClick={onCancel}

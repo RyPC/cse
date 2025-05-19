@@ -45,7 +45,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export const Signup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { studentSignup, handleRedirectResult } = useAuthContext();
+  const { studentSignup, handleRedirectResult, updateRole, login } = useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -68,6 +68,11 @@ export const Signup = () => {
       });
 
       if (user) {
+        login({
+          email: data.email,
+          password: data.password
+        });
+        updateRole();
         navigate("/discovery");
       }
     } catch (err) {
@@ -91,7 +96,7 @@ export const Signup = () => {
   };
 
   return (
-    <Box mt={"10vh"}>
+    <Box mt={"5vh"}>
       <VStack
         spacing={4}
         sx={{ width: 350, marginX: "auto" }}

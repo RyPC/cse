@@ -29,7 +29,7 @@ const ReviewCard = ({
   const [stars, setStars] = useState(Array(5).fill(0));
 
   const colors = {
-    purple: "#422E8D",
+    purple: "purple.600",
     grey: "a9a9a9",
   };
 

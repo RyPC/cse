@@ -41,8 +41,8 @@ export const Navbar = () => {
           return (
             <Link to={item.path} key={item.path}>
               <VStack spacing={1}>
-                <Icon as={item.icon} boxSize={6} color={isActive ? "#422E8D" : "gray.500"} />
-                <Text fontSize="xs" color={isActive ? "#422E8D" : "gray.500"} fontWeight={isActive ? "bold" : "normal"}>
+                <Icon as={item.icon} boxSize={6} color={isActive ? "purple.600" : "gray.500"} />
+                <Text fontSize="xs" color={isActive ? "purple.600" : "gray.500"} fontWeight={isActive ? "bold" : "normal"}>
                   {item.label}
                 </Text>
               </VStack>
