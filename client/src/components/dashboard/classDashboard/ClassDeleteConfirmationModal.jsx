@@ -39,6 +39,7 @@ import {
           status: "error",
           duration: 4000,
           isClosable: true,
+          position: "top",
         });
       }
     };

@@ -59,6 +59,7 @@ export const Login = () => {
         description: msg,
         status: "error",
         variant: "subtle",
+        position: "top",
       });
     },
     [toast]

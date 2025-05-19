@@ -196,7 +196,6 @@ export const TeacherEditModal = ({
       isClosable: true,
       position: "top",
       colorScheme: "purple",
-
     });
     // defer validation for isPublishing to update
     setTimeout(() => {

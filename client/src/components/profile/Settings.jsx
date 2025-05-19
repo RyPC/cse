@@ -43,6 +43,7 @@ export const Settings = () => {
             status: "error",
             duration: 5000,
             isClosable: true,
+            position: "top",
           });
         }
       }
@@ -77,6 +78,7 @@ export const Settings = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
       return;
     }
@@ -88,6 +90,7 @@ export const Settings = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
       return;
     }
@@ -106,6 +109,7 @@ export const Settings = () => {
           status: "success",
           duration: 3000,
           isClosable: true,
+          position: "top",
         });
         setIsEditing(false);
       } else {
@@ -120,6 +124,7 @@ export const Settings = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
     }
   };

@@ -34,6 +34,7 @@ export const ForgotPassword = () => {
         status: "success",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
       setEmail(""); // Clear email field
       navigate("/forgotPasswordConfirmation");
@@ -57,6 +58,7 @@ export const ForgotPassword = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
       console.error(err);
     } finally {
@@ -111,9 +113,9 @@ export const ForgotPassword = () => {
             </FormControl>
             <Button
               type="submit"
-              bg="#6A1B9A"
+              bg="purple.600"
               color="white"
-              _hover={{ bg: "#4A148C" }}
+              _hover={{ bg: "purple.400" }}
               size="lg"
               w="100%"
               isLoading={isLoading}

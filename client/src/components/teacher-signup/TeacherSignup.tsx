@@ -84,6 +84,7 @@ export const TeacherSignup = () => {
           description: err.message,
           status: "error",
           variant: "subtle",
+          position: "top",
         });
       }
     }
