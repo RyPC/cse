@@ -28,12 +28,27 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { FaClock, FaMapMarkerAlt, FaSearch, FaUser } from "react-icons/fa";
+import {
+  FaClock,
+  FaMapMarkerAlt,
+  FaMicrophoneAlt,
+  FaMusic,
+  FaSearch,
+  FaUser,
+} from "react-icons/fa";
+import {
+  GiAbstract001,
+  GiBallerinaShoes,
+  GiBoombox,
+  GiCartwheel,
+  GiTambourine,
+} from "react-icons/gi";
 import { MdAdd, MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import { CreateClassForm } from "../forms/createClasses";
 import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
@@ -42,12 +57,12 @@ import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { InfoModal } from "./InfoModal";
+import { SearchBar } from "../searchbar/SearchBar";
 import { TeacherCancelModal } from "./TeacherCancelModal";
 import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
-import { formatDate, formatTime } from "../../utils/formatDateTime";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -70,9 +85,11 @@ export const Bookings = () => {
   const [tabIndex, setTabIndex] = useState(0);
   const [allEvents, setAllEvents] = useState([]);
   const [coreqId, setCoreqId] = useState();
-  const [searchInput, setSearchInput] = useState("");
-  const [tags, setTags] = useState({});
+  const [tags, setTags] = useState([]);
   const [tagFilter, setTagFilter] = useState({});
+  const [lastToggledTag, setLastToggledTag] = useState(null);
+  const [classTagsMap, setClassTagsMap] = useState({});
+  const [eventTagsMap, setEventTagsMap] = useState({});
 
   const [refresh, setRefresh] = useState(0);
 
@@ -103,8 +120,22 @@ export const Bookings = () => {
 
           backend
             .get(`/class-enrollments/student/${userId}`)
-            .then((res) => {
-              setClasses(res.data);
+            .then(async (res) => {
+              const enrolledClasses = res.data;
+              setClasses(enrolledClasses);
+
+              const tagsPromises = enrolledClasses.map(cls => 
+                backend.get(`/class-tags/tags/${cls.id}`)
+              );
+
+              const tagsResults = await Promise.all(tagsPromises);
+              const newClassTagsMap = {};
+              
+              enrolledClasses.forEach((cls, index) => {
+                newClassTagsMap[cls.id] = tagsResults[index].data.map(tag => tag.id);
+              });
+
+              setClassTagsMap(newClassTagsMap);
             })
             .catch((err) => {
               console.log("Error fetching class enrollments:", err);
@@ -112,17 +143,22 @@ export const Bookings = () => {
 
           backend
             .get(`/event-enrollments/student/${userId}`)
-            .then((res) => {
-              setEvents(res.data);
-            })
-            .catch((err) => {
-              console.log("Error fetching event enrollments:", err);
-            });
+            .then(async (res) => {
+              const enrolledEvents = res.data;
+              setEvents(enrolledEvents);
 
-          backend
-            .get(`/event-enrollments/student/${userId}`)
-            .then((res) => {
-              setEvents(res.data);
+              const tagsPromises = enrolledEvents.map(evt => 
+                backend.get(`/event-tags/tags/${evt.id}`)
+              );
+
+              const tagsResults = await Promise.all(tagsPromises);
+              const newEventTagsMap = {};
+              
+              enrolledEvents.forEach((evt, index) => {
+                newEventTagsMap[evt.id] = tagsResults[index].data.map(tag => tag.id);
+              });
+
+              setEventTagsMap(newEventTagsMap);
             })
             .catch((err) => {
               console.log("Error fetching event enrollments:", err);
@@ -140,6 +176,35 @@ export const Bookings = () => {
     setAttended([...attendedClasses, ...attendedEvents]);
     setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+        try {
+          const tagsResponse = await backend.get("/tags");
+          const initialTagFilter = {};
+          const initialTags = {};
+          tagsResponse.data.forEach((tag) => {
+            initialTagFilter[tag.id] = false;
+            initialTags[tag.id] =
+              tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
+          });
+    
+          setTagFilter(initialTagFilter);
+          setTags(initialTags);
+          // console.log(initialTags);
+        } catch (error) {
+          console.error("Error fetching tags:", error);
+        }
+      };
+      fetchTags();
+ }, []);
+
+ const handleFilterToggle = (id) => {
+    setTagFilter((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   useEffect(() => {
     const fetchCoreqId = async () => {
@@ -165,67 +230,6 @@ export const Bookings = () => {
 
     fetchCoreqId();
   }, [backend, selectedCard, isOpen]);
-
-  const fetchTags = async () => {
-    try {
-      const tagsResponse = await backend.get("/tags");
-      const initialTagFilter = {};
-      const initialTags = {};
-      tagsResponse.data.forEach((tag) => {
-        initialTagFilter[tag.id] = false;
-        initialTags[tag.id] =
-          tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
-      });
-
-      setTagFilter(initialTagFilter);
-      setTags(initialTags);
-      // console.log(initialTags);
-    } catch (error) {
-      console.error("Error fetching tags:", error);
-    }
-  };
-
-  const fetchEventsByTag = async (tagId) => {
-    try {
-      const res = await backend.get(`/event-tags/events/${tagId}`);
-      const events = res.data;
-      setEvents(events);
-    } catch (error) {
-      console.error("Error fetching events for specified tag:", error);
-    }
-  };
-
-  const fetchAllEvents = async () => {
-    try {
-      const res = await backend.get("/events/published");
-      setEvents(res.data);
-    } catch (error) {
-      console.error("Error fetching all events:", error);
-    }
-  }
-
-  const fetchClassesByTag = async (tagId) => {
-    try {
-      const res = await backend.get(`/class-tags/classes/${tagId}`);
-      const classes = res.data;
-      setClasses(classes);
-    } catch (error) {
-      console.error("Error fetching events for specified tag:", error);
-    }
-  };
-
-  const fetchAllClasses = async () => {
-    try {
-      const res = await backend.get("/classes/published");
-      setClasses(res.data);
-    } catch (error) {
-      console.error("Error fetching all events:", error);
-    }
-  }
-
-  useEffect(() => {
-    fetchTags();
-  }, [searchInput]);
 
   const onCloseModal = () => {
     setSelectedCard(null);
@@ -323,33 +327,7 @@ export const Bookings = () => {
     }
   };
 
-  const isFilterActive = Object.values(tagFilter).some(Boolean);
-
-  const handleFilterToggle = (id) => () => {
-    console.log(`Tag ${id} has been toggled!`);
-    setTagFilter((prev) => {
-      const updatedFilter = { ...prev, [id]: !prev[id] };
-      return updatedFilter;
-    });
-    if (tagFilter[id]) {
-      fetchAllEvents();
-    } else {
-      fetchEventsByTag(id);
-    }
-  };
-
-  const handleClassFilterToggle = (id) => () => {
-    console.log(`Tag ${id} has been toggled!`);
-    setTagFilter((prev) => {
-      const updatedFilter = { ...prev, [id]: !prev[id] };
-      return updatedFilter;
-    });
-    if (tagFilter[id]) {
-      fetchAllClasses();
-    } else {
-      fetchClassesByTag(id);
-    }
-  };
+  // const isFilterActive = Object.values(tagFilter).some(Boolean);
 
   const loadCorequisites = async (classId) => {
     try {
@@ -364,21 +342,52 @@ export const Bookings = () => {
     }
   };
 
+  const handleClassSearch = async (query) => {
+    if (currentUser && role === "student") {
+      // For students, search within their enrolled classes
+      const enrolledRes = await backend.get(`/class-enrollments/student/${user_id}`);
+      const allEnrolledClasses = enrolledRes.data;
+      
+      // Client-side search filtering
+      const filteredClasses = allEnrolledClasses.filter(cls => 
+        cls.title.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      setClasses(filteredClasses);
+    } else {
+      // For teachers/admin, keep the existing server-side search
+      const searchRes = await backend.get(`/classes/search/${query}`);
+      setClasses(searchRes.data);
+    }
+  }
+
+  const handleEventSearch = async (query) => {
+    if (currentUser && role === "student") {
+      // For students, search within their enrolled events
+      const enrolledRes = await backend.get(`/event-enrollments/student/${user_id}`);
+      const allEnrolledEvents = enrolledRes.data;
+      
+      // Client-side search filtering
+      const filteredEvents = allEnrolledEvents.filter(evt => 
+        evt.title.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      setEvents(filteredEvents);
+    } else {
+      // For teachers/admin, keep the existing server-side search
+      const searchRes = await backend.get(`/events/search/${query}`);
+      setEvents(searchRes.data);
+    }
+  }
+
   const reloadClassesAndDrafts = async () => {
     try {
-      if (searchInput) {
-        backend.get(`/events/search/${searchInput}`).then((res) => setEvents(res.data));
-        backend.get(`/classes/search/${searchInput}`).then((res) => {
-          setClasses(res.data);
-        });
-      } else {
-        backend.get(`/events/published`).then((res) => setEvents(res.data));
-        backend.get(`/classes/published`).then((res) => {
-          setClasses(res.data);
-        });
-      }
-      backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
-      backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
+      await Promise.all([
+        backend.get(`/events/published`).then((res) => setEvents(res.data)),
+        backend.get(`/classes/published`).then((res) => setClasses(res.data)),
+        backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data)),
+        backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data))
+      ]);
 
       const attendedClasses = classes.filter((c) => c.attendance !== null);
       const attendedEvents = events.filter((e) => e.attendance !== null);
@@ -391,36 +400,31 @@ export const Bookings = () => {
   };
 
   const reloadClasses = async () => {
-    if (searchInput) {
-      backend.get(`/classes/search/${searchInput}`).then((res) => {
+      await backend.get(`/classes/published`).then((res) => {
         setClasses(res.data);
       });
-    } else {
-      backend.get(`/classes/published`).then((res) => {
-        setClasses(res.data);
-      });
-    }
 
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
-    loadCorequisites(selectedCard.id);
+
+    if (selectedCard) {
+      loadCorequisites(selectedCard.id);
+    }
   };
 
   const reloadEvents = async () => {
-    if (searchInput) {
-      backend.get(`/events/search/${searchInput}`).then((res) => {
+    await backend.get(`/events/published`).then((res) => {
         setEvents(res.data);
       });
-    } else {
-      backend.get(`/events/published`).then((res) => {
-        setEvents(res.data);
-      });
-    }
+
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
-    loadCorequisites(selectedCard.id);
+
+    if (selectedCard) {
+      loadCorequisites(selectedCard.id);
+    }
   };
 
   // useEffect(() => {
@@ -481,52 +485,12 @@ export const Bookings = () => {
     return d;
   };
 
-  const handleKeyDown = async (e) => {
-    if (e.key === "Enter") {
-      if (tabIndex === 0) {
-        console.log("hay");
-        await reloadClasses();
-        toggleClasses();
-      } else if (tabIndex === 1) {
-        await reloadEvents();
-        toggleEvents();
-      }
-    }
-  };
-
-  // console.log("draft classes", draftClasses);
-  // console.log("events", events);
-  // console.log("attended", classes);
-  // console.log("selected card", selectedCard);
   return (
     <Box pt={2}>
       <VStack
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
-        <Box
-          px={4}
-          width="100%"
-          pt={4}
-        >
-          <InputGroup>
-            <InputLeftElement pointerEvents="none">
-              <FaSearch color="gray.300" />
-            </InputLeftElement>
-            <Input
-              placeholder="Search"
-              variant="filled"
-              borderRadius="full"
-              borderColor={"gray.300"}
-              bg="white.100"
-              _hover={{ bg: "gray.200" }}
-              _focus={{ bg: "white", borderColor: "gray.300" }}
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-          </InputGroup>
-        </Box>
 
         <Tabs
           width="100%"
@@ -537,59 +501,101 @@ export const Bookings = () => {
           <TabList justifyContent="center">
             <Tab
               _selected={{
-                color: "black",
-                borderBottom: "2px solid black",
-                borderColor: "black",
+                borderBottom: "2px",
+                borderColor: "purple.600",
                 fontWeight: "bold",
+                color: "purple.600",
               }}
             >
               Classes
             </Tab>
             <Tab
               _selected={{
-                color: "black",
-                borderBottom: "2px solid black",
-                borderColor: "black",
+                borderBottom: "2px",
+                borderColor: "purple.600",
                 fontWeight: "bold",
+                color: "purple.600",
               }}
             >
               Events
             </Tab>
             <Tab
               _selected={{
-                color: "black",
-                borderBottom: "2px solid black",
-                borderColor: "black",
+                borderBottom: "2px",
+                borderColor: "purple.600",
                 fontWeight: "bold",
+                color: "purple.600",
               }}
             >
               {role !== "student" ? "Drafts" : "Attended"}
             </Tab>
           </TabList>
-
+          {/* <Box
+            px={4}
+            width="100%"
+            pt={4}
+          >
+            <InputGroup>
+              <InputLeftElement pointerEvents="none">
+                <FaSearch color="gray.300" />
+              </InputLeftElement>
+              <Input
+                placeholder="Search"
+                variant="filled"
+                borderRadius="full"
+                borderColor={"gray.300"}
+                bg="white.100"
+                _hover={{ bg: "gray.200" }}
+                _focus={{ bg: "white", borderColor: "gray.300" }}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </InputGroup>
+          </Box> */}
           <TabPanels>
             <TabPanel>
-            <Flex gap={3}>
-                  {Object.keys(tags).map((tag) => (
-                    <Badge
-                      key={tag}
-                      onClick={handleClassFilterToggle(tag)}
-                      rounded="xl"
-                      px={4}
-                      py={1}
-                      colorScheme={tagFilter[tag] ? "green" : "red"}
-                      textTransform="none"
-                    >
-                      {tags[tag]}
-                    </Badge>
-                  ))}
-                </Flex>
+              <SearchBar
+                  onSearch={handleClassSearch}
+                  tags={tags}
+                  tagFilter={tagFilter}
+                  onTag={handleFilterToggle}
+              />
               <VStack
                 spacing={4}
                 width="100%"
                 my={5}
                 mb={20}
+                justifyContent="center"
               >
+                {role !== "student" && (
+                  <Box
+                    w={{ base: "90%", md: "30em" }}
+                    cursor="pointer"
+                    onClick={() => {
+                      setSelectedCard(null);
+                      setCurrentModal("create");
+                      onOpen();
+                    }}
+                  >
+                    <Card
+                      w="100%"
+                      border="1px"
+                      borderColor="gray.300"
+                      bg="gray.50"
+                      _hover={{ bg: "gray.60" }}
+                    >
+                      <CardBody textAlign="center">
+                        <Text
+                          fontSize="xl"
+                          fontWeight="semibold"
+                        >
+                          Add a Class +
+                        </Text>
+                      </CardBody>
+                    </Card>
+                  </Box>
+                )}
                 {role !== "student" ? (
                   classes.length > 0 ? (
                     classes.map((classItem, index) => (
@@ -606,13 +612,29 @@ export const Bookings = () => {
                     <Text>No classes available.</Text>
                   )
                 ) : classes.length > 0 ? (
-                  classes.map((classItem) => (
-                    <ClassCard
-                      key={classItem.id}
-                      {...classItem}
-                      onClick={() => updateModal(classItem)}
-                    />
-                  ))
+                  classes.map((classItem) => {
+                    const isFilterActive = Object.values(tagFilter).some(Boolean);
+                    const classTags = classTagsMap[classItem.id] || [];
+                    
+                    if (!isFilterActive || classTags.some(tagId => tagFilter[tagId])) {
+                      return (
+                        <Box
+                          key={classItem.id}
+                          display="flex"
+                          justifyContent="center"
+                          w="100%"
+                        >
+                          <ClassCard
+                            {...classItem}
+                            onClick={() => updateModal(classItem)}
+                            triggerRefresh={triggerRefresh}
+                            onCloseModal={onCloseModal}
+                          />
+                        </Box>
+                      );
+                    }
+                    return null;
+                  })
                 ) : (
                   <Text>No classes booked.</Text>
                 )}
@@ -620,37 +642,65 @@ export const Bookings = () => {
             </TabPanel>
 
             <TabPanel>
-                <Flex gap={3}>
-                  {Object.keys(tags).map((tag) => (
-                    <Badge
-                      key={tag}
-                      onClick={handleFilterToggle(tag)}
-                      rounded="xl"
-                      px={4}
-                      py={1}
-                      colorScheme={tagFilter[tag] ? "green" : "red"}
-                      textTransform="none"
-                    >
-                      {tags[tag]}
-                    </Badge>
-                  ))}
-                </Flex>
+              <SearchBar
+                onSearch={handleEventSearch}
+                tags={tags}
+                tagFilter={tagFilter}
+                onTag={handleFilterToggle}
+            />
               <VStack
                 spacing={4}
                 width="100%"
                 my={5}
                 mb={20}
+                justifyContent="center"
               >
+                {role !== "student" && (
+                  <Box
+                    w={{ base: "90%", md: "30em" }}
+                    cursor="pointer"
+                    onClick={() => {
+                      setSelectedCard(null);
+                      setCurrentModal("create");
+                      onOpen();
+                    }}
+                  >
+                    <Card
+                      w="100%"
+                      border="1px"
+                      borderColor="gray.300"
+                      bg="gray.50"
+                      _hover={{ bg: "gray.60" }}
+                    >
+                      <CardBody textAlign="center">
+                        <Text
+                          fontSize="xl"
+                          fontWeight="semibold"
+                        >
+                          Add an Event +
+                        </Text>
+                      </CardBody>
+                    </Card>
+                  </Box>
+                )}
                 {events.length > 0 ? (
-                  events.map((eventItem) => (
-                    <EventCard
-                      key={eventItem.id}
-                      {...eventItem}
-                      onClick={() => updateModal(eventItem)}
-                      triggerRefresh={triggerRefresh}
-                      onCloseModal={onCloseModal}
-                    />
-                  ))
+                  events.map((eventItem) => {
+                    const isFilterActive = Object.values(tagFilter).some(Boolean);
+                    const eventTags = eventTagsMap[eventItem.id] || [];
+                    
+                    if (!isFilterActive || eventTags.some(tagId => tagFilter[tagId])) {
+                      return (
+                        <EventCard
+                          key={eventItem.id}
+                          {...eventItem}
+                          onClick={() => updateModal(eventItem)}
+                          triggerRefresh={triggerRefresh}
+                          onCloseModal={onCloseModal}
+                        />
+                      );
+                    }
+                    return null;
+                  })
                 ) : (
                   <Text>No events booked.</Text>
                 )}
@@ -663,6 +713,7 @@ export const Bookings = () => {
                 width="100%"
                 my={5}
                 mb={20}
+                justifyContent={"center"}
               >
                 {role !== "student" ? (
                   drafts.length > 0 ? (
@@ -760,7 +811,7 @@ export const Bookings = () => {
                 <HStack justify="space-between">
                   <MdArrowBackIosNew onClick={onCloseModal} />
                   <Heading size="lg">
-                    {tabIndex === 0 ? "Create a Class" : "Create an Event"}
+                    {tabIndex === 0 ? "New Class" : "New Event"}
                   </Heading>{" "}
                   {/* Will add from prop */}
                   <MdMoreHoriz opacity={0} />
@@ -818,28 +869,6 @@ export const Bookings = () => {
           type={cardType}
         />
       )}
-      {isTeacher && tabIndex !== 2 && (
-        <Button
-          onClick={() => {
-            setSelectedCard(null);
-            setCurrentModal("create");
-            onOpen();
-          }}
-          position="fixed"
-          bottom="90px"
-          right="20px"
-          borderRadius="50%"
-          width="66px"
-          height="66px"
-          bg="purple.600"
-          color="white"
-          _hover={{ bg: "blue.700" }}
-          fontSize="4xl"
-          zIndex={999}
-        >
-          <MdAdd size={40} />
-        </Button>
-      )}
       <Navbar />
     </Box>
   );
@@ -866,143 +895,182 @@ const ClassTeacherCard = memo(
     endTime,
     navigate,
     setSelectedCard,
+    tagId,
     onOpen,
   }) => {
+    const formattedDate = date ? formatDate(date) : null;
+    const formattedStartTime = startTime ? formatTime(startTime) : null;
+    const formattedEndTime = endTime ? formatTime(endTime) : null;
+    const getIcon = () => {
+      const iconSize = 50;
+      switch (tagId) {
+        case 1:
+          return <FaMusic size={iconSize} />;
+        case 2:
+          return <GiBallerinaShoes size={iconSize} />;
+        case 3:
+          return <FaMicrophoneAlt size={iconSize} />;
+        case 4:
+          return <GiBoombox size={iconSize} />;
+        case 5:
+          return <GiAbstract001 size={iconSize} />;
+        case 6:
+          return <GiCartwheel size={iconSize} />;
+        case 7:
+          return <GiTambourine size={iconSize} />;
+        default:
+          return <FaMusic size={iconSize} />;
+      }
+    };
     return (
-      <Card
-        w={{ base: "90%", md: "30em" }}
-        bg="gray.200"
+      <Box
+       display="flex"
+       justifyContent="center"
+       w={{ base: "100%", md: "30em" }}
       >
-        <CardHeader pb={0}>
-          <Heading
-            size="md"
-            fontWeight="bold"
-          >
-            {title ? title : "Placeholder Title"}
-          </Heading>
-        </CardHeader>
-        <CardBody>
-          <VStack
-            align="stretch"
-            spacing={2}
-          >
-            <HStack>
-              <FaClock size={14} />
-              <Text fontSize="sm">
-                  {
-                    date ? 
-                    `${formatDate(date)} @ ${formatTime(startTime)} - ${formatTime(endTime)}` : 
-                    "No date"
-                  }
-              </Text>
-            </HStack>
-            <HStack>
-              <FaMapMarkerAlt size={14} />
-              <Text fontSize="sm">{location ? location : "Irvine"}</Text>
-            </HStack>
-            <HStack>
-              <FaUser size={14} />
-              <Text fontSize="sm">
-                {rsvpCount ? rsvpCount : 10}{" "}
-                {rsvpCount === 1 ? "person" : "people"} RSVP'd
-              </Text>
-            </HStack>
-            <Button
-              alignSelf="flex-end"
-              variant="solid"
-              size="sm"
-              bg="purple.600"
-              color="white"
-              _hover={{ bg: "gray.700" }}
-              mt={2}
-              onClick={
-                isDraft
-                  ? () => {
-                      const modalData = {
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        level,
-                        costume,
-                        performances: performance,
-                        isRecurring,
-                        recurrencePattern,
-                        startDate,
-                        endDate,
-                        isDraft,
-                        rsvpCount,
-                        startTime,
-                        endTime,
-                      };
-                      setSelectedCard(modalData);
-                      onOpen({
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        isRecurring,
-                        recurrencePattern,
-                        startDate,
-                        endDate,
-                        level,
-                        costume,
-                        isDraft,
-                        startTime,
-                        endTime,
-                      });
-                    }
-                  : () => {
-                      const modalData = {
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        level,
-                        costume,
-                        isRecurring,
-                        recurrencePattern,
-                        performances: performance,
-                        isDraft,
-                        startDate,
-                        endDate,
-                        rsvpCount,
-                        startTime,
-                        endTime,
-                      };
-                      setSelectedCard(modalData);
-                      onOpen({
-                        id,
-                        title,
-                        location,
-                        date,
-                        description,
-                        capacity,
-                        level,
-                        isRecurring,
-                        recurrencePattern,
-                        costume,
-                        startDate,
-                        endDate,
-                        isDraft,
-                        startTime,
-                        endTime,
-                      });
-                    }
-                // : () => navigate(`/dashboard/classes/${classId}`)
+
+      <Card
+        cursor="pointer"
+        key={id}
+        w={{ base: "90%", md: "30em" }}
+        border="1px"
+        borderColor="gray.300"
+        bg="gray.50"
+        onClick={
+          isDraft
+            ? () => {
+                const modalData = {
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  level,
+                  costume,
+                  performances: performance,
+                  isRecurring,
+                  recurrencePattern,
+                  startDate,
+                  endDate,
+                  isDraft,
+                  rsvpCount,
+                  startTime,
+                  endTime,
+                };
+                setSelectedCard(modalData);
+                onOpen({
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  isRecurring,
+                  recurrencePattern,
+                  startDate,
+                  endDate,
+                  level,
+                  costume,
+                  isDraft,
+                  startTime,
+                  endTime,
+                });
               }
+            : () => {
+                const modalData = {
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  level,
+                  costume,
+                  isRecurring,
+                  recurrencePattern,
+                  performances: performance,
+                  isDraft,
+                  startDate,
+                  endDate,
+                  rsvpCount,
+                  startTime,
+                  endTime,
+                };
+                setSelectedCard(modalData);
+                onOpen({
+                  id,
+                  title,
+                  location,
+                  date,
+                  description,
+                  capacity,
+                  level,
+                  isRecurring,
+                  recurrencePattern,
+                  costume,
+                  startDate,
+                  endDate,
+                  isDraft,
+                  startTime,
+                  endTime,
+                });
+              }
+          // : () => navigate(`/dashboard/classes/${classId}`)
+        }
+      >
+        <CardBody px={0}>
+          <Box
+            position="absolute"
+            textAlign="center"
+            justifyContent="center"
+            alignItems="center"
+            display="flex"
+            height="20px"
+            top="10px"
+            right="5%"
+            px="16px"
+            py="2px"
+            borderRadius="full"
+            border="0.2px solid"
+            borderColor="purple.600"
+            color="purple.700"
+            backgroundColor="purple.50"
+            fontSize="10px"
+          >
+            <Text>
+              {rsvpCount ?? 0} {(rsvpCount ?? 0) === 1 ? "Person" : "People"}{" "}
+              Enrolled
+            </Text>
+          </Box>
+          <HStack>
+            <Box px="20px">{getIcon()}</Box>
+            <VStack
+              alignItems="flex-start"
+              py="1rem"
             >
-              {isDraft ? "Edit" : "View Details >"}
-            </Button>
-          </VStack>
+              <Text
+                fontSize="1.5rem"
+                fontWeight="bold"
+              >
+                {title}
+              </Text>
+
+              <HStack>
+                <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
+              </HStack>
+              <HStack>
+                <Text fontSize="sm">
+                    {formattedDate
+                      ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
+                      : "No date"}
+                </Text>
+              </HStack>
+            </VStack>
+          </HStack>
         </CardBody>
       </Card>
+      </Box>
     );
   }
 );

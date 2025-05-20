@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Center,
+  Divider,
   Flex,
   Heading,
   HStack,
@@ -51,6 +52,7 @@ import { CreateEvent } from "../../forms/createEvent";
 import { EventRSVP } from "../../rsvp/eventRsvp";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
 import { QRCode } from "./qrcode/QRCode.jsx";
+import { AiOutlineArrowLeft } from  "react-icons/ai";
 
 function TeacherEventViewModal({
   isOpenProp,
@@ -89,6 +91,7 @@ function TeacherEventViewModal({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
+
 
   // disclosure for rsvp
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -184,6 +187,8 @@ function TeacherEventViewModal({
     }
   }, [imageSrc, isOpenProp]);
 
+
+
   return (
     <>
       <SuccessSignupModal
@@ -268,14 +273,14 @@ function TeacherEventViewModal({
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>
+            <ModalHeader bg = "gray.50">
               <HStack justify="space-between">
-                <MdArrowBackIosNew onClick={handleClose} />
-                <Heading size="lg">{title ? title : "N/A"}</Heading>
+                <AiOutlineArrowLeft cursor="pointer" onClick={handleClose} />
                 <Menu>
                   <MenuButton
+                    bg = "gray.50"
                     as={IconButton}
-                    icon={<MdMoreHoriz />}
+                    icon={<MdMoreHoriz/>}
                   />
                   <MenuList
                     backgroundColor="gray.100"
@@ -304,7 +309,7 @@ function TeacherEventViewModal({
                 </Menu>
               </HStack>
             </ModalHeader>
-            <ModalBody>
+            <ModalBody bg="gray.50">
               {/* <HStack padding={3}>
               <Box width="60%">
                 <Text fontWeight="bold">Location:</Text>
@@ -318,54 +323,39 @@ function TeacherEventViewModal({
 
               <VStack>
                 <Box
-                  bg="gray.200"
+                  bg="white"
                   h="100%"
                   w="100%"
-                  mt="4"
                   mb="4"
                   p="4"
+                  boxShadow="md"
+                  borderRadius="lg"
                 >
-                  <Box
-                    bg="gray"
-                    h="100%"
-                    w="100%"
-                    p="4"
-                    mt="4"
-                    color="white"
-                  >
+                 
                     <Center>
                       <QRCode
                         id={id}
                         type="Event"
                       ></QRCode>
                     </Center>
-                    <Center>
-                      <Button
-                        colorScheme="blue"
-                        mr={3}
-                      >
-                        Share
-                      </Button>
-                    </Center>
-                  </Box>
                   <Box
                     width="100%"
                     align="center"
                   >
-                    <Text fontWeight="bold">
+                    <Text fontSize = "1.5rem" fontWeight="bold">
                       {" "}
-                      {rsvpnum ? rsvpnum : 0} RSVPs
+                      {rsvpnum ? rsvpnum : 0} People Enrolled
                     </Text>
                     <Button
                       onClick={onOpen}
                       variant="unstyled"
-                      fontSize="lg"
+                      fontSize="1.2rem"
                       fontWeight="normal"
-                      color="purple"
+                      color="black"
                       textDecoration="underline"
                       _focus={{ boxShadow: "none" }}
                     >
-                      View attendees &gt;
+                      <u>View Attendees</u>
                     </Button>
                     <EventRSVP
                       isOpen={isOpen}
@@ -380,44 +370,46 @@ function TeacherEventViewModal({
                 spacing={4}
                 align="center"
               >
-                <HStack
-                  spacing={4}
-                  width={"100%"}
-                  justifyContent={"space-around"}
+                <Box 
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
                 >
-                  <Box width="60%">
-                    <Text
-                      fontWeight="bold"
-                      fontSize={20}
-                    >
-                      Location
-                    </Text>
-                    <Text>{location ? location : "N/A"}</Text>
-                  </Box>
-                  <Box width="40%">
-                    <Text
-                      fontWeight="bold"
-                      fontSize={20}
-                    >
-                      Date
-                    </Text>
-                    <Text>{formattedDate ? formattedDate : "N/A"}</Text>
-                  </Box>
-                </HStack>
-
-                <Box width="100%">
-                  <Text
+                  <Text 
+                    fontSize="1.8rem"
                     fontWeight="bold"
-                    fontSize={20}
                   >
-                    Event Time
+                    {title}
                   </Text>
-                  <Text>
-                    {formattedStartTime ? formattedStartTime : "TBD"} to{" "}
+                </Box>
+                <Box 
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                >
+                </Box>
+                <Box 
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                >
+                  <Text fontSize="16px"
+                  >
+                    {description}
+                  </Text>
+                </Box>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+                <Box width="100%">
+                  <Text color='purple.700' fontWeight="bold" fontSize="16px">
+                    {formattedDate} ·{" "}
+                    {formattedStartTime ? formattedStartTime : "TBD"} -{" "}
                     {formattedEndTime ? formattedEndTime : "TBD"}
                   </Text>
                 </Box>
-
+                <Box width="100%">
+                    <Text fontSize="16px">{location ? location : "N/A"}</Text>
+                </Box>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
                 <Box width="100%">
                   <Text
                     fontWeight="bold"
@@ -427,16 +419,7 @@ function TeacherEventViewModal({
                   </Text>
                   <Text>{formattedCallTime ? formattedCallTime : "TBD"}</Text>
                 </Box>
-
-                <Box width="100%">
-                  <Text
-                    fontWeight="bold"
-                    fontSize={20}
-                  >
-                    Description
-                  </Text>
-                  <Text>{description ? description : "TBD"}</Text>
-                </Box>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
 
                 <HStack
                   spacing={4}
@@ -462,6 +445,7 @@ function TeacherEventViewModal({
                     <Text>{level ? level : "TBD"}</Text>
                   </Box>
                 </HStack>
+                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
 
                 <HStack width={"100%"}>
                   <Box>
@@ -481,10 +465,11 @@ function TeacherEventViewModal({
                         as="b"
                         fontSize={20}
                       >
-                        Class Corequisites
+                        Event Prerequisites
                       </Text>
+                      <Text color = "gray.600">We recommend taking these classes before enrolling in this event</Text>
                       {!corequisites || corequisites.length === 0 ? (
-                        <Text>No corequisites for this class</Text>
+                        <Text>No corequisites for this event</Text>
                       ) : (
                         <List>
                           {corequisites.map((coreq, index) => (

@@ -7,19 +7,26 @@ import { Link, useLocation } from "react-router-dom";
 import { FaSearch, FaCalendarAlt, FaBook, FaUser } from 'react-icons/fa';
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+import { useRoleContext } from "../../contexts/hooks/useRoleContext";
+
 
 export const Navbar = () => {
-  const { role } = useAuthContext();
+  const { role: user_role } = useAuthContext();
+  const { role } = useRoleContext();
+  console.log("role from navbar:", role);
   const location = useLocation();
+  const dashboardImg = "./dashboard.svg";
 
   const navItems = [
-    ...(role !== 'teacher' ? [{ path: "/discovery", icon: FaSearch, label: "Discover" }] : []),
+    ...(role === 'admin' ? [{path: "/dashboard", src: dashboardImg, label: "Dashboard"}] : []),
+    ...((user_role !== 'teacher' || role === 'admin') ? [{ path: "/discovery", icon: FaSearch, label: "Discovery" }] : []),
     { path: "/bookings", icon: FaCalendarAlt, label: "Schedule" },
     { path: "/resources", icon: FaBook, label: "Resources" },
     { path: "/profile", icon: FaUser, label: "Profile" },
   ];
 
   return (
+    console.log("my role:", role),
     <Box
       as="footer"
       position="fixed"

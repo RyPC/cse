@@ -24,6 +24,7 @@ export const NavigationSidebar = () => {
       position="sticky"
       top={0}
     >
+      
       <Flex direction="column" gap={2}>
         {routes.map((route) => (
           <RouterLink to={route.path} key={route.path}>
@@ -42,6 +43,7 @@ export const NavigationSidebar = () => {
             >
               <Icon as={route.icon} mr={3} boxSize={5} />
               <Text fontSize="md">{route.name}</Text>
+              
             </Link>
           </RouterLink>
         ))}

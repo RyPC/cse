@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Badge,
   Box,
+  Flex,
   Heading,
   HStack,
   Image,
@@ -51,6 +52,8 @@ export const ClassCard = ({
       w="100%"
       bg="gray.50"
       borderRadius="16px"
+      borderColor={"gray.300"}
+      borderWidth={1}
       px={6}
       py={10}
       position="relative"
@@ -81,25 +84,32 @@ export const ClassCard = ({
         align="center"
       >
         {/* two-shoe icon */}
-        <HStack spacing={-4}>
+        <Flex
+          w={"20%"}
+          align="center"
+          justify="center"
+        >
           <Image
             src="/card_images/ballet.svg"
-            boxSize="80px"
-            mx={3}
+            alt="Class illustration"
+            maxW="100%"
+            maxH="100%"
             objectFit="contain"
-            transform="rotate(-15deg)"
+            // transform="rotate(-15deg)"
           />
 
-        </HStack>
+        </Flex>
 
         {/* text */}
         <VStack
+          w={"80%"}
           align="flex-start"
           spacing={1}
         >
           <Heading
             size="md"
-            color="gray.800"
+            fontWeight={"semibold"}
+            color="gray.700"
           >
             {title}
           </Heading>

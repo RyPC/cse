@@ -23,5 +23,5 @@
     "useUnknownInCatchVariables": false, // https://stackoverflow.com/a/69445095
     "noUncheckedIndexedAccess": true
   },
-  "include": ["src", "../src/components/ui"]
+  "include": ["src"]
 }

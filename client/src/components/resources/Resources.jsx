@@ -1,5 +1,22 @@
-import { Badge, Box, Center, Flex, IconButton, Input, InputGroup, InputLeftAddon, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+
+import {
+  Badge,
+  Box,
+  Center,
+  Flex,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftAddon,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
+
 import { IoSearch } from "react-icons/io5";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -7,6 +24,7 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { NewsCard } from "./NewsCard";
 import { ControllerModal } from "./ResourceFlow/ResourceFlowController";
+import { SearchBar } from "../searchbar/SearchBar";
 import { UploadComponent } from "./UploadComponent";
 import { VideoCard } from "./VideoCard";
 
@@ -19,8 +37,9 @@ export const Resources = () => {
   const [tagFilter, setTagFilter] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+  const [tab, setTab] = useState();
 
-  const {role} = useAuthContext();
+  const { role } = useAuthContext();
 
   const handleInputChange = (e) => {
     setSearchInput(e.target.value);
@@ -102,10 +121,15 @@ export const Resources = () => {
   const searchArticles = async () => {
     if (searchInput) {
       try {
-        const response = await backend.get(`/articles/with-tags/search/${searchInput}`);
+        const response = await backend.get(
+          `/articles/with-tags/search/${searchInput}`
+        );
         setArticles(response.data);
       } catch (error) {
-        console.error(`Error fetching articles with query '${searchInput}':`, error);
+        console.error(
+          `Error fetching articles with query '${searchInput}':`,
+          error
+        );
       }
     } else {
       try {
@@ -117,114 +141,132 @@ export const Resources = () => {
     }
   };
 
+  const handleSearch = async (query) => {
+    try {
+      if (tabIndex === 0) {
+        const res = await backend.get(`/classes-videos/with-tags/search/${query}`);
+        setVideos(res.data);
+      } else if (tabIndex === 1) {
+        const res = await backend.get(`/articles/with-tags/search/${query}`);
+        setArticles(res.data);
+      }
+    } catch (err) {
+      console.log("Error fetching search:", err);
+    }
+  }
+
   useEffect(() => {
-    if (tabIndex == 0) { // only fetch videos
+    if (tabIndex == 0) {
+      // only fetch videos
       console.log(tabIndex);
       searchVideos(); // Fetch videos initially
-    } else if (tabIndex == 1) {
+    } else if (tabIndex === 1) {
       searchArticles();
     }
     fetchNews(); // Fetch news initially
     fetchTags();   // Fetch tags initially
-  }, [searchInput, tabIndex]);
+  }, [tabIndex]);
 
   return (
     <Box position="relative" pb="70px" minHeight="100vh">
-    <Flex direction="column" p={4} gap={4}>
-      <InputGroup mt={10}>
-        <InputLeftAddon>
-          <IoSearch/>
-        </InputLeftAddon>
-        <Input
-          placeholder="Search"
-          rounded="3xl"
-          value={searchInput}
-          onChange={handleInputChange}
-        />
-      </InputGroup>
-      
-      <Flex gap={3}>
-        {Object.keys(tags).map((tag) => (
-          <Badge
-            key={tag}
-            onClick={handleFilterToggle(tag)}
-            rounded="xl"
-            px={4}
-            py={1}
-            colorScheme={tagFilter[tag] ? 'green': 'red'}
-            textTransform="none"
-          >
-            {tags[tag]}
-          </Badge>
-        ))}
-      </Flex>
+    <Flex direction="column" p={4}>
+      <SearchBar
+        onSearch={handleSearch}
+        tags={tags}
+        tagFilter={tagFilter}
+        backend={backend}
+        onTag={handleFilterToggle}
+      />
 
-      {/* place Videos and News cards into separate tabs */}
-      <Tabs
-        colorScheme="purple"
-        mt={4}
-        index={tabIndex}
-        onChange={(index) => setTabIndex(index)}>
-        <Center>
-        <TabList>
-          <Tab fontWeight="bold">Videos</Tab>
-          <Tab fontWeight="bold">Articles</Tab>
-        </TabList>
-        </Center>
-        <TabPanels>
-          <TabPanel>
-            <Text fontWeight="bold" mt={4} mb={2}>Videos</Text>
-            <Flex wrap="wrap" gap={4}>
-              {videos.map((video) => {
-                const isFilterActive = Object.values(tagFilter).some(Boolean);
-
-                if (!isFilterActive || (video.tags && video.tags.some(tag => tagFilter[tag]))) {
-                  return (
-                    <VideoCard
-                      key={video.id}
-                      id={video.id}
-                      description={video.description}
-                      title={video.title}
-                      S3Url={video.s3Url}
-                      classId={video.classId}
-                      classTitle={video.classTitle}
-                      mediaUrl={video.mediaUrl}
-                      tags={video.tags?.map(tag => tags[tag] || [])}
-                    />
-                )
-                }
-              })}
-            </Flex>
-          </TabPanel>
-          <TabPanel>
-            <Text fontWeight="bold" mt={4} mb={2}>Articles</Text>
-            <Flex wrap="wrap" gap={4}>
-              {articles.map((article) => {
+        {/* place Videos and News cards into separate tabs */}
+        <Tabs
+          colorScheme="purple"
+          mt={4}
+          index={tabIndex}
+          onChange={(index) => setTabIndex(index)}
+        >
+          <Center>
+            <TabList>
+              <Tab fontWeight="bold">Videos</Tab>
+              <Tab fontWeight="bold">Articles</Tab>
+            </TabList>
+          </Center>
+          <TabPanels>
+            <TabPanel>
+              <Text
+                fontWeight="bold"
+                mt={4}
+                mb={2}
+              >
+                Videos
+              </Text>
+              <Flex
+                wrap="wrap"
+                gap={4}
+              >
+                {videos.map((video) => {
                   const isFilterActive = Object.values(tagFilter).some(Boolean);
-                
-                  if (!isFilterActive || (article.tags && article.tags.some(tag => tagFilter[tag]))) {
-                    return ( 
+
+                  if (
+                    !isFilterActive ||
+                    (video.tags && video.tags.some((tag) => tagFilter[tag]))
+                  ) {
+                    return (
+                      <VideoCard
+                        key={video.id}
+                        id={video.id}
+                        description={video.description}
+                        title={video.title}
+                        S3Url={video.s3Url}
+                        classId={video.classId}
+                        classTitle={video.classTitle}
+                        mediaUrl={video.mediaUrl}
+                        tags={video.tags?.map((tag) => tags[tag] || [])}
+                      />
+                    );
+                  }
+                })}
+              </Flex>
+            </TabPanel>
+            <TabPanel>
+              <Text
+                fontWeight="bold"
+                mt={4}
+                mb={2}
+              >
+                Articles
+              </Text>
+              <Flex
+                wrap="wrap"
+                gap={4}
+              >
+                {articles.map((article) => {
+                  const isFilterActive = Object.values(tagFilter).some(Boolean);
+
+                  if (
+                    !isFilterActive ||
+                    (article.tags && article.tags.some((tag) => tagFilter[tag]))
+                  ) {
+                    return (
                       <NewsCard
                         key={article.id}
                         id={article.id}
                         S3Url={article.s3Url}
                         description={article.description}
                         mediaUrl={article.mediaUrl}
-                        tags={article.tags?.map(tag => tags[tag] || [])}
+                        tags={article.tags?.map((tag) => tags[tag] || [])}
                       />
-                    )
+                    );
                   }
-              })}
-            </Flex>
-          </TabPanel>
-        </TabPanels>
+                })}
+              </Flex>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
 
-      </Tabs>
-
-
-      {/* <UploadComponent /> */}
-    </Flex>
-      {role === "teacher" && 
+        {/* <UploadComponent /> */}
+      </Flex>
+      {role === "teacher" && (
         <IconButton
           icon={<span style={{ fontSize: "24px" }}>+</span>}
           colorScheme="purple"
@@ -238,7 +280,7 @@ export const Resources = () => {
           aria-label="Add new item"
           onClick={handleAddButtonClick}
         />
-      }
+      )}
       {showModal && <ControllerModal autoOpen={true} />}
       <Navbar />
     </Box>

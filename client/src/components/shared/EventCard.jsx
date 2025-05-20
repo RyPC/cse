@@ -67,108 +67,109 @@ export const EventCard = ({
     : "Date/Time not available";
 
   return (
-    <>
-      <Box
-        w="100%"
-        bg="gray.50"
-        borderRadius="16px"
-        px={6}
-        py={10}
-        position="relative"
-        cursor="pointer"
-        onClick={handleClickModal}
-        _hover={{ bg: "gray.100" }}
+    <Box
+      w="100%"
+      bg="gray.50"
+      borderRadius="16px"
+      borderColor={"gray.300"}
+      borderWidth={1}
+      px={6}
+      py={10}
+      position="relative"
+      cursor="pointer"
+      onClick={handleClickModal}
+      _hover={{ bg: "gray.100" }}
+    >
+      <Badge
+        position="absolute"
+        top={4}
+        right={4}
+        variant="outline"
+        borderStyle="dashed"
+        borderColor="purple.600"
+        color="purple.700"
+        bg="purple.50"
+        px={3}
+        py={1}
+        fontSize="xs"
+        fontWeight="medium"
+        borderRadius="full"
       >
-        <Badge
-          position="absolute"
-          top={4}
-          right={4}
-          variant="outline"
-          borderStyle="dashed"
-          borderColor="purple.600"
-          color="purple.700"
-          bg="purple.50"
-          px={3}
-          py={1}
-          fontSize="xs"
-          fontWeight="medium"
-          borderRadius="full"
-        >
-          {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
-        </Badge>
-        <HStack
-          spacing={4}
+        {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
+      </Badge>
+      <HStack
+        spacing={4}
+        align="center"
+      >
+        <Flex
+          w="20%"
           align="center"
+          justify="center"
         >
-          <Flex
-            boxSize="60px"
-            align="center"
-            justify="center"
+          <Image
+            src="/card_images/classical.svg" // Set the image source
+            alt="Event illustration"
+            maxW="100%"
+            maxH="100%"
+            objectFit="contain"
+          />
+        </Flex>
+        <VStack
+          w="80%"
+          align="flex-start"
+          spacing={1}
+        >
+          <Heading
+            size="md"
+            fontWeight="semibold"
+            color="grey.700"
           >
-            <Image
-              src="/card_images/classical.svg" // Set the image source
-              alt="Event illustration"
-              maxW="100%"
-              maxH="100%"
-              objectFit="contain"
-            />
-          </Flex>
-          <VStack
-            align="flex-start"
-            spacing={1}
+            {title}
+          </Heading>
+          <Text
+            fontSize="sm"
+            color="grey.700"
           >
-            <Heading
-              size="md"
-              fontWeight="semibold"
-              color="black"
-            >
-              {title}
-            </Heading>
-            <Text
-              fontSize="sm"
-              color="blackAlpha.800"
-            >
-              {location}
-            </Text>
-            <Text
-              fontSize="sm"
-              color="blackAlpha.800"
-            >
-              {formattedDate} · {formattedStartTime} – {formattedEndTime}
-            </Text>
-          </VStack>
-        </HStack>
-        <SignUpController
-          event_id={id}
-          title={title}
-          description={description}
-          location={location}
-          level={level}
-          costume={costume}
-          date={date}
-          startTime={startTime}
-          endTime={endTime}
-          setOpenRootModal={setOpenRootModal}
-          openRootModal={openRootModal}
-          user={user}
-        />
-      </Box>
-      <TeacherEventViewModal
-        isOpenProp={openTeacherModal}
-        handleClose={closeTeacherModal}
-        id={id}
-        location={location}
+            {location}
+          </Text>
+          <Text
+            fontSize="sm"
+            color="gray.700"
+          >
+            {formattedDate} · {formattedStartTime} – {formattedEndTime}
+          </Text>
+        </VStack>
+      </HStack>
+      <SignUpController
+        event_id={id}
         title={title}
         description={description}
+        location={location}
         level={level}
+        costume={costume}
         date={date}
         startTime={startTime}
         endTime={endTime}
-        callTime={callTime}
-        costume={costume}
-        capacity={capacity}
-        triggerRefresh={triggerRefresh}
+        setOpenRootModal={setOpenRootModal}
+        openRootModal={openRootModal}
+        user={user}
       />
-    </>
+    <TeacherEventViewModal
+      isOpenProp={openTeacherModal}
+      handleClose={closeTeacherModal}
+      id={id}
+      location={location}
+      title={title}
+      description={description}
+      level={level}
+      date={date}
+      startTime={startTime}
+      endTime={endTime}
+      callTime={callTime}
+      costume={costume}
+      capacity={capacity}
+      triggerRefresh={triggerRefresh}
+    />
+    </Box>
   );
 };

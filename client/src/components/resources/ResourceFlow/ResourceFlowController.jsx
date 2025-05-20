@@ -23,6 +23,8 @@ export const ControllerModal = ({ autoOpen = true }) => {
   const [s3URL, setS3URL] = useState("");
   const [clsId, setClsId] = useState("");
   const [description, setDescription] = useState("");
+  const [allTags, setAllTags] = useState([]);
+
   console.log(
     "Creating resource with data:",
     title,
@@ -38,6 +40,22 @@ export const ControllerModal = ({ autoOpen = true }) => {
       onOpen();
     }
   }, [autoOpen, onOpen]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await backend.get("/tags");
+        const tagsDict = response.data.reduce((acc, tag) => {
+          acc[tag.tag] = tag.id;
+          return acc;
+        }, {});
+        setAllTags(tagsDict);
+      } catch (err) {
+        console.error("Error fetching tags:", err);
+      }
+    };
+    fetchTags();
+  }, []);
 
   const onCloseModal = () => {
     setCurrentModal("select-class");
@@ -160,6 +178,7 @@ export const ControllerModal = ({ autoOpen = true }) => {
           link={link}
           s3URL={urlBeforeQuery}
           ajax={ajax}
+          allTags={allTags}
         />
       );
     } else if (currentModal === "upload-photo") {
@@ -193,6 +212,11 @@ export const ControllerModal = ({ autoOpen = true }) => {
           setDescription={setDescription}
           link={link}
           setLink={setLink}
+          s3URL={s3URL}
+          setS3URL={setS3URL}
+          tags={tags}
+          setTags={setTags}
+          allTags={allTags}
         />
       );
     }
