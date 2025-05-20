@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import {
   Box,
   Button,
+  List,
+  ListItem,
   Modal,
   ModalBody,
   ModalContent,
@@ -13,8 +15,8 @@ import {
 
 import { CiCircleCheck } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-import CompletedIndicator from "./CompletedIndicator.png"
 
+import CompletedIndicator from "./CompletedIndicator.png";
 
 function SuccessSignupModal({
   isOpen,
@@ -23,6 +25,10 @@ function SuccessSignupModal({
   isCoreq: isCorequisiteSignUp,
 }) {
   const navigate = useNavigate();
+
+  if (typeof title === "string") {
+    title = [title];
+  }
 
   useEffect(() => {
     if (isOpen) {
@@ -45,24 +51,40 @@ function SuccessSignupModal({
           display={"flex"}
           justifyContent={"center"}
         >
-          <VStack 
+          <VStack
             spacing={10}
-            minH = {"100vh"}
-            justify= {"center"}
+            minH={"100vh"}
+            justify={"center"}
             marginBottom={"10vh"}
           >
-            <VStack
-              marginTop="5rem"
-            >
-              <img src={CompletedIndicator} alt="Completed Indicator" />
-              <Text textAlign={"center"} fontWeight="bold" fontSize="xl" mt="2rem">
+            <VStack marginTop="5rem">
+              <img
+                src={CompletedIndicator}
+                alt="Completed Indicator"
+              />
+              <Text
+                textAlign={"center"}
+                fontWeight="bold"
+                fontSize="xl"
+                mt="2rem"
+              >
                 Thanks for Signing Up!
               </Text>
               <Text textAlign={"center"}>
                 You've successfully signed up for...
               </Text>
               <Text textAlign={"center"}>
-                Insert What They Signed Up For Here
+                {title && title.length > 1 ? (
+                  <List>
+                    {title.map((t, index) => (
+                      <ListItem key={index}>{t}</ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Text fontWeight="bold">
+                    {title ? title[0] : "No title detected"}
+                  </Text>
+                )}
               </Text>
             </VStack>
 
