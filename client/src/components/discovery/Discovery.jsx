@@ -1,17 +1,12 @@
 import { useEffect, useState } from "react";
 
 import {
-  Badge,
   Box,
   Button,
   Flex,
-  Input,
-  InputGroup,
-  InputLeftElement,
   VStack,
 } from "@chakra-ui/react";
 
-import { FaSearch } from "react-icons/fa";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
