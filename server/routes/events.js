@@ -37,16 +37,17 @@ eventsRouter.get("/count", async (req, res) => {
   }
 });
 
-eventsRouter.get("/corequisites/:id", async (req, res) => {
+eventsRouter.get("/corequisites/:eventid/:userid", async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, uid } = req.params;
     const corequisites = await db.query(
-      `SELECT DISTINCT c.*, ce.student_id
-       FROM classes c
-       JOIN corequisites co ON c.id = co.class_id
-       FULL OUTER JOIN class_enrollments ce ON ce.class_id = c.id
-       WHERE co.event_id = $1;`,
-      [id]
+      `SELECT DISTINCT ON (c.id) c.*, 
+              CASE WHEN ce.student_id IS NOT NULL THEN true ELSE false END AS enrolled
+        FROM classes c
+        JOIN corequisites co ON c.id = co.class_id
+        FULL OUTER JOIN class_enrollments ce ON ce.class_id = c.id AND ce.student_id = $1
+        WHERE co.event_id = $2;`,
+      [uid,id]
     );
 
     res.status(200).json(keysToCamel(corequisites));

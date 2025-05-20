@@ -92,13 +92,14 @@ function CoReqWarningModal({
       setOpenSuccessModal(true);
     });
 
-    console.log("lstCorequisites", lstCorequisites);
+    console.log("lstCorequisites in signupclicked", lstCorequisites);
 
     setTitles(
       lstCorequisites
         .filter((coreq) => coreq.enrolled)
         .map((coreq) => coreq.title)
     );
+    console.log("settitles in signupclicked", titles);
     // setOpenCoreq(true);
     killModal();
   };
@@ -117,7 +118,9 @@ function CoReqWarningModal({
         setOpenSuccessModal(true);
       });
 
+    console.log("lstCorequisites in signupclicked", lstCorequisites);
     setTitles([title]);
+    console.log("settitles in signupclicked", titles);
     // setOpenCoreq(true);
     killModal();
   };

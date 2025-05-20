@@ -42,7 +42,7 @@ function SignUpController({
       const eventCoReqId = res.data[0].id;
 
       const classCoReqs = await backend.get(
-        `/events/corequisites/${eventCoReqId}`
+        `/events/corequisites/${eventCoReqId}/${user.data[0].id}`
       );
       // setCoreqResponse(classCoReqs);
 
@@ -50,9 +50,11 @@ function SignUpController({
       res = res.data[0];
       setCoreqResponse([...classCoReqs.data, res]);
     } else {
-      await backend.get(`/events/corequisites/${id}`).then((res) => {
-        setCoreqResponse(res.data);
-      });
+      await backend
+        .get(`/events/corequisites/${id}/${user.data[0].id}`)
+        .then((res) => {
+          setCoreqResponse(res.data);
+        });
     }
   }, [backend, class_id, event_id, currentUser.uid]);
 
@@ -99,7 +101,7 @@ function SignUpController({
       console.log("Coreqs: ", coreqs);
       console.log("Filtered Coreqs: ", filteredCoreqs);
       setCorequisites(coreqs);
-    
+
       setFilteredCorequisites(filteredCoreqs);
     }
   }, [coReqResponse]);
