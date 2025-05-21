@@ -29,32 +29,20 @@ function SignUpController({
   const [filteredCorequisites, setFilteredCorequisites] = useState([]);
 
   const fetchCorequirements = useCallback(async () => {
-    const id = class_id !== null ? class_id : event_id;
-    // const COREQUISITE_ROUTE =
-    //   class_id !== null
-    //     ? `/classes/corequisites/${id}`
-    //     : `/events/corequisites/${id}`;
+    const id = class_id ?? event_id;
+    const userId = user.data[0].id;
 
-    // const response = await backend.get(COREQUISITE_ROUTE);
     if (class_id !== null) {
-      // gets associated event of class. At most 1 event coreq per class
-      let res = await backend.get(`/classes/corequisites/${id}`);
-      const eventCoReqId = res.data[0].id;
-
-      const classCoReqs = await backend.get(
-        `/events/corequisites/${eventCoReqId}/${user.data[0].id}`
+      // For classes, get associated event corequisite (max 1 per class)
+      const classCoReqResponse = await backend.get(
+        `/classes/corequisites/${id}/${userId}`
       );
-      // setCoreqResponse(classCoReqs);
-
-      // TODO: get event coreq and setCoreqResponse with Promise.all
-      res = res.data[0];
-      setCoreqResponse([...classCoReqs.data, res]);
+      setCoreqResponse(classCoReqResponse.data);
     } else {
-      await backend
-        .get(`/events/corequisites/${id}/${user.data[0].id}`)
-        .then((res) => {
-          setCoreqResponse(res.data);
-        });
+      const response = await backend.get(
+        `/events/corequisites/${id}/${userId}`
+      );
+      setCoreqResponse(response.data);
     }
   }, [backend, class_id, event_id, currentUser.uid]);
 
@@ -69,26 +57,25 @@ function SignUpController({
   useEffect(() => {
     if (coReqResponse) {
       // is this check to see an event okay? Will classes get call times in the future?
+      console.log("CoReqResponse: ", coReqResponse);
       const coreqs = coReqResponse.map((coreq) => {
         const userId = user.data[0].id;
         // No need to check userId anymore, coreq response will only return the rows for studentId
         if (userId === coreq.studentId) {
           return {
             ...coreq,
-            enrolled: true,
             isEvent: coreq.callTime ? true : false,
           };
         } else {
           return {
             ...coreq,
-            enrolled: false,
             isEvent: coreq.callTime ? true : false,
           };
         }
       });
 
       // filter out the class associated with the card the user is currently on.
-      const filteredCoreqs = coreqs.filter((coreq) => {
+      const postProcessedCoreqs = coreqs.filter((coreq) => {
         if (class_id) {
           return class_id !== coreq.id;
         }
@@ -97,12 +84,9 @@ function SignUpController({
           return event_id !== coreq.id;
         }
       });
-
-      console.log("Coreqs: ", coreqs);
-      console.log("Filtered Coreqs: ", filteredCoreqs);
+      console.log("Filtered Coreqs: ", postProcessedCoreqs);
       setCorequisites(coreqs);
-
-      setFilteredCorequisites(filteredCoreqs);
+      setFilteredCorequisites(postProcessedCoreqs);
     }
   }, [coReqResponse]);
 
@@ -126,7 +110,7 @@ function SignUpController({
           isOpenProp={openRootModal}
           id={class_id}
           {...infoProps}
-          corequisites={corequisites}
+          corequisites={filteredCorequisites}
           filteredCorequisites={filteredCorequisites}
           isCorequisiteSignUp={false}
           handleClose={toggleRootModal}
@@ -140,7 +124,7 @@ function SignUpController({
           isOpenProp={openRootModal}
           id={event_id}
           {...infoProps}
-          corequisites={corequisites}
+          corequisites={filteredCorequisites}
           isCorequisiteSignUp={false}
           handleClose={toggleRootModal}
           handleResolveCoreq={toggleCoreqModal}
