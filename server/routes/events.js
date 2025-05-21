@@ -39,7 +39,7 @@ eventsRouter.get("/count", async (req, res) => {
 
 eventsRouter.get("/corequisites/:eventid/:userid", async (req, res) => {
   try {
-    const { id, uid } = req.params;
+    const { eventid, userid } = req.params;
     const corequisites = await db.query(
       `SELECT DISTINCT ON (c.id) c.*, 
               CASE WHEN ce.student_id IS NOT NULL THEN true ELSE false END AS enrolled
@@ -47,7 +47,7 @@ eventsRouter.get("/corequisites/:eventid/:userid", async (req, res) => {
         JOIN corequisites co ON c.id = co.class_id
         FULL OUTER JOIN class_enrollments ce ON ce.class_id = c.id AND ce.student_id = $1
         WHERE co.event_id = $2;`,
-      [uid,id]
+      [userid, eventid]
     );
 
     res.status(200).json(keysToCamel(corequisites));
@@ -136,7 +136,7 @@ eventsRouter.post("/", async (req, res) => {
       call_time,
       costume,
       capacity,
-      is_draft
+      is_draft,
     } = req.body;
     const result = await db.query(
       "INSERT INTO events (location, title, description, level, date, start_time, end_time, call_time, costume, capacity, is_draft) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;",
@@ -151,7 +151,7 @@ eventsRouter.post("/", async (req, res) => {
         call_time,
         costume,
         capacity,
-        is_draft
+        is_draft,
       ]
     );
 
