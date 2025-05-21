@@ -41,7 +41,6 @@ function CoReqWarningModal({
 }) {
   const { backend } = useBackendContext();
   const { currentUser } = useAuthContext();
-  const [openCoreq, setOpenCoreq] = useState(false);
   const [coreq, setCoreq] = useState(null);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -173,7 +172,6 @@ function CoReqWarningModal({
   };
 
   const cancelSignUp = () => {
-    setOpenCoreq(false);
     handleClose();
     killModal();
   };
@@ -202,38 +200,6 @@ function CoReqWarningModal({
         // isCoreq={isCorequisiteSignUp}
       />
       <Box>
-        {origin.toUpperCase() === "CLASS" ? (
-          <EventInfoModal
-            user={user}
-            isOpenProp={openCoreq}
-            id={coreq.id}
-            title={coreq.title}
-            location={coreq.location}
-            description={coreq.description}
-            level={coreq.level}
-            date={coreq.date}
-            capacity={coreq.capacity}
-            costume={coreq.costume}
-            isCorequisiteSignUp={true}
-            handleClose={cancelSignUp}
-          />
-        ) : (
-          <ClassInfoModal
-            user={user}
-            isOpenProp={openCoreq}
-            title={coreq.title}
-            description={coreq.description}
-            location={coreq.location}
-            date={coreq.date}
-            capacity={coreq.capacity}
-            costume={coreq.costume}
-            level={coreq.level}
-            id={coreq.id}
-            isCorequisiteSignUp={true}
-            handleClose={cancelSignUp}
-          />
-        )}
-
         <Modal
           isOpen={isOpenProp}
           onClose={() => {}}

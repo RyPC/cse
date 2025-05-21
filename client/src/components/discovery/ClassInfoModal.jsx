@@ -131,7 +131,7 @@ function ClassInfoModal({
               spacing={4}
               align="center"
             >
-              {!isCorequisiteSignUp && corequisites && corequisites.length !== 0 && (
+              {corequisites && corequisites.length !== 0 && (
                 <HStack width="100%">
                   <Box
                     bg="#E8E7EF"
@@ -146,18 +146,18 @@ function ClassInfoModal({
                       <HStack align="center">
                         <Text as="b">Recommended</Text>
                       </HStack>
-                        <List>
-                          {filteredCorequisites.map((coreq, index) => (
-                            <ListItem key={index}>
-                              <ListIcon
-                                as={
-                                  coreq.enrolled ? FaCircleCheck : FaTimesCircle
-                                }
-                              />
-                              {coreq.title}
-                            </ListItem>
-                          ))}
-                        </List>
+                      <List>
+                        {corequisites.map((coreq, index) => (
+                          <ListItem key={index}>
+                            <ListIcon
+                              as={
+                                coreq.enrolled ? FaCircleCheck : FaTimesCircle
+                              }
+                            />
+                            {coreq.title}
+                          </ListItem>
+                        ))}
+                      </List>
                     </VStack>
                   </Box>
                 </HStack>

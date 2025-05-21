@@ -155,7 +155,7 @@ function EventInfoModal({
               align="center"
             >
               <HStack width="100%">
-                {!isCorequisiteSignUp && (
+                {corequisites && corequisites.length > 0 && (
                   <Box
                     bg="#E8E7EF"
                     borderRadius="md"
@@ -163,31 +163,16 @@ function EventInfoModal({
                     p={4}
                   >
                     <Text as="b">Recommended</Text>
-                    {!corequisites || corequisites.length === 0 ? (
-                      <Text>
-                        No corequisites for this{" "}
-                        <Text
-                          as="span"
-                          fontWeight="bold"
-                          color="red"
-                        >
-                          event
-                        </Text>
-                      </Text>
-                    ) : (
-                      <List>
-                        {corequisites.map((coreq, index) => (
-                          <ListItem key={index}>
-                            <ListIcon
-                              as={
-                                coreq.enrolled ? FaCircleCheck : FaTimesCircle
-                              }
-                            />
-                            {coreq.title}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
+                    <List>
+                      {corequisites.map((coreq, index) => (
+                        <ListItem key={index}>
+                          <ListIcon
+                            as={coreq.enrolled ? FaCircleCheck : FaTimesCircle}
+                          />
+                          {coreq.title}
+                        </ListItem>
+                      ))}
+                    </List>
                   </Box>
                 )}
               </HStack>
