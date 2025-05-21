@@ -71,7 +71,7 @@ function SignUpController({
       // is this check to see an event okay? Will classes get call times in the future?
       const coreqs = coReqResponse.map((coreq) => {
         const userId = user.data[0].id;
-
+        // No need to check userId anymore, coreq response will only return the rows for studentId
         if (userId === coreq.studentId) {
           return {
             ...coreq,

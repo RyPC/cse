@@ -96,7 +96,7 @@ function CoReqWarningModal({
 
     setTitles(
       lstCorequisites
-        .filter((coreq) => coreq.enrolled)
+        .filter((coreq) => !coreq.enrolled)
         .map((coreq) => coreq.title)
     );
     console.log("settitles in signupclicked", titles);
