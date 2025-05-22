@@ -27,6 +27,8 @@ function SignUpController({
   const [modalIdentity, setModalIdentity] = useState(null);
   const [coReqResponse, setCoreqResponse] = useState(null);
   const [filteredCorequisites, setFilteredCorequisites] = useState([]);
+  const [ tag, setTags ] = useState([]);
+  const [ teacherName, setTeacherName ] = useState('');
 
   const fetchCorequirements = useCallback(async () => {
     const id = class_id ?? event_id;

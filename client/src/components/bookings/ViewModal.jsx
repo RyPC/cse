@@ -1,23 +1,32 @@
 import {
+  Box,
   Button,
+  Divider,
+  Flex,
   Grid,
   GridItem,
   Heading,
   HStack,
+  List,
+  ListIcon,
+  ListItem,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Tag,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
+import { useEffect, useState } from "react";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { formatDate } from "../../utils/formatDateTime";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import PublishedReviews from "../reviews/classReview";
 
 export const ViewModal = ({
@@ -36,71 +45,119 @@ export const ViewModal = ({
     setCurrentModal("cancel");
   };
 
-  console.log("viewmodal", card);
+  const [tags, setTags] = useState([]);
+  const { backend } = useBackendContext();
+
+  const getTags = async () => {
+    const tags_arr = [];
+    if (!card?.id) {
+      return;
+    }
+    const tags = await backend.get(`/event-tags/tags/${card.id}`)
+    // console.log("TAGS from GETTAGS event")
+    // console.log(tags.data)
+    for (let i=0; i<tags.data.length; i++) {
+      if (!tags_arr.includes(tags.data[i].tag)) {
+        tags_arr.push(tags.data[i].tag)
+      }
+    }
+    setTags(tags_arr)
+  }
+
+  useEffect(() => {
+    getTags()
+  }, [backend]);
+
+  // console.log("viewmodal", card);
   const viewInfo = (
     <>
-      <Grid
-        templateColumns="repeat(2, 1fr)"
-        gap={4}
+      <List>
+        {tags.map((tag, index) => (
+          <Tag key={index} m={1}>
+            {tag}
+          </Tag>
+        ))}
+      </List> 
+      <Flex justifyContent="center">
+        {title}
+      </Flex>
+      <Text>{card?.description ? `Description: ${card.description}` : "No description available."}</Text> <br />
+      <Divider orientation='horizontal' /> <br /> 
+      <Text color="#553C9A">{formatDate(card?.date)} · {formatTime(card?.startTime)} – {formatTime(card?.endTime)}</Text>
+      <Text>Call Time: {formatTime(card?.callTime)}</Text>
+      <Text>Location: {card?.location}</Text>     
+      <br /> <Divider orientation='horizontal' /> <br /> 
+      <VStack
+        spacing={4}
+        align="center"
       >
-        <GridItem>
-          <Text fontWeight="bold">Location</Text> {/* Will add from prop */}
-          <Text>{card ? card.location : "N/A"}</Text>
-        </GridItem>
-
-        <GridItem>
-          <Text fontWeight="bold">Date</Text> {/* Will add from prop */}
-          <Text>{card ? formatDate(card.date) : "N/A"}</Text>
-        </GridItem>
-
-        <GridItem colSpan={2}>
-          <Text fontWeight="bold">Description</Text> {/* Will add from prop */}
-          <Text>{card ? card.description : "N/A"}</Text>
-        </GridItem>
-
-        {type === "class" ? (
-          <GridItem>
+        <HStack
+          spacing={4}
+          width={"100%"}
+        >
+          <Box width="50%">
+            <Text fontWeight="bold">Level</Text>
+            <Text>{card?.level}</Text>
+          </Box>
+          <Box width="50%">
             <Text fontWeight="bold">Capacity</Text>
-            <Text>{card ? card.capacity : "N/A"}</Text>
-          </GridItem>
-        ) : (
-          <GridItem>
-            <Text fontWeight="bold">Start Time</Text>
-            <Text>{card ? card.startTime : "N/A"}</Text>
-          </GridItem>
-        )}
+            <Text>{card?.capacity}</Text>
+          </Box>
+        </HStack>
+        <br/><Divider orientation='horizontal' />
+        {/* <HStack width="100%"> */}
+        <Box>
+          <Text mr="20" fontWeight="bold" mb = "0.5rem">Recommended Prerequisites(s)</Text>
+          <Text>We recommend taking these classes before enrolling in this series.</Text>
 
-        {type === "class" ? (
-          <GridItem>
-            <Text fontWeight="bold">Level</Text>
-            <Text>{card ? card.level : "N/A"}</Text>
-          </GridItem>
-        ) : (
-          <GridItem>
-            <Text fontWeight="bold">End Time</Text>
-            <Text>{card ? card.endTime : "N/A"}</Text>
-          </GridItem>
-        )}
+          {/* {classData?.prerequisites && classData?.prerequisites.length > 0 ? (
+            <Text fontSize="16px">
+              {classData?.prerequisites.map((prerequisite) => (
+                <Tag borderRadius={"full"} bg="purple.100" textColor={"purple.800"} key={prerequisite.id}>{prerequisite.title}</Tag>
+              ))}
+            </Text>
+          ) : (
+            <Text>No prerequisites for this class</Text>
+          )} */}
 
-        {type === "class" ? (
-          <GridItem colSpan={2}>
-            {/* Make an endpoint for this :sob: */}
-            <Text fontWeight="bold">Performances</Text>
-            {coEvents.length > 0 ? (
-              coEvents.map((event, index) => (
-                <Text key={index}>{event.title}</Text>
-              ))
-            ) : (
-              <Text>No corequisite events found.</Text>
-            )}
-          </GridItem>
-        ) : (
-          <GridItem colSpan={2}>
-            <Text fontWeight="bold">Level</Text>
-            <Text>{card ? card.level : "N/A"}</Text>
-          </GridItem>
-        )}
-      </Grid>
+
+        </Box>
+        <Box>
+          <Text mr="20" fontWeight="bold" mb = "0.5rem">Performance(s)</Text>
+          <Text mb={3}>At the end of the class period, students will perform in a final performance.</Text> 
+          {coEvents.map((performance) => (
+            <Tag borderRadius={"full"} bg="purple.100" textColor={"purple.800"} key={performance.id}>{performance.title}</Tag>
+          ))}
+        </Box>
+        <Divider orientation='horizontal' />
+        {/* <Divider borderColor="gray.400" borderWidth="1px" my={4} /> */}
+          {/* {!isCorequisiteSignUp && (
+            <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
+              <Text as="b">
+                Recommended classes
+              </Text>
+              {!corequisites || corequisites.length === 0 ? (
+                <Text>No corequisites for this class</Text>
+              ) : (
+                <List>
+                  {corequisites.map((coreq, index) => (
+                    <ListItem key={index}>
+                      <ListIcon
+                        as={
+                          coreq.enrolled
+                            ? FaCircleCheck
+                            : FaTimesCircle
+                        }
+                      />
+                      {coreq.title}
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          )} */}
+        {/* </HStack> */}
+      </VStack>
     </>
   );
   return (
@@ -112,6 +169,13 @@ export const ViewModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
+          <List>
+            {tags.map((tag, index) => (
+              <Tag key={index} m={1}>
+                {tag}
+              </Tag>
+            ))}
+          </List> 
           <HStack justify="space-between">
             <MdArrowBackIosNew onClick={onClose} />
             <Heading size="lg">
@@ -128,7 +192,7 @@ export const ViewModal = ({
             <Button
               width = "60%"
               size="sm"
-              background="#422E8D"
+              background="purple.600"
               color="white"
               mr={3}
               onClick={onCancel}

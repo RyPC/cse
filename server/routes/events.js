@@ -6,12 +6,35 @@ import { db } from "../db/db-pgp";
 const eventsRouter = express.Router();
 eventsRouter.use(express.json());
 
+eventsRouter.get("/search/published/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const search = `%${name}%`;
+    const allEvents = await db.query(
+      `SELECT
+        e.*,
+        (SELECT COUNT(*) FROM event_enrollments ee WHERE ee.event_id = e.id) AS attendee_count
+        FROM events e
+        WHERE e.title ILIKE $1 AND e.is_draft = false;`,
+      // "SELECT * FROM events WHERE title ILIKE $1 AND is_draft = false;",
+      [search]
+    );
+    res.status(200).json(keysToCamel(allEvents));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 eventsRouter.get("/search/:name", async (req, res) => {
   try {
     const { name } = req.params;
     const search = `%${name}%`;
     const allEvents = await db.query(
-      "SELECT * FROM events WHERE title ILIKE $1;",
+      `SELECT
+        e.*,
+        (SELECT COUNT(*) FROM event_enrollments ee WHERE ee.event_id = e.id) AS attendee_count
+        FROM events e
+        WHERE e.title ILIKE $1;`,
+      // "SELECT * FROM events WHERE title ILIKE $1;",
       [search]
     );
     res.status(200).json(keysToCamel(allEvents));

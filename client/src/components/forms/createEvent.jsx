@@ -3,8 +3,13 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Container,
   Flex,
+  FormControl,
+  HStack,
   Input,
+  NumberInput,
+  NumberInputField,
   Select,
   Text,
   Textarea,
@@ -74,9 +79,20 @@ export const CreateEvent = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateDraft = () => {
+    const newErrors = {};
+
+    // Validate required fields
+    if (!formData.title) newErrors.title = "Title is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // add in call to events router here!
   const handleSubmit = async (isDraft) => {
-    if (!isDraft && !validateForm()) return;
+    if (!isDraft && !validateForm()) { console.log("what the heck", errors); return;}
+    if (isDraft && !validateDraft()) { return; }
     setIsSubmitting(true);
     try {
       // Convert form data to match API expectations
@@ -100,7 +116,12 @@ export const CreateEvent = ({
           formData.callTime === ""
             ? `${new Date().getHours()}:${new Date().getMinutes()}`
             : formData.callTime,
-        capacity: formData.capacity === "" ? 0 : formData.capacity,
+        capacity:
+          formData.capacity === "" &&
+          (parseInt(formData.capacity) < 0 ||
+            parseInt(formData.capacity) > 2147483647)
+            ? 0
+            : formData.capacity,
         is_draft: isDraft,
       };
 
@@ -188,14 +209,22 @@ export const CreateEvent = ({
   }, []);
 
   return (
+    <Container>
     <VStack
+      height= "100%"
       spacing={4}
       align="stretch"
     >
       {!eventId ? <Text></Text> : ""}
       <Box>
-        <Text>Event Title</Text>
+        <Text fontWeight="bold">Event Title</Text>
         <Input
+          placeholder = "Event Title"
+          _placeholder={{ color: 'gray.400' }}
+          border = '1px'
+          borderColor="gray.200"
+          boxShadow="sm"
+          type="text"
           name="title"
           value={formData.title}
           onChange={handleChange}
@@ -205,8 +234,14 @@ export const CreateEvent = ({
       </Box>
 
       <Box>
-        <Text>Location</Text>
+        <Text fontWeight="bold">Location</Text>
         <Input
+          placeholder = "Location"
+          _placeholder={{ color: 'gray.400' }}
+          border = '1px'
+          borderColor="gray.200"
+          boxShadow="sm"
+          type="text"
           name="location"
           value={formData.location}
           onChange={handleChange}
@@ -215,32 +250,17 @@ export const CreateEvent = ({
         {errors.location && <Text color="red.500">{errors.location}</Text>}
       </Box>
 
-      <Box>
-        <Text>Level</Text>
-        <Select
-          name="level"
-          value={formData.level}
-          onChange={handleChange}
-          isInvalid={errors.level}
-        >
-          <option value="">Select Level</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </Select>
-        {errors.level && <Text color="red.500">{errors.level}</Text>}
-      </Box>
 
       <Box>
-        <Text>Tags</Text>
-        <Select
+        <Text fontWeight="bold">Tags</Text>
+          <Select
           name="tag"
           value={formData.tag}
           // onChange={handleOnChange}
           onChange={handleChange}
           // isInvalid={errors.level}
         >
-          <option value="Select Tag">Select Tag</option>
+          <option value disabled="Tag">Select Tag</option>
           {Object.values(tags).map((option) => {
             return <option value={option}>{option}</option>;
           })}
@@ -249,8 +269,11 @@ export const CreateEvent = ({
       </Box>
 
       <Box>
-        <Text>Date</Text>
+        <Text fontWeight="bold">Date</Text>
         <Input
+          border = '1px'
+          borderColor="gray.200"
+          boxShadow="sm"
           type="date"
           name="date"
           value={formData.date}
@@ -259,34 +282,46 @@ export const CreateEvent = ({
         />
         {errors.date && <Text color="red.500">{errors.date}</Text>}
       </Box>
+      
+      <HStack align="flex-start">
+        <FormControl>
+          <Text fontWeight="bold">Start Time</Text>
+          <Input
+            border="1px"
+            borderColor="gray.200"
+            boxShadow="sm"
+            type="time"
+            name="startTime"
+            value={formData.startTime}
+            onChange={handleChange}
+            isInvalid={errors.startTime}
+          />
+          {errors.startTime && <Text color="red.500">{errors.startTime}</Text>}
+        </FormControl>
+
+        <FormControl>
+          <Text fontWeight="bold">End Time</Text>
+          <Input
+            border="1px"
+            borderColor="gray.200"
+            boxShadow="sm"
+            type="time"
+            name="endTime"
+            value={formData.endTime}
+            onChange={handleChange}
+            isInvalid={errors.endTime}
+          />
+          {errors.endTime && <Text color="red.500">{errors.endTime}</Text>}
+        </FormControl>
+      </HStack>
+          
 
       <Box>
-        <Text>Start Time</Text>
+        <Text fontWeight="bold">Call Time</Text>
         <Input
-          type="time"
-          name="startTime"
-          value={formData.startTime}
-          onChange={handleChange}
-          isInvalid={errors.startTime}
-        />
-        {errors.startTime && <Text color="red.500">{errors.startTime}</Text>}
-      </Box>
-
-      <Box>
-        <Text>End Time</Text>
-        <Input
-          type="time"
-          name="endTime"
-          value={formData.endTime}
-          onChange={handleChange}
-          isInvalid={errors.endTime}
-        />
-        {errors.endTime && <Text color="red.500">{errors.endTime}</Text>}
-      </Box>
-
-      <Box>
-        <Text>Call Time</Text>
-        <Input
+          border = '1px'
+          borderColor="gray.200"
+          boxShadow="sm"
           type="time"
           name="callTime"
           value={formData.callTime}
@@ -295,10 +330,53 @@ export const CreateEvent = ({
         />
         {errors.callTime && <Text color="red.500">{errors.callTime}</Text>}
       </Box>
+      
+      <HStack>
+        <Box>
+          <Text fontWeight="bold">Capacity</Text>
+          <Input
+            placeholder = "Capacity"
+            _placeholder={{ color: 'gray.400' }}
+            border = '1px'
+            borderColor="gray.200"
+            boxShadow="sm"
+            type="number"
+            name="capacity"
+            value={formData.capacity}
+            onChange={handleChange}
+          />
+        </Box>
+
+        <Box>
+        <Text fontWeight="bold">Level</Text>
+        <Select
+          border = '1px'
+          borderColor="gray.200"
+          boxShadow="sm"
+          type="text"
+          name="level"
+          value={formData.level}
+          onChange={handleChange}
+          isInvalid={errors.level}
+        >
+          <option>Level</option>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+          </Select>
+          {errors.level && <Text color="red.500">{errors.level}</Text>}
+        </Box>
+      </HStack>
 
       <Box>
-        <Text>Description</Text>
+        <Text fontWeight="bold">Description</Text>
         <Textarea
+          placeholder = "Description"
+          _placeholder={{ color: 'gray.400' }}
+          border = '1px'
+          borderColor="gray.200"
+          boxShadow="sm"
+          type="text"
           name="description"
           value={formData.description}
           onChange={handleChange}
@@ -307,27 +385,6 @@ export const CreateEvent = ({
         {errors.description && (
           <Text color="red.500">{errors.description}</Text>
         )}
-      </Box>
-
-      <Box>
-        <Text>Capacity</Text>
-        <Input
-          type="number"
-          name="capacity"
-          value={formData.capacity}
-          onChange={handleChange}
-        />
-      </Box>
-
-      <Box>
-        <Text>Costume</Text>
-        <Textarea
-          name="costume"
-          value={formData.costume}
-          onChange={handleChange}
-          isInvalid={errors.costume}
-        />
-        {errors.costume && <Text color="red.500">{errors.costume}</Text>}
       </Box>
       <Flex
         justifyContent="center"
@@ -338,13 +395,14 @@ export const CreateEvent = ({
           onClick={() => handleSubmit(true)} // true = save draft
           isLoading={isSubmitting}
           flex="1"
+          bg = "gray.100"
         >
           Save Draft
         </Button>
         <Button
           onClick={() => handleSubmit(false)} // false = publish
           isLoading={isSubmitting}
-          bg="#422E8D"
+          bg="purple.600"
           color="white"
           flex="1"
         >
@@ -352,6 +410,7 @@ export const CreateEvent = ({
         </Button>
       </Flex>
     </VStack>
+    </Container>
   );
 };
 

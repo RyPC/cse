@@ -32,17 +32,13 @@ export const ConfirmationModal = ({ isOpen, onClose, card }) => {
                             Your RSVP has been removed for {card ? card.title : "N/A"}
                         </Text>
                     </VStack>
-
-                    <Button
-                        bg="#6B46C1"
-                        color="#FFFFFF"
-                        onClick={onClose}
-                        width="100%"
-                    >
-                        Find Upcoming Events
-                    </Button>
                 </VStack>
             </ModalBody>
+            <ModalFooter justifyContent="center">
+                <Button bg="purple.600" color = "white" width="60%" mr={3} onClick={onClose}>
+                    Find Upcoming Events
+                </Button>
+            </ModalFooter>
         </ModalContent>
     </Modal>
   );

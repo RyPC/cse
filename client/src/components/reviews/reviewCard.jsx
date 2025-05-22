@@ -8,10 +8,13 @@ import {
   CardFooter,
   CardHeader,
   HStack,
+  Icon,
   Text,
 } from "@chakra-ui/react";
 
 import { FaStar } from "react-icons/fa6";
+
+import { FaUserCircle } from "react-icons/fa";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -29,7 +32,7 @@ const ReviewCard = ({
   const [stars, setStars] = useState(Array(5).fill(0));
 
   const colors = {
-    purple: "#422E8D",
+    purple: "purple.600",
     grey: "a9a9a9",
   };
 
@@ -43,12 +46,15 @@ const ReviewCard = ({
   return (
     <>
       <CardHeader>
-        <HStack>
-          <Avatar
-            name="Dan Abrahmov"
-            src="https://bit.ly/dan-abramov"
-          />
-          <Text>
+        <HStack alignItems={"center"}>
+            <Icon
+              as={FaUserCircle} 
+              w={45}
+              h={45}
+              mb={2}
+              color="gray.500"
+            />
+          <Text mb={2}>
             {student?.firstName} {student?.lastName}
           </Text>
         </HStack>

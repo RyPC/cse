@@ -176,6 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           } catch (e) {
             await backend.delete(`/users/${result.user.uid}`);
             toast({
+              position: "top",
               title: "An error occurred",
               description: `Account was not created: ${e.message}`,
               status: "error",

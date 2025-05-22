@@ -22,6 +22,7 @@ import dashboardIcon from "../../components/dashboard/sidebarImgs/dashboard.svg"
 import settingsIcon from "../../components/dashboard/sidebarImgs/settings.svg";
 import studentsIcon from "../../components/dashboard/sidebarImgs/students.svg";
 import teachersIcon from "../../components/dashboard/sidebarImgs/teachers.svg";
+import redirectIcon from "../../components/dashboard/sidebarImgs/redirect.svg";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
@@ -250,7 +251,7 @@ export const DashboardHome = () => {
                 <Line
                   type="linear"
                   dataKey="count"
-                  stroke="#422E8D"
+                  stroke="purple.600"
                   dot={false}
                   strokeWidth={3}
                 />
@@ -308,6 +309,8 @@ export const DashboardHome = () => {
 };
 
 export const Sidebar = () => {
+
+
   const navigate = useNavigate();
   return (
     <Box
@@ -382,6 +385,20 @@ export const Sidebar = () => {
           <HStack>
             <Image src={studentsIcon} />
             <Text>Students</Text>
+          </HStack>
+        </Box>
+        <Box
+          as="button"
+          p={3}
+          borderRadius="md"
+          _hover={{ bg: "#F3D0F7" }}
+          color="black"
+          onClick={() => navigate("/bookings")}
+          textAlign="left"
+        >
+          <HStack>
+            <Image src={redirectIcon} />
+            <Text>Redirect to Teacher-End</Text>
           </HStack>
         </Box>
         <Box
