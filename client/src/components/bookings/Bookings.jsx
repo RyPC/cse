@@ -28,27 +28,27 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import {
-  FaClock,
-  FaMapMarkerAlt,
-  FaMicrophoneAlt,
-  FaMusic,
-  FaSearch,
-  FaUser,
-} from "react-icons/fa";
-import {
-  GiAbstract001,
-  GiBallerinaShoes,
-  GiBoombox,
-  GiCartwheel,
-  GiTambourine,
-} from "react-icons/gi";
+// import {
+//   FaClock,
+//   FaMapMarkerAlt,
+//   FaMicrophoneAlt,
+//   FaMusic,
+//   FaSearch,
+//   FaUser,
+// } from "react-icons/fa";
+// import {
+//   GiAbstract001,
+//   GiBallerinaShoes,
+//   GiBoombox,
+//   GiCartwheel,
+//   GiTambourine,
+// } from "react-icons/gi";
 import { MdAdd, MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { formatDate, formatTime } from "../../utils/formatDateTime";
+// import { formatDate, formatTime } from "../../utils/formatDateTime";
 import { CreateClassForm } from "../forms/createClasses";
 import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
@@ -56,13 +56,14 @@ import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
-import { InfoModal } from "./InfoModal";
+// import { InfoModal } from "./InfoModal";
 import { SearchBar } from "../searchbar/SearchBar";
 import { TeacherCancelModal } from "./TeacherCancelModal";
 import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
 import { TeacherViewModal } from "./TeacherViewModal";
 import { ViewModal } from "./ViewModal";
+import { ClassTeacherCard } from "./ClassTeacherCard";
 
 export const Bookings = () => {
   const navigate = useNavigate();
@@ -394,6 +395,7 @@ export const Bookings = () => {
       setAttended([...attendedClasses, ...attendedEvents]);
       setDrafts([...draftClasses, ...draftEvents]);
       if (selectedCard) loadCorequisites(selectedCard.id);
+      console.log(classes);
     } catch (error) {
       console.error("Error reloading classes:", error);
     }
@@ -570,7 +572,8 @@ export const Bookings = () => {
               >
                 {role !== "student" && (
                   <Box
-                    w={{ base: "90%", md: "30em" }}
+                    // w={{ base: "100%", md: "30em" }}
+                    w={"100%"}
                     cursor="pointer"
                     onClick={() => {
                       setSelectedCard(null);
@@ -657,7 +660,8 @@ export const Bookings = () => {
               >
                 {role !== "student" && (
                   <Box
-                    w={{ base: "90%", md: "30em" }}
+                    // w={{ base: "90%", md: "30em" }}
+                    w={"100%"}
                     cursor="pointer"
                     onClick={() => {
                       setSelectedCard(null);
@@ -719,10 +723,13 @@ export const Bookings = () => {
                   drafts.length > 0 ? (
                     drafts.map((item) =>
                       !item.callTime ? (
-                        <ClassCard
+                        <ClassTeacherCard
                           key={item.id}
                           {...item}
                           onClick={() => updateModal(item)}
+                          setSelectedCard={setSelectedCard}
+                          performance={coEvents}
+                          onOpen={updateModal}
                         />
                       ) : (
                         <EventCard
@@ -874,203 +881,210 @@ export const Bookings = () => {
   );
 };
 
-const ClassTeacherCard = memo(
-  ({
-    id,
-    title,
-    location,
-    date,
-    description,
-    capacity,
-    level,
-    costume,
-    performance,
-    rsvpCount,
-    isDraft,
-    recurrencePattern,
-    isRecurring,
-    startDate,
-    endDate,
-    startTime,
-    endTime,
-    navigate,
-    setSelectedCard,
-    tagId,
-    onOpen,
-  }) => {
-    const formattedDate = date ? formatDate(date) : null;
-    const formattedStartTime = startTime ? formatTime(startTime) : null;
-    const formattedEndTime = endTime ? formatTime(endTime) : null;
-    const getIcon = () => {
-      const iconSize = 50;
-      switch (tagId) {
-        case 1:
-          return <FaMusic size={iconSize} />;
-        case 2:
-          return <GiBallerinaShoes size={iconSize} />;
-        case 3:
-          return <FaMicrophoneAlt size={iconSize} />;
-        case 4:
-          return <GiBoombox size={iconSize} />;
-        case 5:
-          return <GiAbstract001 size={iconSize} />;
-        case 6:
-          return <GiCartwheel size={iconSize} />;
-        case 7:
-          return <GiTambourine size={iconSize} />;
-        default:
-          return <FaMusic size={iconSize} />;
-      }
-    };
-    return (
-      <Box
-       display="flex"
-       justifyContent="center"
-       w={{ base: "100%", md: "30em" }}
-      >
+// const ClassTeacherCard = memo(
+//   ({
+//     id,
+//     title,
+//     location,
+//     date,
+//     description,
+//     capacity,
+//     level,
+//     costume,
+//     performance,
+//     attendeeCount,
+//     isDraft,
+//     recurrencePattern,
+//     isRecurring,
+//     startDate,
+//     endDate,
+//     startTime,
+//     endTime,
+//     navigate,
+//     setSelectedCard,
+//     tagId,
+//     onOpen,
+//   }) => {
 
-      <Card
-        cursor="pointer"
-        key={id}
-        w={{ base: "90%", md: "30em" }}
-        border="1px"
-        borderColor="gray.300"
-        bg="gray.50"
-        onClick={
-          isDraft
-            ? () => {
-                const modalData = {
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  level,
-                  costume,
-                  performances: performance,
-                  isRecurring,
-                  recurrencePattern,
-                  startDate,
-                  endDate,
-                  isDraft,
-                  rsvpCount,
-                  startTime,
-                  endTime,
-                };
-                setSelectedCard(modalData);
-                onOpen({
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  isRecurring,
-                  recurrencePattern,
-                  startDate,
-                  endDate,
-                  level,
-                  costume,
-                  isDraft,
-                  startTime,
-                  endTime,
-                });
-              }
-            : () => {
-                const modalData = {
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  level,
-                  costume,
-                  isRecurring,
-                  recurrencePattern,
-                  performances: performance,
-                  isDraft,
-                  startDate,
-                  endDate,
-                  rsvpCount,
-                  startTime,
-                  endTime,
-                };
-                setSelectedCard(modalData);
-                onOpen({
-                  id,
-                  title,
-                  location,
-                  date,
-                  description,
-                  capacity,
-                  level,
-                  isRecurring,
-                  recurrencePattern,
-                  costume,
-                  startDate,
-                  endDate,
-                  isDraft,
-                  startTime,
-                  endTime,
-                });
-              }
-          // : () => navigate(`/dashboard/classes/${classId}`)
-        }
-      >
-        <CardBody px={0}>
-          <Box
-            position="absolute"
-            textAlign="center"
-            justifyContent="center"
-            alignItems="center"
-            display="flex"
-            height="20px"
-            top="10px"
-            right="5%"
-            px="16px"
-            py="2px"
-            borderRadius="full"
-            border="0.2px solid"
-            borderColor="purple.600"
-            color="purple.700"
-            backgroundColor="purple.50"
-            fontSize="10px"
-          >
-            <Text>
-              {rsvpCount ?? 0} {(rsvpCount ?? 0) === 1 ? "Person" : "People"}{" "}
-              Enrolled
-            </Text>
-          </Box>
-          <HStack>
-            <Box px="20px">{getIcon()}</Box>
-            <VStack
-              alignItems="flex-start"
-              py="1rem"
-            >
-              <Text
-                fontSize="1.5rem"
-                fontWeight="bold"
-              >
-                {title}
-              </Text>
+//     const [openTeacherModal, setOpenTeacherModal] = useState(false);
 
-              <HStack>
-                <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
-              </HStack>
-              <HStack>
-                <Text fontSize="sm">
-                    {formattedDate
-                      ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
-                      : "No date"}
-                </Text>
-              </HStack>
-            </VStack>
-          </HStack>
-        </CardBody>
-      </Card>
-      </Box>
-    );
-  }
-);
+//     const closeTeacherModal = () => {
+//       setOpenTeacherModal(false);
+//     };
+
+//     const formattedDate = date ? formatDate(date) : null;
+//     const formattedStartTime = startTime ? formatTime(startTime) : null;
+//     const formattedEndTime = endTime ? formatTime(endTime) : null;
+//     const getIcon = () => {
+//       const iconSize = 50;
+//       switch (tagId) {
+//         case 1:
+//           return <FaMusic size={iconSize} />;
+//         case 2:
+//           return <GiBallerinaShoes size={iconSize} />;
+//         case 3:
+//           return <FaMicrophoneAlt size={iconSize} />;
+//         case 4:
+//           return <GiBoombox size={iconSize} />;
+//         case 5:
+//           return <GiAbstract001 size={iconSize} />;
+//         case 6:
+//           return <GiCartwheel size={iconSize} />;
+//         case 7:
+//           return <GiTambourine size={iconSize} />;
+//         default:
+//           return <FaMusic size={iconSize} />;
+//       }
+//     };
+//     return (
+//       <Box
+//        display="flex"
+//        justifyContent="center"
+//        w={{ base: "100%", md: "30em" }}
+//       >
+
+//       <Card
+//         cursor="pointer"
+//         key={id}
+//         w={{ base: "90%", md: "30em" }}
+//         border="1px"
+//         borderColor="gray.300"
+//         bg="gray.50"
+//         onClick={
+//           isDraft
+//             ? () => {
+//                 const modalData = {
+//                   id,
+//                   title,
+//                   location,
+//                   date,
+//                   description,
+//                   capacity,
+//                   level,
+//                   costume,
+//                   performances: performance,
+//                   isRecurring,
+//                   recurrencePattern,
+//                   startDate,
+//                   endDate,
+//                   isDraft,
+//                   attendeeCount,
+//                   startTime,
+//                   endTime,
+//                 };
+//                 setSelectedCard(modalData);
+//                 onOpen({
+//                   id,
+//                   title,
+//                   location,
+//                   date,
+//                   description,
+//                   capacity,
+//                   isRecurring,
+//                   recurrencePattern,
+//                   startDate,
+//                   endDate,
+//                   level,
+//                   costume,
+//                   isDraft,
+//                   startTime,
+//                   endTime,
+//                 });
+//               }
+//             : () => {
+//                 const modalData = {
+//                   id,
+//                   title,
+//                   location,
+//                   date,
+//                   description,
+//                   capacity,
+//                   level,
+//                   costume,
+//                   isRecurring,
+//                   recurrencePattern,
+//                   performances: performance,
+//                   isDraft,
+//                   startDate,
+//                   endDate,
+//                   attendeeCount,
+//                   startTime,
+//                   endTime,
+//                 };
+//                 setSelectedCard(modalData);
+//                 onOpen({
+//                   id,
+//                   title,
+//                   location,
+//                   date,
+//                   description,
+//                   capacity,
+//                   level,
+//                   isRecurring,
+//                   recurrencePattern,
+//                   costume,
+//                   startDate,
+//                   endDate,
+//                   isDraft,
+//                   startTime,
+//                   endTime,
+//                 });
+//               }
+//           // : () => navigate(`/dashboard/classes/${classId}`)
+//         }
+//       >
+//         <CardBody px={0}>
+//           <Box
+//             position="absolute"
+//             textAlign="center"
+//             justifyContent="center"
+//             alignItems="center"
+//             display="flex"
+//             height="20px"
+//             top="10px"
+//             right="5%"
+//             px="16px"
+//             py="2px"
+//             borderRadius="full"
+//             border="0.2px solid"
+//             borderColor="purple.600"
+//             color="purple.700"
+//             backgroundColor="purple.50"
+//             fontSize="10px"
+//           >
+//             <Text>
+//               {attendeeCount ?? 0} {(attendeeCount ?? 0) === 1 ? "Person" : "People"}{" "}
+//               Enrolled
+//             </Text>
+//           </Box>
+//           <HStack>
+//             <Box px="20px">{getIcon()}</Box>
+//             <VStack
+//               alignItems="flex-start"
+//               py="1rem"
+//             >
+//               <Text
+//                 fontSize="1.5rem"
+//                 fontWeight="bold"
+//               >
+//                 {title}
+//               </Text>
+
+//               <HStack>
+//                 <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
+//               </HStack>
+//               <HStack>
+//                 <Text fontSize="sm">
+//                     {formattedDate
+//                       ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
+//                       : "No date"}
+//                 </Text>
+//               </HStack>
+//             </VStack>
+//           </HStack>
+//         </CardBody>
+//       </Card>
+//       </Box>
+//     );
+//   }
+// );

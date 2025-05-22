@@ -19,6 +19,8 @@ import {
   ModalOverlay,
   Text,
   VStack,
+  Tag,
+  Divider
 } from "@chakra-ui/react";
 
 import { FaTimesCircle } from "react-icons/fa";
@@ -29,25 +31,26 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import PublishedReviews from "../reviews/classReview";
 import SuccessSignupModal from "./SuccessSignupModal";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 
-function ClassInfoModal({
+const ClassInfoModal = ({
   userid,
   isOpenProp,
   title,
   location,
-  description,
-  level,
+  // description,
+  // level,
   date,
-  startTime,
-  endTime,
+  // startTime,
+  // endTime,
   id,
-  capacity,
+  // capacity,
   costume,
   isCorequisiteSignUp,
   corequisites,
   handleClose,
   handleResolveCoreq = () => {},
-}) {
+}) => {
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
 
@@ -55,6 +58,39 @@ function ClassInfoModal({
 
   // temp for image
   const [imageSrc, setImageSrc] = useState("");
+  const [tags, setTags] = useState([]);
+  const [teacherName, setTeacherName] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [description, setDescription] = useState("");
+  const [capacity, setCapacity] = useState("");
+  const [level, setLevel] = useState("");
+
+  const getTags = async () => {
+    const tags_arr = [];
+    const tags = await backend.get(`/class-tags/tags/${id}`)
+    // console.log("TAGS from GETTAGS")
+    // console.log(tags.data)
+    for (let i=0; i<tags.data.length; i++) {
+      if (!tags_arr.includes(tags.data[i].tag)) {
+        tags_arr.push(tags.data[i].tag)
+      }
+    }
+    setTags(tags_arr)
+  }
+
+  const getTeacherName = async() => {
+    const teacherName = await backend.get(`/classes-taught/instructor/${id}`)
+    console.log("TEACHER'S NAME!")
+    console.log(teacherName.data[0])
+    setTeacherName(teacherName.data[0].firstName + " " + teacherName.data[0].lastName)
+  }
+
+  const getStartTime = async() => {
+    const data = await backend.get(`/scheduled-classes/${id}`)
+    setStartTime(data.data[0].startTime)
+    setEndTime(data.data[0].endTime)
+  }
 
   const enrollInClass = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
@@ -87,13 +123,31 @@ function ClassInfoModal({
     }
   };
 
+  const initClass = async() => {
+    const classData = await backend.get(`/classes/${id}`)
+    setDescription(classData.data[0].description)
+    setCapacity(classData.data[0].capacity)
+    setLevel(classData.data[0].level)
+  }
+
+  const getPerformance = async() => {
+    const performanceData = await backend.get(`/corequisites/${id}`)
+    console.log("performance data")
+    console.log(performanceData.data)
+  }
+
   useEffect(() => {
-    if (isOpenProp && !imageSrc) {
-      fetch("https://dog.ceo/api/breeds/image/random") // for fun
-        .then((res) => res.json())
-        .then((data) => setImageSrc(data.message));
+    if (isOpenProp) {
+      // fetch("https://dog.ceo/api/breeds/image/random") // for fun
+      //   .then((res) => res.json())
+      //   .then((data) => setImageSrc(data.message));
+      getTags();
+      getTeacherName();
+      getStartTime();
+      initClass();
+      getPerformance()
     }
-  }, [imageSrc, isOpenProp]);
+  }, [isOpenProp]);
 
   return (
     <>
@@ -105,26 +159,60 @@ function ClassInfoModal({
       />
 
       <Modal
+        size={"full"}
         isOpen={isOpenProp}
         onClose={handleClose}
-        size="full"
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{title}</ModalHeader>
+
+          <ModalHeader>
+            <List>
+              {tags.map((tag, index) => (
+                <Tag key={index} m={1}>
+                  {tag}
+                </Tag>
+              ))}
+            </List> 
+            {title}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <Text>Taught by { teacherName ? teacherName : "Unknown" }</Text>
+            <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
+
+            <Divider orientation='horizontal' /> <br />
+
+            <Text color="#553C9A">{formatDate(date)} · {formatTime(startTime)} – {formatTime(endTime)}</Text>
+            <Text>Location: {location}</Text>
+
+            <br/> <Divider orientation='horizontal' /> <br />
+
+            <HStack
+              spacing={4}
+              width={"100%"}
+            >
+              <Box width="50%">
+                <Text fontWeight="bold">Level</Text>
+                <Text>{level}</Text>
+              </Box>
+              <Box width="50%">
+                <Text fontWeight="bold">Capacity</Text>
+                <Text>{capacity}</Text>
+              </Box>
+            </HStack>
+            <br/> <Divider orientation='horizontal' /> <br />
             <VStack
               spacing={4}
               align="center"
-            >
+            >             
               {!isCorequisiteSignUp && (
                 <HStack width="100%">
                   <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
                     <VStack align = "start" spacing={2}>
                       <HStack align="center">
                         <Text as="b">
-                          Recommended
+                          Recommended classes and events:
                         </Text>
                       </HStack>
                     {!corequisites || corequisites.length === 0 ? (
@@ -149,66 +237,6 @@ function ClassInfoModal({
                   </Box>
                 </HStack>
               )}
-              <Box
-                boxSize="sm"
-                height="15rem"
-                width={"100%"}
-                alignContent={"center"}
-                justifyContent={"center"}
-                display="flex"
-              >
-                <Image
-                  src={imageSrc}
-                  alt="Random Dog"
-                  height={"100%"}
-                  width={"100%%"}
-                />
-              </Box>
-
-              <HStack
-                width={"100%"}
-                justifyContent={"space-between"}
-              >
-                <Box>
-                  <Text fontWeight="bold">Location</Text>
-                  <Text>{location}</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight="bold">Date</Text>
-                  <Text>{date}</Text>
-                </Box>
-              </HStack>
-
-              <Box width="100%">
-                <Box>
-                    <Text fontWeight="bold">Time</Text>
-                    <Text>pass in time prop and use it</Text>
-                </Box>
-                <Text fontWeight="bold">Description:</Text>
-                <Text>{description}</Text>
-              </Box>
-
-              <HStack
-                spacing={4}
-                width={"100%"}
-                justifyContent={"space-between"}
-              >
-                <Box>
-                  <Text fontWeight="bold">Capacity</Text>
-                  <Text>{capacity}</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight="bold">Level</Text>
-                  <Text>{level}</Text>
-                </Box>
-              </HStack>
-
-              <HStack width={"100%"}>
-                <Box>
-                  <Text fontWeight="bold">Classes</Text>
-                  <Text>{costume}</Text>
-                </Box>
-              </HStack>
             </VStack>
           </ModalBody>
           <Flex justifyContent="center" width = "100%">
@@ -217,7 +245,7 @@ function ClassInfoModal({
                 <Button
                   width = "100%"
                   p = {7}
-                  bg = "#6B46C1"
+                  bg = "purple.600"
                   color = "white"
                   onClick={classSignUp}>Sign up
                 </Button>

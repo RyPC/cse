@@ -251,7 +251,7 @@ export const DashboardHome = () => {
                 <Line
                   type="linear"
                   dataKey="count"
-                  stroke="#422E8D"
+                  stroke="purple.600"
                   dot={false}
                   strokeWidth={3}
                 />

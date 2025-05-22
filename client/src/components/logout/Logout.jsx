@@ -29,7 +29,7 @@ const Logout = ({ cookies }) => {
       <Button
         type="submit"
         onClick={handleLogout}
-        bg="#6B46C1"
+        bg="purple.600"
         color="white"
         height="6.407vh"
         // width calculated from figma hi-fi

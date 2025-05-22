@@ -32,7 +32,8 @@ export const ClassRSVP = ({ isOpen, onClose, card }) => {
   }, [backend, currentUser.uid]);
   
   useEffect(() => {
-    if (teacherId) {
+    // only fetch if card opened
+    if (teacherId && isOpen) {
       const fetchClasses = async () => {
         try {
           // const response = await backend.get(`/class-enrollments/teacher/${teacherId}/${card.id}`);

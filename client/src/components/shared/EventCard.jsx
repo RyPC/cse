@@ -1,27 +1,24 @@
+import { useState, memo } from "react";
+
 import {
+  Badge,
   Box,
-  Card,
-  CardBody,
-  CardHeader,
+  Flex,
   Heading,
   HStack,
+  Image,
   Text,
   VStack,
-  CardFooter,
-  useDisclosure
 } from "@chakra-ui/react";
 
-import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
+
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-
-
 import { formatDate, formatTime } from "../../utils/formatDateTime";
-import SignUpController from "../discovery/SignUpController";
 import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal";
-import { useState } from "react";
+import SignUpController from "../discovery/SignUpController";
 
-export const EventCard = ({
+export const EventCard = memo(({
   id,
   title,
   location,
@@ -31,161 +28,149 @@ export const EventCard = ({
   startTime,
   endTime,
   callTime,
-  classId,
   costume,
   capacity,
-  attendeeCount = 0, // Default to 0 if not provided
+  attendeeCount = 0,
   onClick,
-  isAttended = false,
   triggerRefresh,
-  onCloseModal,
   user = null,
-
 }) => {
   const formattedDate = formatDate(date);
   const formattedStartTime = formatTime(startTime);
   const formattedEndTime = formatTime(endTime);
-  const [openModal, setOpenModal] = useState(false);
   const { pathname } = useLocation();
   const [openRootModal, setOpenRootModal] = useState(false);
   const [openTeacherModal, setOpenTeacherModal] = useState(false);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [currentModal, setCurrentModal] = useState("view");
   const { role } = useAuthContext();
 
-  const handleOpenModal = () => {
-    setOpenModal(!openModal);
-  };
-  const handleCancel = () => {
-    setOpenModal(false);
-  };
-
-  // const onCloseModal = () => {
-  //   setCurrentModal("view");
-  //   onClose();
-  // };
-
   const closeTeacherModal = () => {
     setOpenTeacherModal(false);
-    // onCloseModal();
   };
 
   const handleClickModal = () => {
-      if (pathname === "/bookings" && role !== "student") {
-        if (currentModal === "view") {
-          setOpenTeacherModal(true);
-          console.log("Open teacher view modal!");
-        }
-      } else if (pathname === "/bookings") {
-        onClick();
+    if (pathname === "/bookings" && role !== "student") {
+      if (currentModal === "view") {
+        setOpenTeacherModal(true);
+        console.log("Open teacher view modal!");
       }
-      else {
-        setOpenRootModal(true);
-      }
-    };
+    } else if (pathname === "/bookings") {
+      if (onClick) onClick();
+    } else {
+      setOpenRootModal(true);
+    }
+  };
 
+  const dateTimeString = formattedDate
+    ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
+    : "Date/Time not available";
 
-  // console.log(user);
   return (
-    <>
-    <Box 
-      display="flex"
-      justifyContent="center"
-      w={{ base: "100%", md: "30em" }}
-      onClick={handleClickModal} 
-      cursor="pointer">
-      <Card
-        w={{ base: "90%", md: "30em" }}
-        border = "1px"
-        borderColor="gray.300"
-        bg="gray.50"
+    <Box
+      w="100%"
+      bg="gray.50"
+      borderRadius="16px"
+      borderColor={"gray.300"}
+      borderWidth={1}
+      px={6}
+      py={10}
+      position="relative"
+      cursor="pointer"
+      onClick={handleClickModal}
+      _hover={{ bg: "gray.100" }}
+    >
+      <Badge
+        position="absolute"
+        top={4}
+        right={4}
+        variant="outline"
+        borderStyle="dashed"
+        borderColor="purple.600"
+        color="purple.700"
+        bg="purple.50"
+        px={3}
+        py={1}
+        fontSize="xs"
+        fontWeight="medium"
+        borderRadius="full"
       >
-        <CardHeader pb={0}>
-          <HStack
-            position="absolute"
-            height = "15%"
-            top="10%"
-            right="5%"
-            bg="purple.50"
-            px={3}
-            py={1}
-            borderRadius="full"
-            border="1px"
-            borderColor="purple.600"
-            color="black"
-            fontSize="sm"
-          >
-            <Text>
-              {attendeeCount} {parseInt(attendeeCount) === 1 ? "Person" : "People"} Enrolled
-            </Text>
-          </HStack>
-        </CardHeader>
-        <CardBody>
-          <Box
-            display="flex"
-            justifyContent="start"> 
-          <VStack
-            alignItems="self-start"
-            spacing={2}
-          >
-            <Text
-            fontSize="1.5rem"
-            fontWeight="bold"
+        {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
+      </Badge>
+      <HStack
+        spacing={4}
+        align="center"
+      >
+        <Flex
+          w="20%"
+          align="center"
+          justify="center"
+        >
+          <Image
+            src="/card_images/classical.svg" // Set the image source
+            alt="Event illustration"
+            maxW="100%"
+            maxH="100%"
+            objectFit="contain"
+          />
+        </Flex>
+        <VStack
+          w="80%"
+          align="flex-start"
+          spacing={1}
+        >
+          <Heading
+            size="md"
+            fontWeight="semibold"
+            color="grey.700"
           >
             {title}
+          </Heading>
+          <Text
+            fontSize="sm"
+            color="grey.700"
+          >
+            {location}
           </Text>
-
-            <HStack>
-              <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
-            </HStack>
-            <HStack>
-              <Text fontSize="sm">
-                  {formattedDate
-                    ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
-                    : "No date"}
-              </Text>
-            </HStack>
-
-
-          </VStack>
-          </Box>
-        </CardBody>
-
-        <CardFooter justifyContent="right" hidden>
-            {/* <Text>Required Class ID: {classId}</Text> */}
-            <SignUpController
-              event_id={id}
-              title={title}
-              description={description}
-              location={location}
-              capacity={"might remove for events"}
-              level={level}
-              costume={costume}
-              date={date}
-              setOpenRootModal={setOpenRootModal}
-              openRootModal={openRootModal}
-              user={user}
-            />
-            <TeacherEventViewModal
-              isOpenProp={openTeacherModal}
-              handleClose={closeTeacherModal}
-              id = {id}
-              location = {location}
-              title = {title}
-              description = {description}
-              level = {level}
-              date = {date}
-              startTime = {startTime}
-              endTime = {endTime}
-              callTime = {callTime}
-              costume = {costume}
-              capacity = {capacity}
-              triggerRefresh = {triggerRefresh}
-            />
-        </CardFooter>
-      </Card>
+          <Text
+            fontSize="sm"
+            color="gray.700"
+          >
+            {formattedDate} · {formattedStartTime} – {formattedEndTime}
+          </Text>
+        </VStack>
+      </HStack>
+      <SignUpController
+        event_id={id}
+        title={title}
+        description={description}
+        location={location}
+        level={level}
+        costume={costume}
+        date={date}
+        startTime={startTime}
+        endTime={endTime}
+        setOpenRootModal={setOpenRootModal}
+        openRootModal={openRootModal}
+        user={user}
+      />
+    <TeacherEventViewModal
+      isOpenProp={openTeacherModal}
+      handleClose={closeTeacherModal}
+      id={id}
+      location={location}
+      title={title}
+      description={description}
+      level={level}
+      date={date}
+      startTime={startTime}
+      endTime={endTime}
+      callTime={callTime}
+      costume={costume}
+      capacity={capacity}
+      triggerRefresh={triggerRefresh}
+    />
     </Box>
-    </>
   );
-};
+}
+);

@@ -30,7 +30,7 @@ const Request = () => {
                 <Text fontSize="lg" w={"60%"} whiteSpace="pre-line">{message}</Text>
         
                 <Button
-                  bg="#422e8d"
+                  bg="purple.600"
                   color="white"
                   w="155px"
                   h="45px"

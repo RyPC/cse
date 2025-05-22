@@ -36,7 +36,7 @@ const signupSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
   repeatPassword: z.string().min(6)
-}).refine((data) => data.password == data.repeatPassword, {
+}).refine((data) => data.password === data.repeatPassword, {
   message: "Passwords must match.",
   path: ["repeatPassword"],
 });
@@ -84,6 +84,7 @@ export const TeacherSignup = () => {
           description: err.message,
           status: "error",
           variant: "subtle",
+          position: "top",
         });
       }
     }
@@ -238,7 +239,7 @@ export const TeacherSignup = () => {
               size={"lg"}
               // sx={{ width: "100%" }}
               isDisabled={Object.keys(errors).length > 0}
-              bg="#422e8d"
+              bg="purple.600"
               color="white"
               w="200px"
               h="55px"

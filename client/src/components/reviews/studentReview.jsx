@@ -11,6 +11,7 @@ import {
   FormHelperText,
   FormLabel,
   HStack,
+  Icon,
   Text,
   Textarea,
 } from "@chakra-ui/react";
@@ -20,6 +21,7 @@ import { FaStar } from "react-icons/fa6";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { color } from "framer-motion";
+import { FaUserCircle } from "react-icons/fa";
 
 const StudentReview = ({
   rating,
@@ -53,8 +55,8 @@ const StudentReview = ({
     setStarRating(value);
   };
   const colors = {
-    purple: "#6B46C1",
-    grey: "#A9A9A9",
+    purple: "purple.600",
+    grey: "a9a9a9",
   };
 
   const isError = review === "" || starRating === 0;
@@ -104,11 +106,19 @@ const StudentReview = ({
       <CardBody hidden={attended === null}>
         <FormControl>
           <HStack>
-            <Avatar
-              name="Dan Abrahmov"
-              src="https://bit.ly/dan-abramov"
+            {/* <Avatar
+              // name="Dan Abrahmov"
+              // src="https://bit.ly/dan-abramov"
+
+            /> */}
+            <Icon
+              as={FaUserCircle} 
+              w={50}
+              h={50}
+              mb={2}
+              color="gray.500"
             />
-            <Text>{displayName}</Text>
+            <Text mb={2}>{displayName}</Text>
           </HStack>
           <HStack>
             {stars.map((_, index) => (
@@ -130,6 +140,7 @@ const StudentReview = ({
           </HStack>
 
           <Textarea
+            minH={100}
             placeholder="Type Here..."
             value={review}
             onChange={(e) => setReview(e.target.value)}

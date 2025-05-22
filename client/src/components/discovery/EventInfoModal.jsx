@@ -18,6 +18,8 @@ import {
   ModalOverlay,
   Text,
   VStack,
+  Tag,
+  Divider
 } from "@chakra-ui/react";
 import { FaTimesCircle } from "react-icons/fa";
 import { FaCheckCircle } from "react-icons/fa";
@@ -25,7 +27,7 @@ import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import {formatDate} from "../../utils/formatDateTime";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function EventInfoModal({
@@ -73,6 +75,30 @@ function EventInfoModal({
   //   }
   // }, [backend, id, user?.data, isOpenProp]);
 
+  const [tags, setTags] = useState([]);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [callTime, setCallTime] = useState("");
+
+  const getStartTime = async() => {
+    const data = await backend.get(`/events/${id}`)
+    setStartTime(data.data[0].startTime)
+    setEndTime(data.data[0].endTime)
+    setCallTime(data.data[0].callTime)
+  }
+
+  const getTags = async () => {
+    const tags_arr = [];
+    const tags = await backend.get(`/event-tags/tags/${id}`)
+    // console.log("TAGS from GETTAGS event")
+    // console.log(tags.data)
+    for (let i=0; i<tags.data.length; i++) {
+      if (!tags_arr.includes(tags.data[i].tag)) {
+        tags_arr.push(tags.data[i].tag)
+      }
+    }
+    setTags(tags_arr)
+  }
 
   const enrollInEvent = async () => {
     // Check if already checked into event
@@ -118,14 +144,21 @@ function EventInfoModal({
     handleClose();
   };
 
+  const parseDate = (dateString) => {
+    // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
+    const date = new Date(dateString)
+    return ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear()
+  }
   
 
   useEffect(() => {
-    if (isOpenProp && !imageSrc) {
-      fetch("https://dog.ceo/api/breeds/image/random") // for fun
-        .then((res) => res.json())
-        .then((data) => setImageSrc(data.message));
-    }
+    // if (isOpenProp && !imageSrc) {
+    //   fetch("https://dog.ceo/api/breeds/image/random") // for fun
+    //     .then((res) => res.json())
+    //     .then((data) => setImageSrc(data.message));
+    // }
+    getTags()
+    getStartTime()
   }, [imageSrc, isOpenProp]);
 
   return (
@@ -145,21 +178,48 @@ function EventInfoModal({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
+            <List>
+              {tags.map((tag, index) => (
+                <Tag key={index} m={1}>
+                  {tag}
+                </Tag>
+              ))}
+            </List> 
             <Flex justifyContent="center">
               {title}
             </Flex>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
+            <Divider orientation='horizontal' /> <br /> 
+            <Text color="#553C9A">{formatDate(date)} · {formatTime(startTime)} – {formatTime(endTime)}</Text>
+            <Text>Call Time: {formatTime(callTime)}</Text>
+            <Text>Location: {location}</Text>     
+            <br /> <Divider orientation='horizontal' /> <br /> 
             <VStack
               spacing={4}
               align="center"
             >
+              <HStack
+                spacing={4}
+                width={"100%"}
+              >
+                <Box width="50%">
+                  <Text fontWeight="bold">Level</Text>
+                  <Text>{level}</Text>
+                </Box>
+                <Box width="50%">
+                  <Text fontWeight="bold">Capacity</Text>
+                  <Text>{capacity}</Text>
+                </Box>
+              </HStack>
+              <br/><Divider orientation='horizontal' />
               <HStack width="100%">
                 {!isCorequisiteSignUp && (
                   <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
                     <Text as="b">
-                      Recommended
+                      Recommended classes
                     </Text>
                     {!corequisites || corequisites.length === 0 ? (
                       <Text>No corequisites for this class</Text>
@@ -182,65 +242,6 @@ function EventInfoModal({
                   </Box>
                 )}
               </HStack>
-              <Box
-                boxSize="sm"
-                height="15rem"
-                width={"100%"}
-                alignContent={"center"}
-                justifyContent={"center"}
-                display="flex"
-              >
-                <Image
-                  src={imageSrc}
-                  alt="Random Dog"
-                  width={"100%%"}
-                />
-              </Box>
-
-              <HStack
-                width={"100%"}
-                justifyContent={"space-between"}
-              >
-                <Box>
-                  <Text fontWeight="bold">Location:</Text>
-                  <Text>{location}</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight="bold">Date</Text>
-                  <Text>{formatDate(date)}</Text>
-                </Box>
-              </HStack>
-              
-              <Box width="100%">
-                <Box>
-                    <Text fontWeight="bold">Time</Text>
-                    <Text>need to pass in time prop</Text>
-                </Box>
-                <Text fontWeight="bold">Description:</Text>
-                <Text>{description}</Text> 
-              </Box>
-
-              <HStack
-                spacing={4}
-                width={"100%"}
-                justifyContent={"space-between"}
-              >
-                <Box>
-                  <Text fontWeight="bold">Capacity</Text>
-                  <Text>{capacity}</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight="bold">Level</Text>
-                  <Text>{level}</Text>
-                </Box>
-              </HStack>
-
-              <HStack width={"100%"}>
-                <Box>
-                  <Text fontWeight="bold">Classes</Text>
-                  <Text>{costume}</Text>
-                </Box>
-              </HStack>
             </VStack>
           </ModalBody>
           <Flex justifyContent="center" width = "100%">
@@ -249,7 +250,7 @@ function EventInfoModal({
                 <Button
                   width = "100%"
                   p = {7}
-                  bg = "#6B46C1" 
+                  bg = "purple.600" 
                   color = "white"
                   onClick={eventSignUp}
                 >

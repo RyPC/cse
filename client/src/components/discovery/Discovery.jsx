@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 
-import { Box, Button, Flex, Input, InputGroup, InputLeftElement, VStack, Badge } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  VStack,
+} from "@chakra-ui/react";
 
+
+import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
-import { useAuthContext } from "../../contexts/hooks/useAuthContext";
-import { FaSearch } from "react-icons/fa";
 import { SearchBar } from "../searchbar/SearchBar";
 
 export const Discovery = () => {
@@ -17,7 +22,7 @@ export const Discovery = () => {
   const [refresh, setRefresh] = useState(0);
   const [lastToggledTag, setLastToggledTag] = useState(null);
 
-  const { currentUser } = useAuthContext();
+  const { currentUser, role } = useAuthContext();
 
   const toggleClasses = () => {
     setActiveTab("classes");
@@ -36,20 +41,21 @@ export const Discovery = () => {
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
 
-
   // this will be an array of users
   const [user, setUser] = useState(null);
   useEffect(() => {
-    const fetchUserData = () => {backend.get(`/users/${currentUser.uid}`).then(res => setUser(res))};
+    const fetchUserData = () => {
+      backend.get(`/users/${currentUser.uid}`).then((res) => setUser(res));
+    };
     fetchUserData();
-  }, [backend, currentUser])
-
+  }, [backend, currentUser]);
 
   useEffect(() => {
     const fetchData = async () => {
       // Fetch and Store Classes Information
       try {
-        const response = await backend.get("/classes/scheduled");
+        const response = await backend.get(role !== 'student' ? "/classes/scheduled" : "/classes/published");
+        console.log("Classes:", response.data);
         setClasses(response.data);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -57,7 +63,7 @@ export const Discovery = () => {
 
       // Fetch and Store Events Information
       try {
-        const response = await backend.get("/events");
+        const response = await backend.get(role !== 'student' ? "/events" : "/events/published");
         setEvents(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -78,25 +84,31 @@ export const Discovery = () => {
           initialTags[tag.id] =
             tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
         });
-  
+
         setTagFilter(initialTagFilter);
         setTags(initialTags);
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
     };
-  
+
     fetchTags();
   }, [backend]); // only run once or when `backend` changes
-  
 
   // take string as search query
   const searchEvents = async (query) => {
     try {
-      const res = await backend.get(
-        query ? `/events/search/${query}` : "/events"
-      );
-      setEvents(res.data);
+      if (role === 'student') {
+        const res = await backend.get(
+          query ? `/events/search/published/${query}` : "/events/published"
+        );
+        setEvents(res.data);
+      } else {
+        const res = await backend.get(
+          query ? `/events/search/${query}` : "/events"
+        );
+        setEvents(res.data);
+      }
     } catch (error) {
       console.error("Error fetching events:", error);
     }
@@ -104,10 +116,17 @@ export const Discovery = () => {
 
   const searchClasses = async (query) => {
     try {
-      const res = await backend.get(
-        query ? `/classes/search/${query}` : "/classes/scheduled"
-      );
-      setClasses(res.data);
+      if (role === 'student') {
+        const res = await backend.get(
+          query ? `/classes/search/published/${query}` : "/classes/scheduled"
+        );
+        setClasses(res.data);
+      } else {
+        const res = await backend.get(
+          query ? `/classes/search/${query}` : "/classes/scheduled"
+        );
+        setClasses(res.data);
+      }
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
@@ -176,7 +195,7 @@ export const Discovery = () => {
     } catch (error) {
       console.error("Error fetching all events:", error);
     }
-  }
+  };
 
   const fetchClassesByTag = async (tagId) => {
     try {
@@ -222,11 +241,11 @@ export const Discovery = () => {
               color={activeTab === "classes" ? "black" : "gray.500"}
               borderRadius="0"
               onClick={() => {
-                setActiveTab("classes");
                 toggleClasses();
               }}
             >
-              Classes</Button>
+              Classes
+            </Button>
             <Button
               variant="unstyled"
               borderBottom="2px solid"
@@ -235,11 +254,11 @@ export const Discovery = () => {
               color={activeTab === "events" ? "black" : "gray.500"}
               borderRadius="0"
               onClick={() => {
-                setActiveTab("events");
                 toggleEvents();
               }}
             >
-              Events</Button>
+              Events
+            </Button>
           </Flex>
         </Box>
 
@@ -258,7 +277,7 @@ export const Discovery = () => {
           />
         </Box>
 
-        <Box my="14px">
+        <Box my="14px" width={"90%"}>
           <Flex
             display={activeTab === "events" ? "none" : "flex"}
             align="center"
@@ -306,6 +325,7 @@ export const Discovery = () => {
                 callTime={eventItem.callTime}
                 classId={eventItem.classId}
                 costume={eventItem.costume}
+                attendeeCount={eventItem.attendeeCount}
                 id={eventItem.id}
                 setRefresh={setRefresh}
                 user={user}
@@ -314,7 +334,7 @@ export const Discovery = () => {
           </Flex>
         </Box>
       </VStack>
-      <Navbar></Navbar>
+      <Navbar/>
     </Box>
   );
 };

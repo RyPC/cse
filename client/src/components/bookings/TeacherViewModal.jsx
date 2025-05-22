@@ -15,6 +15,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Tag,
   Text,
   useDisclosure,
   VStack,
@@ -24,7 +25,7 @@ import { BiSolidEdit, BiTrash } from "react-icons/bi";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { BsChevronLeft } from "react-icons/bs";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 import { ClassRSVP } from "../rsvp/classRsvp.jsx"
@@ -33,7 +34,7 @@ import PublishedReviews from "../reviews/classReview";
 import { MdMoreHoriz } from "react-icons/md";
 
 
-export const TeacherViewModal = ({
+export const TeacherViewModal = memo(({
   isOpen,
   onClose,
   setCurrentModal,
@@ -185,7 +186,7 @@ export const TeacherViewModal = ({
               >
                 <Text fontSize = "1.5rem" fontWeight="bold">
                   {" "}
-                  {classData?.rsvpCount ? classData?.rsvpCount : 0} People Enrolled
+                  {classData?.attendeeCount ? classData?.attendeeCount : 0} People Enrolled
                 </Text>
                 <Button
                   onClick={onRSVPOpen}
@@ -297,12 +298,24 @@ export const TeacherViewModal = ({
           <Box>
             <Text mr="20" fontWeight="bold" mb = "0.5rem">Recommended Prerequisites(s)</Text>
             <Text>We recommend taking these classes before enrolling in this series.</Text>
+
+            {classData?.prerequisites && classData?.prerequisites.length > 0 ? (
+              <Text fontSize="16px">
+                {classData?.prerequisites.map((prerequisite) => (
+                  <Tag borderRadius={"full"} bg="purple.100" textColor={"purple.800"} key={prerequisite.id}>{prerequisite.title}</Tag>
+                ))}
+              </Text>
+            ) : (
+              <Text>No prerequisites for this class</Text>
+            )}
+
+
           </Box>
           <Box>
             <Text mr="20" fontWeight="bold" mb = "0.5rem">Performance(s)</Text>
-            <Text>At the end of the class period, students will perform in a final performance.</Text>
+            <Text mb={3}>At the end of the class period, students will perform in a final performance.</Text> 
             {performances.map((performance) => (
-              <Text key={performance.id}>{performance.title}</Text>
+              <Tag borderRadius={"full"} bg="purple.100" textColor={"purple.800"} key={performance.id}>{performance.title}</Tag>
             ))}
           </Box>
           <Divider borderColor="gray.400" borderWidth="1px" my={4} />
@@ -315,4 +328,5 @@ export const TeacherViewModal = ({
     <ClassRSVP isOpen={isRSVPOpen} onClose={onRSVPClose} card={{id: classData?.id, name: classData?.title, date: classData?.date}}/>
     </>
   );
-};
+}
+);

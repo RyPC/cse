@@ -476,13 +476,8 @@ export const TeacherEditModal = ({
             >
               Discard Edits
             </Button>
-            <Button
-              bg="#6B46C1"
-              color="white"
-              flex="1"
-              onClick={onPublish}
-            >
-              Save Changes
+            <Button bg= "purple.600"  color = "white" flex="1" onClick={onPublish}>
+              Publish
             </Button>
           </Flex>
         </ModalFooter>

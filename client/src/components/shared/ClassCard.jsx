@@ -1,166 +1,158 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
 import {
+  Badge,
   Box,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
+  Flex,
   Heading,
   HStack,
+  Image,
   Text,
   VStack,
 } from "@chakra-ui/react";
 
-import { FaClock, FaMapMarkerAlt, FaUser } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
 
-export const ClassCard = ({
+export const ClassCard = memo(
+({
   title,
-  description,
   location,
-  capacity,
-  level,
-  costume,
   date,
   startTime,
   endTime,
-  attendeeCount = 0, // Default to 0 if not provided
-  onClick,
+  attendeeCount = 0,
   id,
-  user = null
+  user = null,
+  onClick = null,
 }) => {
-  const formattedDate = date ? formatDate(date) : null;
-  const formattedStartTime = startTime ? formatTime(startTime) : null;
-  const formattedEndTime = endTime ? formatTime(endTime) : null;
-  const { backend } = useBackendContext();
-  const [classDate, setClassDate] = useState(null);
-  const { pathname } = useLocation();
-  const [openRootModal, setOpenRootModal] = useState(false);
-  // console.log({formattedDate, formattedStartTime, formattedEndTime})
-  // const fetchClassDate = async () => {
-  //   if (!classDate) {
-  //     // console.log("id", id);
-  //     const response = await backend.get(`/scheduled-classes/${id}`);
-  //     if (response?.data[0]?.date) {
-  //       const formattedDate = new Date(
-  //         response.data[0].date
-  //       ).toLocaleDateString("en-US");
-  //       setClassDate(formattedDate);
-  //     }
-  //   }
-  // };
-  useEffect(() => {
-    const fetchClassDate = async () => {
-      if (!classDate && id) {
-        // console.log("id", id);
-        const response = await backend.get(`/scheduled-classes/${id}`);
-        if (response?.data[0]?.date) {
-          const newDate = new Date(
-            response.data[0].date
-          ).toLocaleDateString("en-US");
-          setClassDate(newDate);
-        }
+    const formattedDate = date ? formatDate(date) : null;
+    const formattedStartTime = startTime ? formatTime(startTime) : null;
+    const formattedEndTime = endTime ? formatTime(endTime) : null;
+    const { backend } = useBackendContext();
+    const [classDate, setClassDate] = useState(null);
+    const [openRootModal, setOpenRootModal] = useState(false);
+
+    const { pathname } = useLocation();
+
+    const handleClick = () => {
+      if (pathname === "/bookings") {
+        if (onClick) onClick();
+      } else {
+        setOpenRootModal(true);
       }
     };
-    fetchClassDate();
-  }, [backend, classDate, id]);
 
-  return (
-    <>
-    <Box 
-      display="flex"
-      justifyContent="center"
-      w={{ base: "100%", md: "30em" }}
-      onClick={() => {
-        if (pathname === "/bookings") {
-          onClick();
-        } else {
-          setOpenRootModal(true);
+    useEffect(() => {
+      const fetchClassDate = async () => {
+        if (!classDate && id) {
+          const response = await backend.get(`/scheduled-classes/${id}`);
+          if (response?.data[0]?.date) {
+            const newDate = new Date(response.data[0].date).toLocaleDateString(
+              "en-US"
+            );
+            setClassDate(newDate);
+          }
         }
-      }} 
-      cursor="pointer">
-      <Card
-        w={{ base: "90%", md: "30em" }}
-        border = "1px"
-        borderColor="gray.300"
+      };
+      fetchClassDate();
+    }, [backend, classDate, id]);
+
+    return (
+      <Box
+        w="100%"
         bg="gray.50"
+        borderRadius="16px"
+        borderColor={"gray.300"}
+        borderWidth={1}
+        px={6}
+        py={10}
+        position="relative"
+        cursor="pointer"
+        onClick={handleClick} 
+        _hover={{ bg: "gray.100" }}
       >
-        <CardHeader pb={0}>
-          <HStack
-            position="absolute"
-            height = "15%"
-            top="10%"
-            right="5%"
-            bg="purple.50"
-            px={3}
-            py={1}
-            borderRadius="full"
-            border="1px"
-            borderColor="purple.600"
-            color="black"
-            fontSize="sm"
+        <Badge
+          position="absolute"
+          top={4}
+          right={4}
+          variant="outline"
+          borderStyle="dashed"
+          borderColor="purple.600"
+          color="purple.700"
+          bg="purple.50"
+          px={3}
+          py={1}
+          fontSize="xs"
+          fontWeight="medium"
+          borderRadius="full"
+        >
+          {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} Enrolled
+        </Badge>
+
+        <HStack
+          spacing={4}
+          align="center"
+        >
+          {/* two-shoe icon */}
+          <Flex
+            w={"20%"}
+            align="center"
+            justify="center"
           >
-            <Text>
-              {attendeeCount} {parseInt(attendeeCount) === 1 ? "Person" : "People"} Enrolled
-            </Text>
-          </HStack>
-        </CardHeader>
-        <CardBody>
-          <Box 
-            display="flex" 
-            justifyContent="start"
-          >
+            <Image
+              src="/card_images/ballet.svg"
+              alt="Class illustration"
+              maxW="100%"
+              maxH="100%"
+              objectFit="contain"
+              // transform="rotate(-15deg)"
+            />
+
+          </Flex>
+
+          {/* text */}
           <VStack
-            alignItems="flex-start"
-            spacing={2}
+            w={"80%"}
+            align="flex-start"
+            spacing={1}
           >
-            <Text
-              fontSize="1.5rem"
-              fontWeight="bold"
+            <Heading
+              size="md"
+              fontWeight={"semibold"}
+              color="gray.700"
             >
               {title}
+            </Heading>
+            <Text
+              fontSize="sm"
+              color="gray.700"
+            >
+              {location}
             </Text>
-            
-            <HStack>
-              <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
-            </HStack>
-            <HStack>
-              <Text fontSize="sm">
-                  {formattedDate
-                    ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
-                    : "No date"}
-              </Text>
-            </HStack>
+            <Text
+              fontSize="sm"
+              color="gray.700"
+            >
+              {formattedDate} · {formattedStartTime} – {formattedEndTime}
+            </Text>
           </VStack>
-          </Box>
-        </CardBody>
+        </HStack>
 
-        <CardFooter
-          justifyContent="right"
-          hidden
-        >
-          {/* <Text>0/{capacity} spots left</Text> */}
-          <SignUpController
-            class_id={id}
-            title={title}
-            description={description}
-            location={location}
-            capacity={capacity}
-            level={level}
-            costume={costume}
-            date={classDate}
-            setOpenRootModal={setOpenRootModal}
-            openRootModal={openRootModal}
-            user={user}
-          />
-        </CardFooter>
-      </Card>
-    </Box>
-    </>
-  );
-};
+        <SignUpController
+          class_id={id}
+          title={title}
+          location={location}
+          date={classDate || date}
+          startTime={startTime}
+          endTime={endTime}
+          setOpenRootModal={setOpenRootModal}
+          openRootModal={openRootModal}
+          user={user}
+        />
+      </Box>
+    );
+  }
+);

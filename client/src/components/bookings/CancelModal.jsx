@@ -32,7 +32,7 @@ export const CancelModal = ({ isOpen, onClose, setCurrentModal, card, handleEven
                         </Button>
                         <Button 
                             flex="1" 
-                            bg="#6B46C1" 
+                            bg="purple.600" 
                             color = "white" 
                             fontWeight="bold" 
                             onClick={onConfirm} 

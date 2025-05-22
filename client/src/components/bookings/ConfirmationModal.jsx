@@ -28,7 +28,7 @@ export const ConfirmationModal = ({ isOpen, onClose, card }) => {
             </ModalBody>
 
             <ModalFooter justifyContent="center">
-                <Button bg="#6B46C1" color = "white" width="60%" mr={3} onClick={onClose}>
+                <Button bg="purple.600" color = "white" width="60%" mr={3} onClick={onClose}>
                     View Booked Events
                 </Button>
             </ModalFooter>
