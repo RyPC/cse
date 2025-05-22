@@ -4,9 +4,9 @@ import {
   Box,
   Button,
   Card,
+  Flex,
   HStack,
   Image,
-  Flex,
   List,
   ListIcon,
   ListItem,
@@ -23,8 +23,7 @@ import {
   Divider
 } from "@chakra-ui/react";
 
-import { FaTimesCircle } from "react-icons/fa";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -49,6 +48,9 @@ const ClassInfoModal = ({
   isCorequisiteSignUp,
   corequisites,
   handleClose,
+  modalIdentity,
+  setModalIdentity,
+  filteredCorequisites,
   handleResolveCoreq = () => {},
 }) => {
   const { currentUser, role } = useAuthContext();
@@ -112,13 +114,24 @@ const ClassInfoModal = ({
   };
 
   const classSignUp = async () => {
+    console.log("In class signup button");
+    console.log(isCorequisiteSignUp);
+    corequisites.map((coreq) => {
+      console.log(coreq);
+    });
     if (isCorequisiteSignUp) {
+      console.log("In isCorequisiteSignup clause");
       enrollInClass();
       return;
     }
+    // if there exisits a coreq and not enrolled in a coreq,
     if (corequisites.some((coreq) => !coreq.enrolled)) {
+      console.log("In handleResolveCoreq clause");
+      // let coReqWarningModal know that it should programatically display an event info modal version
+      setModalIdentity("class");
       handleResolveCoreq();
     } else {
+      console.log("In else clause (enrollInClass())");
       enrollInClass();
     }
   };
@@ -207,41 +220,46 @@ const ClassInfoModal = ({
             <VStack
               spacing={4}
               align="center"
-            >             
-              {!isCorequisiteSignUp && (
+            >
+              {corequisites && corequisites.length !== 0 && (
                 <HStack width="100%">
-                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
-                    <VStack align = "start" spacing={2}>
+                  <Box
+                    bg="#E8E7EF"
+                    borderRadius="md"
+                    width="100%"
+                    p={4}
+                  >
+                    <VStack
+                      align="start"
+                      spacing={2}
+                    >
                       <HStack align="center">
                         <Text as="b">
                           Recommended classes and events:
                         </Text>
                       </HStack>
-                    {!corequisites || corequisites.length === 0 ? (
-                      <Text>No corequisites for this class</Text>
-                    ) : (
                       <List>
                         {corequisites.map((coreq, index) => (
                           <ListItem key={index}>
                             <ListIcon
                               as={
-                                coreq.enrolled
-                                  ? FaCircleCheck
-                                  : FaTimesCircle
+                                coreq.enrolled ? FaCircleCheck : FaTimesCircle
                               }
                             />
                             {coreq.title}
                           </ListItem>
                         ))}
                       </List>
-                    )}
                     </VStack>
                   </Box>
                 </HStack>
               )}
             </VStack>
           </ModalBody>
-          <Flex justifyContent="center" width = "100%">
+          <Flex
+            justifyContent="center"
+            width="100%"
+          >
             <ModalFooter>
               {role === "student" && (
                 <Button

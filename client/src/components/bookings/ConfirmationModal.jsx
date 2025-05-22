@@ -1,38 +1,47 @@
-import { Button, Modal, ModalOverlay, ModalHeader, ModalContent, ModalCloseButton, ModalBody, ModalFooter, Box, Icon, VStack } from "@chakra-ui/react";
+import { Button, Text, Modal, ModalOverlay, ModalContent, ModalBody, VStack } from "@chakra-ui/react";
 import CompletedIndicator from "./CompletedIndicator.png"
-
 
 
 export const ConfirmationModal = ({ isOpen, onClose, card }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal 
+        isOpen={isOpen} 
+        size="full" 
+        onClose={() => {}}
+    >
         <ModalOverlay />
         <ModalContent>
-            <ModalHeader py={3}>
-            </ModalHeader>
-            <VStack>
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    w="150px" 
-                    h="150px"
-                    borderRadius="full"
-                    bg="#d9d9d9"
+            <ModalBody
+                display={"flex"}
+                justifyContent={"center"}
+            >
+                <VStack 
+                    spacing={10}
+                    minH = {"100vh"}
+                    justify= {"center"}
+                    marginBottom={"10vh"}
                 >
-                    <img src={CompletedIndicator} alt="Completed Indicator" />
-                </Box>
-            </VStack>
-            <ModalBody textAlign="center" fontSize="2xl" fontWeight="bold">
-                You've successfully cancelled {card ? card.title : "N/A"}.
+                    <VStack
+                        marginTop="5rem"
+                    >
+                        <img src={CompletedIndicator} alt="Completed Indicator" />
+                        <Text textAlign={"center"} fontWeight="bold" fontSize="xl" mt="2rem">
+                            Sorry to See You Go!
+                        </Text>
+                        <Text textAlign={"center"}>
+                            Your RSVP has been removed for {card ? card.title : "N/A"}
+                        </Text>
+                    </VStack>
+                </VStack>
             </ModalBody>
-
             <ModalFooter justifyContent="center">
                 <Button bg="purple.600" color = "white" width="60%" mr={3} onClick={onClose}>
-                    View Booked Events
+                    Find Upcoming Events
                 </Button>
             </ModalFooter>
         </ModalContent>
     </Modal>
   );
 };
+
+export default ConfirmationModal;

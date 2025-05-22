@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Flex,
   HStack,
   Image,
-  Flex,
   List,
   ListIcon,
   ListItem,
@@ -21,8 +21,8 @@ import {
   Tag,
   Divider
 } from "@chakra-ui/react";
-import { FaTimesCircle } from "react-icons/fa";
-import { FaCheckCircle } from "react-icons/fa";
+
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -44,6 +44,8 @@ function EventInfoModal({
   costume,
   isCorequisiteSignUp,
   corequisites,
+  modalIdentity,
+  setModalIdentity,
   handleResolveCoreq = () => {},
 }) {
   const { backend } = useBackendContext();
@@ -102,26 +104,22 @@ function EventInfoModal({
 
   const enrollInEvent = async () => {
     // Check if already checked into event
-    const currentCheckIn = await backend.get(
-      `/event-enrollments/test`,
-      {
-        params:{
-          student_id: user.data[0].id,
-          event_id: id
-        }
-      }
-    );
+    const currentCheckIn = await backend.get(`/event-enrollments/test`, {
+      params: {
+        student_id: user.data[0].id,
+        event_id: id,
+      },
+    });
     if (user.data[0] && !currentCheckIn.data.exists) {
       const req = await backend.post(`/event-enrollments/`, {
         student_id: user.data[0].id,
         event_id: id,
-        attendance: null
+        attendance: null,
       });
       if (req.status === 201) {
         setOpenSuccessModal(true);
       }
-    }
-    else {
+    } else {
       console.log("Already signed up for this event!");
     }
   };
@@ -133,6 +131,8 @@ function EventInfoModal({
     }
 
     if (corequisites.some((coreq) => !coreq.enrolled)) {
+      // let coReqWarningModal know that it should programatically display an event info modal version
+      setModalIdentity("event");
       handleResolveCoreq();
     } else {
       enrollInEvent();
@@ -144,12 +144,6 @@ function EventInfoModal({
     handleClose();
   };
 
-  const parseDate = (dateString) => {
-    // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
-    const date = new Date(dateString)
-    return ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear()
-  }
-  
 
   useEffect(() => {
     // if (isOpenProp && !imageSrc) {
@@ -159,7 +153,7 @@ function EventInfoModal({
     // }
     getTags()
     getStartTime()
-  }, [imageSrc, isOpenProp]);
+  }, [isOpenProp]);
 
   return (
     <>
@@ -216,37 +210,35 @@ function EventInfoModal({
               </HStack>
               <br/><Divider orientation='horizontal' />
               <HStack width="100%">
-                {!isCorequisiteSignUp && (
-                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
-                    <Text as="b">
-                      Recommended classes
-                    </Text>
-                    {!corequisites || corequisites.length === 0 ? (
-                      <Text>No corequisites for this class</Text>
-                    ) : (
-                      <List>
-                        {corequisites.map((coreq, index) => (
-                          <ListItem key={index}>
-                            <ListIcon
-                              as={
-                                coreq.enrolled
-                                  ? FaCircleCheck
-                                  : FaTimesCircle
-                              }
-                            />
-                            {coreq.title}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
+                {corequisites && corequisites.length > 0 && (
+                  <Box
+                    bg="#E8E7EF"
+                    borderRadius="md"
+                    width="100%"
+                    p={4}
+                  >
+                    <Text as="b">Recommended</Text>
+                    <List>
+                      {corequisites.map((coreq, index) => (
+                        <ListItem key={index}>
+                          <ListIcon
+                            as={coreq.enrolled ? FaCircleCheck : FaTimesCircle}
+                          />
+                          {coreq.title}
+                        </ListItem>
+                      ))}
+                    </List>
                   </Box>
                 )}
               </HStack>
             </VStack>
           </ModalBody>
-          <Flex justifyContent="center" width = "100%">
+          <Flex
+            justifyContent="center"
+            width="100%"
+          >
             <ModalFooter>
-              <Flex justify = "center">
+              <Flex justify="center">
                 <Button
                   width = "100%"
                   p = {7}

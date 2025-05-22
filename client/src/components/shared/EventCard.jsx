@@ -118,6 +118,7 @@ export const EventCard = memo(({
           w="80%"
           align="flex-start"
           spacing={1}
+          wordBreak="break-word"
         >
           <Heading
             size="md"
@@ -129,6 +130,7 @@ export const EventCard = memo(({
           <Text
             fontSize="sm"
             color="grey.700"
+            wordBreak="break-word"
           >
             {location}
           </Text>
@@ -154,23 +156,22 @@ export const EventCard = memo(({
         openRootModal={openRootModal}
         user={user}
       />
-    <TeacherEventViewModal
-      isOpenProp={openTeacherModal}
-      handleClose={closeTeacherModal}
-      id={id}
-      location={location}
-      title={title}
-      description={description}
-      level={level}
-      date={date}
-      startTime={startTime}
-      endTime={endTime}
-      callTime={callTime}
-      costume={costume}
-      capacity={capacity}
-      triggerRefresh={triggerRefresh}
-    />
+      <TeacherEventViewModal
+        isOpenProp={openTeacherModal}
+        handleClose={closeTeacherModal}
+        id={id}
+        location={location}
+        title={title}
+        description={description}
+        level={level}
+        date={date}
+        startTime={startTime}
+        endTime={endTime}
+        callTime={callTime}
+        costume={costume}
+        capacity={capacity}
+        triggerRefresh={triggerRefresh}
+      />
     </Box>
   );
-}
-);
+});

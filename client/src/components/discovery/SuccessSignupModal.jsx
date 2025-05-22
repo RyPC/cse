@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import {
   Box,
   Button,
+  List,
+  ListItem,
   Modal,
   ModalBody,
   ModalContent,
@@ -13,8 +15,8 @@ import {
 
 import { CiCircleCheck } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-import CompletedIndicator from "./CompletedIndicator.png"
 
+import CompletedIndicator from "./CompletedIndicator.png";
 
 function SuccessSignupModal({
   isOpen,
@@ -24,12 +26,16 @@ function SuccessSignupModal({
 }) {
   const navigate = useNavigate();
 
+  if (typeof title === "string") {
+    title = [title];
+  }
+
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => {
-        onClose();
-        if (!isCorequisiteSignUp) navigate("/bookings");
-      }, 2000);
+      // setTimeout(() => {
+      //   onClose();
+      //   if (!isCorequisiteSignUp) navigate("/bookings");
+      // }, 2000);
     }
   }, [isCorequisiteSignUp, isOpen, navigate, onClose]);
 
@@ -45,18 +51,40 @@ function SuccessSignupModal({
           display={"flex"}
           justifyContent={"center"}
         >
-          <VStack 
+          <VStack
             spacing={10}
-            minh = {"100vh"}
-            justify= {"center"}
+            minH={"100vh"}
+            justify={"center"}
+            marginBottom={"10vh"}
           >
-            <VStack
-              spacing={4}
-              marginTop="5rem"
-            >
-              <img src={CompletedIndicator} alt="Completed Indicator" />
+            <VStack marginTop="5rem">
+              <img
+                src={CompletedIndicator}
+                alt="Completed Indicator"
+              />
+              <Text
+                textAlign={"center"}
+                fontWeight="bold"
+                fontSize="xl"
+                mt="2rem"
+              >
+                Thanks for Signing Up!
+              </Text>
               <Text textAlign={"center"}>
-                You've successfully signed up for <Box as="b">{title}</Box>
+                You've successfully signed up for...
+              </Text>
+              <Text textAlign={"center"}>
+                {title && title.length > 1 ? (
+                  <List>
+                    {title.map((t, index) => (
+                      <ListItem key={index}>{t}</ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Text fontWeight="bold">
+                    {title ? title[0] : "No title detected"}
+                  </Text>
+                )}
               </Text>
             </VStack>
 
@@ -65,8 +93,9 @@ function SuccessSignupModal({
                 bg="purple.600"
                 color = "#FFFFFF"
                 onClick={onClose}
+                width="100%"
               >
-                View Booked Events
+                Find Upcoming Events
               </Button>
             )}
           </VStack>
