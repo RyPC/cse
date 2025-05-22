@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 
 import {
   Badge,
@@ -18,7 +18,7 @@ import { formatDate, formatTime } from "../../utils/formatDateTime";
 import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal";
 import SignUpController from "../discovery/SignUpController";
 
-export const EventCard = ({
+export const EventCard = memo(({
   id,
   title,
   location,
@@ -172,4 +172,5 @@ export const EventCard = ({
     />
     </Box>
   );
-};
+}
+);

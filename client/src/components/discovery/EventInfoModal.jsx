@@ -27,7 +27,7 @@ import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import {formatDate} from "../../utils/formatDateTime";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function EventInfoModal({
@@ -77,14 +77,18 @@ function EventInfoModal({
 
   const [tags, setTags] = useState([]);
   const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [callTime, setCallTime] = useState("");
 
   const getStartTime = async() => {
     const data = await backend.get(`/events/${id}`)
     setStartTime(data.data[0].startTime)
+    setEndTime(data.data[0].endTime)
+    setCallTime(data.data[0].callTime)
   }
 
   const getTags = async () => {
-    let tags_arr = [];
+    const tags_arr = [];
     const tags = await backend.get(`/event-tags/tags/${id}`)
     console.log("TAGS from GETTAGS event")
     console.log(tags.data)
@@ -148,11 +152,11 @@ function EventInfoModal({
   
 
   useEffect(() => {
-    if (isOpenProp && !imageSrc) {
-      fetch("https://dog.ceo/api/breeds/image/random") // for fun
-        .then((res) => res.json())
-        .then((data) => setImageSrc(data.message));
-    }
+    // if (isOpenProp && !imageSrc) {
+    //   fetch("https://dog.ceo/api/breeds/image/random") // for fun
+    //     .then((res) => res.json())
+    //     .then((data) => setImageSrc(data.message));
+    // }
     getTags()
     getStartTime()
   }, [imageSrc, isOpenProp]);
@@ -176,7 +180,7 @@ function EventInfoModal({
           <ModalHeader>
             <List>
               {tags.map((tag, index) => (
-                <Tag key={index}>
+                <Tag key={index} m={1}>
                   {tag}
                 </Tag>
               ))}
@@ -187,52 +191,35 @@ function EventInfoModal({
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>Description: {description}</Text> <br />
+            <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
             <Divider orientation='horizontal' /> <br /> 
-            <Text color="#553C9A">Date: {parseDate(date)} {startTime}</Text> 
+            <Text color="#553C9A">{formatDate(date)} · {formatTime(startTime)} – {formatTime(endTime)}</Text>
+            <Text>Call Time: {formatTime(callTime)}</Text>
             <Text>Location: {location}</Text>     
-            <Divider orientation='horizontal' /> <br /> 
+            <br /> <Divider orientation='horizontal' /> <br /> 
             <VStack
               spacing={4}
               align="center"
             >
-
-              <Box
-                boxSize="sm"
-                height="15rem"
-                width={"100%"}
-                alignContent={"center"}
-                justifyContent={"center"}
-                display="flex"
-              >
-                <Image
-                  src={imageSrc}
-                  alt="Random Dog"
-                  width={"100%%"}
-                />
-              </Box>
-              
-              
               <HStack
                 spacing={4}
                 width={"100%"}
-                justifyContent={"space-between"}
               >
-                <Box>
-                  <Text fontWeight="bold">Capacity</Text>
-                  <Text>{capacity}</Text>
-                </Box>
-                <Box>
+                <Box width="50%">
                   <Text fontWeight="bold">Level</Text>
                   <Text>{level}</Text>
                 </Box>
+                <Box width="50%">
+                  <Text fontWeight="bold">Capacity</Text>
+                  <Text>{capacity}</Text>
+                </Box>
               </HStack>
-              <Divider orientation='horizontal' /> 
+              <br/><Divider orientation='horizontal' />
               <HStack width="100%">
                 {!isCorequisiteSignUp && (
                   <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
                     <Text as="b">
-                      Recommended
+                      Recommended classes
                     </Text>
                     {!corequisites || corequisites.length === 0 ? (
                       <Text>No corequisites for this class</Text>
@@ -254,12 +241,6 @@ function EventInfoModal({
                     )}
                   </Box>
                 )}
-              </HStack>
-              <HStack width={"100%"}>
-                <Box>
-                  <Text fontWeight="bold">Classes</Text>
-                  <Text>{costume}</Text>
-                </Box>
               </HStack>
             </VStack>
           </ModalBody>

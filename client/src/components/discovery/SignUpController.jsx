@@ -77,7 +77,7 @@ function SignUpController({
       setTeacherName(teacherName.data[0].firstName)
     }
 
-    let tags_arr = []
+    const tags_arr = []
     const tags = await backend.get(`/class-tags/tags/${id}`)
     console.log(tags.data)
     for (let i=0; i<tags.data.length; i++) {

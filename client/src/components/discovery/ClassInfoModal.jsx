@@ -31,6 +31,7 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import PublishedReviews from "../reviews/classReview";
 import SuccessSignupModal from "./SuccessSignupModal";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 
 function ClassInfoModal({
   userid,
@@ -60,12 +61,13 @@ function ClassInfoModal({
   const [tags, setTags] = useState([]);
   const [teacherName, setTeacherName] = useState("");
   const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [description, setDescription] = useState("");
   const [capacity, setCapacity] = useState("");
   const [level, setLevel] = useState("");
 
   const getTags = async () => {
-    let tags_arr = [];
+    const tags_arr = [];
     const tags = await backend.get(`/class-tags/tags/${id}`)
     console.log("TAGS from GETTAGS")
     console.log(tags.data)
@@ -87,6 +89,7 @@ function ClassInfoModal({
   const getStartTime = async() => {
     const data = await backend.get(`/scheduled-classes/${id}`)
     setStartTime(data.data[0].startTime)
+    setEndTime(data.data[0].endTime)
   }
 
   const enrollInClass = async () => {
@@ -166,7 +169,7 @@ function ClassInfoModal({
           <ModalHeader>
             <List>
               {tags.map((tag, index) => (
-                <Tag key={index}>
+                <Tag key={index} m={1}>
                   {tag}
                 </Tag>
               ))}
@@ -175,33 +178,30 @@ function ClassInfoModal({
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <p>Taught By { teacherName }</p> <br />
-            <Text>Description: {description}</Text> <br />
-    
-            <Divider orientation='horizontal' /> <br />
-            
-            <Text color="#553C9A">Date: {date} {startTime}</Text>
-            <Text>Location: {location}</Text>
+            <Text>Taught By { teacherName ? teacherName : "Unknown" }</Text>
+            <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
 
             <Divider orientation='horizontal' /> <br />
+
+            <Text color="#553C9A">{formatDate(date)} · {formatTime(startTime)} – {formatTime(endTime)}</Text>
+            <Text>Location: {location}</Text>
+
+            <br/> <Divider orientation='horizontal' /> <br />
 
             <HStack
               spacing={4}
               width={"100%"}
-              justifyContent={"space-between"}
             >
-              <Box>
-                <Text fontWeight="bold">Capacity</Text>
-                <Text>{capacity}</Text>
-              </Box>
-              <Box>
+              <Box width="50%">
                 <Text fontWeight="bold">Level</Text>
                 <Text>{level}</Text>
               </Box>
+              <Box width="50%">
+                <Text fontWeight="bold">Capacity</Text>
+                <Text>{capacity}</Text>
+              </Box>
             </HStack>
-
-            <Divider orientation='horizontal' /> <br />
-
+            <br/> <Divider orientation='horizontal' /> <br />
             <VStack
               spacing={4}
               align="center"
@@ -212,7 +212,7 @@ function ClassInfoModal({
                     <VStack align = "start" spacing={2}>
                       <HStack align="center">
                         <Text as="b">
-                          Recommended
+                          Recommended classes and events:
                         </Text>
                       </HStack>
                     {!corequisites || corequisites.length === 0 ? (
@@ -237,52 +237,7 @@ function ClassInfoModal({
                   </Box>
                 </HStack>
               )}
-              {/* <Box
-                boxSize="sm"
-                height="15rem"
-                width={"100%"}
-                alignContent={"center"}
-                justifyContent={"center"}
-                display="flex"
-              >
-                <Image
-                  src={imageSrc}
-                  alt="Random Dog"
-                  height={"100%"}
-                  width={"100%%"}
-                />
-              </Box>
-
-              <HStack
-                width={"100%"}
-                justifyContent={"space-between"}
-              >
-                <Box>
-                  <Text fontWeight="bold">Location</Text>
-                </Box>
-                <Box>
-                  <Text fontWeight="bold">Date</Text>
-                  
-                </Box>
-              </HStack> */}
-
-              {/* <Box width="100%">
-                <Box>
-                    <Text fontWeight="bold">Time</Text>
-                    <Text>pass in time prop and use it</Text>
-                </Box>
-                <Text fontWeight="bold">Description:</Text>
-              </Box>
-
-
-              <HStack width={"100%"}>
-                <Box>
-                  <Text fontWeight="bold">Classes</Text>
-                  <Text>{costume}</Text>
-                </Box>
-              </HStack> */}
             </VStack>
-          
           </ModalBody>
           <Flex justifyContent="center" width = "100%">
             <ModalFooter>
