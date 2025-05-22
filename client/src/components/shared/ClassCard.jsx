@@ -123,12 +123,15 @@ export const ClassCard = memo(
               size="md"
               fontWeight={"semibold"}
               color="gray.700"
+              wordBreak="break-word"
+              marginTop="10px"
             >
               {title}
             </Heading>
             <Text
               fontSize="sm"
               color="gray.700"
+              wordBreak="break-word"
             >
               {location}
             </Text>
