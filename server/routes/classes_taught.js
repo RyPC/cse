@@ -52,9 +52,6 @@ classesTaughtRouter.get("/instructor/:classId", async (req, res) => {
     `, [classId]);
 
     res.status(200).json(keysToCamel(result));
-
-
-
   } catch (err) {
     console.error("Failed to fetch instructor:", err);
     res.status(500).send(err.message);

@@ -40,7 +40,7 @@ export const ClassTeacherCard = memo(
     level,
     costume,
     performance,
-    rsvpCount,
+    attendeeCount = 0,
     isDraft,
     recurrencePattern,
     isRecurring,
@@ -76,7 +76,7 @@ export const ClassTeacherCard = memo(
             isRecurring,
             startDate,
             endDate,
-            rsvpCount,
+            attendeeCount,
             startTime,
             endTime,
         };
@@ -140,7 +140,7 @@ export const ClassTeacherCard = memo(
             fontWeight="medium"
             borderRadius="full"
         >
-        {rsvpCount} {rsvpCount === 1 ? "Person" : "People"} RSVP'd
+        {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
         </Badge>
         <HStack
             spacing={4}
@@ -229,7 +229,7 @@ export const ClassTeacherCard = memo(
     //               startDate,
     //               endDate,
     //               isDraft,
-    //               rsvpCount,
+    //               attendeeCount,
     //               startTime,
     //               endTime,
     //             };
@@ -268,7 +268,7 @@ export const ClassTeacherCard = memo(
     //               isDraft,
     //               startDate,
     //               endDate,
-    //               rsvpCount,
+    //               attendeeCount,
     //               startTime,
     //               endTime,
     //             };
@@ -314,7 +314,7 @@ export const ClassTeacherCard = memo(
     //         fontSize="10px"
     //       >
     //         <Text>
-    //           {rsvpCount ?? 0} {(rsvpCount ?? 0) === 1 ? "Person" : "People"}{" "}
+    //           {attendeeCount ?? 0} {(attendeeCount ?? 0) === 1 ? "Person" : "People"}{" "}
     //           Enrolled
     //         </Text>
     //       </Box>

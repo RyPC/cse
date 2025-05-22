@@ -90,8 +90,8 @@ function EventInfoModal({
   const getTags = async () => {
     const tags_arr = [];
     const tags = await backend.get(`/event-tags/tags/${id}`)
-    console.log("TAGS from GETTAGS event")
-    console.log(tags.data)
+    // console.log("TAGS from GETTAGS event")
+    // console.log(tags.data)
     for (let i=0; i<tags.data.length; i++) {
       if (!tags_arr.includes(tags.data[i].tag)) {
         tags_arr.push(tags.data[i].tag)

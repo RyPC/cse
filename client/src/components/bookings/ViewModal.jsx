@@ -50,7 +50,10 @@ export const ViewModal = ({
 
   const getTags = async () => {
     const tags_arr = [];
-    const tags = await backend.get(`/event-tags/tags/${id}`)
+    if (!card?.id) {
+      return;
+    }
+    const tags = await backend.get(`/event-tags/tags/${card.id}`)
     // console.log("TAGS from GETTAGS event")
     // console.log(tags.data)
     for (let i=0; i<tags.data.length; i++) {

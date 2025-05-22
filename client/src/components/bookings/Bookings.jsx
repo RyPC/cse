@@ -28,27 +28,27 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import {
-  FaClock,
-  FaMapMarkerAlt,
-  FaMicrophoneAlt,
-  FaMusic,
-  FaSearch,
-  FaUser,
-} from "react-icons/fa";
-import {
-  GiAbstract001,
-  GiBallerinaShoes,
-  GiBoombox,
-  GiCartwheel,
-  GiTambourine,
-} from "react-icons/gi";
+// import {
+//   FaClock,
+//   FaMapMarkerAlt,
+//   FaMicrophoneAlt,
+//   FaMusic,
+//   FaSearch,
+//   FaUser,
+// } from "react-icons/fa";
+// import {
+//   GiAbstract001,
+//   GiBallerinaShoes,
+//   GiBoombox,
+//   GiCartwheel,
+//   GiTambourine,
+// } from "react-icons/gi";
 import { MdAdd, MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { formatDate, formatTime } from "../../utils/formatDateTime";
+// import { formatDate, formatTime } from "../../utils/formatDateTime";
 import { CreateClassForm } from "../forms/createClasses";
 import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
@@ -56,7 +56,7 @@ import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
-import { InfoModal } from "./InfoModal";
+// import { InfoModal } from "./InfoModal";
 import { SearchBar } from "../searchbar/SearchBar";
 import { TeacherCancelModal } from "./TeacherCancelModal";
 import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
@@ -395,6 +395,7 @@ export const Bookings = () => {
       setAttended([...attendedClasses, ...attendedEvents]);
       setDrafts([...draftClasses, ...draftEvents]);
       if (selectedCard) loadCorequisites(selectedCard.id);
+      console.log(classes);
     } catch (error) {
       console.error("Error reloading classes:", error);
     }
@@ -571,7 +572,8 @@ export const Bookings = () => {
               >
                 {role !== "student" && (
                   <Box
-                    w={{ base: "90%", md: "30em" }}
+                    // w={{ base: "100%", md: "30em" }}
+                    w={"100%"}
                     cursor="pointer"
                     onClick={() => {
                       setSelectedCard(null);
@@ -658,7 +660,8 @@ export const Bookings = () => {
               >
                 {role !== "student" && (
                   <Box
-                    w={{ base: "90%", md: "30em" }}
+                    // w={{ base: "90%", md: "30em" }}
+                    w={"100%"}
                     cursor="pointer"
                     onClick={() => {
                       setSelectedCard(null);
@@ -889,7 +892,7 @@ export const Bookings = () => {
 //     level,
 //     costume,
 //     performance,
-//     rsvpCount,
+//     attendeeCount,
 //     isDraft,
 //     recurrencePattern,
 //     isRecurring,
@@ -965,7 +968,7 @@ export const Bookings = () => {
 //                   startDate,
 //                   endDate,
 //                   isDraft,
-//                   rsvpCount,
+//                   attendeeCount,
 //                   startTime,
 //                   endTime,
 //                 };
@@ -1004,7 +1007,7 @@ export const Bookings = () => {
 //                   isDraft,
 //                   startDate,
 //                   endDate,
-//                   rsvpCount,
+//                   attendeeCount,
 //                   startTime,
 //                   endTime,
 //                 };
@@ -1050,7 +1053,7 @@ export const Bookings = () => {
 //             fontSize="10px"
 //           >
 //             <Text>
-//               {rsvpCount ?? 0} {(rsvpCount ?? 0) === 1 ? "Person" : "People"}{" "}
+//               {attendeeCount ?? 0} {(attendeeCount ?? 0) === 1 ? "Person" : "People"}{" "}
 //               Enrolled
 //             </Text>
 //           </Box>

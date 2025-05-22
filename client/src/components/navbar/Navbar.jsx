@@ -13,7 +13,7 @@ import { useRoleContext } from "../../contexts/hooks/useRoleContext";
 export const Navbar = () => {
   const { role: user_role } = useAuthContext();
   const { role } = useRoleContext();
-  console.log("role from navbar:", role);
+  // console.log("role from navbar:", role);
   const location = useLocation();
   const dashboardImg = "./dashboard.svg";
 
@@ -26,7 +26,7 @@ export const Navbar = () => {
   ];
 
   return (
-    console.log("my role:", role),
+    // console.log("my role:", role),
     <Box
       as="footer"
       position="fixed"

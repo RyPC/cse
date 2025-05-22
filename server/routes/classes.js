@@ -230,6 +230,28 @@ classesRouter.get("/drafts", async (req, res) => {
   // }
 // });
 
+classesRouter.get("/search/published/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const search = `%${name}%`;
+    const allClasses = await db.query(
+      `SELECT
+        c.*,
+        sc.date,
+        sc.start_time,
+        sc.end_time,
+        (SELECT COUNT(*) FROM class_enrollments WHERE class_id = c.id AND attendance IS NULL) as attendee_count
+      FROM classes c
+      LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+      WHERE c.is_draft = false AND c.title ILIKE $1
+      GROUP BY c.id, sc.date, sc.start_time, sc.end_time;`,
+      [search]
+    );
+    res.status(200).json(keysToCamel(allClasses));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
 classesRouter.get("/search/:name", async (req, res) => {
   try {
     const { name } = req.params;

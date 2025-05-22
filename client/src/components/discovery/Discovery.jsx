@@ -22,7 +22,7 @@ export const Discovery = () => {
   const [refresh, setRefresh] = useState(0);
   const [lastToggledTag, setLastToggledTag] = useState(null);
 
-  const { currentUser } = useAuthContext();
+  const { currentUser, role } = useAuthContext();
 
   const toggleClasses = () => {
     setActiveTab("classes");
@@ -54,7 +54,7 @@ export const Discovery = () => {
     const fetchData = async () => {
       // Fetch and Store Classes Information
       try {
-        const response = await backend.get("/classes/scheduled");
+        const response = await backend.get(role !== 'student' ? "/classes/scheduled" : "/classes/published");
         console.log("Classes:", response.data);
         setClasses(response.data);
       } catch (error) {
@@ -63,7 +63,7 @@ export const Discovery = () => {
 
       // Fetch and Store Events Information
       try {
-        const response = await backend.get("/events");
+        const response = await backend.get(role !== 'student' ? "/events" : "/events/published");
         setEvents(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -98,10 +98,17 @@ export const Discovery = () => {
   // take string as search query
   const searchEvents = async (query) => {
     try {
-      const res = await backend.get(
-        query ? `/events/search/${query}` : "/events"
-      );
-      setEvents(res.data);
+      if (role === 'student') {
+        const res = await backend.get(
+          query ? `/events/search/published/${query}` : "/events/published"
+        );
+        setEvents(res.data);
+      } else {
+        const res = await backend.get(
+          query ? `/events/search/${query}` : "/events"
+        );
+        setEvents(res.data);
+      }
     } catch (error) {
       console.error("Error fetching events:", error);
     }
@@ -109,10 +116,17 @@ export const Discovery = () => {
 
   const searchClasses = async (query) => {
     try {
-      const res = await backend.get(
-        query ? `/classes/search/${query}` : "/classes/scheduled"
-      );
-      setClasses(res.data);
+      if (role === 'student') {
+        const res = await backend.get(
+          query ? `/classes/search/published/${query}` : "/classes/scheduled"
+        );
+        setClasses(res.data);
+      } else {
+        const res = await backend.get(
+          query ? `/classes/search/${query}` : "/classes/scheduled"
+        );
+        setClasses(res.data);
+      }
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
@@ -311,6 +325,7 @@ export const Discovery = () => {
                 callTime={eventItem.callTime}
                 classId={eventItem.classId}
                 costume={eventItem.costume}
+                attendeeCount={eventItem.attendeeCount}
                 id={eventItem.id}
                 setRefresh={setRefresh}
                 user={user}

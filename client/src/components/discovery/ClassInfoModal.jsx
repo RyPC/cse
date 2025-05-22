@@ -33,7 +33,7 @@ import PublishedReviews from "../reviews/classReview";
 import SuccessSignupModal from "./SuccessSignupModal";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 
-function ClassInfoModal({
+const ClassInfoModal = ({
   userid,
   isOpenProp,
   title,
@@ -50,7 +50,7 @@ function ClassInfoModal({
   corequisites,
   handleClose,
   handleResolveCoreq = () => {},
-}) {
+}) => {
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
 
@@ -69,8 +69,8 @@ function ClassInfoModal({
   const getTags = async () => {
     const tags_arr = [];
     const tags = await backend.get(`/class-tags/tags/${id}`)
-    console.log("TAGS from GETTAGS")
-    console.log(tags.data)
+    // console.log("TAGS from GETTAGS")
+    // console.log(tags.data)
     for (let i=0; i<tags.data.length; i++) {
       if (!tags_arr.includes(tags.data[i].tag)) {
         tags_arr.push(tags.data[i].tag)
@@ -82,8 +82,8 @@ function ClassInfoModal({
   const getTeacherName = async() => {
     const teacherName = await backend.get(`/classes-taught/instructor/${id}`)
     console.log("TEACHER'S NAME!")
-    console.log(teacherName.data)
-    setTeacherName(teacherName.data[0].firstName)
+    console.log(teacherName.data[0])
+    setTeacherName(teacherName.data[0].firstName + " " + teacherName.data[0].lastName)
   }
 
   const getStartTime = async() => {
@@ -137,17 +137,17 @@ function ClassInfoModal({
   }
 
   useEffect(() => {
-    if (isOpenProp && !imageSrc) {
-      fetch("https://dog.ceo/api/breeds/image/random") // for fun
-        .then((res) => res.json())
-        .then((data) => setImageSrc(data.message));
+    if (isOpenProp) {
+      // fetch("https://dog.ceo/api/breeds/image/random") // for fun
+      //   .then((res) => res.json())
+      //   .then((data) => setImageSrc(data.message));
       getTags();
       getTeacherName();
       getStartTime();
       initClass();
       getPerformance()
     }
-  }, [imageSrc, isOpenProp]);
+  }, [isOpenProp]);
 
   return (
     <>
@@ -178,7 +178,7 @@ function ClassInfoModal({
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>Taught By { teacherName ? teacherName : "Unknown" }</Text>
+            <Text>Taught by { teacherName ? teacherName : "Unknown" }</Text>
             <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
 
             <Divider orientation='horizontal' /> <br />

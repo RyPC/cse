@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Container,
   Flex,
   FormControl,
   HStack,
@@ -208,6 +209,7 @@ export const CreateEvent = ({
   }, []);
 
   return (
+    <Container>
     <VStack
       height= "100%"
       spacing={4}
@@ -408,6 +410,7 @@ export const CreateEvent = ({
         </Button>
       </Flex>
     </VStack>
+    </Container>
   );
 };
 
