@@ -20,13 +20,11 @@ import { z } from "zod";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { authenticateGoogleUser } from "../../utils/auth/providers";
 import { EmailTemplate } from "../signup/EmailTemplate";
 
 const signupSchema = z.object({
   firstName: z.string().min(1, "Field Cannot Be Empty"),
   lastName: z.string().min(1, "Field Cannot Be Empty"),
-  experience: z.string().min(1, "Must Select an Experience Value"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
   repeatPassword: z.string().min(6)
@@ -57,7 +55,7 @@ export const TeacherSignup = () => {
       const user = await teacherSignup({
         firstName: data.firstName,
         lastName: data.lastName,
-        experience: data.experience,
+        experience: "",
         email: data.email,
         password: data.password,
       });
@@ -87,10 +85,6 @@ export const TeacherSignup = () => {
         });
       }
     }
-  };
-
-  const handleGoogleSignup = async () => {
-    await authenticateGoogleUser();
   };
 
   useEffect(() => {
