@@ -217,18 +217,18 @@ classesRouter.get("/drafts", async (req, res) => {
   }
 });
 
-classesRouter.get("/search/:name", async (req, res) => {
-  try {
-    const { name } = req.params;
-    const data = await db.query(`SELECT * FROM classes WHERE title LIKE $1;`, [
-      `%${name}%`,
-    ]);
-
-    res.status(200).json(keysToCamel(data));
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
+// classesRouter.get("/search/:name", async (req, res) => {
+  // try {
+    // const { name } = req.params;
+    // const data = await db.query(`SELECT * FROM classes WHERE title LIKE $1;`, [
+      // `%${name}%`,
+    // ]);
+// 
+    // res.status(200).json(keysToCamel(data));
+  // } catch (err) {
+    // res.status(500).send(err.message);
+  // }
+// });
 
 classesRouter.get("/search/:name", async (req, res) => {
   try {
