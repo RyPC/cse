@@ -29,20 +29,16 @@ function CoReqWarningModal({
   killModal = () => {},
 }) {
   const { backend } = useBackendContext();
-  const { currentUser } = useAuthContext();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [withCoreqFlag, setWithCoreqFlag] = useState(false);
 
   const enrollInClass = async (id) => {
     if (user.data[0]) {
-      const req = await backend.post(`/class-enrollments`, {
+      await backend.post(`/class-enrollments`, {
         studentId: user.data[0].id,
         classId: id,
         attendance: null,
       });
-      if (req.status === 201) {
-        setOpenSuccessModal(true);
-      }
     }
   };
 
@@ -68,25 +64,28 @@ function CoReqWarningModal({
   };
 
   const signupWithCoreq = async () => {
-    // setOpenCoreq(true);
-    setWithCoreqFlag(true);
-    if (class_id === null) {
-      await enrollInEvent(event_id);
-      lstCorequisites.forEach((coreq) => {
-        if (coreq.enrolled === false) {
-          enrollInClass(coreq.id);
-        }
-      });
-    } else {
-      await enrollInClass(class_id);
-      lstCorequisites.forEach((coreq) => {
-        if (coreq.enrolled === false) {
-          enrollInClass(coreq.id);
-        }
-      });
+    try {
+      setWithCoreqFlag(true);
+      if (class_id === null) {
+        await enrollInEvent(event_id);
+        lstCorequisites.forEach((coreq) => {
+          if (coreq.enrolled === false) {
+            enrollInClass(coreq.id);
+          }
+        });
+      } else {
+        await enrollInClass(class_id);
+        lstCorequisites.forEach((coreq) => {
+          if (coreq.enrolled === false) {
+            enrollInEvent(coreq.id);
+          }
+        });
+      }
+      setOpenSuccessModal(true);
+      killModal();
+    } catch (error) {
+      console.error("Error during signup:", error);
     }
-    setOpenSuccessModal(true);
-    killModal();
   };
 
   const signupWithoutCoreq = async () => {
