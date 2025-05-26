@@ -124,6 +124,7 @@ export const ClassCard = memo(
               fontWeight={"semibold"}
               color="gray.700"
               wordBreak="break-word"
+              marginTop="10px"
             >
               {title}
             </Heading>

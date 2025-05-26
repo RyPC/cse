@@ -177,7 +177,9 @@ const ClassInfoModal = ({
         onClose={handleClose}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent
+          paddingRight="5vw"
+        >
 
           <ModalHeader>
             <List>

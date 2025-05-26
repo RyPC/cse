@@ -124,6 +124,8 @@ export const EventCard = memo(({
             size="md"
             fontWeight="semibold"
             color="grey.700"
+            wordBreak="break-word"
+            marginTop="10px"
           >
             {title}
           </Heading>
