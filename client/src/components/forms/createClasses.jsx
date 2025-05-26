@@ -125,9 +125,11 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
-        await backend.put(
-          `/corequisites/${modalData.classId}` + `/${performance}`
-        );
+        if (parseInt(performance) !== -1) {
+          await backend.put(
+            `/corequisites/${modalData.classId}` + `/${performance}`
+          );
+        }
 
         // Add teacher to classes-taught on form post
         const res = await backend.post(
@@ -225,8 +227,7 @@ export const CreateClassForm = memo(
         console.log("Added teacher to classes-taught:", res);
 
         // Add prerequisite if performance is selected
-        console.log(performance);
-        if (performance !== null && performance !== -1) {
+        if (parseInt(performance) !== -1) {
           await backend.put(`/corequisites/${classId}` + `/${performance}`);
         }
 
@@ -633,7 +634,7 @@ export const CreateClassForm = memo(
                 value={performance}
                 onChange={(e) => setPerformance(e.target.value)}
                 bg="white"
-                color={performance === -1 ? "gray.400" : "black"}
+                color={parseInt(performance) === -1 ? "gray.400" : "black"}
                 sx={{
                   "& option": {
                     bg: "white",
@@ -649,8 +650,8 @@ export const CreateClassForm = memo(
                   Performances
                 </option>
                 <option
-                  key={null}
-                  value={null} //pretty sure this is what's causing it to error? POST says this value is invalid
+                  key={0}
+                  value={-1}
                 >
                   No Performance Required
                 </option>
