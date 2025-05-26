@@ -64,7 +64,8 @@ export const ClassCard = memo(
       <Box
         w="100%"
         bg="gray.50"
-        borderRadius="16px"
+        borderRadius="3xl"
+        // borderRadius="16px"
         borderColor={"gray.300"}
         borderWidth={1}
         px={6}

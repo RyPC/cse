@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
 import {
   Box,
   Button,
   Flex,
   HStack,
+  IconButton,
   Image,
   List,
   ListIcon,
@@ -24,13 +25,14 @@ import {
 
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SuccessSignupModal from "./SuccessSignupModal";
 
-function EventInfoModal({
+const EventInfoModal = ({
   user,
   isOpenProp,
   handleClose,
@@ -41,19 +43,19 @@ function EventInfoModal({
   date,
   id,
   capacity,
-  costume,
+  // costume,
   isCorequisiteSignUp,
   corequisites,
-  modalIdentity,
+  // modalIdentity,
   setModalIdentity,
   handleResolveCoreq = () => {},
-}) {
+}) => {
   const { backend } = useBackendContext();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   // temp for image
-  const [imageSrc, setImageSrc] = useState("");
+  // const [imageSrc, setImageSrc] = useState("");
   // const [enrollmentStatus, setEnrollmentStatus] = useState(false);
 
   // // console.log(user);
@@ -172,16 +174,19 @@ function EventInfoModal({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <List>
-              {tags.map((tag, index) => (
-                <Tag key={index} m={1}>
-                  {tag}
-                </Tag>
-              ))}
-            </List> 
-            <Flex justifyContent="center">
-              {title}
-            </Flex>
+            <VStack align={"start"}>
+              <IconButton icon={<ArrowBackIcon/>} onClick={handleClose} aria-label="Back" variant="ghost" fontSize={"2xl"} p={4} ml={-4}/>
+              <List>
+                {tags.map((tag, index) => (
+                  <Tag key={index} mr={1} mb={1} mt={1} borderRadius={"full"} bg="white" textColor="gray.600" borderColor={"gray.300"} borderWidth={1}>
+                    {tag}
+                  </Tag>
+                ))}
+              </List> 
+              <Text justifyContent="center" wordBreak={"break-word"} fontWeight={"bold"}>
+                {title}
+              </Text>
+            </VStack>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -255,6 +260,6 @@ function EventInfoModal({
       </Modal>
     </>
   );
-}
+};
 
 export default EventInfoModal;

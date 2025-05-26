@@ -7,11 +7,13 @@ import {
   GridItem,
   Heading,
   HStack,
+  IconButton,
   List,
   ListIcon,
   ListItem,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
@@ -21,10 +23,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
-import { useEffect, useState } from "react";
+// import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import { memo, useEffect, useState } from "react";
 
-import { useAuthContext } from "../../contexts/hooks/useAuthContext";
+// import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import PublishedReviews from "../reviews/classReview";
@@ -33,12 +36,12 @@ export const ViewModal = ({
   isOpen,
   onClose,
   setCurrentModal,
-  children,
-  title,
+  // children,
+  // title,
   card,
   coEvents,
-  type,
-  role,
+  // type,
+  // role,
   isAttended = false,
 }) => {
   const onCancel = () => {
@@ -71,16 +74,9 @@ export const ViewModal = ({
   // console.log("viewmodal", card);
   const viewInfo = (
     <>
-      <List>
-        {tags.map((tag, index) => (
-          <Tag key={index} m={1}>
-            {tag}
-          </Tag>
-        ))}
-      </List> 
-      <Flex justifyContent="center">
+      {/* <Flex justifyContent="center">
         {title}
-      </Flex>
+      </Flex> */}
       <Text>{card?.description ? `Description: ${card.description}` : "No description available."}</Text> <br />
       <Divider orientation='horizontal' /> <br /> 
       <Text color="#553C9A">{formatDate(card?.date)} · {formatTime(card?.startTime)} – {formatTime(card?.endTime)}</Text>
@@ -169,23 +165,20 @@ export const ViewModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
+        <VStack align={"start"}>
+          <IconButton icon={<ArrowBackIcon/>} onClick={onClose} aria-label="Back" variant="ghost" fontSize={"2xl"} p={4} ml={-4}/>
           <List>
             {tags.map((tag, index) => (
-              <Tag key={index} m={1}>
+              <Tag key={index} mr={1} mb={1} mt={1} borderRadius={"full"} bg="white" textColor="gray.600" borderColor={"gray.300"} borderWidth={1}>
                 {tag}
               </Tag>
             ))}
           </List> 
-          <HStack justify="space-between">
-            <MdArrowBackIosNew onClick={onClose} />
-            <Heading size="lg">
-              {card?.title ?? "Create a Class/Draft"}
-            </Heading>{" "}
-            {/* Will add from prop */}
-            <MdMoreHoriz opacity={0} />
-          </HStack>
+          <Text justifyContent="center" wordBreak={"break-word"} fontWeight={"bold"}>
+            {card?.title ?? "Create a Class/Draft"}
+          </Text>
+        </VStack>
         </ModalHeader>
-
         <ModalBody>{viewInfo}</ModalBody>
         {!isAttended && !card?.attendance && (
           <ModalFooter justifyContent="center">

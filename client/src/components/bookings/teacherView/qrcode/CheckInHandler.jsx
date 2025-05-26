@@ -83,7 +83,7 @@ export const CheckInHandler = () => {
     );
   }
 
-  console.log("title", title);
+  // console.log("title", title);
 
   return (
     <Box

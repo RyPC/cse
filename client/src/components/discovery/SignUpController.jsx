@@ -59,7 +59,7 @@ function SignUpController({
   useEffect(() => {
     if (coReqResponse) {
       // is this check to see an event okay? Will classes get call times in the future?
-      console.log("CoReqResponse: ", coReqResponse);
+      // console.log("CoReqResponse: ", coReqResponse);
       const coreqs = coReqResponse.map((coreq) => {
         const userId = user.data[0].id;
         // No need to check userId anymore, coreq response will only return the rows for studentId
@@ -86,7 +86,7 @@ function SignUpController({
           return event_id !== coreq.id;
         }
       });
-      console.log("Filtered Coreqs: ", postProcessedCoreqs);
+      // console.log("Filtered Coreqs: ", postProcessedCoreqs);
       setCorequisites(coreqs);
       setFilteredCorequisites(postProcessedCoreqs);
     }
@@ -106,7 +106,7 @@ function SignUpController({
     throw new Error("Cannot have both class_id and event_id");
   }
 
-  console.log("SignUpController Rendered:", infoProps.title, class_id, event_id);
+  // console.log("SignUpController Rendered:", infoProps.title, class_id, event_id);
   return (
     <>
       {class_id ? (
