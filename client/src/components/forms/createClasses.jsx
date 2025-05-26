@@ -18,6 +18,7 @@ import {
   Text,
   Textarea,
   useDisclosure,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 
@@ -63,6 +64,35 @@ export const CreateClassForm = memo(
     const [performance, setPerformance] = useState(
       modalData?.performance ?? -1
     );
+
+    const displayToast = () => {
+      console.log({
+        selectedInstructor,
+        title,
+        location,
+        date,
+        endDate,
+        startTime,
+        endTime,
+        description,
+        capacity,
+      });
+      if (
+        selectedInstructor == "" &&
+        title == "" &&
+        location == "" &&
+        date == "" &&
+        endDate == "" &&
+        startTime == "" &&
+        endTime == "" &&
+        description == "" &&
+        capacity == 0
+      ) {
+        return true;
+      }
+      return false;
+    };
+    const toast = useToast();
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const {
@@ -296,11 +326,21 @@ export const CreateClassForm = memo(
 
     return (
       <Container>
-
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onConfirmationOpen();
+            if (displayToast()) {
+              toast({
+                title: "Class Not Published",
+                description: "Fill out missing fields.",
+                status: "error",
+                duration: 9000,
+                isClosable: true,
+                position: "top",
+              });
+            } else {
+              onConfirmationOpen();
+            }
           }}
         >
           <FormControl isInvalid={isDraft && validationSchema.title}>
@@ -317,7 +357,6 @@ export const CreateClassForm = memo(
               borderColor="gray.200"
               boxShadow="sm"
               type="text"
-              required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               bg="white"
@@ -338,7 +377,6 @@ export const CreateClassForm = memo(
               border="1px"
               borderColor="gray.200"
               type="text"
-              required
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               bg="white"
@@ -357,7 +395,6 @@ export const CreateClassForm = memo(
                 border="1px"
                 borderColor="gray.200"
                 type="date"
-                required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 bg="white"
@@ -412,7 +449,6 @@ export const CreateClassForm = memo(
                 borderColor="gray.200"
                 boxShadow="sm"
                 type="time"
-                required
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
                 bg="white"
@@ -427,7 +463,6 @@ export const CreateClassForm = memo(
                 borderColor="gray.200"
                 boxShadow="sm"
                 type="time"
-                required
                 value={endTime}
                 onChange={(e) => setEndTime(e.target.value)}
                 bg="white"
@@ -467,7 +502,6 @@ export const CreateClassForm = memo(
               borderColor="gray.200"
               boxShadow="sm"
               type="text"
-              required
               value={selectedInstructor}
               onChange={(e) => setSelectedInstructor(e.target.value)}
               bg="white"
@@ -522,7 +556,6 @@ export const CreateClassForm = memo(
                 clampValueOnBlur
               >
                 <NumberInputField
-                  required
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                   bg="white"
@@ -539,7 +572,6 @@ export const CreateClassForm = memo(
                 border="1px"
                 borderColor="gray.200"
                 boxShadow="sm"
-                required
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
                 bg="white"
@@ -562,7 +594,6 @@ export const CreateClassForm = memo(
           <FormControl>
             <FormLabel fontWeight="bold">Class Type</FormLabel>
             <Select
-              required
               value={classType}
               onChange={(e) => setClassType(e.target.value)}
               bg="white"
@@ -595,7 +626,6 @@ export const CreateClassForm = memo(
               border="1px"
               borderColor="gray.200"
               boxShadow="sm"
-              required
               value={performance}
               onChange={(e) => setPerformance(e.target.value)}
               bg="white"
@@ -658,6 +688,7 @@ export const CreateClassForm = memo(
               _hover={{ bg: "#5D2E8C" }}
               onClick={() => {
                 setIsDraft(false);
+                displayToast();
               }}
             >
               Publish

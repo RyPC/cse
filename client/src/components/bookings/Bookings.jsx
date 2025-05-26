@@ -242,14 +242,19 @@ export const Bookings = () => {
     setCurrentModal("view");
     onClose();
     reloadClassesAndDrafts();
-    toast({
-      title: type == 0 ? "Class Published." : "Event Published.", // 0 == "class" || 1 == "event"
-      description: type == 0 ? "Class is visible to students." : "Event is visible to students.",
-      status: "success",
-      duration: 9000,
-      isClosable: true,
-      position: "top"
-    });
+    if (type !== 3) {
+      toast({
+        title: type == 0 ? "Class Published." : "Event Published.", // 0 == "class" || 1 == "event"
+        description:
+          type == 0
+            ? "Class is visible to students."
+            : "Event is visible to students.",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+        position: "top",
+      });
+    }
   };
   const onOpenModal = (data) => {
     setClassData(data);
@@ -834,7 +839,7 @@ export const Bookings = () => {
             <ModalContent>
               <ModalHeader>
                 <HStack justify="space-between">
-                  <MdArrowBackIosNew onClick={onCloseModal} />
+                  <MdArrowBackIosNew onClick={() => onCloseModal(3)} />
                   <Heading size="lg">
                     {tabIndex === 0 ? "New Class" : "New Event"}
                   </Heading>{" "}
