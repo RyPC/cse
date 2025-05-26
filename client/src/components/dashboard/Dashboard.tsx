@@ -31,7 +31,7 @@ import { useRoleContext } from "../../contexts/hooks/useRoleContext";
 import { Attendance } from "../../types/attendance";
 import { Class } from "../../types/legacy/class";
 import { NotificationPanel } from "./NotificationPanel";
-import { FaRegBell } from "react-icons/fa6";
+import { FaRegBell } from "react-icons/fa";
 
 interface StatCardProps {
   icon: string;
