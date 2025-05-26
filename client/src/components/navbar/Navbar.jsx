@@ -1,10 +1,8 @@
-import { useState } from "react";
-
 import { Box, Flex, Icon, Text, VStack } from "@chakra-ui/react";
 
 import { Link, useLocation } from "react-router-dom";
 
-import { FaSearch, FaCalendarAlt, FaBook, FaUser } from 'react-icons/fa';
+import { FaSearch, FaCalendarAlt, FaBook, FaUser, FaLaptop} from 'react-icons/fa';
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useRoleContext } from "../../contexts/hooks/useRoleContext";
@@ -13,12 +11,10 @@ import { useRoleContext } from "../../contexts/hooks/useRoleContext";
 export const Navbar = () => {
   const { role: user_role } = useAuthContext();
   const { role } = useRoleContext();
-  // console.log("role from navbar:", role);
   const location = useLocation();
-  const dashboardImg = "./dashboard.svg";
 
   const navItems = [
-    ...(role === 'admin' ? [{path: "/dashboard", src: dashboardImg, label: "Dashboard"}] : []),
+    ...(role === 'admin' ? [{path: "/dashboard", icon: FaLaptop, label: "Dashboard"}] : []),
     ...((user_role !== 'teacher' || role === 'admin') ? [{ path: "/discovery", icon: FaSearch, label: "Discovery" }] : []),
     { path: "/bookings", icon: FaCalendarAlt, label: "Schedule" },
     { path: "/resources", icon: FaBook, label: "Resources" },
@@ -26,7 +22,6 @@ export const Navbar = () => {
   ];
 
   return (
-    // console.log("my role:", role),
     <Box
       as="footer"
       position="fixed"

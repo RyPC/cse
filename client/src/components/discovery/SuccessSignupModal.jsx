@@ -17,7 +17,6 @@ import {
 import { MdCheckCircle } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
-import CompletedIndicator from "./CompletedIndicator.png";
 
 function SuccessSignupModal({
   isOpen,
@@ -60,7 +59,6 @@ function SuccessSignupModal({
             justify={"center"}
           >
             <VStack spacing={4}>
-              {/* <img src={CompletedIndicator} alt="Completed Indicator" /> */}
               <Box color="purple.600">
                 <MdCheckCircle fontSize={"9rem"} />
               </Box>

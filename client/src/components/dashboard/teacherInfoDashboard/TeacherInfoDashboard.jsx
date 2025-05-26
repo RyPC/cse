@@ -8,6 +8,7 @@ import {
   Heading,
   HStack,
   Image,
+  IconButton,
   Table,
   TableCaption,
   TableContainer,
@@ -22,6 +23,7 @@ import {
 } from "@chakra-ui/react";
 
 import { SlArrowLeft } from "react-icons/sl";
+import { FaRegBell } from "react-icons/fa"; 
 import { useNavigate, useParams } from "react-router-dom";
 
 import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
@@ -119,13 +121,14 @@ export const TeacherInfoDashboard = () => {
           </Button>
           {teacher?.firstName} {teacher?.lastName}
         </Heading>
-        <Image
+        {/* <Image
           alignSelf={"flex-end"}
           cursor="pointer"
           onClick={onOpen}
           ref={notifRef}
           src="/bell.png"
-        />
+        /> */}
+        <IconButton icon={<FaRegBell/>} size="lg" mt="-2" onClick={onOpen} ref={notifRef} aria-label="Notifications" bg="white"/>
         <NotificationPanel
           isOpen={isOpen}
           onClose={onClose}

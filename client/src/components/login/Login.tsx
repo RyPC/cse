@@ -27,7 +27,7 @@ import { z } from "zod";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { authenticateGoogleUser } from "../../utils/auth/providers";
-import logo from "./logo.png";
+import logo from "/logo.png";
 
 const signinSchema = z.object({
   email: z.string().email("Invalid email address"),
