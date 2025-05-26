@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+
 import {
+  Box,
   Button,
   Image,
   Modal,
@@ -10,9 +12,8 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  VStack,
-  Box,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 
 interface AuthorityModalProps {
@@ -66,9 +67,17 @@ const AuthorityModal: React.FC<AuthorityModalProps> = ({
         width="100%"
         rounded="md"
         justifyContent="flex-start"
-        leftIcon={<Image src={icon} boxSize="24px" />}
+        leftIcon={
+          <Image
+            src={icon}
+            boxSize="24px"
+          />
+        }
       >
-        <Text fontSize="4xl" fontWeight="medium">
+        <Text
+          fontSize="4xl"
+          fontWeight="medium"
+        >
           {label}
         </Text>
       </Button>
@@ -76,7 +85,12 @@ const AuthorityModal: React.FC<AuthorityModalProps> = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleBack} size="full" isCentered>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleBack}
+      size="full"
+      isCentered
+    >
       <ModalOverlay bg="blackAlpha.600" />
 
       <ModalContent
@@ -90,14 +104,33 @@ const AuthorityModal: React.FC<AuthorityModalProps> = ({
         bg="gray.50"
       >
         {/* HEADER */}
-        <ModalHeader px={6} pt={9} pb={4} fontSize="4xl" fontWeight="bold" color={"gray.800"}>
+        <ModalHeader
+          px={6}
+          pt={9}
+          pb={4}
+          fontSize="4xl"
+          fontWeight="bold"
+          color={"gray.800"}
+        >
           Are you a student or a teacher?
         </ModalHeader>
-        <ModalCloseButton top={6} right={6} />
+        <ModalCloseButton
+          top={6}
+          right={6}
+        />
 
         {/* OPTIONS */}
-        <ModalBody flex="1" px={6} pt={0} pb={0} overflowY="auto">
-          <VStack spacing={4} mt={4}>
+        <ModalBody
+          flex="1"
+          px={6}
+          pt={0}
+          pb={0}
+          overflowY="auto"
+        >
+          <VStack
+            spacing={4}
+            mt={4}
+          >
             <OptionButton
               authority="student"
               icon="/student.png"
@@ -119,7 +152,10 @@ const AuthorityModal: React.FC<AuthorityModalProps> = ({
           borderColor="gray.200"
           bg="white"
         >
-          <Stack spacing={3} width="100%">
+          <Stack
+            spacing={3}
+            width="100%"
+          >
             <Button
               onClick={handleConfirm}
               bg={selected ? "purple.600" : "gray.200"}

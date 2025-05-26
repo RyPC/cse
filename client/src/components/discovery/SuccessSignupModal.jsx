@@ -17,7 +17,6 @@ import {
 import { MdCheckCircle } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
-
 function SuccessSignupModal({
   isOpen,
   title,
@@ -99,7 +98,7 @@ function SuccessSignupModal({
             {!isCorequisiteSignUp && (
               <Button
                 bg="purple.600"
-                color = "#FFFFFF"
+                color="#FFFFFF"
                 onClick={onClose}
                 width="100%"
               >

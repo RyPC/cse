@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Box, Button, Center, Spinner, Text, VStack } from "@chakra-ui/react";
 
@@ -32,7 +32,10 @@ export const ClassCheckInHandler = () => {
           const date = params.date;
 
           // removed baseURL, was preventing the redirect to login from happening
-          localStorage.setItem("qrcode_redirect", `/check-in/class/${id}/${date}`);
+          localStorage.setItem(
+            "qrcode_redirect",
+            `/check-in/class/${id}/${date}`
+          );
           // throw new Error("No user ID found");
           navigate("/login");
         }
@@ -47,21 +50,23 @@ export const ClassCheckInHandler = () => {
         // console.log(decodeURIComponent(date));
         // Class-specific endpoint
 
-        const currentCheckIn = await backend.get(
-          `/class-enrollments/test`, {
-            params: {
-              student_id: studentId,
-              class_id: id,
-              attendance: new Date(decodeURIComponent(date)).toISOString().split("T")[0],
-            }
-          }
-        );
+        const currentCheckIn = await backend.get(`/class-enrollments/test`, {
+          params: {
+            student_id: studentId,
+            class_id: id,
+            attendance: new Date(decodeURIComponent(date))
+              .toISOString()
+              .split("T")[0],
+          },
+        });
 
         if (!currentCheckIn.data.exists) {
           await backend.post("/class-enrollments", {
             studentId: studentId,
             classId: id,
-            attendance: new Date(decodeURIComponent(date)).toISOString().split("T")[0],
+            attendance: new Date(decodeURIComponent(date))
+              .toISOString()
+              .split("T")[0],
           });
         }
 

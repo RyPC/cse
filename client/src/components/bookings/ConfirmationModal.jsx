@@ -9,7 +9,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-
 export const ConfirmationModal = ({ isOpen, onClose, card }) => {
   return (
     <Modal

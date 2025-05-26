@@ -41,7 +41,8 @@ export const EventCheckInHandler = () => {
         );
         const studentId = studentResponse.data.id;
 
-        await backend.put(`/event-enrollments/${studentId}`, { // switched post to put?
+        await backend.put(`/event-enrollments/${studentId}`, {
+          // switched post to put?
           student_id: studentId,
           event_id: id,
           // this statement has no effect since attendance defaults to false in backend route (event_enrollments.ts)

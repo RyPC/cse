@@ -19,7 +19,6 @@ classesTaughtRouter.get("/", async (req, res) => {
   }
 });
 
-
 // Creates a new classes-taught entry in the classes taught table
 classesTaughtRouter.post("/", async (req, res) => {
   try {
@@ -43,13 +42,16 @@ classesTaughtRouter.get("/instructor/:classId", async (req, res) => {
   try {
     const classId = req.params.classId;
 
-    const result = await db.any(`
+    const result = await db.any(
+      `
       SELECT u.first_name, u.last_name
       FROM classes_taught ct
       JOIN teachers t ON ct.teacher_id = t.id
       JOIN users u ON u.id = t.id
       WHERE ct.class_id = $1;
-    `, [classId]);
+    `,
+      [classId]
+    );
 
     res.status(200).json(keysToCamel(result));
   } catch (err) {
@@ -80,4 +82,3 @@ classesTaughtRouter.put("/", async (req, res) => {
 });
 
 export { classesTaughtRouter };
-

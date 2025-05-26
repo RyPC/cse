@@ -1,3 +1,7 @@
+import { memo, useEffect, useState } from "react";
+
+// import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -22,10 +26,6 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-
-// import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
-import { ArrowBackIcon } from "@chakra-ui/icons";
-import { memo, useEffect, useState } from "react";
 
 // import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -56,19 +56,19 @@ export const ViewModal = ({
     if (!card?.id) {
       return;
     }
-    const tags = await backend.get(`/event-tags/tags/${card.id}`)
+    const tags = await backend.get(`/event-tags/tags/${card.id}`);
     // console.log("TAGS from GETTAGS event")
     // console.log(tags.data)
-    for (let i=0; i<tags.data.length; i++) {
+    for (let i = 0; i < tags.data.length; i++) {
       if (!tags_arr.includes(tags.data[i].tag)) {
-        tags_arr.push(tags.data[i].tag)
+        tags_arr.push(tags.data[i].tag);
       }
     }
-    setTags(tags_arr)
-  }
+    setTags(tags_arr);
+  };
 
   useEffect(() => {
-    getTags()
+    getTags();
   }, [backend]);
 
   // console.log("viewmodal", card);
@@ -77,12 +77,20 @@ export const ViewModal = ({
       {/* <Flex justifyContent="center">
         {title}
       </Flex> */}
-      <Text>{card?.description ? `Description: ${card.description}` : "No description available."}</Text> <br />
-      <Divider orientation='horizontal' /> <br /> 
-      <Text color="#553C9A">{formatDate(card?.date)} · {formatTime(card?.startTime)} – {formatTime(card?.endTime)}</Text>
+      <Text>
+        {card?.description
+          ? `Description: ${card.description}`
+          : "No description available."}
+      </Text>{" "}
+      <br />
+      <Divider orientation="horizontal" /> <br />
+      <Text color="#553C9A">
+        {formatDate(card?.date)} · {formatTime(card?.startTime)} –{" "}
+        {formatTime(card?.endTime)}
+      </Text>
       <Text>Call Time: {formatTime(card?.callTime)}</Text>
-      <Text>Location: {card?.location}</Text>     
-      <br /> <Divider orientation='horizontal' /> <br /> 
+      <Text>Location: {card?.location}</Text>
+      <br /> <Divider orientation="horizontal" /> <br />
       <VStack
         spacing={4}
         align="center"
@@ -100,11 +108,20 @@ export const ViewModal = ({
             <Text>{card?.capacity}</Text>
           </Box>
         </HStack>
-        <br/><Divider orientation='horizontal' />
+        <br />
+        <Divider orientation="horizontal" />
         {/* <HStack width="100%"> */}
         <Box>
-          <Text mr="20" fontWeight="bold" mb = "0.5rem">Recommended Prerequisites(s)</Text>
-          <Text>We recommend taking these classes before enrolling in this series.</Text>
+          <Text
+            mr="20"
+            fontWeight="bold"
+            mb="0.5rem"
+          >
+            Recommended Prerequisites(s)
+          </Text>
+          <Text>
+            We recommend taking these classes before enrolling in this series.
+          </Text>
 
           {/* {classData?.prerequisites && classData?.prerequisites.length > 0 ? (
             <Text fontSize="16px">
@@ -115,19 +132,33 @@ export const ViewModal = ({
           ) : (
             <Text>No prerequisites for this class</Text>
           )} */}
-
-
         </Box>
         <Box>
-          <Text mr="20" fontWeight="bold" mb = "0.5rem">Performance(s)</Text>
-          <Text mb={3}>At the end of the class period, students will perform in a final performance.</Text> 
+          <Text
+            mr="20"
+            fontWeight="bold"
+            mb="0.5rem"
+          >
+            Performance(s)
+          </Text>
+          <Text mb={3}>
+            At the end of the class period, students will perform in a final
+            performance.
+          </Text>
           {coEvents.map((performance) => (
-            <Tag borderRadius={"full"} bg="purple.100" textColor={"purple.800"} key={performance.id}>{performance.title}</Tag>
+            <Tag
+              borderRadius={"full"}
+              bg="purple.100"
+              textColor={"purple.800"}
+              key={performance.id}
+            >
+              {performance.title}
+            </Tag>
           ))}
         </Box>
-        <Divider orientation='horizontal' />
+        <Divider orientation="horizontal" />
         {/* <Divider borderColor="gray.400" borderWidth="1px" my={4} /> */}
-          {/* {!isCorequisiteSignUp && (
+        {/* {!isCorequisiteSignUp && (
             <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
               <Text as="b">
                 Recommended classes
@@ -165,25 +196,47 @@ export const ViewModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-        <VStack align={"start"}>
-          <IconButton icon={<ArrowBackIcon/>} onClick={onClose} aria-label="Back" variant="ghost" fontSize={"2xl"} p={4} ml={-4}/>
-          <List>
-            {tags.map((tag, index) => (
-              <Tag key={index} mr={1} mb={1} mt={1} borderRadius={"full"} bg="white" textColor="gray.600" borderColor={"gray.300"} borderWidth={1}>
-                {tag}
-              </Tag>
-            ))}
-          </List> 
-          <Text justifyContent="center" wordBreak={"break-word"} fontWeight={"bold"}>
-            {card?.title ?? "Create a Class/Draft"}
-          </Text>
-        </VStack>
+          <VStack align={"start"}>
+            <IconButton
+              icon={<ArrowBackIcon />}
+              onClick={onClose}
+              aria-label="Back"
+              variant="ghost"
+              fontSize={"2xl"}
+              p={4}
+              ml={-4}
+            />
+            <List>
+              {tags.map((tag, index) => (
+                <Tag
+                  key={index}
+                  mr={1}
+                  mb={1}
+                  mt={1}
+                  borderRadius={"full"}
+                  bg="white"
+                  textColor="gray.600"
+                  borderColor={"gray.300"}
+                  borderWidth={1}
+                >
+                  {tag}
+                </Tag>
+              ))}
+            </List>
+            <Text
+              justifyContent="center"
+              wordBreak={"break-word"}
+              fontWeight={"bold"}
+            >
+              {card?.title ?? "Create a Class/Draft"}
+            </Text>
+          </VStack>
         </ModalHeader>
         <ModalBody>{viewInfo}</ModalBody>
         {!isAttended && !card?.attendance && (
           <ModalFooter justifyContent="center">
             <Button
-              width = "60%"
+              width="60%"
               size="sm"
               background="purple.600"
               color="white"

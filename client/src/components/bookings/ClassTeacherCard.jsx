@@ -1,4 +1,3 @@
-
 import { memo, useEffect, useState } from "react";
 
 import {
@@ -13,10 +12,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import {
-  FaMicrophoneAlt,
-  FaMusic,
-} from "react-icons/fa";
+import { FaMicrophoneAlt, FaMusic } from "react-icons/fa";
 import {
   GiAbstract001,
   GiBallerinaShoes,
@@ -53,7 +49,6 @@ export const ClassTeacherCard = memo(
     tagId,
     onOpen,
   }) => {
-
     const [openTeacherModal, setOpenTeacherModal] = useState(false);
 
     const closeTeacherModal = () => {
@@ -61,30 +56,29 @@ export const ClassTeacherCard = memo(
     };
 
     const handleClickModal = () => {
-        const modalData = {
-            id,
-            title,
-            location,
-            date,
-            description,
-            capacity,
-            level,
-            costume,
-            performances: performance,
-            isDraft,
-            recurrencePattern,
-            isRecurring,
-            startDate,
-            endDate,
-            attendeeCount,
-            startTime,
-            endTime,
-        };
-        setOpenTeacherModal(true);
-        setSelectedCard(modalData);
-        onOpen(modalData);
-    }
-
+      const modalData = {
+        id,
+        title,
+        location,
+        date,
+        description,
+        capacity,
+        level,
+        costume,
+        performances: performance,
+        isDraft,
+        recurrencePattern,
+        isRecurring,
+        startDate,
+        endDate,
+        attendeeCount,
+        startTime,
+        endTime,
+      };
+      setOpenTeacherModal(true);
+      setSelectedCard(modalData);
+      onOpen(modalData);
+    };
 
     const formattedDate = date ? formatDate(date) : null;
     const formattedStartTime = startTime ? formatTime(startTime) : null;
@@ -112,7 +106,7 @@ export const ClassTeacherCard = memo(
     };
 
     return (
-        <Box
+      <Box
         w="100%"
         bg="gray.50"
         borderRadius={"3xl"}
@@ -125,81 +119,72 @@ export const ClassTeacherCard = memo(
         cursor="pointer"
         onClick={handleClickModal}
         _hover={{ bg: "gray.100" }}
-        >
+      >
         <Badge
-            position="absolute"
-            top={4}
-            right={4}
-            variant="outline"
-            borderStyle="dashed"
-            borderColor="purple.600"
-            color="purple.700"
-            bg="purple.50"
-            px={3}
-            py={1}
-            fontSize="xs"
-            fontWeight="medium"
-            borderRadius="full"
+          position="absolute"
+          top={4}
+          right={4}
+          variant="outline"
+          borderStyle="dashed"
+          borderColor="purple.600"
+          color="purple.700"
+          bg="purple.50"
+          px={3}
+          py={1}
+          fontSize="xs"
+          fontWeight="medium"
+          borderRadius="full"
         >
-        {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
+          {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
         </Badge>
         <HStack
-            spacing={4}
-            align="center"
+          spacing={4}
+          align="center"
         >
-            <Flex
+          <Flex
             w="20%"
             align="center"
             justify="center"
-            >
+          >
             <Image
-                src="/card_images/classical.svg" // Set the image source
-                alt="Event illustration"
-                maxW="100%"
-                maxH="100%"
-                objectFit="contain"
+              src="/card_images/classical.svg" // Set the image source
+              alt="Event illustration"
+              maxW="100%"
+              maxH="100%"
+              objectFit="contain"
             />
-            </Flex>
-            <VStack
+          </Flex>
+          <VStack
             w="80%"
             align="flex-start"
             spacing={1}
-            >
+          >
             <Heading
-                size="md"
-                fontWeight="semibold"
-                color="grey.700"
-                wordBreak="break-word"
-                marginTop="10px"
+              size="md"
+              fontWeight="semibold"
+              color="grey.700"
+              wordBreak="break-word"
+              marginTop="10px"
             >
-                {title}
+              {title}
             </Heading>
             <Text
-                fontSize="sm"
-                color="grey.700"
-                wordBreak="break-word"
+              fontSize="sm"
+              color="grey.700"
+              wordBreak="break-word"
             >
-                {location}
+              {location}
             </Text>
             <Text
-                fontSize="sm"
-                color="gray.700"
+              fontSize="sm"
+              color="gray.700"
             >
-                {formattedDate} · {formattedStartTime} – {formattedEndTime}
+              {formattedDate} · {formattedStartTime} – {formattedEndTime}
             </Text>
-            </VStack>
+          </VStack>
         </HStack>
-        </Box>
+      </Box>
     );
-
-
-
-
-
-
-
-
-
 
     // return (
     //   <Box
