@@ -232,22 +232,24 @@ const ClassInfoModal = ({
                       spacing={2}
                     >
                       <HStack align="center">
-                        <Text as="b">
-                          Recommended classes and events:
-                        </Text>
+                        <Text as="b">Recommended classes and events</Text>
                       </HStack>
-                      <List>
-                        {corequisites.map((coreq, index) => (
-                          <ListItem key={index}>
-                            <ListIcon
-                              as={
-                                coreq.enrolled ? FaCircleCheck : FaTimesCircle
-                              }
-                            />
-                            {coreq.title}
-                          </ListItem>
-                        ))}
-                      </List>
+                      {!corequisites || corequisites.length === 0 ? (
+                        <Text>No corequisites for this class</Text>
+                      ) : (
+                        <List>
+                          {corequisites.map((coreq, index) => (
+                            <ListItem key={index}>
+                              <ListIcon
+                                as={
+                                  coreq.enrolled ? FaCircleCheck : FaTimesCircle
+                                }
+                              />
+                              {coreq.title}
+                            </ListItem>
+                          ))}
+                        </List>
+                      )}
                     </VStack>
                   </Box>
                 </HStack>

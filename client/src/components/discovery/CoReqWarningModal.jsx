@@ -8,6 +8,7 @@ import {
   ListItem,
   Modal,
   ModalBody,
+  ModalCloseButton,
   ModalContent,
   ModalOverlay,
   Stack,
@@ -15,22 +16,17 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { FaX, FaXmark } from "react-icons/fa6";
-
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import ClassInfoModal from "./ClassInfoModal";
-// import { modalTheme } from "./confirmationModalStyle";
-import EventInfoModal from "./EventInfoModal";
 import SuccessSignupModal from "./SuccessSignupModal";
 
 function CoReqWarningModal({
-  user,
-  origin,
-  isOpenProp,
-  classId,
-  lstCorequisites,
   title,
+  user,
+  class_id = null,
+  event_id = null,
+  isOpenProp,
+  lstCorequisites,
   modalIdentity,
   setModalIdentity,
   filteredCorequisites,
@@ -40,134 +36,82 @@ function CoReqWarningModal({
   killModal = () => {},
 }) {
   const { backend } = useBackendContext();
-  const { currentUser } = useAuthContext();
-  const [coreq, setCoreq] = useState(null);
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-  const [titles, setTitles] = useState([]);
-  console.log("Filtered coreqs in coreq warning modal: ", filteredCorequisites);
-  // All corequisites excluding the current card that the user is not enrolled in
-  const notEnrolledFilteredCorequisites = filteredCorequisites.filter(
-    (coreq) => !coreq.enrolled
-  );
-  console.log(
-    "Not Enrolled Filtered coreqs in coreq warning modal: ",
-    notEnrolledFilteredCorequisites
-  );
+  const [withCoreqFlag, setWithCoreqFlag] = useState(false);
 
-  const signupWithCorequisite = async () => {
-    const userData = await backend.get(`users/${currentUser.uid}`);
-    const studentId = userData.data[0].id;
-    console.log("sign up with corequisite yay");
-    let requests = [];
-    console.log("lstcorequisites", lstCorequisites);
-    lstCorequisites.map((coreq) => {
-      console.log(coreq.isEvent);
-      if (coreq.isEvent === false) {
-        const req = backend
-          .post("class-enrollments/", {
-            studentId: studentId,
-            classId: coreq.id,
-          })
-          .then((res) => {
-            return res;
-          });
-        requests.push(() => req);
-      } else if (coreq.isEvent === true) {
-        const req = backend
-          .post("event-enrollments/", {
-            student_id: studentId,
-            event_id: coreq.id,
-          })
-          .then((res) => {
-            return res;
-          });
-        requests.push(() => req);
+  const enrollInClass = async (id) => {
+    if (user.data[0]) {
+      await backend.post(`/class-enrollments`, {
+        studentId: user.data[0].id,
+        classId: id,
+        attendance: null,
+      });
+    }
+  };
+
+  const enrollInEvent = async (id) => {
+    const currentCheckIn = await backend.get(`/event-enrollments/test`, {
+      params: {
+        student_id: user.data[0].id,
+        event_id: id,
+      },
+    });
+    if (user.data[0] && !currentCheckIn.data.exists) {
+      console.log("Enrolling in event:", id);
+      const req = await backend.post(`/event-enrollments/`, {
+        student_id: user.data[0].id,
+        event_id: id,
+        attendance: null,
+      });
+      if (req.status === 201) {
+        setOpenSuccessModal(true);
       }
-    });
+    } else {
+      console.log("Already signed up for this event!");
+    }
+  };
 
-    console.log("Requests: ", requests);
-    await Promise.all(requests.map((request) => request())).then((res) => {
-      console.log("Promise.all() response: ", res);
+  const signupWithCoreq = async () => {
+    try {
+      setWithCoreqFlag(true);
+      if (class_id === null) {
+        await enrollInEvent(event_id);
+        for (const coreq of lstCorequisites) {
+          if (coreq.enrolled === false) {
+            await enrollInClass(coreq.id);
+          }
+        }
+      } else {
+        await enrollInClass(class_id);
+        for (const coreq of lstCorequisites) {
+          if (coreq.enrolled === false) {
+            console.log("Enrolling in corequisite class:", coreq.id);
+            await enrollInEvent(coreq.id);
+          }
+        }
+        // lstCorequisites.forEach((coreq) => {
+        //   if (coreq.enrolled === false) {
+        //     console.log("Enrolling in corequisite class:", coreq.id);
+        //     await enrollInEvent(coreq.id);
+        //   }
+        // });
+      }
       setOpenSuccessModal(true);
-    });
+      killModal();
+    } catch (error) {
+      console.error("Error during signup:", error);
+    }
+  };
 
-    console.log("lstCorequisites in signupclicked", lstCorequisites);
-
-    setTitles(
-      lstCorequisites
-        .filter((coreq) => !coreq.enrolled)
-        .map((coreq) => coreq.title)
-    );
-    console.log("settitles in signupclicked", titles);
+  const signupWithoutCoreq = async () => {
     // setOpenCoreq(true);
-    killModal();
-  };
-
-  const signupWithoutCorequisite = async () => {
-    // enroll in event
-    const userData = await backend.get(`users/${currentUser.uid}`);
-    const studentId = userData.data[0].id;
-
-    await backend
-      .post("class-enrollments/", {
-        studentId: studentId,
-        classId: classId,
-      })
-      .then(() => {
-        setOpenSuccessModal(true);
-      });
-
-    console.log("lstCorequisites in signupclicked", lstCorequisites);
-    setTitles([title]);
-    console.log("settitles in signupclicked", titles);
-    // setOpenCoreq(true);
-    killModal();
-  };
-
-  const signupWithCorequisiteEventVersion = async () => {
-    const userData = await backend.get(`users/${currentUser.uid}`);
-    const studentId = userData.data[0].id;
-
-    // enroll in corequisite class(es)
-    await Promise.all(
-      lstCorequisites.map((corequisite) =>
-        backend
-          .post("class-enrollments", {
-            studentId: studentId,
-            classId: corequisite.id,
-          })
-          .then((res) => console.log(res))
-      )
-    ).then(() => {
-      setOpenSuccessModal(true);
-    });
-
-    // enroll in event
-    await backend.post("event-enrollments/", {
-      student_id: studentId,
-      event_id: eventId,
-    });
-
-    setTitles(lstCorequisites.map((coreq) => coreq.title));
-
-    killModal();
-  };
-
-  const signupWithoutCorequisiteEventVersion = async () => {
-    const userData = await backend.get(`users/${currentUser.uid}`);
-    const studentId = userData.data[0].id;
-
-    // enroll in event
-    await backend
-      .post("event-enrollments/", {
-        student_id: studentId,
-        event_id: eventId,
-      })
-      .then(() => {
-        setOpenSuccessModal(true);
-      });
-
-    setTitles([title]);
+    setWithCoreqFlag(false);
+    if (class_id === null) {
+      await enrollInEvent(event_id);
+    } else {
+      await enrollInClass(class_id);
+    }
+    setOpenSuccessModal(true);
     killModal();
   };
 
@@ -176,220 +120,82 @@ function CoReqWarningModal({
     killModal();
   };
 
-  const handleSuccess = () => {
-    setOpenSuccessModal(false);
-  };
-
-  useEffect(() => {
-    if (lstCorequisites.length > 0) {
-      setCoreq(
-        lstCorequisites.find((coreq) => coreq.enrolled === false) || null
-      );
-    }
-  }, [lstCorequisites]);
-
-  if (!coreq || !lstCorequisites || lstCorequisites.length === 0) {
+  if (!lstCorequisites || lstCorequisites.length === 0) {
     return null;
   }
   return (
-    <>
+    <Box>
       <SuccessSignupModal
         isOpen={openSuccessModal}
-        title={titles}
-        onClose={handleSuccess}
-        // isCoreq={isCorequisiteSignUp}
+        onClose={() => setOpenSuccessModal(false)}
+        title={title}
+        corequisites={lstCorequisites}
+        withCoreqFlag={withCoreqFlag}
       />
-      <Box>
-        <Modal
-          isOpen={isOpenProp}
-          onClose={() => {}}
-        >
-          <ModalOverlay />
-          <ModalContent w="90vw">
-            <ModalBody p={5}>
-              <Box
-              // sx={{ border: "1px solid red" }}
+      <Modal
+        isOpen={isOpenProp}
+        onClose={cancelSignUp}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalCloseButton />
+
+          <ModalBody
+            display={"flex"}
+            justifyContent={"center"}
+          >
+            <VStack spacing={10}>
+              <VStack
+                marginY="2rem"
+                spacing={4}
+                alignItems={"start"}
+                fontSize="medium"
               >
-                <VStack spacing={5}>
-                  <Box
-                    w="full"
-                    // sx={{ border: "1px solid yellow" }}
-                    display="flex"
-                    justifyContent="flex-end"
-                  >
-                    <FaX onClick={cancelSignUp} />
-                  </Box>
-                  {/* fix font */}
-                  <Box
-                    color="#2D3748"
-                    // sx={{ border: "2px solid green" }}
-                  >
-                    <VStack
-                      spacing={7}
-                      // sx={{ border: "2px solid green" }}
+                <Text
+                  fontWeight="bold"
+                  fontSize="large"
+                >
+                  Performance Participation Required
+                </Text>
+                <Text>
+                  To enroll in {title}, it is recommended that you participate
+                  in the end-of-session performance
+                  {lstCorequisites.map((coreq, i) => (
+                    <Text
+                      fontWeight="bold"
+                      variant={"span"}
                     >
-                      <Box
-                      // sx={{ border: "1px solid blue" }}
-                      >
-                        <Stack
-                          spacing="8px"
-                          marginRight="5vw"
-                          // sx={{ border: "2px solid yellow " }}
-                        >
-                          <Text
-                            fontWeight="bold"
-                            fontSize="18px"
-                          >
-                            {modalIdentity === "class" ? (
-                              notEnrolledFilteredCorequisites.length === 1 ? (
-                                <Text as="span">Event </Text>
-                              ) : (
-                                <Text as="span">Multiple Coreqs </Text>
-                              )
-                            ) : (
-                              <Text as="span">Class </Text>
-                            )}
-                            Recommended
-                          </Text>
-
-                          {modalIdentity === "class" ? (
-                            <Text>
-                              {/* handle multiple performances grammar */}
-                              To enroll in {title}, it is recommended that you
-                              participate in &nbsp;
-                              <Text
-                                as="span"
-                                fontWeight="bold"
-                              >
-                                {notEnrolledFilteredCorequisites &&
-                                  notEnrolledFilteredCorequisites.length >
-                                    0 && (
-                                    <Text as="span">
-                                      {notEnrolledFilteredCorequisites.map(
-                                        (coreq, index) => {
-                                          const isLast =
-                                            index ===
-                                            notEnrolledFilteredCorequisites.length -
-                                              1;
-                                          const isSecondToLast =
-                                            index ===
-                                            notEnrolledFilteredCorequisites.length -
-                                              2;
-
-                                          return (
-                                            <span key={index}>
-                                              {coreq.title}
-                                              {isSecondToLast
-                                                ? " and "
-                                                : !isLast
-                                                  ? ", "
-                                                  : ""}
-                                            </span>
-                                          );
-                                        }
-                                      )}
-                                    </Text>
-                                  )}
-                              </Text>
-                              .
-                            </Text>
-                          ) : (
-                            <Text>
-                              {/* handle multiple performances grammar */}
-                              To join {title}, it is recommended that you enroll
-                              in the prerequisite{" "}
-                              {notEnrolledFilteredCorequisites.length > 1 ? (
-                                <Text as="span">classes</Text>
-                              ) : (
-                                <Text as="span">class</Text>
-                              )}
-                              &nbsp;
-                              <Text
-                                as="span"
-                                fontWeight="bold"
-                              >
-                                {notEnrolledFilteredCorequisites &&
-                                notEnrolledFilteredCorequisites.length > 0
-                                  ? coreq?.title
-                                  : ""}
-                              </Text>
-                              .
-                            </Text>
-                          )}
-
-                          <Text>
-                            Do you agree to take part in{" "}
-                            {notEnrolledFilteredCorequisites.length > 1 ? (
-                              <Text as="span">these corequisites?</Text>
-                            ) : (
-                              <Text as="span">this corequisite?</Text>
-                            )}
-                          </Text>
-                        </Stack>
-                      </Box>
-                      <Box
-                        // sx={{ border: "2px solid blue" }}
-                        w="full"
-                      >
-                        {modalIdentity === "class" ? (
-                          <VStack spacing="8px">
-                            <Button
-                              w="full"
-                              bg="purple.100"
-                              color="white"
-                              onClick={signupWithCorequisite}
-                            >
-                              {notEnrolledFilteredCorequisites.length > 1 ? (
-                                <Text as="span">Yes, Enroll in All Coreqs</Text>
-                              ) : (
-                                <Text as="span">Yes, Enroll in Coreq</Text>
-                              )}
-                            </Button>
-                            <Button
-                              w="full"
-                              bg="#CBD5E0"
-                              color="#4A5568"
-                              onClick={signupWithoutCorequisite}
-                            >
-                              No, Enroll in Class Only
-                            </Button>
-                          </VStack>
-                        ) : (
-                          <VStack spacing="8px">
-                            <Button
-                              w="full"
-                              bg="purple.100"
-                              color="white"
-                              onClick={signupWithCorequisiteEventVersion}
-                            >
-                              Yes, Join & Enroll in&nbsp;
-                              {notEnrolledFilteredCorequisites.length > 1 ? (
-                                <Text as="span">Classes</Text>
-                              ) : (
-                                <Text as="span">Class</Text>
-                              )}
-                            </Button>
-                            <Button
-                              w="full"
-                              bg="#CBD5E0"
-                              color="#4A5568"
-                              onClick={signupWithoutCorequisiteEventVersion}
-                            >
-                              No, Join Performance Only
-                            </Button>
-                          </VStack>
-                        )}
-                      </Box>
-                    </VStack>
-                  </Box>
-                </VStack>
-              </Box>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </Box>
-    </>
-    // </Box>
+                      {coreq.title}
+                      {i < lstCorequisites.length - 1 ? ", " : ""}
+                    </Text>
+                  ))}
+                </Text>
+                <Text>Do you agree to take part in the performance?</Text>
+              </VStack>
+              <VStack width="full">
+                <Button
+                  width="inherit"
+                  colorScheme="purple"
+                  fontSize="medium"
+                  bgColor="purple.600"
+                  onClick={signupWithCoreq}
+                >
+                  Yes, Enroll & Join Performance
+                </Button>
+                <Button
+                  width="inherit"
+                  colorScheme="gray"
+                  bgColor="gray.300"
+                  onClick={signupWithoutCoreq}
+                >
+                  No, Enroll in Class Only
+                </Button>
+              </VStack>
+            </VStack>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Box>
   );
 }
 

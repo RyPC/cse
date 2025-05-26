@@ -10,10 +10,11 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
+  UnorderedList,
   VStack,
 } from "@chakra-ui/react";
 
-import { CiCircleCheck } from "react-icons/ci";
+import { MdCheckCircle } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import CompletedIndicator from "./CompletedIndicator.png";
@@ -22,7 +23,9 @@ function SuccessSignupModal({
   isOpen,
   title,
   onClose,
-  isCoreq: isCorequisiteSignUp,
+  isCoreq: isCorequisiteSignUp = false,
+  corequisites = [],
+  withCoreqFlag = false,
 }) {
   const navigate = useNavigate();
 
@@ -52,24 +55,15 @@ function SuccessSignupModal({
           justifyContent={"center"}
         >
           <VStack
-            spacing={10}
-            minH={"100vh"}
+            // spacing={150}
+            minh={"100vh"}
             justify={"center"}
-            marginBottom={"10vh"}
           >
-            <VStack marginTop="5rem">
-              <img
-                src={CompletedIndicator}
-                alt="Completed Indicator"
-              />
-              <Text
-                textAlign={"center"}
-                fontWeight="bold"
-                fontSize="xl"
-                mt="2rem"
-              >
-                Thanks for Signing Up!
-              </Text>
+            <VStack spacing={4}>
+              {/* <img src={CompletedIndicator} alt="Completed Indicator" /> */}
+              <Box color="purple.600">
+                <MdCheckCircle fontSize={"9rem"} />
+              </Box>
               <Text textAlign={"center"}>
                 You've successfully signed up for...
               </Text>
@@ -87,6 +81,22 @@ function SuccessSignupModal({
                 )}
               </Text>
             </VStack>
+
+            {withCoreqFlag && corequisites.length > 0 && (
+              <UnorderedList listStyleType="disc">
+                {corequisites.map((coreq) => (
+                  <ListItem
+                    key={coreq.id}
+                    display="flex"
+                    alignItems="center"
+                    fontSize="lg"
+                    listStyleType={""}
+                  >
+                    <Text>{coreq.title}</Text>
+                  </ListItem>
+                ))}
+              </UnorderedList>
+            )}
 
             {!isCorequisiteSignUp && (
               <Button

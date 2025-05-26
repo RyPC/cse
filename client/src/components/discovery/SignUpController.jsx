@@ -105,6 +105,8 @@ function SignUpController({
   if (class_id !== null && event_id !== null) {
     throw new Error("Cannot have both class_id and event_id");
   }
+
+  console.log("SignUpController Rendered:", infoProps.title, class_id, event_id);
   return (
     <>
       {class_id ? (
@@ -139,9 +141,10 @@ function SignUpController({
       <CoReqWarningModal
         user={user}
         origin={class_id ? "CLASS" : "EVENT"}
+        title={infoProps.title}
         isOpenProp={openCoreqModal}
-        classId={class_id}
-        eventId={event_id}
+        class_id={class_id}
+        event_id={event_id}
         {...infoProps}
         lstCorequisites={corequisites}
         handleClose={toggleCoreqModal}
