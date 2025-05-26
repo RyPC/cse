@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
 import {
   Box,
   Button,
-  HStack,
-  Image,
   Flex,
+  HStack,
+  IconButton,
+  Image,
   List,
   ListIcon,
   ListItem,
@@ -21,16 +22,17 @@ import {
   Tag,
   Divider
 } from "@chakra-ui/react";
-import { FaTimesCircle } from "react-icons/fa";
-import { FaCheckCircle } from "react-icons/fa";
+
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SuccessSignupModal from "./SuccessSignupModal";
 
-function EventInfoModal({
+const EventInfoModal = ({
   user,
   isOpenProp,
   handleClose,
@@ -41,17 +43,19 @@ function EventInfoModal({
   date,
   id,
   capacity,
-  costume,
+  // costume,
   isCorequisiteSignUp,
   corequisites,
+  // modalIdentity,
+  setModalIdentity,
   handleResolveCoreq = () => {},
-}) {
+}) => {
   const { backend } = useBackendContext();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
   // temp for image
-  const [imageSrc, setImageSrc] = useState("");
+  // const [imageSrc, setImageSrc] = useState("");
   // const [enrollmentStatus, setEnrollmentStatus] = useState(false);
 
   // // console.log(user);
@@ -102,26 +106,22 @@ function EventInfoModal({
 
   const enrollInEvent = async () => {
     // Check if already checked into event
-    const currentCheckIn = await backend.get(
-      `/event-enrollments/test`,
-      {
-        params:{
-          student_id: user.data[0].id,
-          event_id: id
-        }
-      }
-    );
+    const currentCheckIn = await backend.get(`/event-enrollments/test`, {
+      params: {
+        student_id: user.data[0].id,
+        event_id: id,
+      },
+    });
     if (user.data[0] && !currentCheckIn.data.exists) {
       const req = await backend.post(`/event-enrollments/`, {
         student_id: user.data[0].id,
         event_id: id,
-        attendance: null
+        attendance: null,
       });
       if (req.status === 201) {
         setOpenSuccessModal(true);
       }
-    }
-    else {
+    } else {
       console.log("Already signed up for this event!");
     }
   };
@@ -133,6 +133,8 @@ function EventInfoModal({
     }
 
     if (corequisites.some((coreq) => !coreq.enrolled)) {
+      // let coReqWarningModal know that it should programatically display an event info modal version
+      setModalIdentity("event");
       handleResolveCoreq();
     } else {
       enrollInEvent();
@@ -144,12 +146,6 @@ function EventInfoModal({
     handleClose();
   };
 
-  const parseDate = (dateString) => {
-    // https://stackoverflow.com/questions/11591854/format-date-to-mm-dd-yyyy-in-javascript
-    const date = new Date(dateString)
-    return ((date.getMonth() > 8) ? (date.getMonth() + 1) : ('0' + (date.getMonth() + 1))) + '/' + ((date.getDate() > 9) ? date.getDate() : ('0' + date.getDate())) + '/' + date.getFullYear()
-  }
-  
 
   useEffect(() => {
     // if (isOpenProp && !imageSrc) {
@@ -159,7 +155,7 @@ function EventInfoModal({
     // }
     getTags()
     getStartTime()
-  }, [imageSrc, isOpenProp]);
+  }, [isOpenProp]);
 
   return (
     <>
@@ -178,16 +174,19 @@ function EventInfoModal({
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
-            <List>
-              {tags.map((tag, index) => (
-                <Tag key={index} m={1}>
-                  {tag}
-                </Tag>
-              ))}
-            </List> 
-            <Flex justifyContent="center">
-              {title}
-            </Flex>
+            <VStack align={"start"}>
+              <IconButton icon={<ArrowBackIcon/>} onClick={handleClose} aria-label="Back" variant="ghost" fontSize={"2xl"} p={4} ml={-4}/>
+              <List>
+                {tags.map((tag, index) => (
+                  <Tag key={index} mr={1} mb={1} mt={1} borderRadius={"full"} bg="white" textColor="gray.600" borderColor={"gray.300"} borderWidth={1}>
+                    {tag}
+                  </Tag>
+                ))}
+              </List> 
+              <Text justifyContent="center" wordBreak={"break-word"} fontWeight={"bold"}>
+                {title}
+              </Text>
+            </VStack>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -216,37 +215,35 @@ function EventInfoModal({
               </HStack>
               <br/><Divider orientation='horizontal' />
               <HStack width="100%">
-                {!isCorequisiteSignUp && (
-                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
-                    <Text as="b">
-                      Recommended classes
-                    </Text>
-                    {!corequisites || corequisites.length === 0 ? (
-                      <Text>No corequisites for this class</Text>
-                    ) : (
-                      <List>
-                        {corequisites.map((coreq, index) => (
-                          <ListItem key={index}>
-                            <ListIcon
-                              as={
-                                coreq.enrolled
-                                  ? FaCircleCheck
-                                  : FaTimesCircle
-                              }
-                            />
-                            {coreq.title}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
+                {corequisites && corequisites.length > 0 && (
+                  <Box
+                    bg="#E8E7EF"
+                    borderRadius="md"
+                    width="100%"
+                    p={4}
+                  >
+                    <Text as="b">Recommended</Text>
+                    <List>
+                      {corequisites.map((coreq, index) => (
+                        <ListItem key={index}>
+                          <ListIcon
+                            as={coreq.enrolled ? FaCircleCheck : FaTimesCircle}
+                          />
+                          {coreq.title}
+                        </ListItem>
+                      ))}
+                    </List>
                   </Box>
                 )}
               </HStack>
             </VStack>
           </ModalBody>
-          <Flex justifyContent="center" width = "100%">
+          <Flex
+            justifyContent="center"
+            width="100%"
+          >
             <ModalFooter>
-              <Flex justify = "center">
+              <Flex justify="center">
                 <Button
                   width = "100%"
                   p = {7}
@@ -263,6 +260,6 @@ function EventInfoModal({
       </Modal>
     </>
   );
-}
+};
 
 export default EventInfoModal;

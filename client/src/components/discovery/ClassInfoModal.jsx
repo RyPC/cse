@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 
 import {
   Box,
   Button,
   Card,
+  Flex,
   HStack,
   Image,
-  Flex,
   List,
   ListIcon,
   ListItem,
@@ -20,12 +20,13 @@ import {
   Text,
   VStack,
   Tag,
-  Divider
+  Divider,
+  IconButton
 } from "@chakra-ui/react";
 
-import { FaTimesCircle } from "react-icons/fa";
-import { FaPencilAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
+import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -34,7 +35,7 @@ import SuccessSignupModal from "./SuccessSignupModal";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 
 const ClassInfoModal = ({
-  userid,
+  // userid,
   isOpenProp,
   title,
   location,
@@ -45,10 +46,13 @@ const ClassInfoModal = ({
   // endTime,
   id,
   // capacity,
-  costume,
+  // costume,
   isCorequisiteSignUp,
   corequisites,
   handleClose,
+  // modalIdentity,
+  setModalIdentity,
+  // filteredCorequisites,
   handleResolveCoreq = () => {},
 }) => {
   const { currentUser, role } = useAuthContext();
@@ -112,13 +116,24 @@ const ClassInfoModal = ({
   };
 
   const classSignUp = async () => {
+    console.log("In class signup button");
+    console.log(isCorequisiteSignUp);
+    corequisites.map((coreq) => {
+      console.log(coreq);
+    });
     if (isCorequisiteSignUp) {
+      console.log("In isCorequisiteSignup clause");
       enrollInClass();
       return;
     }
+    // if there exisits a coreq and not enrolled in a coreq,
     if (corequisites.some((coreq) => !coreq.enrolled)) {
+      console.log("In handleResolveCoreq clause");
+      // let coReqWarningModal know that it should programatically display an event info modal version
+      setModalIdentity("class");
       handleResolveCoreq();
     } else {
+      console.log("In else clause (enrollInClass())");
       enrollInClass();
     }
   };
@@ -164,19 +179,27 @@ const ClassInfoModal = ({
         onClose={handleClose}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent
+          paddingRight="5vw"
+        >
 
           <ModalHeader>
+            <VStack
+              align="start">
+            <IconButton icon={<ArrowBackIcon/>} onClick={handleClose} aria-label="Back" variant="ghost" fontSize={"2xl"} p={4} ml={-4}/>
             <List>
               {tags.map((tag, index) => (
-                <Tag key={index} m={1}>
+                <Tag key={index} mr={1} mb={1} mt={1} borderRadius={"full"} bg="white" textColor="gray.600" borderColor={"gray.300"} borderWidth={1}>
                   {tag}
                 </Tag>
               ))}
             </List> 
-            {title}
+            <Text justifyContent="center" wordBreak={"break-word"} fontWeight={"bold"}>
+              {title}
+            </Text>
+            </VStack>
           </ModalHeader>
-          <ModalCloseButton />
+          {/* <ModalCloseButton /> */}
           <ModalBody>
             <Text>Taught by { teacherName ? teacherName : "Unknown" }</Text>
             <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
@@ -205,41 +228,48 @@ const ClassInfoModal = ({
             <VStack
               spacing={4}
               align="center"
-            >             
-              {!isCorequisiteSignUp && (
+            >
+              {corequisites && corequisites.length !== 0 && (
                 <HStack width="100%">
-                  <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
-                    <VStack align = "start" spacing={2}>
+                  <Box
+                    bg="#E8E7EF"
+                    borderRadius="md"
+                    width="100%"
+                    p={4}
+                  >
+                    <VStack
+                      align="start"
+                      spacing={2}
+                    >
                       <HStack align="center">
-                        <Text as="b">
-                          Recommended classes and events:
-                        </Text>
+                        <Text as="b">Recommended classes and events</Text>
                       </HStack>
-                    {!corequisites || corequisites.length === 0 ? (
-                      <Text>No corequisites for this class</Text>
-                    ) : (
-                      <List>
-                        {corequisites.map((coreq, index) => (
-                          <ListItem key={index}>
-                            <ListIcon
-                              as={
-                                coreq.enrolled
-                                  ? FaCircleCheck
-                                  : FaTimesCircle
-                              }
-                            />
-                            {coreq.title}
-                          </ListItem>
-                        ))}
-                      </List>
-                    )}
+                      {!corequisites || corequisites.length === 0 ? (
+                        <Text>No corequisites for this class</Text>
+                      ) : (
+                        <List>
+                          {corequisites.map((coreq, index) => (
+                            <ListItem key={index}>
+                              <ListIcon
+                                as={
+                                  coreq.enrolled ? FaCircleCheck : FaTimesCircle
+                                }
+                              />
+                              {coreq.title}
+                            </ListItem>
+                          ))}
+                        </List>
+                      )}
                     </VStack>
                   </Box>
                 </HStack>
               )}
             </VStack>
           </ModalBody>
-          <Flex justifyContent="center" width = "100%">
+          <Flex
+            justifyContent="center"
+            width="100%"
+          >
             <ModalFooter>
               {role === "student" && (
                 <Button
@@ -265,6 +295,6 @@ const ClassInfoModal = ({
       </Modal>
     </>
   );
-}
+};
 
 export default ClassInfoModal;

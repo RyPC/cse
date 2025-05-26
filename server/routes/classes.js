@@ -127,18 +127,20 @@ classesRouter.get("/students/:id", async (req, res) => {
   }
 });
 
-classesRouter.get("/corequisites/:id", async (req, res) => {
+classesRouter.get("/corequisites/:classid/:userid", async (req, res) => {
   try {
-    const { id } = req.params;
-    const events = await db.query(
-      `SELECT e.*
-       FROM events e
-       JOIN corequisites co ON e.id = co.event_id
-       WHERE co.class_id = $1;`,
-      [id]
+    const { classid, userid } = req.params;
+    const corequisites = await db.query(
+      `SELECT DISTINCT ON (e.id) e.*, 
+              CASE WHEN ce.student_id IS NOT NULL THEN true ELSE false END AS enrolled
+        FROM events e
+        JOIN corequisites co ON e.id = co.event_id
+        FULL OUTER JOIN event_enrollments ce ON ce.event_id = e.id AND ce.student_id = $1
+        WHERE co.class_id = $2;`,
+      [userid, classid]
     );
 
-    res.status(200).json(keysToCamel(events));
+    res.status(200).json(keysToCamel(corequisites));
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -218,16 +220,16 @@ classesRouter.get("/drafts", async (req, res) => {
 });
 
 // classesRouter.get("/search/:name", async (req, res) => {
-  // try {
-    // const { name } = req.params;
-    // const data = await db.query(`SELECT * FROM classes WHERE title LIKE $1;`, [
-      // `%${name}%`,
-    // ]);
-// 
-    // res.status(200).json(keysToCamel(data));
-  // } catch (err) {
-    // res.status(500).send(err.message);
-  // }
+// try {
+// const { name } = req.params;
+// const data = await db.query(`SELECT * FROM classes WHERE title LIKE $1;`, [
+// `%${name}%`,
+// ]);
+//
+// res.status(200).json(keysToCamel(data));
+// } catch (err) {
+// res.status(500).send(err.message);
+// }
 // });
 
 classesRouter.get("/search/published/:name", async (req, res) => {

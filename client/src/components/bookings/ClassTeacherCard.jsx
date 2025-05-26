@@ -115,7 +115,8 @@ export const ClassTeacherCard = memo(
         <Box
         w="100%"
         bg="gray.50"
-        borderRadius="16px"
+        borderRadius={"3xl"}
+        // borderRadius="16px"
         borderColor={"gray.300"}
         borderWidth={1}
         px={6}
@@ -168,12 +169,15 @@ export const ClassTeacherCard = memo(
                 size="md"
                 fontWeight="semibold"
                 color="grey.700"
+                wordBreak="break-word"
+                marginTop="10px"
             >
                 {title}
             </Heading>
             <Text
                 fontSize="sm"
                 color="grey.700"
+                wordBreak="break-word"
             >
                 {location}
             </Text>

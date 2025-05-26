@@ -8,7 +8,9 @@ import App from "./App.tsx";
 import "@fontsource-variable/inter";
 
 const colors = {
-  brand: {},
+    purple: {
+      100: '#6B46C1',
+    },
 };
 
 const fonts = {

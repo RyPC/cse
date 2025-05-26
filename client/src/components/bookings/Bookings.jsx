@@ -111,7 +111,7 @@ export const Bookings = () => {
       backend.get(`/classes/published`).then((res) => setClasses(res.data));
       backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data));
       backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data));
-      backend.get("/events").then((res) => setAllEvents(res.data));
+      backend.get("/events/all").then((res) => setAllEvents(res.data));
     } else if (currentUser && role === "student") {
       backend
         .get(`/users/${currentUser.uid}`)
@@ -607,6 +607,7 @@ export const Bookings = () => {
                         setSelectedCard={setSelectedCard}
                         {...classItem}
                         performance={coEvents}
+                        performances={events}
                         navigate={navigate}
                         onOpen={updateModal}
                       />
