@@ -25,7 +25,6 @@ import {
   Tabs,
   Text,
   useDisclosure,
-  useToast,
   VStack,
 } from "@chakra-ui/react";
 
@@ -53,12 +52,12 @@ import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { CreateClassForm } from "../forms/createClasses";
 import CreateEvent from "../forms/createEvent";
 import { Navbar } from "../navbar/Navbar";
-import { SearchBar } from "../searchbar/SearchBar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
 import { CancelModal } from "./CancelModal";
 import { ConfirmationModal } from "./ConfirmationModal";
 // import { InfoModal } from "./InfoModal";
+import { SearchBar } from "../searchbar/SearchBar";
 import { TeacherCancelModal } from "./TeacherCancelModal";
 import { TeacherConfirmationModal } from "./TeacherConfirmationModal";
 import { TeacherEditModal } from "./TeacherEditModal";
@@ -67,7 +66,6 @@ import { ViewModal } from "./ViewModal";
 import { ClassTeacherCard } from "./ClassTeacherCard";
 
 export const Bookings = () => {
-  const toast = useToast();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { currentUser, role } = useAuthContext();
@@ -127,17 +125,15 @@ export const Bookings = () => {
               const enrolledClasses = res.data;
               setClasses(enrolledClasses);
 
-              const tagsPromises = enrolledClasses.map((cls) =>
+              const tagsPromises = enrolledClasses.map(cls => 
                 backend.get(`/class-tags/tags/${cls.id}`)
               );
 
               const tagsResults = await Promise.all(tagsPromises);
               const newClassTagsMap = {};
-
+              
               enrolledClasses.forEach((cls, index) => {
-                newClassTagsMap[cls.id] = tagsResults[index].data.map(
-                  (tag) => tag.id
-                );
+                newClassTagsMap[cls.id] = tagsResults[index].data.map(tag => tag.id);
               });
 
               setClassTagsMap(newClassTagsMap);
@@ -152,17 +148,15 @@ export const Bookings = () => {
               const enrolledEvents = res.data;
               setEvents(enrolledEvents);
 
-              const tagsPromises = enrolledEvents.map((evt) =>
+              const tagsPromises = enrolledEvents.map(evt => 
                 backend.get(`/event-tags/tags/${evt.id}`)
               );
 
               const tagsResults = await Promise.all(tagsPromises);
               const newEventTagsMap = {};
-
+              
               enrolledEvents.forEach((evt, index) => {
-                newEventTagsMap[evt.id] = tagsResults[index].data.map(
-                  (tag) => tag.id
-                );
+                newEventTagsMap[evt.id] = tagsResults[index].data.map(tag => tag.id);
               });
 
               setEventTagsMap(newEventTagsMap);
@@ -186,27 +180,27 @@ export const Bookings = () => {
 
   useEffect(() => {
     const fetchTags = async () => {
-      try {
-        const tagsResponse = await backend.get("/tags");
-        const initialTagFilter = {};
-        const initialTags = {};
-        tagsResponse.data.forEach((tag) => {
-          initialTagFilter[tag.id] = false;
-          initialTags[tag.id] =
-            tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
-        });
+        try {
+          const tagsResponse = await backend.get("/tags");
+          const initialTagFilter = {};
+          const initialTags = {};
+          tagsResponse.data.forEach((tag) => {
+            initialTagFilter[tag.id] = false;
+            initialTags[tag.id] =
+              tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
+          });
+    
+          setTagFilter(initialTagFilter);
+          setTags(initialTags);
+          // console.log(initialTags);
+        } catch (error) {
+          console.error("Error fetching tags:", error);
+        }
+      };
+      fetchTags();
+ }, []);
 
-        setTagFilter(initialTagFilter);
-        setTags(initialTags);
-        // console.log(initialTags);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
-      }
-    };
-    fetchTags();
-  }, []);
-
-  const handleFilterToggle = (id) => {
+ const handleFilterToggle = (id) => {
     setTagFilter((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -238,19 +232,11 @@ export const Bookings = () => {
     fetchCoreqId();
   }, [backend, selectedCard, isOpen]);
 
-  const onCloseModal = (type) => {
+  const onCloseModal = () => {
     setSelectedCard(null);
     setCurrentModal("view");
     onClose();
     reloadClassesAndDrafts();
-    toast({
-      title: type == 0 ? "Class Published." : "Event Published.", // 0 == "class" || 1 == "event"
-      description: type == 0 ? "Class is visible to students." : "Event is visible to students.",
-      status: "success",
-      duration: 9000,
-      isClosable: true,
-      position: "top"
-    });
   };
   const onOpenModal = (data) => {
     setClassData(data);
@@ -360,44 +346,40 @@ export const Bookings = () => {
   const handleClassSearch = async (query) => {
     if (currentUser && role === "student") {
       // For students, search within their enrolled classes
-      const enrolledRes = await backend.get(
-        `/class-enrollments/student/${user_id}`
-      );
+      const enrolledRes = await backend.get(`/class-enrollments/student/${user_id}`);
       const allEnrolledClasses = enrolledRes.data;
-
+      
       // Client-side search filtering
-      const filteredClasses = allEnrolledClasses.filter((cls) =>
+      const filteredClasses = allEnrolledClasses.filter(cls => 
         cls.title.toLowerCase().includes(query.toLowerCase())
       );
-
+      
       setClasses(filteredClasses);
     } else {
       // For teachers/admin, keep the existing server-side search
       const searchRes = await backend.get(`/classes/search/${query}`);
       setClasses(searchRes.data);
     }
-  };
+  }
 
   const handleEventSearch = async (query) => {
     if (currentUser && role === "student") {
       // For students, search within their enrolled events
-      const enrolledRes = await backend.get(
-        `/event-enrollments/student/${user_id}`
-      );
+      const enrolledRes = await backend.get(`/event-enrollments/student/${user_id}`);
       const allEnrolledEvents = enrolledRes.data;
-
+      
       // Client-side search filtering
-      const filteredEvents = allEnrolledEvents.filter((evt) =>
+      const filteredEvents = allEnrolledEvents.filter(evt => 
         evt.title.toLowerCase().includes(query.toLowerCase())
       );
-
+      
       setEvents(filteredEvents);
     } else {
       // For teachers/admin, keep the existing server-side search
       const searchRes = await backend.get(`/events/search/${query}`);
       setEvents(searchRes.data);
     }
-  };
+  }
 
   const reloadClassesAndDrafts = async () => {
     try {
@@ -405,7 +387,7 @@ export const Bookings = () => {
         backend.get(`/events/published`).then((res) => setEvents(res.data)),
         backend.get(`/classes/published`).then((res) => setClasses(res.data)),
         backend.get(`/events/drafts`).then((res) => setDraftEvents(res.data)),
-        backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data)),
+        backend.get(`/classes/drafts`).then((res) => setDraftClasses(res.data))
       ]);
 
       const attendedClasses = classes.filter((c) => c.attendance !== null);
@@ -420,9 +402,9 @@ export const Bookings = () => {
   };
 
   const reloadClasses = async () => {
-    await backend.get(`/classes/published`).then((res) => {
-      setClasses(res.data);
-    });
+      await backend.get(`/classes/published`).then((res) => {
+        setClasses(res.data);
+      });
 
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
@@ -435,8 +417,8 @@ export const Bookings = () => {
 
   const reloadEvents = async () => {
     await backend.get(`/events/published`).then((res) => {
-      setEvents(res.data);
-    });
+        setEvents(res.data);
+      });
 
     const attendedClasses = classes.filter((c) => c.attendance !== null);
     const attendedEvents = events.filter((e) => e.attendance !== null);
@@ -511,6 +493,7 @@ export const Bookings = () => {
         spacing={8}
         sx={{ maxWidth: "100%", marginX: "auto" }}
       >
+
         <Tabs
           width="100%"
           variant="line"
@@ -575,10 +558,10 @@ export const Bookings = () => {
           <TabPanels>
             <TabPanel>
               <SearchBar
-                onSearch={handleClassSearch}
-                tags={tags}
-                tagFilter={tagFilter}
-                onTag={handleFilterToggle}
+                  onSearch={handleClassSearch}
+                  tags={tags}
+                  tagFilter={tagFilter}
+                  onTag={handleFilterToggle}
               />
               <VStack
                 spacing={4}
@@ -634,14 +617,10 @@ export const Bookings = () => {
                   )
                 ) : classes.length > 0 ? (
                   classes.map((classItem) => {
-                    const isFilterActive =
-                      Object.values(tagFilter).some(Boolean);
+                    const isFilterActive = Object.values(tagFilter).some(Boolean);
                     const classTags = classTagsMap[classItem.id] || [];
-
-                    if (
-                      !isFilterActive ||
-                      classTags.some((tagId) => tagFilter[tagId])
-                    ) {
+                    
+                    if (!isFilterActive || classTags.some(tagId => tagFilter[tagId])) {
                       return (
                         <Box
                           key={classItem.id}
@@ -672,7 +651,7 @@ export const Bookings = () => {
                 tags={tags}
                 tagFilter={tagFilter}
                 onTag={handleFilterToggle}
-              />
+            />
               <VStack
                 spacing={4}
                 width="100%"
@@ -711,14 +690,10 @@ export const Bookings = () => {
                 )}
                 {events.length > 0 ? (
                   events.map((eventItem) => {
-                    const isFilterActive =
-                      Object.values(tagFilter).some(Boolean);
+                    const isFilterActive = Object.values(tagFilter).some(Boolean);
                     const eventTags = eventTagsMap[eventItem.id] || [];
-
-                    if (
-                      !isFilterActive ||
-                      eventTags.some((tagId) => tagFilter[tagId])
-                    ) {
+                    
+                    if (!isFilterActive || eventTags.some(tagId => tagFilter[tagId])) {
                       return (
                         <EventCard
                           key={eventItem.id}
