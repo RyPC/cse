@@ -1,7 +1,23 @@
-import CoreqWarningModal from "../discovery/CoReqWarningModal";
+import { Button, useToast } from "@chakra-ui/react";
 
 export const Playground = () => {
-  return <div>
-    <CoreqWarningModal isOpen={true} onClose={() => {}}/>
-  </div>
+  const toast = useToast();
+
+  return (
+    <div>
+      <Button
+        onClick={() =>
+          toast({
+            title: "Account created.",
+            description: "We've created your account for you.",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+          })
+        }
+      >
+        Show Toast
+      </Button>
+    </div>
+  );
 };
