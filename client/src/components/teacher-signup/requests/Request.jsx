@@ -1,6 +1,6 @@
 import { Box, Button, Image, Text, VStack } from "@chakra-ui/react";
 import {useNavigate, useLocation} from "react-router-dom";
-import centerStageLogo from "./cse-logo.png";
+import centerStageLogo from "/logo.png";
 
 const Request = () => {
     const navigate = useNavigate();
