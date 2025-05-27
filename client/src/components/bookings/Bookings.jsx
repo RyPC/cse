@@ -670,8 +670,7 @@ export const Bookings = () => {
                   )
                 ) : classes.length > 0 ? (
                   classes.map((classItem) => {
-                    const isFilterActive =
-                      Object.values(tagFilter).some(Boolean);
+                    const isFilterActive = Object.values(tagFilter).some(Boolean);
                     const classTags = classTagsMap[classItem.id] || [];
 
                     if (
@@ -690,6 +689,7 @@ export const Bookings = () => {
                             onClick={() => updateModal(classItem)}
                             triggerRefresh={triggerRefresh}
                             onCloseModal={onCloseModal}
+                            tags={classTags}
                           />
                         </Box>
                       );
@@ -762,6 +762,7 @@ export const Bookings = () => {
                           onClick={() => updateModal(eventItem)}
                           triggerRefresh={triggerRefresh}
                           onCloseModal={onCloseModal}
+                          tags={eventTags}
                         />
                       );
                     }

@@ -17,6 +17,8 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal";
 import SignUpController from "../discovery/SignUpController";
+import { FaMusic, FaMicrophoneAlt } from "react-icons/fa";
+import { GiBallerinaShoes, GiBoombox, GiAbstract001, GiCartwheel, GiTambourine } from "react-icons/gi";
 
 export const EventCard = memo(
   ({
@@ -35,6 +37,7 @@ export const EventCard = memo(
     onClick,
     triggerRefresh,
     user = null,
+    tags = [],
   }) => {
     const formattedDate = formatDate(date);
     const formattedStartTime = formatTime(startTime);
@@ -45,6 +48,28 @@ export const EventCard = memo(
 
     const [currentModal, setCurrentModal] = useState("view");
     const { role } = useAuthContext();
+
+    const getIcon = () => {
+      const iconSize = 50;
+      switch (tags[0]) {
+        case 1:
+          return <FaMusic size={iconSize} />;
+        case 2:
+          return <GiBallerinaShoes size={iconSize} />;
+        case 3:
+          return <FaMicrophoneAlt size={iconSize} />;
+        case 4:
+          return <GiBoombox size={iconSize} />;
+        case 5:
+          return <GiAbstract001 size={iconSize} />;
+        case 6:
+          return <GiCartwheel size={iconSize} />;
+        case 7:
+          return <GiTambourine size={iconSize} />;
+        default:
+          return <FaMusic size={iconSize} />;
+      }
+    };
 
     const closeTeacherModal = () => {
       setOpenTeacherModal(false);
@@ -103,19 +128,16 @@ export const EventCard = memo(
           spacing={4}
           align="center"
         >
-          <Flex
-            w="20%"
-            align="center"
-            justify="center"
+          <Box
+            maxW="100%"
+            maxH="100%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
-            <Image
-              src="/card_images/classical.svg" // Set the image source
-              alt="Event illustration"
-              maxW="100%"
-              maxH="100%"
-              objectFit="contain"
-            />
-          </Flex>
+            {getIcon()}
+          </Box>
+
           <VStack
             w="80%"
             align="flex-start"
