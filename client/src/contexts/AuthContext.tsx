@@ -190,7 +190,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateDisplayName = async (userCredential: UserCredential, fullName: string) => {
+  const updateDisplayName = async (
+    userCredential: UserCredential,
+    fullName: string
+  ) => {
     if (userCredential?.user) {
       try {
         await updateProfile(userCredential.user, { displayName: fullName });
@@ -216,7 +219,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error("Error fetching user role:", error);
       }
     }
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -245,7 +248,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         resetPassword,
         handleRedirectResult,
         updateDisplayName,
-        updateRole
+        updateRole,
       }}
     >
       {loading ? <Spinner /> : children}

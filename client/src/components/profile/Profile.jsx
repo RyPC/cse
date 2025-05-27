@@ -1,27 +1,27 @@
+import { useEffect, useState } from "react";
+
 import {
   Box,
   Button,
   Flex,
   Heading,
-  Image,
   Icon,
+  Image,
   Text,
   VStack,
 } from "@chakra-ui/react";
 
-import { useEffect, useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { L } from "../logout/Logout";
 import { Navbar } from "../navbar/Navbar";
-import { useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
-
 
 export const Profile = () => {
   const { currentUser, role } = useAuthContext();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { backend } = useBackendContext();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -49,8 +49,8 @@ export const Profile = () => {
   //   "https://d1ef7ke0x2i9g8.cloudfront.net/hong-kong/_large700/2143830/LC-Sign-Tony-interview-Big-Hitter-header.webp";
   // const hardcodedName =
   //   // currentUser?.first_name && currentUser?.last_name
-    //   ? `${currentUser.first_name} ${currentUser.last_name}`
-    //   : "Homie Tony";
+  //   ? `${currentUser.first_name} ${currentUser.last_name}`
+  //   : "Homie Tony";
 
   return (
     <Box>
@@ -72,7 +72,13 @@ export const Profile = () => {
           fontSize="20px"
           fontWeight="600"
         >
-          {firstName && lastName ? `${firstName} ${lastName}` : firstName ? `${firstName}` : lastName ? `${lastName}` :"User"}
+          {firstName && lastName
+            ? `${firstName} ${lastName}`
+            : firstName
+              ? `${firstName}`
+              : lastName
+                ? `${lastName}`
+                : "User"}
         </Heading>
         <Text>{currentUser?.email || "Not available"}</Text>
         <Text>Role: {role || "Not available"}</Text>

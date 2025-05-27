@@ -230,7 +230,8 @@ export const TeacherEditModal = ({
   const [classTitle, setClassTitle] = useState(classData?.title);
   const [location, setLocation] = useState(classData?.location);
   const [startDate, setStartDate] = useState(
-    isDefaultDate(classData?.startDate) || isDefaultDate(classData?.date)
+    (isDefaultDate(classData?.startDate) && !classData?.date) ||
+      (isDefaultDate(classData?.date) && !classData?.startDate)
       ? ""
       : classData?.startDate
         ? formatDate(classData.startDate)
@@ -476,7 +477,12 @@ export const TeacherEditModal = ({
             >
               Discard Edits
             </Button>
-            <Button bg= "purple.600"  color = "white" flex="1" onClick={onPublish}>
+            <Button
+              bg="purple.600"
+              color="white"
+              flex="1"
+              onClick={onPublish}
+            >
               Publish
             </Button>
           </Flex>

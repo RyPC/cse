@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { memo, useState } from "react";
 
 import {
   Badge,
@@ -18,163 +18,165 @@ import { formatDate, formatTime } from "../../utils/formatDateTime";
 import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal";
 import SignUpController from "../discovery/SignUpController";
 
-export const EventCard = memo(({
-  id,
-  title,
-  location,
-  description,
-  level,
-  date,
-  startTime,
-  endTime,
-  callTime,
-  costume,
-  capacity,
-  attendeeCount = 0,
-  onClick,
-  triggerRefresh,
-  user = null,
-}) => {
-  const formattedDate = formatDate(date);
-  const formattedStartTime = formatTime(startTime);
-  const formattedEndTime = formatTime(endTime);
-  const { pathname } = useLocation();
-  const [openRootModal, setOpenRootModal] = useState(false);
-  const [openTeacherModal, setOpenTeacherModal] = useState(false);
+export const EventCard = memo(
+  ({
+    id,
+    title,
+    location,
+    description,
+    level,
+    date,
+    startTime,
+    endTime,
+    callTime,
+    costume,
+    capacity,
+    attendeeCount = 0,
+    onClick,
+    triggerRefresh,
+    user = null,
+  }) => {
+    const formattedDate = formatDate(date);
+    const formattedStartTime = formatTime(startTime);
+    const formattedEndTime = formatTime(endTime);
+    const { pathname } = useLocation();
+    const [openRootModal, setOpenRootModal] = useState(false);
+    const [openTeacherModal, setOpenTeacherModal] = useState(false);
 
-  const [currentModal, setCurrentModal] = useState("view");
-  const { role } = useAuthContext();
+    const [currentModal, setCurrentModal] = useState("view");
+    const { role } = useAuthContext();
 
-  const closeTeacherModal = () => {
-    setOpenTeacherModal(false);
-  };
+    const closeTeacherModal = () => {
+      setOpenTeacherModal(false);
+    };
 
-  const handleClickModal = () => {
-    if (pathname === "/bookings" && role !== "student") {
-      if (currentModal === "view") {
-        setOpenTeacherModal(true);
-        console.log("Open teacher view modal!");
+    const handleClickModal = () => {
+      if (pathname === "/bookings" && role !== "student") {
+        if (currentModal === "view") {
+          setOpenTeacherModal(true);
+          console.log("Open teacher view modal!");
+        }
+      } else if (pathname === "/bookings") {
+        if (onClick) onClick();
+      } else {
+        setOpenRootModal(true);
       }
-    } else if (pathname === "/bookings") {
-      if (onClick) onClick();
-    } else {
-      setOpenRootModal(true);
-    }
-  };
+    };
 
-  const dateTimeString = formattedDate
-    ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
-    : "Date/Time not available";
+    const dateTimeString = formattedDate
+      ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
+      : "Date/Time not available";
 
-  return (
-    <Box
-      w="100%"
-      bg="gray.50"
-      borderRadius="3xl"
-      // borderRadius="16px"
-      borderColor={"gray.300"}
-      borderWidth={1}
-      px={6}
-      py={10}
-      position="relative"
-      cursor="pointer"
-      onClick={handleClickModal}
-      _hover={{ bg: "gray.100" }}
-    >
-      <Badge
-        position="absolute"
-        top={4}
-        right={4}
-        variant="outline"
-        borderStyle="dashed"
-        borderColor="purple.600"
-        color="purple.700"
-        bg="purple.50"
-        px={3}
-        py={1}
-        fontSize="xs"
-        fontWeight="medium"
-        borderRadius="full"
+    return (
+      <Box
+        w="100%"
+        bg="gray.50"
+        borderRadius="3xl"
+        // borderRadius="16px"
+        borderColor={"gray.300"}
+        borderWidth={1}
+        px={6}
+        py={10}
+        position="relative"
+        cursor="pointer"
+        onClick={handleClickModal}
+        _hover={{ bg: "gray.100" }}
       >
-        {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
-      </Badge>
-      <HStack
-        spacing={4}
-        align="center"
-      >
-        <Flex
-          w="20%"
+        <Badge
+          position="absolute"
+          top={4}
+          right={4}
+          variant="outline"
+          borderStyle="dashed"
+          borderColor="purple.600"
+          color="purple.700"
+          bg="purple.50"
+          px={3}
+          py={1}
+          fontSize="xs"
+          fontWeight="medium"
+          borderRadius="full"
+        >
+          {attendeeCount} {attendeeCount === 1 ? "Person" : "People"} RSVP'd
+        </Badge>
+        <HStack
+          spacing={4}
           align="center"
-          justify="center"
         >
-          <Image
-            src="/card_images/classical.svg" // Set the image source
-            alt="Event illustration"
-            maxW="100%"
-            maxH="100%"
-            objectFit="contain"
-          />
-        </Flex>
-        <VStack
-          w="80%"
-          align="flex-start"
-          spacing={1}
-          wordBreak="break-word"
-        >
-          <Heading
-            size="md"
-            fontWeight="semibold"
-            color="grey.700"
-            wordBreak="break-word"
-            marginTop="10px"
+          <Flex
+            w="20%"
+            align="center"
+            justify="center"
           >
-            {title}
-          </Heading>
-          <Text
-            fontSize="sm"
-            color="grey.700"
+            <Image
+              src="/card_images/classical.svg" // Set the image source
+              alt="Event illustration"
+              maxW="100%"
+              maxH="100%"
+              objectFit="contain"
+            />
+          </Flex>
+          <VStack
+            w="80%"
+            align="flex-start"
+            spacing={1}
             wordBreak="break-word"
           >
-            {location}
-          </Text>
-          <Text
-            fontSize="sm"
-            color="gray.700"
-          >
-            {formattedDate} · {formattedStartTime} – {formattedEndTime}
-          </Text>
-        </VStack>
-      </HStack>
-      <SignUpController
-        event_id={id}
-        title={title}
-        description={description}
-        location={location}
-        level={level}
-        costume={costume}
-        date={date}
-        startTime={startTime}
-        endTime={endTime}
-        setOpenRootModal={setOpenRootModal}
-        openRootModal={openRootModal}
-        user={user}
-      />
-      <TeacherEventViewModal
-        isOpenProp={openTeacherModal}
-        handleClose={closeTeacherModal}
-        id={id}
-        location={location}
-        title={title}
-        description={description}
-        level={level}
-        date={date}
-        startTime={startTime}
-        endTime={endTime}
-        callTime={callTime}
-        costume={costume}
-        capacity={capacity}
-        triggerRefresh={triggerRefresh}
-      />
-    </Box>
-  );
-});
+            <Heading
+              size="md"
+              fontWeight="semibold"
+              color="grey.700"
+              wordBreak="break-word"
+              marginTop="10px"
+            >
+              {title}
+            </Heading>
+            <Text
+              fontSize="sm"
+              color="grey.700"
+              wordBreak="break-word"
+            >
+              {location}
+            </Text>
+            <Text
+              fontSize="sm"
+              color="gray.700"
+            >
+              {formattedDate} · {formattedStartTime} – {formattedEndTime}
+            </Text>
+          </VStack>
+        </HStack>
+        <SignUpController
+          event_id={id}
+          title={title}
+          description={description}
+          location={location}
+          level={level}
+          costume={costume}
+          date={date}
+          startTime={startTime}
+          endTime={endTime}
+          setOpenRootModal={setOpenRootModal}
+          openRootModal={openRootModal}
+          user={user}
+        />
+        <TeacherEventViewModal
+          isOpenProp={openTeacherModal}
+          handleClose={closeTeacherModal}
+          id={id}
+          location={location}
+          title={title}
+          description={description}
+          level={level}
+          date={date}
+          startTime={startTime}
+          endTime={endTime}
+          callTime={callTime}
+          costume={costume}
+          capacity={capacity}
+          triggerRefresh={triggerRefresh}
+        />
+      </Box>
+    );
+  }
+);

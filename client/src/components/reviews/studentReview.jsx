@@ -16,12 +16,12 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 
+import { color } from "framer-motion";
+import { FaUserCircle } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { color } from "framer-motion";
-import { FaUserCircle } from "react-icons/fa";
 
 const StudentReview = ({
   rating,
@@ -94,13 +94,13 @@ const StudentReview = ({
         `/class-enrollments/student/${student_id}`
       );
 
-      const attendanceObject = attendance.data.find((a) => a.id === class_id)
+      const attendanceObject = attendance.data.find((a) => a.id === class_id);
 
       setAttended(attendanceObject ? attendanceObject.attendance : null);
     };
     fetchAttendance();
   }, [backend, class_id, student_id]);
-  
+
   return (
     <Card>
       <CardBody hidden={attended === null}>
@@ -112,7 +112,7 @@ const StudentReview = ({
 
             /> */}
             <Icon
-              as={FaUserCircle} 
+              as={FaUserCircle}
               w={50}
               h={50}
               mb={2}

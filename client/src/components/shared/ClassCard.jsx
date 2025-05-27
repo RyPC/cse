@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from "react";
+import { memo, useEffect, useState } from "react";
 
 import {
   Badge,
@@ -12,22 +12,23 @@ import {
 } from "@chakra-ui/react";
 
 import { useLocation } from "react-router-dom";
+
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
 
 export const ClassCard = memo(
-({
-  title,
-  location,
-  date,
-  startTime,
-  endTime,
-  attendeeCount = 0,
-  id,
-  user = null,
-  onClick = null,
-}) => {
+  ({
+    title,
+    location,
+    date,
+    startTime,
+    endTime,
+    attendeeCount = 0,
+    id,
+    user = null,
+    onClick = null,
+  }) => {
     const formattedDate = date ? formatDate(date) : null;
     const formattedStartTime = startTime ? formatTime(startTime) : null;
     const formattedEndTime = endTime ? formatTime(endTime) : null;
@@ -72,7 +73,7 @@ export const ClassCard = memo(
         py={10}
         position="relative"
         cursor="pointer"
-        onClick={handleClick} 
+        onClick={handleClick}
         _hover={{ bg: "gray.100" }}
       >
         <Badge
@@ -111,7 +112,6 @@ export const ClassCard = memo(
               objectFit="contain"
               // transform="rotate(-15deg)"
             />
-
           </Flex>
 
           {/* text */}

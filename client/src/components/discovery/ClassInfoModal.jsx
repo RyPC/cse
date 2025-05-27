@@ -1,11 +1,14 @@
-import { useEffect, useState, memo } from "react";
+import { memo, useEffect, useState } from "react";
 
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
   Card,
+  Divider,
   Flex,
   HStack,
+  IconButton,
   Image,
   List,
   ListIcon,
@@ -17,22 +20,19 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Tag,
   Text,
   VStack,
-  Tag,
-  Divider,
-  IconButton
 } from "@chakra-ui/react";
 
 import { FaPencilAlt, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
-import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
+import { formatDate, formatTime } from "../../utils/formatDateTime";
 import PublishedReviews from "../reviews/classReview";
 import SuccessSignupModal from "./SuccessSignupModal";
-import { formatDate, formatTime } from "../../utils/formatDateTime";
 
 const ClassInfoModal = ({
   // userid,
@@ -72,29 +72,31 @@ const ClassInfoModal = ({
 
   const getTags = async () => {
     const tags_arr = [];
-    const tags = await backend.get(`/class-tags/tags/${id}`)
+    const tags = await backend.get(`/class-tags/tags/${id}`);
     // console.log("TAGS from GETTAGS")
     // console.log(tags.data)
-    for (let i=0; i<tags.data.length; i++) {
+    for (let i = 0; i < tags.data.length; i++) {
       if (!tags_arr.includes(tags.data[i].tag)) {
-        tags_arr.push(tags.data[i].tag)
+        tags_arr.push(tags.data[i].tag);
       }
     }
-    setTags(tags_arr)
-  }
+    setTags(tags_arr);
+  };
 
-  const getTeacherName = async() => {
-    const teacherName = await backend.get(`/classes-taught/instructor/${id}`)
-    console.log("TEACHER'S NAME!")
-    console.log(teacherName.data[0])
-    setTeacherName(teacherName.data[0].firstName + " " + teacherName.data[0].lastName)
-  }
+  const getTeacherName = async () => {
+    const teacherName = await backend.get(`/classes-taught/instructor/${id}`);
+    console.log("TEACHER'S NAME!");
+    console.log(teacherName.data[0]);
+    setTeacherName(
+      teacherName.data[0].firstName + " " + teacherName.data[0].lastName
+    );
+  };
 
-  const getStartTime = async() => {
-    const data = await backend.get(`/scheduled-classes/${id}`)
-    setStartTime(data.data[0].startTime)
-    setEndTime(data.data[0].endTime)
-  }
+  const getStartTime = async () => {
+    const data = await backend.get(`/scheduled-classes/${id}`);
+    setStartTime(data.data[0].startTime);
+    setEndTime(data.data[0].endTime);
+  };
 
   const enrollInClass = async () => {
     const users = await backend.get(`/users/${currentUser.uid}`);
@@ -138,18 +140,18 @@ const ClassInfoModal = ({
     }
   };
 
-  const initClass = async() => {
-    const classData = await backend.get(`/classes/${id}`)
-    setDescription(classData.data[0].description)
-    setCapacity(classData.data[0].capacity)
-    setLevel(classData.data[0].level)
-  }
+  const initClass = async () => {
+    const classData = await backend.get(`/classes/${id}`);
+    setDescription(classData.data[0].description);
+    setCapacity(classData.data[0].capacity);
+    setLevel(classData.data[0].level);
+  };
 
-  const getPerformance = async() => {
-    const performanceData = await backend.get(`/corequisites/${id}`)
-    console.log("performance data")
-    console.log(performanceData.data)
-  }
+  const getPerformance = async () => {
+    const performanceData = await backend.get(`/corequisites/${id}`);
+    console.log("performance data");
+    console.log(performanceData.data);
+  };
 
   useEffect(() => {
     if (isOpenProp) {
@@ -160,7 +162,7 @@ const ClassInfoModal = ({
       getTeacherName();
       getStartTime();
       initClass();
-      getPerformance()
+      getPerformance();
     }
   }, [isOpenProp]);
 
@@ -179,38 +181,60 @@ const ClassInfoModal = ({
         onClose={handleClose}
       >
         <ModalOverlay />
-        <ModalContent
-          paddingRight="5vw"
-        >
-
+        <ModalContent paddingRight="5vw">
           <ModalHeader>
-            <VStack
-              align="start">
-            <IconButton icon={<ArrowBackIcon/>} onClick={handleClose} aria-label="Back" variant="ghost" fontSize={"2xl"} p={4} ml={-4}/>
-            <List>
-              {tags.map((tag, index) => (
-                <Tag key={index} mr={1} mb={1} mt={1} borderRadius={"full"} bg="white" textColor="gray.600" borderColor={"gray.300"} borderWidth={1}>
-                  {tag}
-                </Tag>
-              ))}
-            </List> 
-            <Text justifyContent="center" wordBreak={"break-word"} fontWeight={"bold"}>
-              {title}
-            </Text>
+            <VStack align="start">
+              <IconButton
+                icon={<ArrowBackIcon />}
+                onClick={handleClose}
+                aria-label="Back"
+                variant="ghost"
+                fontSize={"2xl"}
+                p={4}
+                ml={-4}
+              />
+              <List>
+                {tags.map((tag, index) => (
+                  <Tag
+                    key={index}
+                    mr={1}
+                    mb={1}
+                    mt={1}
+                    borderRadius={"full"}
+                    bg="white"
+                    textColor="gray.600"
+                    borderColor={"gray.300"}
+                    borderWidth={1}
+                  >
+                    {tag}
+                  </Tag>
+                ))}
+              </List>
+              <Text
+                justifyContent="center"
+                wordBreak={"break-word"}
+                fontWeight={"bold"}
+              >
+                {title}
+              </Text>
             </VStack>
           </ModalHeader>
           {/* <ModalCloseButton /> */}
           <ModalBody>
-            <Text>Taught by { teacherName ? teacherName : "Unknown" }</Text>
-            <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
-
-            <Divider orientation='horizontal' /> <br />
-
-            <Text color="#553C9A">{formatDate(date)} · {formatTime(startTime)} – {formatTime(endTime)}</Text>
+            <Text>Taught by {teacherName ? teacherName : "Unknown"}</Text>
+            <Text>
+              {description
+                ? `Description: ${description}`
+                : "No description available."}
+            </Text>{" "}
+            <br />
+            <Divider orientation="horizontal" /> <br />
+            <Text color="#553C9A">
+              {formatDate(date)} · {formatTime(startTime)} –{" "}
+              {formatTime(endTime)}
+            </Text>
             <Text>Location: {location}</Text>
-
-            <br/> <Divider orientation='horizontal' /> <br />
-
+            <br /> <Divider orientation="horizontal" /> <br />
             <HStack
               spacing={4}
               width={"100%"}
@@ -224,7 +248,7 @@ const ClassInfoModal = ({
                 <Text>{capacity}</Text>
               </Box>
             </HStack>
-            <br/> <Divider orientation='horizontal' /> <br />
+            <br /> <Divider orientation="horizontal" /> <br />
             <VStack
               spacing={4}
               align="center"
@@ -273,11 +297,13 @@ const ClassInfoModal = ({
             <ModalFooter>
               {role === "student" && (
                 <Button
-                  width = "100%"
-                  p = {7}
-                  bg = "purple.600"
-                  color = "white"
-                  onClick={classSignUp}>Sign up
+                  width="100%"
+                  p={7}
+                  bg="purple.600"
+                  color="white"
+                  onClick={classSignUp}
+                >
+                  Sign up
                 </Button>
               )}
             </ModalFooter>

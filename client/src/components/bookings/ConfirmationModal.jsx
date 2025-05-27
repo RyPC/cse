@@ -9,8 +9,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import CompletedIndicator from "./CompletedIndicator.png";
-
 export const ConfirmationModal = ({ isOpen, onClose, card }) => {
   return (
     <Modal
@@ -31,10 +29,9 @@ export const ConfirmationModal = ({ isOpen, onClose, card }) => {
             marginBottom={"10vh"}
           >
             <VStack marginTop="5rem">
-              <img
-                src={CompletedIndicator}
-                alt="Completed Indicator"
-              />
+              <Box color="purple.600">
+                <MdCheckCircle fontSize={"9rem"} />
+              </Box>
               <Text
                 textAlign={"center"}
                 fontWeight="bold"

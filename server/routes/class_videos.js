@@ -1,4 +1,5 @@
 import express from "express";
+
 import { keysToCamel } from "../common/utils";
 import { db } from "../db/db-pgp";
 
@@ -34,9 +35,10 @@ classVideosRouter.get("/with-tags", async (req, res) => {
 });
 
 classVideosRouter.get("/with-tags/search/:name", async (req, res) => {
-    try {
-      const { name } = req.params;  
-      const data = await db.query(`
+  try {
+    const { name } = req.params;
+    const data = await db.query(
+      `
         SELECT c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
         FROM class_videos c
           LEFT JOIN video_tags v ON v.video_id = c.id
@@ -44,19 +46,23 @@ classVideosRouter.get("/with-tags/search/:name", async (req, res) => {
         WHERE title ILIKE $1
         GROUP BY c.id, c.title, c.s3_url, c.description, c.media_url, c.class_id
         ORDER BY c.id;
-      `, [`%${name}%`]);
-  
-      res.status(200).json(keysToCamel(data));
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
+      `,
+      [`%${name}%`]
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 classVideosRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const data = await db.query(`SELECT * FROM class_videos WHERE id = $1`, [id]);
+    const data = await db.query(`SELECT * FROM class_videos WHERE id = $1`, [
+      id,
+    ]);
 
     res.status(200).json(keysToCamel(data));
   } catch (err) {
@@ -67,7 +73,7 @@ classVideosRouter.get("/:id", async (req, res) => {
 classVideosRouter.post("/", async (req, res) => {
   try {
     const { title, s3Url, description, mediaUrl, classId } = req.body;
-    
+
     const postData = await db.query(
       `INSERT INTO class_videos (title, s3_url, description, media_url, class_id)
         VALUES ($1, $2, $3, $4, $5) RETURNING id, title, s3_url, description, media_url, class_id;`,
@@ -97,29 +103,36 @@ classVideosRouter.put("/:id", async (req, res) => {
       await db.query(`SELECT COUNT(*) FROM class_videos WHERE id = $1`, [id])
     )[0];
 
-    if(parseInt(count) === 1) {
-      const updatedClassVideos = await db.query(query, [title, s3Url, description, mediaUrl, classId, id]);
-      res.status(200).send(keysToCamel(updatedClassVideos)); 
+    if (parseInt(count) === 1) {
+      const updatedClassVideos = await db.query(query, [
+        title,
+        s3Url,
+        description,
+        mediaUrl,
+        classId,
+        id,
+      ]);
+      res.status(200).send(keysToCamel(updatedClassVideos));
     } else {
       res.status(400).send("Video with provided id not found");
     }
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-classVideosRouter.delete('/:id', async (req, res) => {
+classVideosRouter.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    const deletedClassVideos = await db.query(`DELETE FROM class_videos WHERE id = $1 RETURNING *;`, [id]);
+    const deletedClassVideos = await db.query(
+      `DELETE FROM class_videos WHERE id = $1 RETURNING *;`,
+      [id]
+    );
     res.status(200).send(keysToCamel(deletedClassVideos));
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
-  
-
 
 export { classVideosRouter };
