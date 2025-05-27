@@ -45,7 +45,8 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export const Signup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { studentSignup, handleRedirectResult, updateRole, login } = useAuthContext();
+  const { studentSignup, handleRedirectResult, updateRole, login } =
+    useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -70,7 +71,7 @@ export const Signup = () => {
       if (user) {
         login({
           email: data.email,
-          password: data.password
+          password: data.password,
         });
         updateRole();
         navigate("/discovery");

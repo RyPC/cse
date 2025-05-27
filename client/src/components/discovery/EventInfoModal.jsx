@@ -1,8 +1,10 @@
-import { useEffect, useState, memo } from "react";
+import { memo, useEffect, useState } from "react";
 
+import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
+  Divider,
   Flex,
   HStack,
   IconButton,
@@ -17,15 +19,13 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Tag,
   Text,
   VStack,
-  Tag,
-  Divider
 } from "@chakra-ui/react";
 
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { FaCircleCheck, FaCircleExclamation } from "react-icons/fa6";
-import { ArrowBackIcon } from "@chakra-ui/icons";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -84,25 +84,25 @@ const EventInfoModal = ({
   const [endTime, setEndTime] = useState("");
   const [callTime, setCallTime] = useState("");
 
-  const getStartTime = async() => {
-    const data = await backend.get(`/events/${id}`)
-    setStartTime(data.data[0].startTime)
-    setEndTime(data.data[0].endTime)
-    setCallTime(data.data[0].callTime)
-  }
+  const getStartTime = async () => {
+    const data = await backend.get(`/events/${id}`);
+    setStartTime(data.data[0].startTime);
+    setEndTime(data.data[0].endTime);
+    setCallTime(data.data[0].callTime);
+  };
 
   const getTags = async () => {
     const tags_arr = [];
-    const tags = await backend.get(`/event-tags/tags/${id}`)
+    const tags = await backend.get(`/event-tags/tags/${id}`);
     // console.log("TAGS from GETTAGS event")
     // console.log(tags.data)
-    for (let i=0; i<tags.data.length; i++) {
+    for (let i = 0; i < tags.data.length; i++) {
       if (!tags_arr.includes(tags.data[i].tag)) {
-        tags_arr.push(tags.data[i].tag)
+        tags_arr.push(tags.data[i].tag);
       }
     }
-    setTags(tags_arr)
-  }
+    setTags(tags_arr);
+  };
 
   const enrollInEvent = async () => {
     // Check if already checked into event
@@ -146,15 +146,14 @@ const EventInfoModal = ({
     handleClose();
   };
 
-
   useEffect(() => {
     // if (isOpenProp && !imageSrc) {
     //   fetch("https://dog.ceo/api/breeds/image/random") // for fun
     //     .then((res) => res.json())
     //     .then((data) => setImageSrc(data.message));
     // }
-    getTags()
-    getStartTime()
+    getTags();
+    getStartTime();
   }, [isOpenProp]);
 
   return (
@@ -175,27 +174,57 @@ const EventInfoModal = ({
         <ModalContent>
           <ModalHeader>
             <VStack align={"start"}>
-              <IconButton icon={<ArrowBackIcon/>} onClick={handleClose} aria-label="Back" variant="ghost" fontSize={"2xl"} p={4} ml={-4}/>
+              <IconButton
+                icon={<ArrowBackIcon />}
+                onClick={handleClose}
+                aria-label="Back"
+                variant="ghost"
+                fontSize={"2xl"}
+                p={4}
+                ml={-4}
+              />
               <List>
                 {tags.map((tag, index) => (
-                  <Tag key={index} mr={1} mb={1} mt={1} borderRadius={"full"} bg="white" textColor="gray.600" borderColor={"gray.300"} borderWidth={1}>
+                  <Tag
+                    key={index}
+                    mr={1}
+                    mb={1}
+                    mt={1}
+                    borderRadius={"full"}
+                    bg="white"
+                    textColor="gray.600"
+                    borderColor={"gray.300"}
+                    borderWidth={1}
+                  >
                     {tag}
                   </Tag>
                 ))}
-              </List> 
-              <Text justifyContent="center" wordBreak={"break-word"} fontWeight={"bold"}>
+              </List>
+              <Text
+                justifyContent="center"
+                wordBreak={"break-word"}
+                fontWeight={"bold"}
+              >
                 {title}
               </Text>
             </VStack>
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>{description ? `Description: ${description}` : "No description available."}</Text> <br />
-            <Divider orientation='horizontal' /> <br /> 
-            <Text color="#553C9A">{formatDate(date)} · {formatTime(startTime)} – {formatTime(endTime)}</Text>
+            <Text>
+              {description
+                ? `Description: ${description}`
+                : "No description available."}
+            </Text>{" "}
+            <br />
+            <Divider orientation="horizontal" /> <br />
+            <Text color="#553C9A">
+              {formatDate(date)} · {formatTime(startTime)} –{" "}
+              {formatTime(endTime)}
+            </Text>
             <Text>Call Time: {formatTime(callTime)}</Text>
-            <Text>Location: {location}</Text>     
-            <br /> <Divider orientation='horizontal' /> <br /> 
+            <Text>Location: {location}</Text>
+            <br /> <Divider orientation="horizontal" /> <br />
             <VStack
               spacing={4}
               align="center"
@@ -213,7 +242,8 @@ const EventInfoModal = ({
                   <Text>{capacity}</Text>
                 </Box>
               </HStack>
-              <br/><Divider orientation='horizontal' />
+              <br />
+              <Divider orientation="horizontal" />
               <HStack width="100%">
                 {corequisites && corequisites.length > 0 && (
                   <Box
@@ -245,10 +275,10 @@ const EventInfoModal = ({
             <ModalFooter>
               <Flex justify="center">
                 <Button
-                  width = "100%"
-                  p = {7}
-                  bg = "purple.600" 
-                  color = "white"
+                  width="100%"
+                  p={7}
+                  bg="purple.600"
+                  color="white"
                   onClick={eventSignUp}
                 >
                   Sign Up

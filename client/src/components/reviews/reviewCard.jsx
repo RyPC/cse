@@ -12,9 +12,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-import { FaStar } from "react-icons/fa6";
-
 import { FaUserCircle } from "react-icons/fa";
+import { FaStar } from "react-icons/fa6";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -47,13 +46,13 @@ const ReviewCard = ({
     <>
       <CardHeader>
         <HStack alignItems={"center"}>
-            <Icon
-              as={FaUserCircle} 
-              w={45}
-              h={45}
-              mb={2}
-              color="gray.500"
-            />
+          <Icon
+            as={FaUserCircle}
+            w={45}
+            h={45}
+            mb={2}
+            color="gray.500"
+          />
           <Text mb={2}>
             {student?.firstName} {student?.lastName}
           </Text>

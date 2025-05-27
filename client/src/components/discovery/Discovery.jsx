@@ -1,19 +1,13 @@
 import { useEffect, useState } from "react";
 
-import {
-  Box,
-  Button,
-  Flex,
-  VStack,
-} from "@chakra-ui/react";
-
+import { Box, Button, Flex, VStack } from "@chakra-ui/react";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
+import { SearchBar } from "../searchbar/SearchBar";
 import { ClassCard } from "../shared/ClassCard";
 import { EventCard } from "../shared/EventCard";
-import { SearchBar } from "../searchbar/SearchBar";
 
 export const Discovery = () => {
   // Active Tab Logic
@@ -54,7 +48,9 @@ export const Discovery = () => {
     const fetchData = async () => {
       // Fetch and Store Classes Information
       try {
-        const response = await backend.get(role !== 'student' ? "/classes/scheduled" : "/classes/published");
+        const response = await backend.get(
+          role !== "student" ? "/classes/scheduled" : "/classes/published"
+        );
         console.log("Classes:", response.data);
         setClasses(response.data);
       } catch (error) {
@@ -63,7 +59,9 @@ export const Discovery = () => {
 
       // Fetch and Store Events Information
       try {
-        const response = await backend.get(role !== 'student' ? "/events" : "/events/published");
+        const response = await backend.get(
+          role !== "student" ? "/events" : "/events/published"
+        );
         setEvents(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -98,7 +96,7 @@ export const Discovery = () => {
   // take string as search query
   const searchEvents = async (query) => {
     try {
-      if (role === 'student') {
+      if (role === "student") {
         const res = await backend.get(
           query ? `/events/search/published/${query}` : "/events/published"
         );
@@ -116,7 +114,7 @@ export const Discovery = () => {
 
   const searchClasses = async (query) => {
     try {
-      if (role === 'student') {
+      if (role === "student") {
         const res = await backend.get(
           query ? `/classes/search/published/${query}` : "/classes/scheduled"
         );
@@ -145,9 +143,9 @@ export const Discovery = () => {
     if (lastToggledTag === null) {
       return;
     }
-  
+
     const active = tagFilter[lastToggledTag];
-  
+
     if (active) {
       fetchEventsByTag(lastToggledTag);
     } else {
@@ -167,9 +165,9 @@ export const Discovery = () => {
     if (lastToggledTag === null) {
       return;
     }
-  
+
     const active = tagFilter[lastToggledTag];
-  
+
     if (active) {
       fetchClassesByTag(lastToggledTag);
     } else {
@@ -214,7 +212,7 @@ export const Discovery = () => {
     } catch (error) {
       console.error("Error fetching all events:", error);
     }
-  }
+  };
 
   // console.log(classes)
   return (
@@ -226,7 +224,10 @@ export const Discovery = () => {
         my={5}
         mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
       >
-        <Box width="100%" px={2}>
+        <Box
+          width="100%"
+          px={2}
+        >
           <Flex
             gap="5"
             justify="center"
@@ -273,11 +274,18 @@ export const Discovery = () => {
             }}
             tags={tags}
             tagFilter={tagFilter}
-            onTag={activeTab === "events" ? handleFilterToggle : handleClassFilterToggle}
+            onTag={
+              activeTab === "events"
+                ? handleFilterToggle
+                : handleClassFilterToggle
+            }
           />
         </Box>
 
-        <Box my="14px" width={"90%"}>
+        <Box
+          my="14px"
+          width={"90%"}
+        >
           <Flex
             display={activeTab === "events" ? "none" : "flex"}
             align="center"
@@ -334,7 +342,7 @@ export const Discovery = () => {
           </Flex>
         </Box>
       </VStack>
-      <Navbar/>
+      <Navbar />
     </Box>
   );
 };

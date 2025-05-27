@@ -20,8 +20,8 @@ interface ArticleRequest {
 }
 
 articlesRouter.get("/with-tags", async (req, res) => {
-    try {
-      const data = await db.query(`
+  try {
+    const data = await db.query(`
         SELECT a.id, a.s3_url, a.description, a.media_url, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
         FROM articles a
           LEFT JOIN article_tags av ON av.article_id = a.id
@@ -29,11 +29,11 @@ articlesRouter.get("/with-tags", async (req, res) => {
         GROUP BY a.id, a.s3_url, a.description, a.media_url
         ORDER BY a.id;
       `);
-  
-      res.status(200).json(keysToCamel(data));
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 // GET /articles/:id
@@ -68,9 +68,10 @@ articlesRouter.get("/", async (req, res) => {
 
 // Articles search functionality
 articlesRouter.get("/with-tags/search/:name", async (req, res) => {
-    try {
-      const { name } = req.params;  
-      const data = await db.query(`
+  try {
+    const { name } = req.params;
+    const data = await db.query(
+      `
         SELECT a.id, a.s3_url, a.description, a.media_url, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
         FROM articles a
           LEFT JOIN article_tags g ON g.article_id = a.id
@@ -78,12 +79,14 @@ articlesRouter.get("/with-tags/search/:name", async (req, res) => {
         WHERE a.description ILIKE $1
         GROUP BY a.id, a.s3_url, a.description, a.media_url
         ORDER BY a.id;
-      `, [`%${name}%`]);
-  
-      res.status(200).json(keysToCamel(data));
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
+      `,
+      [`%${name}%`]
+    );
+
+    res.status(200).json(keysToCamel(data));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 // POST /articles

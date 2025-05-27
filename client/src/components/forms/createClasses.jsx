@@ -76,8 +76,7 @@ export const CreateClassForm = memo(
 
     const validationSchema = {
       title: !title,
-      capacity:
-        capacity && (capacity < 0 || capacity > 2147483647),
+      capacity: capacity && (capacity < 0 || capacity > 2147483647),
     };
     const validateForm = () => {
       if (validationSchema.title) {
@@ -108,7 +107,8 @@ export const CreateClassForm = memo(
         location: location ?? "",
         description: description ?? "",
         level: level ?? "",
-        capacity: capacity === "" ? 0 : Math.min(parseInt(capacity), 2147483647),
+        capacity:
+          capacity === "" ? 0 : Math.min(parseInt(capacity), 2147483647),
         classType: classType ?? "",
         performance: performance ?? "",
         isDraft,
@@ -128,8 +128,9 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
-        await backend.put(`/corequisites/${modalData.classId}`+`/${performance}`)
-        
+        await backend.put(
+          `/corequisites/${modalData.classId}` + `/${performance}`
+        );
 
         // Add teacher to classes-taught on form post
         const res = await backend.post(
@@ -226,7 +227,7 @@ export const CreateClassForm = memo(
         );
         console.log("Added teacher to classes-taught:", res);
 
-        await backend.put(`/corequisites/${classId}`+`/${performance}`)
+        await backend.put(`/corequisites/${classId}` + `/${performance}`);
         for (const classDate of classDates) {
           try {
             // const response = await backend.post("/classes", classBody);
@@ -306,11 +307,16 @@ export const CreateClassForm = memo(
             }}
           >
             <FormControl isInvalid={isDraft && validationSchema.title}>
-              <FormLabel id="title" fontWeight="bold">Class Title</FormLabel>
+              <FormLabel
+                id="title"
+                fontWeight="bold"
+              >
+                Class Title
+              </FormLabel>
               <Input
-                placeholder = "Class Title"
-                _placeholder={{ color: 'gray.400' }}
-                border = '1px'
+                placeholder="Class Title"
+                _placeholder={{ color: "gray.400" }}
+                border="1px"
                 borderColor="gray.200"
                 boxShadow="sm"
                 type="text"
@@ -319,7 +325,6 @@ export const CreateClassForm = memo(
                 onChange={(e) => setTitle(e.target.value)}
                 bg="white"
                 color="black"
-                
               />
               {isDraft && validationSchema.title && (
                 <FormHelperText color="red.500">
@@ -331,9 +336,9 @@ export const CreateClassForm = memo(
             <FormControl mt={3}>
               <FormLabel fontWeight="bold">Location</FormLabel>
               <Input
-                placeholder = "Location"
-                _placeholder={{ color: 'gray.400' }}
-                border = '1px'
+                placeholder="Location"
+                _placeholder={{ color: "gray.400" }}
+                border="1px"
                 borderColor="gray.200"
                 type="text"
                 required
@@ -362,12 +367,12 @@ export const CreateClassForm = memo(
                   color={date === "" ? "gray.400" : "black"}
                   boxShadow="sm"
                   sx={{
-                    '&::-webkit-calendar-picker-indicator': {
-                      backgroundColor: 'gray.100',
-                      padding: '2px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }
+                    "&::-webkit-calendar-picker-indicator": {
+                      backgroundColor: "gray.100",
+                      padding: "2px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    },
                   }}
                 />
               </FormControl>
@@ -376,12 +381,12 @@ export const CreateClassForm = memo(
                 <FormLabel fontWeight="bold">End Date</FormLabel>
                 <Input
                   sx={{
-                    '&::-webkit-calendar-picker-indicator': {
-                      backgroundColor: 'gray.100',
-                      padding: '2px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }
+                    "&::-webkit-calendar-picker-indicator": {
+                      backgroundColor: "gray.100",
+                      padding: "2px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    },
                   }}
                   border="1px"
                   borderColor="gray.400"
@@ -451,7 +456,13 @@ export const CreateClassForm = memo(
                   },
                 }}
               >
-                <option value="" disabled hidden>Recurrence</option>
+                <option
+                  value=""
+                  disabled
+                  hidden
+                >
+                  Recurrence
+                </option>
                 <option value="none">None</option>
                 <option value="weekly">Weekly</option>
                 <option value="biweekly">Bi-Weekly</option>
@@ -462,7 +473,7 @@ export const CreateClassForm = memo(
             <FormControl mt={3}>
               <FormLabel fontWeight="bold">Instructor</FormLabel>
               <Select
-                border = '1px'
+                border="1px"
                 borderColor="gray.200"
                 boxShadow="sm"
                 type="text"
@@ -481,11 +492,18 @@ export const CreateClassForm = memo(
                   },
                 }}
               >
-                <option value="" disabled hidden>
+                <option
+                  value=""
+                  disabled
+                  hidden
+                >
                   Instructor
                 </option>
                 {teachers.map((teacher) => (
-                  <option key={teacher.id} value={teacher.id}>
+                  <option
+                    key={teacher.id}
+                    value={teacher.id}
+                  >
                     {teacher.firstName} {teacher.lastName}
                   </option>
                 ))}
@@ -495,9 +513,9 @@ export const CreateClassForm = memo(
             <FormControl mt={3}>
               <FormLabel fontWeight="bold">Description</FormLabel>
               <Textarea
-                placeholder = "Description"
-                _placeholder={{ color: 'gray.400' }}
-                border = '1px'
+                placeholder="Description"
+                _placeholder={{ color: "gray.400" }}
+                border="1px"
                 borderColor="gray.200"
                 boxShadow="sm"
                 value={description}
@@ -506,14 +524,23 @@ export const CreateClassForm = memo(
                 color="black"
               />
             </FormControl>
-            <HStack  mt={3}>
+            <HStack mt={3}>
               <FormControl isInvalid={isDraft && validationSchema.capacity}>
-                <FormLabel id="capacity" fontWeight={"bold"}>Capacity</FormLabel>
-                <NumberInput min={0} max={2147483647} clampValueOnBlur>
+                <FormLabel
+                  id="capacity"
+                  fontWeight={"bold"}
+                >
+                  Capacity
+                </FormLabel>
+                <NumberInput
+                  min={0}
+                  max={2147483647}
+                  clampValueOnBlur
+                >
                   <NumberInputField
                     required
-                    placeholder = "10"
-                    _placeholder={{ color: 'gray.400' }}
+                    placeholder="10"
+                    _placeholder={{ color: "gray.400" }}
                     value={capacity}
                     onChange={(e) => setCapacity(e.target.value)}
                     bg="white"
@@ -526,34 +553,40 @@ export const CreateClassForm = memo(
               </FormControl>
               <FormControl>
                 <FormLabel fontWeight="bold">Level</FormLabel>
-                  <Select
-                    border = '1px'
-                    borderColor="gray.200"
-                    boxShadow="sm"
-                    required
-                    value={level}
-                    onChange={(e) => setLevel(e.target.value)}
-                    bg="white"
-                    color={level === "" ? "gray.400" : "black"}
-                    sx={{
-                      "& option": {
-                        bg: "white",
-                        color: "black",
-                      },
-                      "& option[disabled]": {
-                        color: "gray.400",
-                  },
-                    }}
+                <Select
+                  border="1px"
+                  borderColor="gray.200"
+                  boxShadow="sm"
+                  required
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  bg="white"
+                  color={level === "" ? "gray.400" : "black"}
+                  sx={{
+                    "& option": {
+                      bg: "white",
+                      color: "black",
+                    },
+                    "& option[disabled]": {
+                      color: "gray.400",
+                    },
+                  }}
+                >
+                  <option
+                    value=""
+                    disabled
+                    hidden
                   >
-                    <option value="" disabled hidden>Level</option>
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                  </Select>
+                    Level
+                  </option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </Select>
               </FormControl>
             </HStack>
 
-            <FormControl  mt={3}>
+            <FormControl mt={3}>
               <FormLabel fontWeight="bold">Class Type</FormLabel>
               <Select
                 required
@@ -568,7 +601,11 @@ export const CreateClassForm = memo(
                   },
                 }}
               >
-                <option value="" disabled hidden>
+                <option
+                  value=""
+                  disabled
+                  hidden
+                >
                   Class Type
                 </option>
                 {tags
@@ -584,10 +621,10 @@ export const CreateClassForm = memo(
               </Select>
             </FormControl>
 
-            <FormControl  mt={3}>
+            <FormControl mt={3}>
               <FormLabel fontWeight="bold">Performances</FormLabel>
               <Select
-                border = '1px'
+                border="1px"
                 borderColor="gray.200"
                 boxShadow="sm"
                 required
@@ -628,7 +665,6 @@ export const CreateClassForm = memo(
               </Select>
             </FormControl>
 
-
             <Stack
               direction="row"
               justifyContent="space-between"
@@ -664,7 +700,6 @@ export const CreateClassForm = memo(
                 _hover={{ bg: "#5D2E8C" }}
                 onClick={() => {
                   setIsDraft(false);
-
                 }}
               >
                 Publish

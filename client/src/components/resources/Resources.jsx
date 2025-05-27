@@ -22,9 +22,9 @@ import { IoSearch } from "react-icons/io5";
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { Navbar } from "../navbar/Navbar";
+import { SearchBar } from "../searchbar/SearchBar";
 import { NewsCard } from "./NewsCard";
 import { ControllerModal } from "./ResourceFlow/ResourceFlowController";
-import { SearchBar } from "../searchbar/SearchBar";
 import { UploadComponent } from "./UploadComponent";
 import { VideoCard } from "./VideoCard";
 
@@ -144,7 +144,9 @@ export const Resources = () => {
   const handleSearch = async (query) => {
     try {
       if (tabIndex === 0) {
-        const res = await backend.get(`/classes-videos/with-tags/search/${query}`);
+        const res = await backend.get(
+          `/classes-videos/with-tags/search/${query}`
+        );
         setVideos(res.data);
       } else if (tabIndex === 1) {
         const res = await backend.get(`/articles/with-tags/search/${query}`);
@@ -153,7 +155,7 @@ export const Resources = () => {
     } catch (err) {
       console.log("Error fetching search:", err);
     }
-  }
+  };
 
   useEffect(() => {
     if (tabIndex == 0) {
@@ -164,19 +166,26 @@ export const Resources = () => {
       searchArticles();
     }
     fetchNews(); // Fetch news initially
-    fetchTags();   // Fetch tags initially
+    fetchTags(); // Fetch tags initially
   }, [tabIndex]);
 
   return (
-    <Box position="relative" pb="70px" minHeight="100vh">
-    <Flex direction="column" p={4}>
-      <SearchBar
-        onSearch={handleSearch}
-        tags={tags}
-        tagFilter={tagFilter}
-        backend={backend}
-        onTag={handleFilterToggle}
-      />
+    <Box
+      position="relative"
+      pb="70px"
+      minHeight="100vh"
+    >
+      <Flex
+        direction="column"
+        p={4}
+      >
+        <SearchBar
+          onSearch={handleSearch}
+          tags={tags}
+          tagFilter={tagFilter}
+          backend={backend}
+          onTag={handleFilterToggle}
+        />
 
         {/* place Videos and News cards into separate tabs */}
         <Tabs

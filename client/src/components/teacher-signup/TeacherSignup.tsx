@@ -22,23 +22,26 @@ import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { EmailTemplate } from "../signup/EmailTemplate";
 
-const signupSchema = z.object({
-  firstName: z.string().min(1, "Field Cannot Be Empty"),
-  lastName: z.string().min(1, "Field Cannot Be Empty"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-  repeatPassword: z.string().min(6)
-}).refine((data) => data.password === data.repeatPassword, {
-  message: "Passwords must match.",
-  path: ["repeatPassword"],
-});
+const signupSchema = z
+  .object({
+    firstName: z.string().min(1, "Field Cannot Be Empty"),
+    lastName: z.string().min(1, "Field Cannot Be Empty"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+    repeatPassword: z.string().min(6),
+  })
+  .refine((data) => data.password === data.repeatPassword, {
+    message: "Passwords must match.",
+    path: ["repeatPassword"],
+  });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 export const TeacherSignup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { teacherSignup, handleRedirectResult, updateDisplayName } = useAuthContext();
+  const { teacherSignup, handleRedirectResult, updateDisplayName } =
+    useAuthContext();
   const { backend } = useBackendContext();
 
   const {

@@ -31,6 +31,7 @@ import {
 } from "@chakra-ui/react";
 
 import { calcLength } from "framer-motion";
+import { AiOutlineArrowLeft } from "react-icons/ai";
 import { BiSolidEdit } from "react-icons/bi";
 import { BsChevronLeft } from "react-icons/bs";
 import {
@@ -52,7 +53,6 @@ import { CreateEvent } from "../../forms/createEvent";
 import { EventRSVP } from "../../rsvp/eventRsvp";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
 import { QRCode } from "./qrcode/QRCode.jsx";
-import { AiOutlineArrowLeft } from  "react-icons/ai";
 
 function TeacherEventViewModal({
   isOpenProp,
@@ -91,7 +91,6 @@ function TeacherEventViewModal({
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
-
 
   // disclosure for rsvp
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -187,8 +186,6 @@ function TeacherEventViewModal({
     }
   }, [imageSrc, isOpenProp]);
 
-
-
   return (
     <>
       <SuccessSignupModal
@@ -273,14 +270,17 @@ function TeacherEventViewModal({
         >
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader bg = "gray.50">
+            <ModalHeader bg="gray.50">
               <HStack justify="space-between">
-                <AiOutlineArrowLeft cursor="pointer" onClick={handleClose} />
+                <AiOutlineArrowLeft
+                  cursor="pointer"
+                  onClick={handleClose}
+                />
                 <Menu>
                   <MenuButton
-                    bg = "gray.50"
+                    bg="gray.50"
                     as={IconButton}
-                    icon={<MdMoreHoriz/>}
+                    icon={<MdMoreHoriz />}
                   />
                   <MenuList
                     backgroundColor="gray.100"
@@ -331,18 +331,20 @@ function TeacherEventViewModal({
                   boxShadow="md"
                   borderRadius="lg"
                 >
-                 
-                    <Center>
-                      <QRCode
-                        id={id}
-                        type="Event"
-                      ></QRCode>
-                    </Center>
+                  <Center>
+                    <QRCode
+                      id={id}
+                      type="Event"
+                    ></QRCode>
+                  </Center>
                   <Box
                     width="100%"
                     align="center"
                   >
-                    <Text fontSize = "1.5rem" fontWeight="bold">
+                    <Text
+                      fontSize="1.5rem"
+                      fontWeight="bold"
+                    >
                       {" "}
                       {rsvpnum ? rsvpnum : 0} People Enrolled
                     </Text>
@@ -370,46 +372,54 @@ function TeacherEventViewModal({
                 spacing={4}
                 align="center"
               >
-                <Box 
+                <Box
                   display="flex"
                   justifyContent="flex-start"
                   width="100%"
                 >
-                  <Text 
+                  <Text
                     fontSize="1.8rem"
                     fontWeight="bold"
                   >
                     {title}
                   </Text>
                 </Box>
-                <Box 
+                <Box
+                  display="flex"
+                  justifyContent="flex-start"
+                  width="100%"
+                ></Box>
+                <Box
                   display="flex"
                   justifyContent="flex-start"
                   width="100%"
                 >
+                  <Text fontSize="16px">{description}</Text>
                 </Box>
-                <Box 
-                  display="flex"
-                  justifyContent="flex-start"
-                  width="100%"
-                >
-                  <Text fontSize="16px"
-                  >
-                    {description}
-                  </Text>
-                </Box>
-                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+                <Divider
+                  borderColor="gray.400"
+                  borderWidth="1px"
+                  my={4}
+                />
                 <Box width="100%">
-                  <Text color='purple.700' fontWeight="bold" fontSize="16px">
+                  <Text
+                    color="purple.700"
+                    fontWeight="bold"
+                    fontSize="16px"
+                  >
                     {formattedDate} ·{" "}
                     {formattedStartTime ? formattedStartTime : "TBD"} -{" "}
                     {formattedEndTime ? formattedEndTime : "TBD"}
                   </Text>
                 </Box>
                 <Box width="100%">
-                    <Text fontSize="16px">{location ? location : "N/A"}</Text>
+                  <Text fontSize="16px">{location ? location : "N/A"}</Text>
                 </Box>
-                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+                <Divider
+                  borderColor="gray.400"
+                  borderWidth="1px"
+                  my={4}
+                />
                 <Box width="100%">
                   <Text
                     fontWeight="bold"
@@ -419,7 +429,11 @@ function TeacherEventViewModal({
                   </Text>
                   <Text>{formattedCallTime ? formattedCallTime : "TBD"}</Text>
                 </Box>
-                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+                <Divider
+                  borderColor="gray.400"
+                  borderWidth="1px"
+                  my={4}
+                />
 
                 <HStack
                   spacing={4}
@@ -445,7 +459,11 @@ function TeacherEventViewModal({
                     <Text>{level ? level : "TBD"}</Text>
                   </Box>
                 </HStack>
-                <Divider borderColor="gray.400" borderWidth="1px" my={4} />
+                <Divider
+                  borderColor="gray.400"
+                  borderWidth="1px"
+                  my={4}
+                />
 
                 <HStack width={"100%"}>
                   <Box>
@@ -467,7 +485,10 @@ function TeacherEventViewModal({
                       >
                         Event Prerequisites
                       </Text>
-                      <Text color = "gray.600">We recommend taking these classes before enrolling in this event</Text>
+                      <Text color="gray.600">
+                        We recommend taking these classes before enrolling in
+                        this event
+                      </Text>
                       {!corequisites || corequisites.length === 0 ? (
                         <Text>No corequisites for this event</Text>
                       ) : (

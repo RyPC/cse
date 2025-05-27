@@ -22,9 +22,9 @@ import {
 } from "@chakra-ui/react";
 
 import { debounce } from "lodash";
+import { FaRegBell } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import { PiArrowsDownUpFill } from "react-icons/pi";
-import { FaRegBell } from "react-icons/fa";
 import { SlArrowLeft, SlArrowRight } from "react-icons/sl";
 import { useNavigate } from "react-router-dom";
 
@@ -152,7 +152,15 @@ export const StudentDashboard = () => {
           ref={notifRef}
           src="../bell.png"
         /> */}
-        <IconButton icon={<FaRegBell/>} size="lg" mt="-2" onClick={onOpen} ref={notifRef} aria-label="Notifications" bg="white"/>
+        <IconButton
+          icon={<FaRegBell />}
+          size="lg"
+          mt="-2"
+          onClick={onOpen}
+          ref={notifRef}
+          aria-label="Notifications"
+          bg="white"
+        />
         <NotificationPanel
           isOpen={isOpen}
           onClose={onClose}
