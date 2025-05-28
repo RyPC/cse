@@ -16,8 +16,7 @@ const Logout = ({ cookies }) => {
 
   const handleLogout = async () => {
     try {
-      await logout("/login", navigate, cookies);
-      navigate("/signup");
+      await logout("/landing", navigate, cookies);
     } catch (err) {
       setErrorMessage(err.message);
     }
