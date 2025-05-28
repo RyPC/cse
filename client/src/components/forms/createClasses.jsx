@@ -651,7 +651,7 @@ export const CreateClassForm = memo(
                   Performances
                 </option>
                 <option
-                  key={0}
+                  key={1738}
                   value={-1}
                 >
                   No Performance Required
