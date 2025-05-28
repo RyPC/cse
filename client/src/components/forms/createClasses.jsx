@@ -501,7 +501,7 @@ export const CreateClassForm = memo(
                   disabled
                   hidden
                 >
-                  Instructor
+                  Select Instructor
                 </option>
                 {teachers.map((teacher) => (
                   <option
@@ -648,7 +648,7 @@ export const CreateClassForm = memo(
                   disabled
                   hidden
                 >
-                  Performances
+                  Select Performance
                 </option>
                 <option
                   key={1738}

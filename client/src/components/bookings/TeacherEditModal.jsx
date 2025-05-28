@@ -115,12 +115,14 @@ export const TeacherEditModal = ({
       await backend.put(`/classes/${classData.id}`, updatedData);
       console.log("Updating class", classData.id, updatedData);
       await backend.delete(`/corequisites/class/${classData.id}`);
-      await backend.put(`/classes-taught`, {
-        classId: classData.id,
-        teacherId: selectedInstructor,
-      });
+      if (selectedInstructor && parseInt(selectedInstructor) !== -1) {
+        await backend.put(`/classes-taught`, {
+          classId: classData.id,
+          teacherId: selectedInstructor,
+        });
+      }
       console.log("Updating instructor", classData.id, selectedInstructor);
-      if (performanceId) {
+      if (performanceId && parseInt(performanceId) !== -1) {
         await backend.put(
           `/corequisites/${classData.id}/${performanceId}`,
           updatedData
@@ -400,8 +402,20 @@ export const TeacherEditModal = ({
                 onChange={(e) => setSelectedInstructor(e.target.value)}
                 maxWidth="300px"
                 bg="white"
-                color="black"
+                color={selectedInstructor === "" ? "gray.400" : "black"}
+                sx={{
+                  "& option": {
+                    color: "black",
+                    backgroundColor: "white",
+                  },
+                  "& option[disabled]": {
+                    color: "gray.400",
+                  },
+                }}
               >
+                <option value="-1" key="-1" disabled hidden>
+                  Select Teacher
+                </option>
                 {teachers.map((teacher) => (
                   <option
                     key={teacher.id}
