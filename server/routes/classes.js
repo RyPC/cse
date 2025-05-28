@@ -146,6 +146,23 @@ classesRouter.get("/corequisites/:classid/:userid", async (req, res) => {
   }
 });
 
+classesRouter.get("/corequisites/:classid", async (req, res) => {
+  try {
+    const { classid } = req.params;
+    const corequisites = await db.query(
+      `SELECT e.*
+        FROM events e
+        JOIN corequisites co ON e.id = co.event_id
+        WHERE co.class_id = $1;`,
+      [classid]
+    );
+
+    res.status(200).json(keysToCamel(corequisites));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 classesRouter.delete("/corequisites/:id", async (req, res) => {
   try {
     const { id } = req.params;

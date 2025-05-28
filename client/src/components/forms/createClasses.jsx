@@ -11,11 +11,8 @@ import {
   Input,
   NumberInput,
   NumberInputField,
-  Radio,
-  RadioGroup,
   Select,
   Stack,
-  Text,
   Textarea,
   useDisclosure,
   VStack,
@@ -128,9 +125,12 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
-        await backend.put(
-          `/corequisites/${modalData.classId}` + `/${performance}`
-        );
+
+        if (parseInt(performance) !== -1) {
+          await backend.put(
+            `/corequisites/${modalData.classId}` + `/${performance}`
+          );
+        }
 
         // Add teacher to classes-taught on form post
         const res = await backend.post(
@@ -227,7 +227,11 @@ export const CreateClassForm = memo(
         );
         console.log("Added teacher to classes-taught:", res);
 
-        await backend.put(`/corequisites/${classId}` + `/${performance}`);
+        // Add prerequisite if performance is selected
+        if (parseInt(performance) !== -1) {
+          await backend.put(`/corequisites/${classId}` + `/${performance}`);
+        }
+
         for (const classDate of classDates) {
           try {
             // const response = await backend.post("/classes", classBody);
@@ -497,7 +501,7 @@ export const CreateClassForm = memo(
                   disabled
                   hidden
                 >
-                  Instructor
+                  Select Instructor
                 </option>
                 {teachers.map((teacher) => (
                   <option
@@ -631,7 +635,7 @@ export const CreateClassForm = memo(
                 value={performance}
                 onChange={(e) => setPerformance(e.target.value)}
                 bg="white"
-                color={performance === -1 ? "gray.400" : "black"}
+                color={parseInt(performance) === -1 ? "gray.400" : "black"}
                 sx={{
                   "& option": {
                     bg: "white",
@@ -644,11 +648,11 @@ export const CreateClassForm = memo(
                   disabled
                   hidden
                 >
-                  Performances
+                  Select Performance
                 </option>
                 <option
-                  key={null}
-                  value={null} //pretty sure this is what's causing it to error? POST says this value is invalid
+                  key={1738}
+                  value={-1}
                 >
                   No Performance Required
                 </option>
