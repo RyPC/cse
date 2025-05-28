@@ -125,7 +125,7 @@ export const CreateClassForm = memo(
             is_recurring: recurrencePattern !== "none",
           })
           .catch((error) => console.log(error));
-        
+
         if (parseInt(performance) !== -1) {
           await backend.put(
             `/corequisites/${modalData.classId}` + `/${performance}`
