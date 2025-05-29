@@ -14,9 +14,10 @@ import {
   Icon,
   Text,
   Textarea,
+  useToken,
+  VStack,
 } from "@chakra-ui/react";
 
-import { color } from "framer-motion";
 import { FaUserCircle } from "react-icons/fa";
 import { FaStar } from "react-icons/fa6";
 
@@ -37,6 +38,8 @@ const StudentReview = ({
   const [starRating, setStarRating] = useState(rating ?? 0);
   const [review, setReview] = useState(reviewText ?? "");
   const [attended, setAttended] = useState(null);
+  const [purpleHex] = useToken("colors", ["purple.600"]);
+  const [greyHex] = useToken("colors", ["gray.600"]);
 
   const [stars, setStars] = useState(Array(5).fill(0));
 
@@ -55,8 +58,8 @@ const StudentReview = ({
     setStarRating(value);
   };
   const colors = {
-    purple: "purple.600",
-    grey: "a9a9a9",
+    purple: purpleHex,
+    grey: greyHex,
   };
 
   const isError = review === "" || starRating === 0;
@@ -120,38 +123,45 @@ const StudentReview = ({
             />
             <Text mb={2}>{displayName}</Text>
           </HStack>
-          <HStack>
-            {stars.map((_, index) => (
-              <FaStar
-                key={index}
-                size={24}
-                value={starRating}
-                onChange={(e) => setStarRating(e.target.value)}
-                color={
-                  (hoverValue || starRating) > index
-                    ? colors.purple
-                    : colors.grey
-                }
-                onClick={() => handleClickStar(index + 1)}
-                onMouseOver={() => handleMouseOverStar(index + 1)}
-                onMouseLeave={() => handleMouseLeaveStar}
-              />
-            ))}
-          </HStack>
 
-          <Textarea
-            minH={100}
-            placeholder="Type Here..."
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-          />
-          <Button
-            onClick={postReview}
-            colorScheme={isError ? colors.purple : "blue"}
-            disabled={isError}
+          <VStack
+            spacing={2}
+            align="flex-start"
           >
-            {editMode ? "Save" : "Post Review"}
-          </Button>
+            <HStack>
+              {stars.map((_, index) => (
+                <FaStar
+                  key={index}
+                  size={24}
+                  value={starRating}
+                  onChange={(e) => setStarRating(e.target.value)}
+                  color={
+                    (hoverValue || starRating) > index
+                      ? colors.purple
+                      : colors.grey
+                  }
+                  cursor="pointer"
+                  onClick={() => handleClickStar(index + 1)}
+                  onMouseOver={() => handleMouseOverStar(index + 1)}
+                  onMouseLeave={() => handleMouseLeaveStar}
+                />
+              ))}
+            </HStack>
+            <Textarea
+              minH={100}
+              placeholder="Type Here..."
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+            />
+            <Button
+              onClick={postReview}
+              width={{ base: "100%", md: "fit-content" }}
+              colorScheme={"purple"}
+              isDisabled={isError}
+            >
+              {editMode ? "Save" : "Submit"}
+            </Button>
+          </VStack>
         </FormControl>
       </CardBody>
     </Card>
