@@ -63,8 +63,8 @@ export const Discovery = () => {
         const tagsResults = await Promise.all(tagsPromises);
         console.log("Tags Results:", tagsResults);
         const classTags = {};
-        tagsResults.forEach((res, index) => {
-          classTags[res.data[0]?.classId] = tagsResults[index].data.map(
+        response.data.forEach((classItem, index) => {
+          classTags[classItem.id] = tagsResults[index].data.map(
             (tag) => tag.tagId
           );
         });
@@ -87,10 +87,9 @@ export const Discovery = () => {
         const tagsResults = await Promise.all(tagsPromises);
         console.log("Tags Results for Events:", tagsResults);
         const eventTags = {};
-        tagsResults.forEach((res, index) => {
-          console.log(res);
-          eventTags[res.data[0]?.eventId] = tagsResults[index].data.map(
-            (tag) => tag.id
+        response.data.forEach((eventItem, index) => {
+          eventTags[eventItem.id] = tagsResults[index].data.map(
+            (tag) => tag.tagId
           );
         });
         console.log("Event Tags Map:", eventTags);
