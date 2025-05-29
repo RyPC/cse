@@ -30,7 +30,7 @@ export const ClassCard = memo(
     id,
     user = null,
     onClick = null,
-    tags,
+    tags = [],
   }) => {
     const formattedDate = date ? formatDate(date) : null;
     const formattedStartTime = startTime ? formatTime(startTime) : null;
@@ -43,6 +43,7 @@ export const ClassCard = memo(
 
     const getIcon = () => {
       const iconSize = 50;
+      // console.log("tags", tags);
       switch (tags[0]) {
         case 1:
           return <FaMusic size={iconSize} />;

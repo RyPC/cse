@@ -35,6 +35,9 @@ export const Discovery = () => {
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
 
+  const [classTagsMap, setClassTagsMap] = useState({});
+  const [eventTagsMap, setEventTagsMap] = useState({});
+
   // this will be an array of users
   const [user, setUser] = useState(null);
   useEffect(() => {
@@ -53,6 +56,20 @@ export const Discovery = () => {
         );
         console.log("Classes:", response.data);
         setClasses(response.data);
+
+        const tagsPromises = response.data.map((classItem) =>
+          backend.get(`/class-tags/tags/${classItem.id}`)
+        );
+        const tagsResults = await Promise.all(tagsPromises);
+        console.log("Tags Results:", tagsResults);
+        const classTags = {};
+        tagsResults.forEach((res, index) => {
+          classTags[res.data[0]?.classId] = tagsResults[index].data.map(
+            (tag) => tag.tagId
+          );
+        });
+        console.log("Class Tags Map:", classTags);
+        setClassTagsMap(classTags);
       } catch (error) {
         console.error("Error fetching classes:", error);
       }
@@ -63,13 +80,28 @@ export const Discovery = () => {
           role !== "student" ? "/events" : "/events/published"
         );
         setEvents(response.data);
+
+        const tagsPromises = response.data.map((eventItem) =>
+          backend.get(`/event-tags/tags/${eventItem.id}`)
+        );
+        const tagsResults = await Promise.all(tagsPromises);
+        console.log("Tags Results for Events:", tagsResults);
+        const eventTags = {};
+        tagsResults.forEach((res, index) => {
+          console.log(res);
+          eventTags[res.data[0]?.eventId] = tagsResults[index].data.map(
+            (tag) => tag.id
+          );
+        });
+        console.log("Event Tags Map:", eventTags);
+        setEventTagsMap(eventTags);
       } catch (error) {
         console.error("Error fetching events:", error);
       }
     };
 
     fetchData();
-  }, [backend]);
+  }, [backend, role]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -308,6 +340,7 @@ export const Discovery = () => {
                 endTime={classItem.endTime}
                 attendeeCount={classItem.attendeeCount}
                 user={user}
+                tags={classTagsMap[classItem.id] || []}
               />
             ))}
           </Flex>
@@ -337,6 +370,7 @@ export const Discovery = () => {
                 id={eventItem.id}
                 setRefresh={setRefresh}
                 user={user}
+                tags={eventTagsMap[eventItem.id] || []}
               />
             ))}
           </Flex>
