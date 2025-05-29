@@ -81,14 +81,16 @@ classesTaughtRouter.put("/", async (req, res) => {
   }
 });
 
-
 // deletes the class taught entry
 classesTaughtRouter.delete("/:classId", async (req, res) => {
   const classId = req.params.classId;
 
   try {
     // Delete the class taught entry
-    const deletedClassTaught = await db.query(`DELETE FROM classes_taught WHERE class_id = $1 RETURNING *`, [classId]);
+    const deletedClassTaught = await db.query(
+      `DELETE FROM classes_taught WHERE class_id = $1 RETURNING *`,
+      [classId]
+    );
 
     res.status(200).json(keysToCamel(deletedClassTaught));
   } catch (error) {

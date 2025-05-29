@@ -82,31 +82,35 @@ export const TeacherEditModal = ({
 
   const [classType, setClassType] = useState(classData?.classType ?? "1");
 
-  useMemo(() => {
-    if (backend) {
-      backend.get("/tags").then((response) => {
-        setTags(response.data);
-      });
-      backend.get("/teachers/activated").then((response) => {
-        setTeachers(response.data);
-        backend.get(`/classes-taught/instructor/${classData.id}`).then((res) => {
-          const teacher = res.data;
-          console.log("Fetched class instructor:", teacher);
-          if (teacher && Array.isArray(teacher) && teacher[0]) {
-            setSelectedInstructor(teacher[0]?.id);
-          } else {
-            setSelectedInstructor("");
+  useEffect(() => {
+    if (backend && classData?.id) {
+      Promise.all([
+        backend.get("/tags"),
+        backend.get("/teachers/activated"),
+        backend.get(`/classes-taught/instructor/${classData.id}`),
+      ])
+        .then(
+          ([tagResponse, activatedTeachersResponse, instructorResponse]) => {
+            setTags(tagResponse.data);
+            setTeachers(activatedTeachersResponse.data);
+            const teacher = instructorResponse.data;
+            if (teacher && Array.isArray(teacher) && teacher[0]) {
+              setSelectedInstructor(teacher[0]?.id);
+            } else {
+              setSelectedInstructor("");
+            }
           }
-        }
-        ).catch((error) => {
-          console.error("Error fetching class instructor:", error);
+        )
+        .catch((error) => {
+          console.log("Error fetching data:", error);
         });
-      });
     }
   }, [backend, classData?.id]);
+
   const onBack = () => {
     setCurrentModal("view");
   };
+
   const onSave = async (draft) => {
     try {
       // PUT request to save class data
@@ -427,7 +431,6 @@ export const TeacherEditModal = ({
                   },
                 }}
               >
-                
                 {teachers.map((teacher) => (
                   <option
                     key={teacher.id}
