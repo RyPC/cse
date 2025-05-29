@@ -427,9 +427,7 @@ export const TeacherEditModal = ({
                   },
                 }}
               >
-                {/* <option value="-1" key="-1" disabled hidden>
-                  No Teacher
-                </option> */}
+                
                 {teachers.map((teacher) => (
                   <option
                     key={teacher.id}
