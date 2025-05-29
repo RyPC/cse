@@ -103,7 +103,7 @@ const StudentReview = ({
 
   return (
     <Card>
-      <CardBody hidden={attended === null}>
+      <CardBody>
         <FormControl>
           <HStack>
             {/* <Avatar
