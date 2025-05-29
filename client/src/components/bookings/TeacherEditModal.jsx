@@ -89,9 +89,21 @@ export const TeacherEditModal = ({
       });
       backend.get("/teachers/activated").then((response) => {
         setTeachers(response.data);
+        backend.get(`/classes-taught/instructor/${classData.id}`).then((res) => {
+          const teacher = res.data;
+          console.log("Fetched class instructor:", teacher);
+          if (teacher && teacher[0]) {
+            setSelectedInstructor(teacher[0]?.id);
+          } else {
+            setSelectedInstructor("");
+          }
+        }
+        ).catch((error) => {
+          console.error("Error fetching class instructor:", error);
+        });
       });
     }
-  }, [backend]);
+  }, [backend, classData?.id]);
   const onBack = () => {
     setCurrentModal("view");
   };
@@ -120,6 +132,8 @@ export const TeacherEditModal = ({
           classId: classData.id,
           teacherId: selectedInstructor,
         });
+      } else {
+        await backend.delete(`/classes-taught/${classData.id}`);
       }
       console.log("Updating instructor", classData.id, selectedInstructor);
       if (performanceId && parseInt(performanceId) !== -1) {
@@ -413,9 +427,9 @@ export const TeacherEditModal = ({
                   },
                 }}
               >
-                <option value="-1" key="-1" disabled hidden>
-                  Select Teacher
-                </option>
+                {/* <option value="-1" key="-1" disabled hidden>
+                  No Teacher
+                </option> */}
                 {teachers.map((teacher) => (
                   <option
                     key={teacher.id}
