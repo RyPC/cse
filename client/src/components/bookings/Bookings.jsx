@@ -111,25 +111,31 @@ export const Bookings = () => {
       const fetchData = async () => {
         try {
           // Get all the basic data
-          const [classesRes, eventsRes, draftEventsRes, draftClassesRes, allEventsRes] = await Promise.all([
+          const [
+            classesRes,
+            eventsRes,
+            draftEventsRes,
+            draftClassesRes,
+            allEventsRes,
+          ] = await Promise.all([
             backend.get(`/classes/published`),
             backend.get(`/events/published`),
             backend.get(`/events/drafts`),
             backend.get(`/classes/drafts`),
-            backend.get("/events/all")
+            backend.get("/events/all"),
           ]);
 
           const allClasses = classesRes.data;
           const allDraftClasses = draftClassesRes.data;
-          
+
           // Fetch tags for both published and draft classes
           const tagsPromises = [...allClasses, ...allDraftClasses].map((cls) =>
             backend.get(`/class-tags/tags/${cls.id}`)
           );
-          
+
           const tagsResults = await Promise.all(tagsPromises);
           const newClassTagsMap = {};
-          
+
           [...allClasses, ...allDraftClasses].forEach((cls, index) => {
             newClassTagsMap[cls.id] = tagsResults[index].data.map(
               (tag) => tag.id
@@ -214,8 +220,15 @@ export const Bookings = () => {
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
+    // console.log("classes:", classes);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
+    // console.log(
+    //   "Attended classes and events:",
+    //   attended,
+    //   attendedClasses,
+    //   attendedEvents
+    // );
     setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
 
@@ -258,10 +271,10 @@ export const Bookings = () => {
 
         if (data.length > 0) {
           const eventId = data[0].eventId;
-          console.log("Fetched coreqId:", eventId);
+          // console.log("Fetched coreqId:", eventId);
           setCoreqId(eventId);
         } else {
-          console.log("No corequisite found for class:", selectedCard.id);
+          // console.log("No corequisite found for class:", selectedCard.id);
           setCoreqId(null);
         }
       } catch (err) {
@@ -286,7 +299,7 @@ export const Bookings = () => {
 
   const triggerRefresh = () => {
     setRefresh(refresh + 1);
-    console.log("Refresh triggered");
+    // console.log("Refresh triggered");
   };
   // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
   const deepEquality = (object1, object2) => {
@@ -319,14 +332,14 @@ export const Bookings = () => {
       draftClasses.some((e) => deepEquality(e, item))
         ? "class"
         : "event";
-    console.log(
-      "update",
-      item,
-      classes,
-      draftClasses,
-      type,
-      deepEquality(classes[0], item)
-    );
+    // console.log(
+    //   "update",
+    //   item,
+    //   classes,
+    //   draftClasses,
+    //   type,
+    //   deepEquality(classes[0], item)
+    // );
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
@@ -377,7 +390,7 @@ export const Bookings = () => {
 
       if (response.status === 200) {
         setCoEvents(response.data);
-        console.log(coEvents);
+        // console.log(coEvents);
       }
     } catch (error) {
       console.error("Error fetching corequisite enrollment:", error);
@@ -440,7 +453,7 @@ export const Bookings = () => {
       setAttended([...attendedClasses, ...attendedEvents]);
       setDrafts([...draftClasses, ...draftEvents]);
       if (selectedCard) loadCorequisites(selectedCard.id);
-      console.log(classes);
+      // console.log(attended);
     } catch (error) {
       console.error("Error reloading classes:", error);
     }
@@ -646,10 +659,14 @@ export const Bookings = () => {
                 {role !== "student" ? (
                   classes.length > 0 ? (
                     classes.map((classItem, index) => {
-                      const isFilterActive = Object.values(tagFilter).some(Boolean);
+                      const isFilterActive =
+                        Object.values(tagFilter).some(Boolean);
                       const classTags = classTagsMap[classItem.id] || [];
 
-                      if (!isFilterActive || classTags.some((tagId) => tagFilter[tagId])) {
+                      if (
+                        !isFilterActive ||
+                        classTags.some((tagId) => tagFilter[tagId])
+                      ) {
                         return (
                           <ClassTeacherCard
                             key={index}
@@ -670,7 +687,8 @@ export const Bookings = () => {
                   )
                 ) : classes.length > 0 ? (
                   classes.map((classItem) => {
-                    const isFilterActive = Object.values(tagFilter).some(Boolean);
+                    const isFilterActive =
+                      Object.values(tagFilter).some(Boolean);
                     const classTags = classTagsMap[classItem.id] || [];
 
                     if (
@@ -785,10 +803,15 @@ export const Bookings = () => {
                 {role !== "student" ? (
                   drafts.length > 0 ? (
                     drafts.map((item) => {
-                      const isFilterActive = Object.values(tagFilter).some(Boolean);
+                      const isFilterActive =
+                        Object.values(tagFilter).some(Boolean);
                       const classTags = classTagsMap[item.id] || [];
 
-                      if (!item.callTime && (!isFilterActive || classTags.some((tagId) => tagFilter[tagId]))) {
+                      if (
+                        !item.callTime &&
+                        (!isFilterActive ||
+                          classTags.some((tagId) => tagFilter[tagId]))
+                      ) {
                         return (
                           <ClassTeacherCard
                             key={item.id}

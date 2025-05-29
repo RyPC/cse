@@ -11,14 +11,20 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { FaMicrophoneAlt, FaMusic } from "react-icons/fa";
+import {
+  GiAbstract001,
+  GiBallerinaShoes,
+  GiBoombox,
+  GiCartwheel,
+  GiTambourine,
+} from "react-icons/gi";
 import { useLocation } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import TeacherEventViewModal from "../bookings/teacherView/TeacherEventViewModal";
 import SignUpController from "../discovery/SignUpController";
-import { FaMusic, FaMicrophoneAlt } from "react-icons/fa";
-import { GiBallerinaShoes, GiBoombox, GiAbstract001, GiCartwheel, GiTambourine } from "react-icons/gi";
 
 export const EventCard = memo(
   ({

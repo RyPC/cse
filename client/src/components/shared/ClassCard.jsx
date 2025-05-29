@@ -11,13 +11,19 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { FaMicrophoneAlt, FaMusic } from "react-icons/fa";
+import {
+  GiAbstract001,
+  GiBallerinaShoes,
+  GiBoombox,
+  GiCartwheel,
+  GiTambourine,
+} from "react-icons/gi";
 import { useLocation } from "react-router-dom";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
 import { formatDate, formatTime } from "../../utils/formatDateTime";
 import SignUpController from "../discovery/SignUpController";
-import { FaMusic, FaMicrophoneAlt } from "react-icons/fa";
-import { GiBallerinaShoes, GiBoombox, GiAbstract001, GiCartwheel, GiTambourine } from "react-icons/gi";
 
 export const ClassCard = memo(
   ({
