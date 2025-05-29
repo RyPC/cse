@@ -46,7 +46,7 @@ export const ClassTeacherCard = memo(
     endTime,
     navigate,
     setSelectedCard,
-    tagId,
+    tags,
     onOpen,
   }) => {
     const [openTeacherModal, setOpenTeacherModal] = useState(false);
@@ -85,7 +85,7 @@ export const ClassTeacherCard = memo(
     const formattedEndTime = endTime ? formatTime(endTime) : null;
     const getIcon = () => {
       const iconSize = 50;
-      switch (tagId) {
+      switch (tags[0]) {
         case 1:
           return <FaMusic size={iconSize} />;
         case 2:
@@ -141,19 +141,15 @@ export const ClassTeacherCard = memo(
           spacing={4}
           align="center"
         >
-          <Flex
-            w="20%"
-            align="center"
-            justify="center"
+          <Box
+            maxW="100%"
+            maxH="100%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
-            <Image
-              src="/card_images/classical.svg" // Set the image source
-              alt="Event illustration"
-              maxW="100%"
-              maxH="100%"
-              objectFit="contain"
-            />
-          </Flex>
+            {getIcon()}
+          </Box>
           <VStack
             w="80%"
             align="flex-start"

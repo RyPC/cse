@@ -11,6 +11,14 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
+import { FaMicrophoneAlt, FaMusic } from "react-icons/fa";
+import {
+  GiAbstract001,
+  GiBallerinaShoes,
+  GiBoombox,
+  GiCartwheel,
+  GiTambourine,
+} from "react-icons/gi";
 import { useLocation } from "react-router-dom";
 
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -28,6 +36,7 @@ export const ClassCard = memo(
     id,
     user = null,
     onClick = null,
+    tags = [],
   }) => {
     const formattedDate = date ? formatDate(date) : null;
     const formattedStartTime = startTime ? formatTime(startTime) : null;
@@ -37,6 +46,29 @@ export const ClassCard = memo(
     const [openRootModal, setOpenRootModal] = useState(false);
 
     const { pathname } = useLocation();
+
+    const getIcon = () => {
+      const iconSize = 50;
+      // console.log("tags", tags);
+      switch (tags[0]) {
+        case 1:
+          return <FaMusic size={iconSize} />;
+        case 2:
+          return <GiBallerinaShoes size={iconSize} />;
+        case 3:
+          return <FaMicrophoneAlt size={iconSize} />;
+        case 4:
+          return <GiBoombox size={iconSize} />;
+        case 5:
+          return <GiAbstract001 size={iconSize} />;
+        case 6:
+          return <GiCartwheel size={iconSize} />;
+        case 7:
+          return <GiTambourine size={iconSize} />;
+        default:
+          return <FaMusic size={iconSize} />;
+      }
+    };
 
     const handleClick = () => {
       if (pathname === "/bookings") {
@@ -98,21 +130,15 @@ export const ClassCard = memo(
           spacing={4}
           align="center"
         >
-          {/* two-shoe icon */}
-          <Flex
-            w={"20%"}
-            align="center"
-            justify="center"
+          <Box
+            maxW="100%"
+            maxH="100%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
           >
-            <Image
-              src="/card_images/ballet.svg"
-              alt="Class illustration"
-              maxW="100%"
-              maxH="100%"
-              objectFit="contain"
-              // transform="rotate(-15deg)"
-            />
-          </Flex>
+            {getIcon()}
+          </Box>
 
           {/* text */}
           <VStack
