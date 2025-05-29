@@ -92,7 +92,7 @@ export const TeacherEditModal = ({
         backend.get(`/classes-taught/instructor/${classData.id}`).then((res) => {
           const teacher = res.data;
           console.log("Fetched class instructor:", teacher);
-          if (teacher && teacher[0]) {
+          if (teacher && Array.isArray(teacher) && teacher[0]) {
             setSelectedInstructor(teacher[0]?.id);
           } else {
             setSelectedInstructor("");
