@@ -143,14 +143,25 @@ export const Resources = () => {
 
   const handleSearch = async (query) => {
     try {
-      if (tabIndex === 0) {
-        const res = await backend.get(
-          `/classes-videos/with-tags/search/${query}`
-        );
-        setVideos(res.data);
-      } else if (tabIndex === 1) {
-        const res = await backend.get(`/articles/with-tags/search/${query}`);
-        setArticles(res.data);
+      if (!query) {
+        if (tabIndex === 0) {
+          const res = await backend.get("/classes-videos/with-tags");
+          setVideos(res.data);
+        }
+        if (tabIndex === 1) {
+          const res = await backend.get("/articles/with-tags");
+          setArticles(res.data);
+        }
+      } else {
+        if (tabIndex === 0) {
+          const res = await backend.get(
+            `/classes-videos/with-tags/search/${query}`
+          );
+          setVideos(res.data);
+        } else if (tabIndex === 1) {
+          const res = await backend.get(`/articles/with-tags/search/${query}`);
+          setArticles(res.data);
+        }
       }
     } catch (err) {
       console.log("Error fetching search:", err);
