@@ -82,19 +82,35 @@ export const TeacherEditModal = ({
 
   const [classType, setClassType] = useState(classData?.classType ?? "1");
 
-  useMemo(() => {
-    if (backend) {
-      backend.get("/tags").then((response) => {
-        setTags(response.data);
-      });
-      backend.get("/teachers/activated").then((response) => {
-        setTeachers(response.data);
-      });
+  useEffect(() => {
+    if (backend && classData?.id) {
+      Promise.all([
+        backend.get("/tags"),
+        backend.get("/teachers/activated"),
+        backend.get(`/classes-taught/instructor/${classData.id}`),
+      ])
+        .then(
+          ([tagResponse, activatedTeachersResponse, instructorResponse]) => {
+            setTags(tagResponse.data);
+            setTeachers(activatedTeachersResponse.data);
+            const teacher = instructorResponse.data;
+            if (teacher && Array.isArray(teacher) && teacher[0]) {
+              setSelectedInstructor(teacher[0]?.id);
+            } else {
+              setSelectedInstructor("");
+            }
+          }
+        )
+        .catch((error) => {
+          console.log("Error fetching data:", error);
+        });
     }
-  }, [backend]);
+  }, [backend, classData?.id]);
+
   const onBack = () => {
     setCurrentModal("view");
   };
+
   const onSave = async (draft) => {
     try {
       // PUT request to save class data
@@ -120,6 +136,8 @@ export const TeacherEditModal = ({
           classId: classData.id,
           teacherId: selectedInstructor,
         });
+      } else {
+        await backend.delete(`/classes-taught/${classData.id}`);
       }
       console.log("Updating instructor", classData.id, selectedInstructor);
       if (performanceId && parseInt(performanceId) !== -1) {
@@ -413,9 +431,6 @@ export const TeacherEditModal = ({
                   },
                 }}
               >
-                <option value="-1" key="-1" disabled hidden>
-                  Select Teacher
-                </option>
                 {teachers.map((teacher) => (
                   <option
                     key={teacher.id}

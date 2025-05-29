@@ -44,7 +44,7 @@ classesTaughtRouter.get("/instructor/:classId", async (req, res) => {
 
     const result = await db.any(
       `
-      SELECT u.first_name, u.last_name
+      SELECT u.first_name, u.last_name, u.id
       FROM classes_taught ct
       JOIN teachers t ON ct.teacher_id = t.id
       JOIN users u ON u.id = t.id
@@ -77,6 +77,24 @@ classesTaughtRouter.put("/", async (req, res) => {
     res.status(200).json({ message: "Instructor updated successfully." });
   } catch (error) {
     console.error("Error updating instructor:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// deletes the class taught entry
+classesTaughtRouter.delete("/:classId", async (req, res) => {
+  const classId = req.params.classId;
+
+  try {
+    // Delete the class taught entry
+    const deletedClassTaught = await db.query(
+      `DELETE FROM classes_taught WHERE class_id = $1 RETURNING *`,
+      [classId]
+    );
+
+    res.status(200).json(keysToCamel(deletedClassTaught));
+  } catch (error) {
+    console.error("Error deleting class taught entry:", error);
     res.status(500).json({ error: error.message });
   }
 });
