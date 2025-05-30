@@ -56,16 +56,6 @@ export const Discovery = () => {
         );
         setClasses(response.data);
 
-        // const tagsPromises = response.data.map((classItem) =>
-        //   backend.get(`/class-tags/tags/${classItem.id}`)
-        // );
-        // const tagsResults = await Promise.all(tagsPromises);
-        // const classTags = {};
-        // response.data.forEach((classItem, index) => {
-        //   classTags[classItem.id] = tagsResults[index].data.map(
-        //     (tag) => tag.tagId
-        //   );
-        // });
         const classTagsResponse = await backend.get("/class-tags/all-class-tags");
         const classTags = {};
         classTagsResponse.data.forEach((tag) => {
@@ -84,16 +74,6 @@ export const Discovery = () => {
         );
         setEvents(response.data);
 
-        // const tagsPromises = response.data.map((eventItem) =>
-        //   backend.get(`/event-tags/tags/${eventItem.id}`)
-        // );
-        // const tagsResults = await Promise.all(tagsPromises);
-        // const eventTags = {};
-        // response.data.forEach((eventItem, index) => {
-        //   eventTags[eventItem.id] = tagsResults[index].data.map(
-        //     (tag) => tag.tagId
-        //   );
-        // });
         const eventTagsResponse = await backend.get("/event-tags/all-event-tags");
         const eventTags = {};
         eventTagsResponse.data.forEach((tag) => {

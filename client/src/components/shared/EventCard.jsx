@@ -188,6 +188,7 @@ export const EventCard = memo(
           setOpenRootModal={setOpenRootModal}
           openRootModal={openRootModal}
           user={user}
+          tags={tags}
         />
         <TeacherEventViewModal
           isOpenProp={openTeacherModal}

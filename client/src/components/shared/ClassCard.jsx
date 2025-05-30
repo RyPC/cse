@@ -181,6 +181,7 @@ export const ClassCard = memo(
           setOpenRootModal={setOpenRootModal}
           openRootModal={openRootModal}
           user={user}
+          tags={tags}
         />
       </Box>
     );

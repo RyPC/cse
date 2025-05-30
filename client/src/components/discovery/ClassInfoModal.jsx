@@ -54,32 +54,19 @@ const ClassInfoModal = ({
   setModalIdentity,
   // filteredCorequisites,
   handleResolveCoreq = () => {},
+  tags = [],
 }) => {
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
-  // temp for image
-  const [imageSrc, setImageSrc] = useState("");
-  const [tags, setTags] = useState([]);
   const [teacherName, setTeacherName] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [description, setDescription] = useState("");
   const [capacity, setCapacity] = useState("");
   const [level, setLevel] = useState("");
-
-  const getTags = async () => {
-    const tags_arr = [];
-    const tags = await backend.get(`/class-tags/tags/${id}`);
-    for (let i = 0; i < tags.data.length; i++) {
-      if (!tags_arr.includes(tags.data[i].tag)) {
-        tags_arr.push(tags.data[i].tag);
-      }
-    }
-    setTags(tags_arr);
-  };
 
   const getTeacherName = async () => {
     const teacherName = await backend.get(`/classes-taught/instructor/${id}`);
@@ -142,7 +129,6 @@ const ClassInfoModal = ({
 
   useEffect(() => {
     if (isOpenProp) {
-      getTags();
       getTeacherName();
       getStartTime();
       initClass();
@@ -190,7 +176,7 @@ const ClassInfoModal = ({
                     borderColor={"gray.300"}
                     borderWidth={1}
                   >
-                    {tag}
+                    {tag.tag}
                   </Tag>
                 ))}
               </List>

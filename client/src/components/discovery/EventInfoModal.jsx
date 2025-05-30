@@ -155,7 +155,7 @@ const EventInfoModal = ({
                     borderColor={"gray.300"}
                     borderWidth={1}
                   >
-                    {tag}
+                    {tag.tag}
                   </Tag>
                 ))}
               </List>
@@ -168,7 +168,6 @@ const EventInfoModal = ({
               </Text>
             </VStack>
           </ModalHeader>
-          <ModalCloseButton />
           <ModalBody>
             <Text>
               {description

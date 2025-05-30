@@ -17,6 +17,7 @@ function SignUpController({
   setOpenRootModal,
   class_id = null,
   event_id = null,
+  tags = [],
   ...infoProps
 }) {
   const { backend } = useBackendContext();
@@ -122,6 +123,7 @@ function SignUpController({
           user={user}
           modalIdentity={modalIdentity}
           setModalIdentity={setModalIdentity}
+          tags={tags}
         />
       ) : (
         <EventInfoModal
@@ -135,6 +137,7 @@ function SignUpController({
           user={user}
           modalIdentity={modalIdentity}
           setModalIdentity={setModalIdentity}
+          tags={tags}
         />
       )}
 
