@@ -71,6 +71,7 @@ function TeacherEventViewModal({
   triggerRefresh,
   handleResolveCoreq = () => {},
   tags = [],
+  magic,
 }) {
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
@@ -82,9 +83,6 @@ function TeacherEventViewModal({
   const toast = useToast();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-
-  // temp for image
-  const [imageSrc, setImageSrc] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -251,6 +249,7 @@ function TeacherEventViewModal({
                       level: level,
                       capacity: capacity,
                       date: formFormattedDate,
+                      tag: tags[0]?.id,
                     }}
                     onClose={handleSaveChanges}
                     triggerRefresh={triggerRefresh}

@@ -37,39 +37,18 @@ import { ClassRSVP } from "../rsvp/classRsvp.jsx";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 
 export const TeacherViewModal = memo(
-  ({ isOpen, onClose, setCurrentModal, classData, performances }) => {
+  ({
+    isOpen,
+    onClose,
+    setCurrentModal,
+    classData,
+    performances,
+    tags,
+    magic,
+  }) => {
     const { backend } = useBackendContext();
-    const [tagData, setTagData] = useState([]);
-    // const [loading, setLoading] = useState(false);
     const [instructorName, setInstructorName] = useState("");
 
-    const fetchTags = async () => {
-      if (!classData?.id || !isOpen) {
-        return;
-      }
-
-      // setLoading(true);
-      try {
-        const response = await backend.get(`/class-tags/tags/${classData.id}`);
-
-        if (response.data && response.data.length > 0) {
-          // Extract tags from the response
-          const processedTags = response.data.map((item) => ({
-            id: item.tagId,
-            name: item.tag,
-          }));
-
-          setTagData(processedTags);
-        } else {
-          setTagData([]);
-        }
-      } catch (error) {
-        console.error("Error fetching tags for class:", error);
-        setTagData([]);
-        // } finally {
-        // setLoading(false);
-      }
-    };
     const fetchInstructor = async () => {
       if (!classData?.id || !isOpen) {
         return;
@@ -78,7 +57,6 @@ export const TeacherViewModal = memo(
         const res = await backend.get(
           `/classes-taught/instructor/${classData.id}`
         );
-        // console.log("TESTING", res);
         if (res.data) {
           const { firstName, lastName } = res.data[0];
           setInstructorName(`${firstName} ${lastName}`);
@@ -93,9 +71,8 @@ export const TeacherViewModal = memo(
       if (!isOpen) {
         return;
       }
-      fetchTags();
       fetchInstructor();
-    }, [backend, classData?.id]);
+    }, [backend, classData?.id, magic]);
 
     const onCancel = () => {
       setCurrentModal("cancel");
@@ -221,7 +198,7 @@ export const TeacherViewModal = memo(
                       px={4}
                     >
                       <Text fontSize="sm">
-                        {tagData[0]?.name ? tagData[0].name : "No tags"}
+                        {tags[0]?.tag ? tags[0].tag : "No tags"}
                       </Text>
                     </Box>
                   </Flex>

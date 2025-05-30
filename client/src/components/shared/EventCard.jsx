@@ -44,6 +44,7 @@ export const EventCard = memo(
     triggerRefresh,
     user = null,
     tags = [],
+    magic,
   }) => {
     const formattedDate = formatDate(date);
     const formattedStartTime = formatTime(startTime);
@@ -98,7 +99,7 @@ export const EventCard = memo(
       ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
       : "Date/Time not available";
 
-    // console.log("ec tags", id, tags);
+    // console.log("ec tags", id, title, tags);
     return (
       <Box
         w="100%"
@@ -206,6 +207,7 @@ export const EventCard = memo(
           capacity={capacity}
           triggerRefresh={triggerRefresh}
           tags={tags}
+          magic={magic}
         />
       </Box>
     );

@@ -92,18 +92,10 @@ export const Bookings = () => {
   const [classTagsMap, setClassTagsMap] = useState({});
   const [eventTagsMap, setEventTagsMap] = useState({});
 
-  const [refresh, setRefresh] = useState(0);
+  const [refresh, setRefresh] = useState(-1);
+  const [magic, setMagic] = useState(-1);
 
   const isTeacher = role === "teacher";
-  const [activeTab, setActiveTab] = useState("classes");
-
-  const toggleClasses = () => {
-    setActiveTab("classes");
-  };
-
-  const toggleEvents = () => {
-    setActiveTab("events");
-  };
 
   const reloadStudentClasses = async () => {
     try {
@@ -296,7 +288,7 @@ export const Bookings = () => {
     fetchTags();
   }, []);
 
-  const handleFilterToggle = (id) => {
+  const handleFilterToggle = (id) => () => {
     setTagFilter((prev) => ({
       ...prev,
       [id]: !prev[id],
@@ -327,40 +319,139 @@ export const Bookings = () => {
   }, [backend, selectedCard, isOpen]);
 
   const onCloseModal = () => {
-    setSelectedCard(null);
-    setCurrentModal("view");
-    onClose();
     if (tabIndex === 0) {
       if (role !== "student") {
-        reloadTeacherClasses();
+        Promise.all([reloadTeacherClasses()]).then(() => {
+          setCurrentModal("view");
+          onClose();
+        });
       } else {
-        reloadStudentClasses();
+        Promise.all([reloadStudentClasses()]).then(() => {
+          setCurrentModal("view");
+          onClose();
+        });
       }
     } else if (tabIndex === 1) {
       if (role !== "student") {
-        reloadTeacherEvents();
+        Promise.all([reloadTeacherEvents()]).then(() => {
+          setSelectedCard(null);
+          setCurrentModal("view");
+          onClose();
+        });
       } else {
-        reloadStudentEvents();
+        Promise.all([reloadStudentEvents()]).then(() => {
+          setSelectedCard(null);
+          setCurrentModal("view");
+          onClose();
+        });
       }
     } else {
       if (role !== "student") {
-        reloadTeacherClasses();
-        reloadTeacherEvents();
+        Promise.all([reloadTeacherClasses(), reloadTeacherEvents()]).then(
+          () => {
+            setSelectedCard(null);
+            setCurrentModal("view");
+            onClose();
+          }
+        );
       } else {
-        reloadStudentClasses();
-        reloadStudentEvents();
+        Promise.all([reloadStudentClasses(), reloadStudentEvents()]).then(
+          () => {
+            setSelectedCard(null);
+            setCurrentModal("view");
+            onClose();
+          }
+        );
       }
     }
     console.log(classTagsMap);
   };
+
+  const onCloseEditModal = () => {
+    if (tabIndex === 0) {
+      if (role !== "student") {
+        Promise.all([reloadTeacherClasses()]).then(() => {
+          setCurrentModal("view");
+          setMagic((prev) => -1 * prev);
+        });
+      } else {
+        Promise.all([reloadStudentClasses()]).then(() => {
+          setCurrentModal("view");
+          setMagic((prev) => -1 * prev);
+        });
+      }
+    } else if (tabIndex === 1) {
+      if (role !== "student") {
+        Promise.all([reloadTeacherEvents()]).then(() => {
+          setCurrentModal("view");
+          setMagic((prev) => -1 * prev);
+        });
+      } else {
+        Promise.all([reloadStudentEvents()]).then(() => {
+          setCurrentModal("view");
+          setMagic((prev) => -1 * prev);
+        });
+      }
+    } else {
+      if (role !== "student") {
+        Promise.all([reloadTeacherClasses(), reloadTeacherEvents()]).then(
+          () => {
+            setCurrentModal("view");
+            setMagic((prev) => -1 * prev);
+          }
+        );
+      } else {
+        Promise.all([reloadStudentClasses(), reloadStudentEvents()]).then(
+          () => {
+            setCurrentModal("view");
+            setMagic((prev) => -1 * prev);
+          }
+        );
+      }
+    }
+  };
+
   const onOpenModal = (data) => {
     setClassData(data);
     onOpen();
   };
 
   const triggerRefresh = () => {
-    setRefresh(refresh + 1);
-    // console.log("Refresh triggered");
+    if (tabIndex === 0) {
+      if (role !== "student") {
+        Promise.all([reloadTeacherClasses()]).then(() => {
+          setRefresh((prev) => -1 * prev);
+        });
+      } else {
+        Promise.all([reloadStudentClasses()]).then(() => {
+          setRefresh((prev) => -1 * prev);
+        });
+      }
+    } else if (tabIndex === 1) {
+      if (role !== "student") {
+        Promise.all([reloadTeacherEvents()]).then(() => {
+          setRefresh((prev) => -1 * prev);
+        });
+      } else {
+        Promise.all([reloadStudentEvents()]).then(() => {
+          setRefresh((prev) => -1 * prev);
+        });
+      }
+    } else {
+      if (role !== "student") {
+        Promise.all([reloadTeacherClasses(), reloadTeacherEvents()]).then(
+          () => {
+            setRefresh((prev) => -1 * prev);
+          }
+        );
+      } else {
+        Promise.all([reloadStudentClasses(), reloadStudentEvents()]).then(
+          () => {
+            setRefresh((prev) => -1 * prev);
+          }
+        );
+      }
+    }
   };
 
   // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
@@ -805,6 +896,7 @@ export const Bookings = () => {
                           onClick={() => {
                             updateModal(eventItem, "event");
                           }}
+                          magic={refresh}
                           triggerRefresh={triggerRefresh}
                           onCloseModal={onCloseModal}
                           tags={eventTags}
@@ -864,6 +956,7 @@ export const Bookings = () => {
                             onClick={() => {
                               updateModal(item, "event");
                             }}
+                            magic={refresh}
                             triggerRefresh={triggerRefresh}
                             onCloseModal={onCloseModal}
                             tags={eventTagsMap[item.id] || []}
@@ -892,7 +985,9 @@ export const Bookings = () => {
                         onClick={() => {
                           updateModal(item, "event");
                         }}
+                        magic={refresh}
                         triggerRefresh={triggerRefresh}
+                        tags={eventTagsMap[item.id] || []}
                       />
                     )
                   )
@@ -916,6 +1011,7 @@ export const Bookings = () => {
             performances={coEvents}
             setPerformances={setCoEvents}
             tags={classTagsMap[selectedCard?.id] || []}
+            magic={magic}
           />
         ) : currentModal === "confirmation" ? (
           <TeacherConfirmationModal
@@ -925,12 +1021,12 @@ export const Bookings = () => {
         ) : currentModal === "edit" ? (
           <TeacherEditModal
             isOpen={isOpen}
-            onClose={onCloseModal}
+            onClose={onCloseEditModal}
             setCurrentModal={setCurrentModal}
             classData={selectedCard}
             setClassData={setSelectedCard}
             performances={allEvents}
-            setRefresh={reloadClassesAndDrafts}
+            setRefresh={reloadTeacherClasses}
             coreqId={coreqId}
             tags={classTagsMap[selectedCard?.id] || []}
           />

@@ -87,9 +87,9 @@ eventTagsRouter.post("/", async (req, res) => {
 });
 
 // delete event/tag relationship
-eventTagsRouter.delete("/", async (req, res) => {
+eventTagsRouter.delete("/:eventId/:tagId", async (req, res) => {
   try {
-    const { eventId, tagId } = req.body;
+    const { eventId, tagId } = req.params;
     const tags = await db.query(
       `DELETE FROM event_tags WHERE event_id = $1 AND tag_id = $2 RETURNING *;`,
       [eventId, tagId]

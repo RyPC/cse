@@ -67,6 +67,8 @@ export const TeacherEditModal = ({
   setRefresh,
   coreqId,
   tags = [],
+  magic,
+  setMagic,
 }) => {
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
@@ -211,7 +213,7 @@ export const TeacherEditModal = ({
             .catch((err) => {
               console.error(err);
             });
-        })
+        });
         await backend
           .post("/class-tags", {
             classId: classData.id,
