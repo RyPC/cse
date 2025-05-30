@@ -57,7 +57,7 @@ export const EventCard = memo(
 
     const getIcon = () => {
       const iconSize = 50;
-      switch (tags[0]) {
+      switch (tags[0]?.id) {
         case 1:
           return <FaMusic size={iconSize} />;
         case 2:
@@ -98,6 +98,7 @@ export const EventCard = memo(
       ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
       : "Date/Time not available";
 
+    console.log("ec tags", id, tags);
     return (
       <Box
         w="100%"
@@ -203,6 +204,7 @@ export const EventCard = memo(
           costume={costume}
           capacity={capacity}
           triggerRefresh={triggerRefresh}
+          tags={tags}
         />
       </Box>
     );

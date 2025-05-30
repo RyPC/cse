@@ -50,7 +50,7 @@ export const ClassCard = memo(
     const getIcon = () => {
       const iconSize = 50;
       // console.log("tags", tags);
-      switch (tags[0]) {
+      switch (tags[0]?.id) {
         case 1:
           return <FaMusic size={iconSize} />;
         case 2:

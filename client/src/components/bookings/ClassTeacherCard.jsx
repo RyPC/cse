@@ -85,7 +85,7 @@ export const ClassTeacherCard = memo(
     const formattedEndTime = endTime ? formatTime(endTime) : null;
     const getIcon = () => {
       const iconSize = 50;
-      switch (tags[0]) {
+      switch (tags[0]?.id) {
         case 1:
           return <FaMusic size={iconSize} />;
         case 2:

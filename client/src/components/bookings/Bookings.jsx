@@ -128,23 +128,22 @@ export const Bookings = () => {
           const allClasses = classesRes.data;
           const allDraftClasses = draftClassesRes.data;
 
-          // Fetch tags for both published and draft classes
-          const tagsPromises = [...allClasses, ...allDraftClasses].map((cls) =>
-            backend.get(`/class-tags/tags/${cls.id}`)
-          );
-
-          const tagsResults = await Promise.all(tagsPromises);
           const newClassTagsMap = {};
-
-          [...allClasses, ...allDraftClasses].forEach((cls, index) => {
-            newClassTagsMap[cls.id] = tagsResults[index].data.map(
-              (tag) => tag.id
-            );
+          const classTagsRes = await backend.get("/class-tags/all-class-tags");
+          classTagsRes.data.forEach((item) => {
+            newClassTagsMap[item.classId] = item.tagArray;
           });
-          console.log(newClassTagsMap);
+          // console.log("Class Tags Map:", newClassTagsMap);
+          const newEventTagsMap = {};
+          const eventTagsRes = await backend.get("/event-tags/all-event-tags");
+          eventTagsRes.data.forEach((item) => {
+            newEventTagsMap[item.eventId] = item.tagArray;
+          });
+          // console.log("Event Tags Map:", newEventTagsMap);
 
           // Set all the state
           setClassTagsMap(newClassTagsMap);
+          setEventTagsMap(newEventTagsMap);
           setClasses(allClasses);
           setEvents(eventsRes.data);
           setDraftEvents(draftEventsRes.data);
@@ -157,65 +156,39 @@ export const Bookings = () => {
 
       fetchData();
     } else if (currentUser && role === "student") {
-      backend
-        .get(`/users/${currentUser.uid}`)
-        .then((userRes) => {
+      const fetchData = async () => {
+        try {
+          const userRes = await backend.get(`/users/${currentUser.uid}`);
           const userId = userRes.data[0].id;
           setUserId(userId);
+          const [enrolledClassesRes, enrolledEventsRes] = await Promise.all([
+            backend.get(`/class-enrollments/student/${userId}`),
+            backend.get(`/event-enrollments/student/${userId}`),
+          ]);
+          const enrolledClasses = enrolledClassesRes.data;
+          const enrolledEvents = enrolledEventsRes.data;
+          setClasses(enrolledClasses);
+          setEvents(enrolledEvents);
 
-          backend
-            .get(`/class-enrollments/student/${userId}`)
-            .then(async (res) => {
-              const enrolledClasses = res.data;
-              setClasses(enrolledClasses);
-
-              const tagsPromises = enrolledClasses.map((cls) =>
-                backend.get(`/class-tags/tags/${cls.id}`)
-              );
-
-              const tagsResults = await Promise.all(tagsPromises);
-              const newClassTagsMap = {};
-
-              enrolledClasses.forEach((cls, index) => {
-                newClassTagsMap[cls.id] = tagsResults[index].data.map(
-                  (tag) => tag.id
-                );
-              });
-
-              setClassTagsMap(newClassTagsMap);
-            })
-            .catch((err) => {
-              console.log("Error fetching class enrollments:", err);
-            });
-
-          backend
-            .get(`/event-enrollments/student/${userId}`)
-            .then(async (res) => {
-              const enrolledEvents = res.data;
-              setEvents(enrolledEvents);
-
-              const tagsPromises = enrolledEvents.map((evt) =>
-                backend.get(`/event-tags/tags/${evt.id}`)
-              );
-
-              const tagsResults = await Promise.all(tagsPromises);
-              const newEventTagsMap = {};
-
-              enrolledEvents.forEach((evt, index) => {
-                newEventTagsMap[evt.id] = tagsResults[index].data.map(
-                  (tag) => tag.id
-                );
-              });
-
-              setEventTagsMap(newEventTagsMap);
-            })
-            .catch((err) => {
-              console.log("Error fetching event enrollments:", err);
-            });
-        })
-        .catch((err) => {
-          console.log("Error fetching user:", err);
-        });
+          const newClassTagsMap = {};
+          const newEventTagsMap = {};
+          const classTagsRes = await backend.get(`/class-tags/enrolled-class-tags/${userId}`);
+          classTagsRes.data.forEach((item) => {
+            newClassTagsMap[item.classId] = item.tagArray;
+          });
+          // console.log("Student Class Tags Map:", newClassTagsMap);
+          const eventTagsRes = await backend.get(`/event-tags/enrolled-event-tags/${userId}`);
+          eventTagsRes.data.forEach((item) => {
+            newEventTagsMap[item.eventId] = item.tagArray;
+          });
+          // console.log("Student Event Tags Map:", newEventTagsMap);
+          setClassTagsMap(newClassTagsMap);
+          setEventTagsMap(newEventTagsMap);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } 
+      };
+      fetchData();
     }
   }, [backend, currentUser, isTeacher, refresh]);
 
@@ -319,11 +292,6 @@ export const Bookings = () => {
   // };
 
   const updateModal = (item, type="class") => {
-    // const type = 
-      // classes.some((e) => deepEquality(e, item)) ||
-      // draftClasses.some((e) => deepEquality(e, item))
-      //   ? "class"
-      //   : "event";
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
@@ -366,7 +334,6 @@ export const Bookings = () => {
     }
   };
 
-  // const isFilterActive = Object.values(tagFilter).some(Boolean);
 
   const loadCorequisites = async (classId) => {
     try {
@@ -374,7 +341,6 @@ export const Bookings = () => {
 
       if (response.status === 200) {
         setCoEvents(response.data);
-        // console.log(coEvents);
       }
     } catch (error) {
       console.error("Error fetching corequisite enrollment:", error);
@@ -471,10 +437,6 @@ export const Bookings = () => {
     }
   };
 
-  // useEffect(() => {
-  //   console.log("selectedCard", selectedCard);
-  // }, [selectedCard]);
-
   const fetchClassData = async () => {
     try {
       const [classesResponse, classDataResponse] = await Promise.all([
@@ -485,9 +447,9 @@ export const Bookings = () => {
       const classDataDict = new Map();
       classDataResponse.data.forEach((cls) => classDataDict.set(cls.id, cls));
 
-      console.log("Fetching tags for class:", clsId);
+      // console.log("Fetching tags for class:", clsId);
       const response = await backend.get(`/class-tags/tags/${clsId}`);
-      console.log("Raw tag data:", response.data);
+      // console.log("Raw tag data:", response.data);
 
       const formattedData = classesResponse.data
         .map((cls) => {
@@ -573,29 +535,7 @@ export const Bookings = () => {
               {role !== "student" ? "Drafts" : "Attended"}
             </Tab>
           </TabList>
-          {/* <Box
-            px={4}
-            width="100%"
-            pt={4}
-          >
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <FaSearch color="gray.300" />
-              </InputLeftElement>
-              <Input
-                placeholder="Search"
-                variant="filled"
-                borderRadius="full"
-                borderColor={"gray.300"}
-                bg="white.100"
-                _hover={{ bg: "gray.200" }}
-                _focus={{ bg: "white", borderColor: "gray.300" }}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-            </InputGroup>
-          </Box> */}
+
           <TabPanels>
             <TabPanel>
               <SearchBar
@@ -649,7 +589,7 @@ export const Bookings = () => {
 
                       if (
                         !isFilterActive ||
-                        classTags.some((tagId) => tagFilter[tagId])
+                        classTags.some((tag) => tagFilter[tag.id])
                       ) {
                         return (
                           <ClassTeacherCard
@@ -663,7 +603,7 @@ export const Bookings = () => {
                             onClick={() => {
                               updateModal(classItem, "class");
                             }}
-                            tags={classTagsMap[classItem.id] || []}
+                            tags={classTags}
                           />
                         );
                       }
@@ -680,7 +620,7 @@ export const Bookings = () => {
 
                     if (
                       !isFilterActive ||
-                      classTags.some((tagId) => tagFilter[tagId])
+                      classTags.some((tag) => tagFilter[tag.id])
                     ) {
                       return (
                         <Box
@@ -760,7 +700,7 @@ export const Bookings = () => {
 
                     if (
                       !isFilterActive ||
-                      eventTags.some((tagId) => tagFilter[tagId])
+                      eventTags.some((tag) => tagFilter[tag.id])
                     ) {
                       return (
                         <EventCard
@@ -798,11 +738,7 @@ export const Bookings = () => {
                         Object.values(tagFilter).some(Boolean);
                       const classTags = classTagsMap[item.id] || [];
 
-                      if (
-                        !item.callTime &&
-                        (!isFilterActive ||
-                          classTags.some((tagId) => tagFilter[tagId]))
-                      ) {
+                      if (!item.callTime) {
                         return (
                           <ClassTeacherCard
                             key={item.id}
@@ -811,7 +747,7 @@ export const Bookings = () => {
                             setSelectedCard={setSelectedCard}
                             performance={coEvents}
                             onOpen={updateModal}
-                            tags={classTagsMap[item.id] || []}
+                            tags={classTags}
                           />
                         );
                       } else if (item.callTime) {
@@ -834,6 +770,7 @@ export const Bookings = () => {
                             }}
                             triggerRefresh={triggerRefresh}
                             onCloseModal={onCloseModal}
+                            tags={eventTagsMap[item.id] || []}
                           />
                         );
                       }
@@ -873,6 +810,8 @@ export const Bookings = () => {
       </VStack>
       {role !== "student" ? (
         currentModal === "view" ? (
+          // this is always going to be the view for classes
+          // events view modal is handled in the event card component
           <TeacherViewModal
             isOpen={isOpen}
             onClose={onCloseModal}
@@ -880,6 +819,7 @@ export const Bookings = () => {
             classData={selectedCard}
             performances={coEvents}
             setPerformances={setCoEvents}
+            tags={classTagsMap[selectedCard?.id] || []}
           />
         ) : currentModal === "confirmation" ? (
           <TeacherConfirmationModal
@@ -950,6 +890,7 @@ export const Bookings = () => {
           coEvents={coEvents}
           type={cardType}
           isAttended={isAttendedItem}
+          tags={cardType === "class" ? classTagsMap[selectedCard?.id] : eventTagsMap[selectedCard?.id] || []}
         />
       ) : currentModal === "confirmation" ? (
         <ConfirmationModal

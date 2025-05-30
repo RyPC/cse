@@ -127,9 +127,9 @@ export const TeacherEditModal = ({
         is_recurring: recurrencePattern !== "none",
         isDraft: draft,
       };
-      console.log(classData);
+      // console.log(classData);
       await backend.put(`/classes/${classData.id}`, updatedData);
-      console.log("Updating class", classData.id, updatedData);
+      // console.log("Updating class", classData.id, updatedData);
       await backend.delete(`/corequisites/class/${classData.id}`);
       if (selectedInstructor && parseInt(selectedInstructor) !== -1) {
         await backend.put(`/classes-taught`, {
@@ -139,18 +139,18 @@ export const TeacherEditModal = ({
       } else {
         await backend.delete(`/classes-taught/${classData.id}`);
       }
-      console.log("Updating instructor", classData.id, selectedInstructor);
+      // console.log("Updating instructor", classData.id, selectedInstructor);
       if (performanceId && parseInt(performanceId) !== -1) {
         await backend.put(
           `/corequisites/${classData.id}/${performanceId}`,
           updatedData
         );
-        console.log(
-          "Updating corequisites",
-          classData.id,
-          performanceId,
-          updatedData
-        );
+        // console.log(
+        //   "Updating corequisites",
+        //   classData.id,
+        //   performanceId,
+        //   updatedData
+        // );
       }
 
       if (recurrencePattern !== "none") {
@@ -160,7 +160,7 @@ export const TeacherEditModal = ({
           stringToDate(endDate),
           recurrencePattern
         );
-        console.log("classdates", classDates);
+        // console.log("classdates", classDates);
         for (const classDate of classDates) {
           if (classDate && startTime && endTime) {
             const scheduledClassBody = {
@@ -291,9 +291,6 @@ export const TeacherEditModal = ({
   const onStartTimeChange = (e) => setStartTime(e.target.value);
   const onEndTimeChange = (e) => setEndTime(e.target.value);
 
-  useEffect(() => {
-    console.log();
-  }, []);
   return (
     <Modal
       size="full"

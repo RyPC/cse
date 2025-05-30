@@ -54,21 +54,24 @@ export const Discovery = () => {
         const response = await backend.get(
           role !== "student" ? "/classes/scheduled" : "/classes/published"
         );
-        console.log("Classes:", response.data);
         setClasses(response.data);
 
-        const tagsPromises = response.data.map((classItem) =>
-          backend.get(`/class-tags/tags/${classItem.id}`)
-        );
-        const tagsResults = await Promise.all(tagsPromises);
-        console.log("Tags Results:", tagsResults);
+        // const tagsPromises = response.data.map((classItem) =>
+        //   backend.get(`/class-tags/tags/${classItem.id}`)
+        // );
+        // const tagsResults = await Promise.all(tagsPromises);
+        // const classTags = {};
+        // response.data.forEach((classItem, index) => {
+        //   classTags[classItem.id] = tagsResults[index].data.map(
+        //     (tag) => tag.tagId
+        //   );
+        // });
+        const classTagsResponse = await backend.get("/class-tags/all-class-tags");
         const classTags = {};
-        response.data.forEach((classItem, index) => {
-          classTags[classItem.id] = tagsResults[index].data.map(
-            (tag) => tag.tagId
-          );
+        classTagsResponse.data.forEach((tag) => {
+          classTags[tag.classId] = tag.tagArray;
         });
-        console.log("Class Tags Map:", classTags);
+
         setClassTagsMap(classTags);
       } catch (error) {
         console.error("Error fetching classes:", error);
@@ -81,18 +84,21 @@ export const Discovery = () => {
         );
         setEvents(response.data);
 
-        const tagsPromises = response.data.map((eventItem) =>
-          backend.get(`/event-tags/tags/${eventItem.id}`)
-        );
-        const tagsResults = await Promise.all(tagsPromises);
-        console.log("Tags Results for Events:", tagsResults);
+        // const tagsPromises = response.data.map((eventItem) =>
+        //   backend.get(`/event-tags/tags/${eventItem.id}`)
+        // );
+        // const tagsResults = await Promise.all(tagsPromises);
+        // const eventTags = {};
+        // response.data.forEach((eventItem, index) => {
+        //   eventTags[eventItem.id] = tagsResults[index].data.map(
+        //     (tag) => tag.tagId
+        //   );
+        // });
+        const eventTagsResponse = await backend.get("/event-tags/all-event-tags");
         const eventTags = {};
-        response.data.forEach((eventItem, index) => {
-          eventTags[eventItem.id] = tagsResults[index].data.map(
-            (tag) => tag.tagId
-          );
+        eventTagsResponse.data.forEach((tag) => {
+          eventTags[tag.eventId] = tag.tagArray;
         });
-        console.log("Event Tags Map:", eventTags);
         setEventTagsMap(eventTags);
       } catch (error) {
         console.error("Error fetching events:", error);
@@ -162,7 +168,7 @@ export const Discovery = () => {
   };
   const isFilterActive = Object.values(tagFilter).some(Boolean);
 
-  const handleFilterToggle = (id) => {
+  const handleFilterToggle = (id) => () => {
     setTagFilter((prev) => ({
       ...prev,
       [id]: !prev[id],

@@ -126,23 +126,12 @@ export const TeacherViewModal = memo(
                     cursor="pointer"
                     onClick={onClose}
                   />
-                  {/* <IconButton
-            bg = "gray.50"
-            onClick={onClose}
-            icon={<AiOutlineArrowLeft />}
-            position="absolute"
-            left={5}
-            backgroundColor="white"
-          /> */}
                   <Menu bg="gray.50">
                     <MenuButton
                       bg="gray.50"
                       as={IconButton}
-                      // position="absolute"
-                      // right={5}
                       icon={<MdMoreHoriz />}
                     />
-                    {/* ... */}
                     <MenuList
                       backgroundColor="gray.100"
                       p={0}
@@ -192,7 +181,7 @@ export const TeacherViewModal = memo(
                       align="center"
                     >
                       <Text
-                        fontSize="1.5rem"
+                        fontSize="md"
                         fontWeight="bold"
                       >
                         {" "}
@@ -231,11 +220,10 @@ export const TeacherViewModal = memo(
                       borderRadius="full"
                       px={4}
                     >
-                      <Text fontSize="0.8rem">
+                      <Text fontSize="sm">
                         {tagData[0]?.name
-                          ? tagData[0].name.charAt(0).toUpperCase() +
-                            tagData[0].name.slice(1)
-                          : "No tag available"}
+                          ? tagData[0].name
+                          : "No tags"}
                       </Text>
                     </Box>
                   </Flex>
@@ -245,8 +233,9 @@ export const TeacherViewModal = memo(
                     width="100%"
                   >
                     <Text
-                      fontSize="1.8rem"
+                      fontSize="2xl"
                       fontWeight="bold"
+                      wordBreak={"break-word"}
                     >
                       {classData?.title}
                     </Text>
@@ -256,7 +245,7 @@ export const TeacherViewModal = memo(
                     justifyContent="flex-start"
                     width="100%"
                   >
-                    <Text fontSize="16px">Taught by {instructorName}</Text>
+                    <Text fontSize="md">Taught by {instructorName}</Text>
                   </Box>
 
                   <Box
@@ -264,7 +253,7 @@ export const TeacherViewModal = memo(
                     justifyContent="flex-start"
                     width="100%"
                   >
-                    <Text fontSize="16px">{classData?.description}</Text>
+                    <Text fontSize="md">{classData?.description}</Text>
                   </Box>
                   <Divider
                     borderColor="gray.400"
@@ -276,7 +265,7 @@ export const TeacherViewModal = memo(
                     <Text
                       color="purple.700"
                       fontWeight="bold"
-                      fontSize="16px"
+                      fontSize="md"
                     >
                       {formatDate(classData?.date)} ·{" "}
                       {classData?.startTime
@@ -293,7 +282,7 @@ export const TeacherViewModal = memo(
                     justifyContent="flex-start"
                     width="100%"
                   >
-                    <Text fontSize="16px">{classData?.location}</Text>
+                    <Text fontSize="md">{classData?.location}</Text>
                   </Box>
                   <Divider
                     borderColor="gray.400"
@@ -310,10 +299,11 @@ export const TeacherViewModal = memo(
                       <Text
                         fontWeight="bold"
                         mb="0.5rem"
+                        fontSize="lg"
                       >
                         Level
                       </Text>
-                      <Text fontSize="16px">
+                      <Text fontSize="md">
                         {classData?.level.charAt(0).toUpperCase() +
                           classData?.level.slice(1)}
                       </Text>
@@ -323,10 +313,11 @@ export const TeacherViewModal = memo(
                         mr="20"
                         fontWeight="bold"
                         mb="0.5rem"
+                        fontSize="lg"
                       >
                         Capacity
                       </Text>
-                      <Text fontSize="16px">{classData?.capacity}</Text>
+                      <Text fontSize="md">{classData?.capacity}</Text>
                     </Box>
                   </HStack>
                   <Divider
@@ -349,11 +340,11 @@ export const TeacherViewModal = memo(
 
                     {classData?.prerequisites &&
                     classData?.prerequisites.length > 0 ? (
-                      <Text fontSize="16px">
+                      <Text fontSize="md">
                         {classData?.prerequisites.map((prerequisite) => (
                           <Tag
                             borderRadius={"full"}
-                            bg="purple.100"
+                            bg="purple.200"
                             textColor={"purple.800"}
                             key={prerequisite.id}
                           >
@@ -380,7 +371,7 @@ export const TeacherViewModal = memo(
                     {performances.map((performance) => (
                       <Tag
                         borderRadius={"full"}
-                        bg="purple.100"
+                        bg="purple.200"
                         textColor={"purple.800"}
                         key={performance.id}
                       >

@@ -12,12 +12,33 @@ classTagsRouter.get("/all-class-tags", async (req, res) => {
   try {
     const tags = await db.query(
       `
-      SELECT class_tags.class_id, ARRAY_AGG(tags.*) tag_array
+      SELECT class_tags.class_id, JSON_ARRAYAGG(tags.*) tag_array
       FROM class_tags 
       JOIN tags ON class_tags.tag_id = tags.id
       GROUP BY class_tags.class_id;`
     );
 
+    res.status(200).json(keysToCamel(tags));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// tags for all enrolled classes
+classTagsRouter.get("/enrolled-class-tags/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const tags = await db.query(
+      `
+      SELECT class_tags.class_id, JSON_ARRAYAGG(tags.*) tag_array
+      FROM class_tags 
+      JOIN tags ON class_tags.tag_id = tags.id
+      JOIN class_enrollments ON class_tags.class_id = class_enrollments.class_id
+      WHERE class_enrollments.student_id = $1
+      GROUP BY class_tags.class_id;`,
+      [userId]
+    );
     res.status(200).json(keysToCamel(tags));
   } catch (err) {
     res.status(500).send(err.message);
