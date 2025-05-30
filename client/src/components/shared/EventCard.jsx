@@ -98,7 +98,7 @@ export const EventCard = memo(
       ? `${formattedDate} @ ${formattedStartTime} - ${formattedEndTime}`
       : "Date/Time not available";
 
-    console.log("ec tags", id, tags);
+    // console.log("ec tags", id, tags);
     return (
       <Box
         w="100%"
