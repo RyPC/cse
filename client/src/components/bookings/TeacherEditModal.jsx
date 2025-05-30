@@ -66,6 +66,7 @@ export const TeacherEditModal = ({
   performances,
   setRefresh,
   coreqId,
+  tags = [],
 }) => {
   const { backend } = useBackendContext();
   const [isPublishing, setIsPublishing] = useState(false);
@@ -77,10 +78,11 @@ export const TeacherEditModal = ({
     classData?.instructor ?? ""
   );
   const formRef = useRef(null);
-  const [tags, setTags] = useState([]);
+  const [tagTypes, setTagTypes] = useState([]);
   const toast = useToast();
 
-  const [classType, setClassType] = useState(classData?.classType ?? "1");
+  console.log("type", tags[0]?.id);
+  const [classType, setClassType] = useState(tags[0]?.id ?? "-1");
 
   useEffect(() => {
     if (backend && classData?.id) {
@@ -91,7 +93,7 @@ export const TeacherEditModal = ({
       ])
         .then(
           ([tagResponse, activatedTeachersResponse, instructorResponse]) => {
-            setTags(tagResponse.data);
+            setTagTypes(tagResponse.data);
             setTeachers(activatedTeachersResponse.data);
             const teacher = instructorResponse.data;
             if (teacher && Array.isArray(teacher) && teacher[0]) {
@@ -202,7 +204,14 @@ export const TeacherEditModal = ({
         isDraft: draft,
       }));
 
-      if (classType !== "") {
+      if (classData?.id && classType !== "-1") {
+        tags.map(async (tag) => {
+          await backend
+            .delete(`/class-tags/${classData.id}/${tag.id}`)
+            .catch((err) => {
+              console.error(err);
+            });
+        })
         await backend
           .post("/class-tags", {
             classId: classData.id,
@@ -468,6 +477,24 @@ export const TeacherEditModal = ({
                 <option value="beginner">Beginner</option>
                 <option value="intermediate">Intermediate</option>
                 <option value="advanced">Advanced</option>
+              </Select>
+            </FormControl>
+            <FormControl mb={4}>
+              <FormLabel>ClassType</FormLabel>
+              <Select
+                maxWidth="200px"
+                value={classType}
+                placeholder="Select class type..."
+                onChange={(e) => setClassType(e.target.value)}
+              >
+                {tagTypes.map((tagType) => (
+                  <option
+                    key={tagType.id}
+                    value={tagType.id}
+                  >
+                    {tagType.tag}
+                  </option>
+                ))}
               </Select>
             </FormControl>
             <FormControl mb={4}>

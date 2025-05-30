@@ -89,9 +89,9 @@ classTagsRouter.post("/", async (req, res) => {
 });
 
 // delete class/tag relationship
-classTagsRouter.delete("/", async (req, res) => {
+classTagsRouter.delete("/:classId/:tagId", async (req, res) => {
   try {
-    const { classId, tagId } = req.body;
+    const { classId, tagId } = req.params;
     const tags = await db.query(
       `DELETE FROM class_tags WHERE class_id = $1 AND tag_id = $2 RETURNING *;`,
       [classId, tagId]

@@ -105,6 +105,78 @@ export const Bookings = () => {
     setActiveTab("events");
   };
 
+  const reloadStudentClasses = async () => {
+    try {
+      const [classesRes, classTagsRes] = await Promise.all([
+        backend.get(`/class-enrollments/student/${user_id}`),
+        backend.get(`/class-tags/enrolled-class-tags/${user_id}`),
+      ]);
+      setClasses(classesRes.data);
+      const newClassTagsMap = {};
+      classTagsRes.data.forEach((item) => {
+        newClassTagsMap[item.classId] = item.tagArray;
+      });
+      setClassTagsMap(newClassTagsMap);
+    } catch (error) {
+      console.error("Error reloading student classes:", error);
+    }
+  };
+
+  const reloadStudentEvents = async () => {
+    try {
+      const [eventsRes, eventTagsRes] = await Promise.all([
+        backend.get(`/event-enrollments/student/${user_id}`),
+        backend.get(`/event-tags/enrolled-event-tags/${user_id}`),
+      ]);
+      setEvents(eventsRes.data);
+      const newEventTagsMap = {};
+      eventTagsRes.data.forEach((item) => {
+        newEventTagsMap[item.eventId] = item.tagArray;
+      });
+      setEventTagsMap(newEventTagsMap);
+    } catch (error) {
+      console.error("Error reloading student events:", error);
+    }
+  };
+
+  const reloadTeacherClasses = async () => {
+    try {
+      const [classesRes, classDraftsRes, classTagsRes] = await Promise.all([
+        backend.get(`/classes/published`),
+        backend.get(`/classes/drafts`),
+        backend.get(`/class-tags/all-class-tags`),
+      ]);
+      setClasses(classesRes.data);
+      setDraftClasses(classDraftsRes.data);
+      const newClassTagsMap = {};
+      classTagsRes.data.forEach((item) => {
+        newClassTagsMap[item.classId] = item.tagArray;
+      });
+      setClassTagsMap(newClassTagsMap);
+    } catch (error) {
+      console.error("Error reloading teacher classes:", error);
+    }
+  };
+
+  const reloadTeacherEvents = async () => {
+    try {
+      const [eventsRes, eventDraftsRes, eventTagsRes] = await Promise.all([
+        backend.get(`/events/published`),
+        backend.get(`/events/drafts`),
+        backend.get(`/event-tags/all-event-tags`),
+      ]);
+      setEvents(eventsRes.data);
+      setDraftEvents(eventDraftsRes.data);
+      const newEventTagsMap = {};
+      eventTagsRes.data.forEach((item) => {
+        newEventTagsMap[item.eventId] = item.tagArray;
+      });
+      setEventTagsMap(newEventTagsMap);
+    } catch (error) {
+      console.error("Error reloading teacher events:", error);
+    }
+  };
+
   useEffect(() => {
     if (currentUser && role !== "student") {
       // First get all classes and events
@@ -258,7 +330,28 @@ export const Bookings = () => {
     setSelectedCard(null);
     setCurrentModal("view");
     onClose();
-    reloadClassesAndDrafts();
+    if (tabIndex === 0) {
+      if (role !== "student") {
+        reloadTeacherClasses();
+      } else {
+        reloadStudentClasses();
+      }
+    } else if (tabIndex === 1) {
+      if (role !== "student") {
+        reloadTeacherEvents();
+      } else {
+        reloadStudentEvents();
+      }
+    } else {
+      if (role !== "student") {
+        reloadTeacherClasses();
+        reloadTeacherEvents();
+      } else {
+        reloadStudentClasses();
+        reloadStudentEvents();
+      }
+    }
+    console.log(classTagsMap);
   };
   const onOpenModal = (data) => {
     setClassData(data);
@@ -839,6 +932,7 @@ export const Bookings = () => {
             performances={allEvents}
             setRefresh={reloadClassesAndDrafts}
             coreqId={coreqId}
+            tags={classTagsMap[selectedCard?.id] || []}
           />
         ) : currentModal === "create" ? (
           <Modal
