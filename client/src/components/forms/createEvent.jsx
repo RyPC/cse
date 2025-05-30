@@ -29,7 +29,7 @@ export const CreateEvent = ({
     title: "",
     description: "",
     level: "",
-    tag: "",
+    tag: "Select Tag",
     date: "",
     startTime: "",
     endTime: "",
@@ -57,6 +57,7 @@ export const CreateEvent = ({
         callTime: event.callTime || "",
         costume: event.costume || "",
         capacity: event.capacity || event.capacity === 0 ? event.capacity : "",
+        tag: event.tag || "Select Tag",
       });
     }
   }, [event]);
@@ -72,8 +73,6 @@ export const CreateEvent = ({
     if (!formData.startTime) newErrors.startTime = "Start time is required";
     if (!formData.endTime) newErrors.endTime = "End time is required";
     if (!formData.callTime) newErrors.callTime = "Call time is required";
-    if (!formData.costume)
-      newErrors.costume = "Costume information is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -104,10 +103,7 @@ export const CreateEvent = ({
       const eventData = {
         ...formData,
         level: formData.level === "" ? "beginner" : formData.level,
-        tag:
-          formData.tag === "Select Tag"
-            ? ""
-            : formData.tag[0].toLowerCase() + formData.tag.slice(1),
+        tag: formData.tag === "Select Tag" ? "" : formData.tag,
         date: formData.date === "" ? new Date() : formData.date,
         start_time:
           formData.startTime === ""
@@ -138,11 +134,25 @@ export const CreateEvent = ({
       if (eventId) {
         // Edit event (PUT request)
         response = await backend.put(`/events/${eventId}/`, eventData);
+        if (eventData.tag !== "") {
+          if (event?.tag) {
+            // If the event already has a tag, we need to delete it first
+            await backend.delete(`/event-tags/${eventId}/${event?.tag}`);
+          }
+          response = await backend.post("/event-tags/", {
+            eventId: eventId,
+            tagId: eventData.tag,
+          });
+        }
       } else {
         // Create new event (POST request)
         if (eventData.tag !== "") {
           const tagId = await backend.get(`/tags/${eventData.tag}`);
           response = await backend.post("/events/", eventData);
+          if (event?.tag) {
+            // If the event already has a tag, we need to delete it first
+            await backend.delete(`/event-tags/${eventId}/${event?.tag}`);
+          }
           response = await backend.post("/event-tags/", {
             eventId: response.data[0].id,
             tagId: tagId.data[0].id,
@@ -169,15 +179,14 @@ export const CreateEvent = ({
           costume: "",
           capacity: "",
         });
-        if (onClose) onClose();
         if (triggerRefresh) triggerRefresh();
+        if (onClose) onClose();
       } else {
         console.error("Failed to create/save event:", response.statusText);
       }
     } catch (error) {
       console.error("Failed to create/save event, error:", error);
     } finally {
-      if (triggerRefresh) triggerRefresh();
       setIsSubmitting(false);
     }
   };
@@ -193,17 +202,7 @@ export const CreateEvent = ({
   const fetchTags = async () => {
     try {
       const tagsResponse = await backend.get("/tags");
-      // const initialTagFilter = {};
-      const initialTags = {};
-      tagsResponse.data.forEach((tag) => {
-        // initialTagFilter[tag.id] = false;
-        initialTags[tag.id] =
-          tag.tag.charAt(0).toUpperCase() + tag.tag.slice(1).toLowerCase();
-      });
-
-      // setTagFilter(initialTagFilter);
-      setTags(initialTags);
-      console.log(initialTags);
+      setTags(tagsResponse.data);
     } catch (error) {
       console.error("Error fetching tags:", error);
     }
@@ -260,18 +259,16 @@ export const CreateEvent = ({
           <Select
             name="tag"
             value={formData.tag}
-            // onChange={handleOnChange}
             onChange={handleChange}
-            // isInvalid={errors.level}
           >
             <option
-              value
+              value="Select Tag"
               disabled="Tag"
             >
               Select Tag
             </option>
             {Object.values(tags).map((option) => {
-              return <option value={option}>{option}</option>;
+              return <option value={option.id}>{option.tag}</option>;
             })}
           </Select>
           {/* {errors.level && <Text color="red.500">{errors.level}</Text>} */}

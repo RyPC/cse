@@ -43,40 +43,16 @@ export const ViewModal = ({
   // type,
   // role,
   isAttended = false,
+  tags = [],
 }) => {
   const onCancel = () => {
     setCurrentModal("cancel");
   };
 
-  const [tags, setTags] = useState([]);
   const { backend } = useBackendContext();
 
-  const getTags = async () => {
-    const tags_arr = [];
-    if (!card?.id) {
-      return;
-    }
-    const tags = await backend.get(`/event-tags/tags/${card.id}`);
-    // console.log("TAGS from GETTAGS event")
-    // console.log(tags.data)
-    for (let i = 0; i < tags.data.length; i++) {
-      if (!tags_arr.includes(tags.data[i].tag)) {
-        tags_arr.push(tags.data[i].tag);
-      }
-    }
-    setTags(tags_arr);
-  };
-
-  useEffect(() => {
-    getTags();
-  }, [backend]);
-
-  // console.log("viewmodal", card);
   const viewInfo = (
     <>
-      {/* <Flex justifyContent="center">
-        {title}
-      </Flex> */}
       <Text>
         {card?.description
           ? `Description: ${card.description}`
@@ -148,7 +124,7 @@ export const ViewModal = ({
           {coEvents.map((performance) => (
             <Tag
               borderRadius={"full"}
-              bg="purple.100"
+              bg="purple.200"
               textColor={"purple.800"}
               key={performance.id}
             >
@@ -196,7 +172,10 @@ export const ViewModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <VStack align={"start"}>
+          <VStack
+            align={"start"}
+            wordBreak={"break-word"}
+          >
             <IconButton
               icon={<ArrowBackIcon />}
               onClick={onClose}
@@ -219,7 +198,7 @@ export const ViewModal = ({
                   borderColor={"gray.300"}
                   borderWidth={1}
                 >
-                  {tag}
+                  {tag.tag[0].toUpperCase() + tag.tag.slice(1)}
                 </Tag>
               ))}
             </List>

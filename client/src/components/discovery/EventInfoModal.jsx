@@ -48,38 +48,13 @@ const EventInfoModal = ({
   corequisites,
   // modalIdentity,
   setModalIdentity,
+  tags = [],
   handleResolveCoreq = () => {},
 }) => {
   const { backend } = useBackendContext();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
-  // temp for image
-  // const [imageSrc, setImageSrc] = useState("");
-  // const [enrollmentStatus, setEnrollmentStatus] = useState(false);
-
-  // // console.log(user);
-
-  // useEffect(() => {
-  //   const checkEventEnrollment = () => {
-  //     // Check if already checked into event
-  //     console.log(user.data[0].id, id);
-  //     const body = {student_id: user.data[0].id, event_id: id};
-  //     backend.get(
-  //       `/event-enrollments/test`, {body}
-  //     ).then(res => {
-  //       console.log(res);
-  //       setEnrollmentStatus(res.data.exists);
-  //     });
-  //   };
-  //   if (user?.data && user?.data[0]) {
-  //     checkEventEnrollment();
-  //   } else {
-  //     setEnrollmentStatus(false);
-  //   }
-  // }, [backend, id, user?.data, isOpenProp]);
-
-  const [tags, setTags] = useState([]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [callTime, setCallTime] = useState("");
@@ -89,19 +64,6 @@ const EventInfoModal = ({
     setStartTime(data.data[0].startTime);
     setEndTime(data.data[0].endTime);
     setCallTime(data.data[0].callTime);
-  };
-
-  const getTags = async () => {
-    const tags_arr = [];
-    const tags = await backend.get(`/event-tags/tags/${id}`);
-    // console.log("TAGS from GETTAGS event")
-    // console.log(tags.data)
-    for (let i = 0; i < tags.data.length; i++) {
-      if (!tags_arr.includes(tags.data[i].tag)) {
-        tags_arr.push(tags.data[i].tag);
-      }
-    }
-    setTags(tags_arr);
   };
 
   const enrollInEvent = async () => {
@@ -147,12 +109,9 @@ const EventInfoModal = ({
   };
 
   useEffect(() => {
-    // if (isOpenProp && !imageSrc) {
-    //   fetch("https://dog.ceo/api/breeds/image/random") // for fun
-    //     .then((res) => res.json())
-    //     .then((data) => setImageSrc(data.message));
-    // }
-    getTags();
+    if (!isOpenProp) {
+      return;
+    }
     getStartTime();
   }, [isOpenProp]);
 
@@ -196,7 +155,7 @@ const EventInfoModal = ({
                     borderColor={"gray.300"}
                     borderWidth={1}
                   >
-                    {tag}
+                    {tag.tag}
                   </Tag>
                 ))}
               </List>
@@ -209,7 +168,6 @@ const EventInfoModal = ({
               </Text>
             </VStack>
           </ModalHeader>
-          <ModalCloseButton />
           <ModalBody>
             <Text>
               {description

@@ -5,7 +5,6 @@ import QRCodeReact from "react-qr-code";
 export const QRCode = ({ id, type, date }) => {
   const baseUrl = window.location.origin;
   const qrUrl = `${baseUrl}/check-in/${type === "Class" ? "class" : "event"}/${id}${date ? `/${encodeURIComponent(date)}` : ""}`;
-  // console.log(qrUrl);
 
   return (
     <VStack

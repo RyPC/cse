@@ -7,6 +7,42 @@ const eventTagsRouter = express.Router();
 
 eventTagsRouter.use(express.json());
 
+eventTagsRouter.get("/all-event-tags", async (req, res) => {
+  try {
+    const tags = await db.query(
+      `
+      SELECT event_tags.event_id, JSON_ARRAYAGG(tags.*) tag_array
+      FROM event_tags
+      JOIN tags ON event_tags.tag_id = tags.id
+      GROUP BY event_tags.event_id;`
+    );
+
+    res.status(200).json(keysToCamel(tags));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+eventTagsRouter.get("/enrolled-event-tags/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const tags = await db.query(
+      `
+      SELECT event_tags.event_id, JSON_ARRAYAGG(tags.*) tag_array
+      FROM event_tags
+      JOIN tags ON event_tags.tag_id = tags.id
+      JOIN event_enrollments ON event_tags.event_id = event_enrollments.event_id
+      WHERE event_enrollments.student_id = $1
+      GROUP BY event_tags.event_id;`,
+      [userId]
+    );
+    res.status(200).json(keysToCamel(tags));
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 // tags for a single event
 eventTagsRouter.get("/tags/:id", async (req, res) => {
   try {
@@ -51,9 +87,9 @@ eventTagsRouter.post("/", async (req, res) => {
 });
 
 // delete event/tag relationship
-eventTagsRouter.delete("/", async (req, res) => {
+eventTagsRouter.delete("/:eventId/:tagId", async (req, res) => {
   try {
-    const { eventId, tagId } = req.body;
+    const { eventId, tagId } = req.params;
     const tags = await db.query(
       `DELETE FROM event_tags WHERE event_id = $1 AND tag_id = $2 RETURNING *;`,
       [eventId, tagId]

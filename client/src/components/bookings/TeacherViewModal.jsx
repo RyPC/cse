@@ -37,64 +37,42 @@ import { ClassRSVP } from "../rsvp/classRsvp.jsx";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 
 export const TeacherViewModal = memo(
-  ({ isOpen, onClose, setCurrentModal, classData, performances }) => {
+  ({
+    isOpen,
+    onClose,
+    setCurrentModal,
+    classData,
+    performances,
+    tags,
+    magic,
+  }) => {
     const { backend } = useBackendContext();
-    const [tagData, setTagData] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [instructorName, setInstructorName] = useState("");
 
+    const fetchInstructor = async () => {
+      if (!classData?.id || !isOpen) {
+        return;
+      }
+      try {
+        const res = await backend.get(
+          `/classes-taught/instructor/${classData.id}`
+        );
+        if (res.data) {
+          const { firstName, lastName } = res.data[0];
+          setInstructorName(`${firstName} ${lastName}`);
+        }
+      } catch (err) {
+        console.error("Failed to fetch instructor:", err);
+        setInstructorName("Unavailable");
+      }
+    };
+
     useEffect(() => {
-      const fetchTags = async () => {
-        if (!classData?.id) {
-          return;
-        }
-
-        setLoading(true);
-        try {
-          const response = await backend.get(
-            `/class-tags/tags/${classData.id}`
-          );
-
-          if (response.data && response.data.length > 0) {
-            // Extract tags from the response
-            const processedTags = response.data.map((item) => ({
-              id: item.tagId,
-              name: item.tag,
-            }));
-
-            setTagData(processedTags);
-          } else {
-            setTagData([]);
-          }
-        } catch (error) {
-          console.error("Error fetching tags for class:", error);
-          setTagData([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-      const fetchInstructor = async () => {
-        if (!classData?.id) {
-          return;
-        }
-        try {
-          const res = await backend.get(
-            `/classes-taught/instructor/${classData.id}`
-          );
-          console.log("TESTING", res);
-          if (res.data) {
-            const { firstName, lastName } = res.data[0];
-            setInstructorName(`${firstName} ${lastName}`);
-          }
-        } catch (err) {
-          console.error("Failed to fetch instructor:", err);
-          setInstructorName("Unavailable");
-        }
-      };
-
-      fetchTags();
+      if (!isOpen) {
+        return;
+      }
       fetchInstructor();
-    }, [backend, classData?.id]);
+    }, [backend, classData?.id, magic]);
 
     const onCancel = () => {
       setCurrentModal("cancel");
@@ -125,23 +103,12 @@ export const TeacherViewModal = memo(
                     cursor="pointer"
                     onClick={onClose}
                   />
-                  {/* <IconButton
-            bg = "gray.50"
-            onClick={onClose}
-            icon={<AiOutlineArrowLeft />}
-            position="absolute"
-            left={5}
-            backgroundColor="white"
-          /> */}
                   <Menu bg="gray.50">
                     <MenuButton
                       bg="gray.50"
                       as={IconButton}
-                      // position="absolute"
-                      // right={5}
                       icon={<MdMoreHoriz />}
                     />
-                    {/* ... */}
                     <MenuList
                       backgroundColor="gray.100"
                       p={0}
@@ -191,7 +158,7 @@ export const TeacherViewModal = memo(
                       align="center"
                     >
                       <Text
-                        fontSize="1.5rem"
+                        fontSize="md"
                         fontWeight="bold"
                       >
                         {" "}
@@ -227,14 +194,11 @@ export const TeacherViewModal = memo(
                     <Box
                       border="1px"
                       borderColor="gray.300"
-                      borderRadius="2xl"
+                      borderRadius="full"
                       px={4}
                     >
-                      <Text fontSize="0.8rem">
-                        {tagData[0]?.name
-                          ? tagData[0].name.charAt(0).toUpperCase() +
-                            tagData[0].name.slice(1)
-                          : "No tag available"}
+                      <Text fontSize="sm">
+                        {tags[0]?.tag ? tags[0].tag : "No tags"}
                       </Text>
                     </Box>
                   </Flex>
@@ -244,8 +208,9 @@ export const TeacherViewModal = memo(
                     width="100%"
                   >
                     <Text
-                      fontSize="1.8rem"
+                      fontSize="2xl"
                       fontWeight="bold"
+                      wordBreak={"break-word"}
                     >
                       {classData?.title}
                     </Text>
@@ -255,7 +220,7 @@ export const TeacherViewModal = memo(
                     justifyContent="flex-start"
                     width="100%"
                   >
-                    <Text fontSize="16px">Taught by {instructorName}</Text>
+                    <Text fontSize="md">Taught by {instructorName}</Text>
                   </Box>
 
                   <Box
@@ -263,7 +228,7 @@ export const TeacherViewModal = memo(
                     justifyContent="flex-start"
                     width="100%"
                   >
-                    <Text fontSize="16px">{classData?.description}</Text>
+                    <Text fontSize="md">{classData?.description}</Text>
                   </Box>
                   <Divider
                     borderColor="gray.400"
@@ -275,7 +240,7 @@ export const TeacherViewModal = memo(
                     <Text
                       color="purple.700"
                       fontWeight="bold"
-                      fontSize="16px"
+                      fontSize="md"
                     >
                       {formatDate(classData?.date)} ·{" "}
                       {classData?.startTime
@@ -292,7 +257,7 @@ export const TeacherViewModal = memo(
                     justifyContent="flex-start"
                     width="100%"
                   >
-                    <Text fontSize="16px">{classData?.location}</Text>
+                    <Text fontSize="md">{classData?.location}</Text>
                   </Box>
                   <Divider
                     borderColor="gray.400"
@@ -309,10 +274,11 @@ export const TeacherViewModal = memo(
                       <Text
                         fontWeight="bold"
                         mb="0.5rem"
+                        fontSize="lg"
                       >
                         Level
                       </Text>
-                      <Text fontSize="16px">
+                      <Text fontSize="md">
                         {classData?.level.charAt(0).toUpperCase() +
                           classData?.level.slice(1)}
                       </Text>
@@ -322,10 +288,11 @@ export const TeacherViewModal = memo(
                         mr="20"
                         fontWeight="bold"
                         mb="0.5rem"
+                        fontSize="lg"
                       >
                         Capacity
                       </Text>
-                      <Text fontSize="16px">{classData?.capacity}</Text>
+                      <Text fontSize="md">{classData?.capacity}</Text>
                     </Box>
                   </HStack>
                   <Divider
@@ -348,11 +315,11 @@ export const TeacherViewModal = memo(
 
                     {classData?.prerequisites &&
                     classData?.prerequisites.length > 0 ? (
-                      <Text fontSize="16px">
+                      <Text fontSize="md">
                         {classData?.prerequisites.map((prerequisite) => (
                           <Tag
                             borderRadius={"full"}
-                            bg="purple.100"
+                            bg="purple.200"
                             textColor={"purple.800"}
                             key={prerequisite.id}
                           >
@@ -379,7 +346,7 @@ export const TeacherViewModal = memo(
                     {performances.map((performance) => (
                       <Tag
                         borderRadius={"full"}
-                        bg="purple.100"
+                        bg="purple.200"
                         textColor={"purple.800"}
                         key={performance.id}
                       >

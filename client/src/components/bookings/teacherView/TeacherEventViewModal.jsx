@@ -30,7 +30,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-import { calcLength } from "framer-motion";
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { BiSolidEdit } from "react-icons/bi";
 import { BsChevronLeft } from "react-icons/bs";
@@ -39,9 +38,7 @@ import {
   FaCircleExclamation,
   FaRegTrashCan,
 } from "react-icons/fa6";
-import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
+import { MdMoreHoriz } from "react-icons/md";
 
 import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
@@ -73,6 +70,8 @@ function TeacherEventViewModal({
   corequisites,
   triggerRefresh,
   handleResolveCoreq = () => {},
+  tags = [],
+  magic,
 }) {
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
@@ -84,9 +83,6 @@ function TeacherEventViewModal({
   const toast = useToast();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
-
-  // temp for image
-  const [imageSrc, setImageSrc] = useState("");
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -178,13 +174,27 @@ function TeacherEventViewModal({
     handleClose();
   };
 
-  useEffect(() => {
-    if (isOpenProp && !imageSrc) {
-      fetch("https://dog.ceo/api/breeds/image/random") // for fun
-        .then((res) => res.json())
-        .then((data) => setImageSrc(data.message));
+  const fetchTags = async () => {
+    if (!id) return;
+    try {
+      const response = await backend.get(`/event-tags/tags/${id}`);
+
+      if (response.data && response.data.length > 0) {
+        const responseTags = response.data.map((tagItem) => ({
+          id: tagItem.tag_id,
+          name: tagItem.tag,
+        }));
+        setTagData(responseTags);
+      } else {
+        setTagData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      setTagData([]);
     }
-  }, [imageSrc, isOpenProp]);
+  };
+
+  const tagData = tags;
 
   return (
     <>
@@ -218,6 +228,7 @@ function TeacherEventViewModal({
                 <ModalHeader
                   flex={1}
                   textAlign="center"
+                  wordBreak={"break-word"}
                 >
                   {title}
                 </ModalHeader>
@@ -238,6 +249,7 @@ function TeacherEventViewModal({
                       level: level,
                       capacity: capacity,
                       date: formFormattedDate,
+                      tag: tags[0]?.id,
                     }}
                     onClose={handleSaveChanges}
                     triggerRefresh={triggerRefresh}
@@ -310,17 +322,6 @@ function TeacherEventViewModal({
               </HStack>
             </ModalHeader>
             <ModalBody bg="gray.50">
-              {/* <HStack padding={3}>
-              <Box width="60%">
-                <Text fontWeight="bold">Location:</Text>
-                <Text>{location ? location : "N/A"}</Text>
-              </Box>
-              <Box width="40%" >
-                  <Text fontWeight="bold">Date:</Text>
-                  <Text>{formattedDate ? formattedDate : "N/A"}</Text>
-                </Box>
-            </HStack> */}
-
               <VStack>
                 <Box
                   bg="white"
@@ -342,7 +343,7 @@ function TeacherEventViewModal({
                     align="center"
                   >
                     <Text
-                      fontSize="1.5rem"
+                      fontSize="md"
                       fontWeight="bold"
                     >
                       {" "}
@@ -351,7 +352,7 @@ function TeacherEventViewModal({
                     <Button
                       onClick={onOpen}
                       variant="unstyled"
-                      fontSize="1.2rem"
+                      fontSize="md"
                       fontWeight="normal"
                       color="black"
                       textDecoration="underline"
@@ -372,14 +373,31 @@ function TeacherEventViewModal({
                 spacing={4}
                 align="center"
               >
+                <Flex
+                  pt={4}
+                  width="100%"
+                  justifyContent="flex-start"
+                >
+                  <Box
+                    border={"1px"}
+                    borderColor="gray.300"
+                    borderRadius="full"
+                    px={4}
+                  >
+                    <Text fontSize="sm">
+                      {tagData[0]?.tag ? tagData[0].tag : "No Tags"}
+                    </Text>
+                  </Box>
+                </Flex>
                 <Box
                   display="flex"
                   justifyContent="flex-start"
                   width="100%"
                 >
                   <Text
-                    fontSize="1.8rem"
+                    fontSize="2xl"
                     fontWeight="bold"
+                    wordBreak={"break-word"}
                   >
                     {title}
                   </Text>
@@ -394,7 +412,7 @@ function TeacherEventViewModal({
                   justifyContent="flex-start"
                   width="100%"
                 >
-                  <Text fontSize="16px">{description}</Text>
+                  <Text fontSize="md">{description}</Text>
                 </Box>
                 <Divider
                   borderColor="gray.400"
@@ -405,7 +423,7 @@ function TeacherEventViewModal({
                   <Text
                     color="purple.700"
                     fontWeight="bold"
-                    fontSize="16px"
+                    fontSize="md"
                   >
                     {formattedDate} ·{" "}
                     {formattedStartTime ? formattedStartTime : "TBD"} -{" "}
@@ -413,7 +431,7 @@ function TeacherEventViewModal({
                   </Text>
                 </Box>
                 <Box width="100%">
-                  <Text fontSize="16px">{location ? location : "N/A"}</Text>
+                  <Text fontSize="md">{location ? location : "N/A"}</Text>
                 </Box>
                 <Divider
                   borderColor="gray.400"
@@ -423,7 +441,7 @@ function TeacherEventViewModal({
                 <Box width="100%">
                   <Text
                     fontWeight="bold"
-                    fontSize={20}
+                    fontSize={"lg"}
                   >
                     Call Time
                   </Text>
@@ -443,7 +461,7 @@ function TeacherEventViewModal({
                   <Box width="50%">
                     <Text
                       fontWeight="bold"
-                      fontSize={20}
+                      fontSize={"lg"}
                     >
                       Capacity
                     </Text>
@@ -452,7 +470,7 @@ function TeacherEventViewModal({
                   <Box width="50%">
                     <Text
                       fontWeight="bold"
-                      fontSize={20}
+                      fontSize={"lg"}
                     >
                       Level
                     </Text>
@@ -469,7 +487,7 @@ function TeacherEventViewModal({
                   <Box>
                     <Text
                       fontWeight="bold"
-                      fontSize={20}
+                      fontSize={"lg"}
                     >
                       Costume
                     </Text>
@@ -481,7 +499,7 @@ function TeacherEventViewModal({
                     <Box>
                       <Text
                         as="b"
-                        fontSize={20}
+                        fontSize={"lg"}
                       >
                         Event Prerequisites
                       </Text>

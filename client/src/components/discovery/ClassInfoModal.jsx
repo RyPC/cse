@@ -54,15 +54,13 @@ const ClassInfoModal = ({
   setModalIdentity,
   // filteredCorequisites,
   handleResolveCoreq = () => {},
+  tags = [],
 }) => {
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
 
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
 
-  // temp for image
-  const [imageSrc, setImageSrc] = useState("");
-  const [tags, setTags] = useState([]);
   const [teacherName, setTeacherName] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -70,23 +68,8 @@ const ClassInfoModal = ({
   const [capacity, setCapacity] = useState("");
   const [level, setLevel] = useState("");
 
-  const getTags = async () => {
-    const tags_arr = [];
-    const tags = await backend.get(`/class-tags/tags/${id}`);
-    // console.log("TAGS from GETTAGS")
-    // console.log(tags.data)
-    for (let i = 0; i < tags.data.length; i++) {
-      if (!tags_arr.includes(tags.data[i].tag)) {
-        tags_arr.push(tags.data[i].tag);
-      }
-    }
-    setTags(tags_arr);
-  };
-
   const getTeacherName = async () => {
     const teacherName = await backend.get(`/classes-taught/instructor/${id}`);
-    console.log("TEACHER'S NAME!");
-    console.log(teacherName.data[0]);
     setTeacherName(
       teacherName.data[0].firstName + " " + teacherName.data[0].lastName
     );
@@ -118,24 +101,16 @@ const ClassInfoModal = ({
   };
 
   const classSignUp = async () => {
-    console.log("In class signup button");
-    console.log(isCorequisiteSignUp);
-    corequisites.map((coreq) => {
-      console.log(coreq);
-    });
     if (isCorequisiteSignUp) {
-      console.log("In isCorequisiteSignup clause");
       enrollInClass();
       return;
     }
     // if there exisits a coreq and not enrolled in a coreq,
     if (corequisites.some((coreq) => !coreq.enrolled)) {
-      console.log("In handleResolveCoreq clause");
       // let coReqWarningModal know that it should programatically display an event info modal version
       setModalIdentity("class");
       handleResolveCoreq();
     } else {
-      console.log("In else clause (enrollInClass())");
       enrollInClass();
     }
   };
@@ -149,16 +124,11 @@ const ClassInfoModal = ({
 
   const getPerformance = async () => {
     const performanceData = await backend.get(`/corequisites/${id}`);
-    console.log("performance data");
     console.log(performanceData.data);
   };
 
   useEffect(() => {
     if (isOpenProp) {
-      // fetch("https://dog.ceo/api/breeds/image/random") // for fun
-      //   .then((res) => res.json())
-      //   .then((data) => setImageSrc(data.message));
-      getTags();
       getTeacherName();
       getStartTime();
       initClass();
@@ -206,7 +176,7 @@ const ClassInfoModal = ({
                     borderColor={"gray.300"}
                     borderWidth={1}
                   >
-                    {tag}
+                    {tag.tag}
                   </Tag>
                 ))}
               </List>

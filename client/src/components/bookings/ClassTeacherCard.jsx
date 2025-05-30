@@ -51,9 +51,9 @@ export const ClassTeacherCard = memo(
   }) => {
     const [openTeacherModal, setOpenTeacherModal] = useState(false);
 
-    const closeTeacherModal = () => {
-      setOpenTeacherModal(false);
-    };
+    // const closeTeacherModal = () => {
+    //   setOpenTeacherModal(false);
+    // };
 
     const handleClickModal = () => {
       const modalData = {
@@ -85,7 +85,7 @@ export const ClassTeacherCard = memo(
     const formattedEndTime = endTime ? formatTime(endTime) : null;
     const getIcon = () => {
       const iconSize = 50;
-      switch (tags[0]) {
+      switch (tags[0]?.id) {
         case 1:
           return <FaMusic size={iconSize} />;
         case 2:
@@ -181,156 +181,5 @@ export const ClassTeacherCard = memo(
         </HStack>
       </Box>
     );
-
-    // return (
-    //   <Box
-    //    display="flex"
-    //    justifyContent="center"
-    //    w={{ base: "100%", md: "30em" }}
-    //   >
-
-    //   <Card
-    //     cursor="pointer"
-    //     key={id}
-    //     w={{ base: "90%", md: "30em" }}
-    //     border="1px"
-    //     borderColor="gray.300"
-    //     bg="gray.50"
-    //     onClick={
-    //       isDraft
-    //         ? () => {
-    //             const modalData = {
-    //               id,
-    //               title,
-    //               location,
-    //               date,
-    //               description,
-    //               capacity,
-    //               level,
-    //               costume,
-    //               performances: performance,
-    //               isRecurring,
-    //               recurrencePattern,
-    //               startDate,
-    //               endDate,
-    //               isDraft,
-    //               attendeeCount,
-    //               startTime,
-    //               endTime,
-    //             };
-    //             setSelectedCard(modalData);
-    //             onOpen({
-    //               id,
-    //               title,
-    //               location,
-    //               date,
-    //               description,
-    //               capacity,
-    //               isRecurring,
-    //               recurrencePattern,
-    //               startDate,
-    //               endDate,
-    //               level,
-    //               costume,
-    //               isDraft,
-    //               startTime,
-    //               endTime,
-    //             });
-    //           }
-    //         : () => {
-    //             const modalData = {
-    //               id,
-    //               title,
-    //               location,
-    //               date,
-    //               description,
-    //               capacity,
-    //               level,
-    //               costume,
-    //               isRecurring,
-    //               recurrencePattern,
-    //               performances: performance,
-    //               isDraft,
-    //               startDate,
-    //               endDate,
-    //               attendeeCount,
-    //               startTime,
-    //               endTime,
-    //             };
-    //             setSelectedCard(modalData);
-    //             onOpen({
-    //               id,
-    //               title,
-    //               location,
-    //               date,
-    //               description,
-    //               capacity,
-    //               level,
-    //               isRecurring,
-    //               recurrencePattern,
-    //               costume,
-    //               startDate,
-    //               endDate,
-    //               isDraft,
-    //               startTime,
-    //               endTime,
-    //             });
-    //           }
-    //       // : () => navigate(`/dashboard/classes/${classId}`)
-    //     }
-    //   >
-    //     <CardBody px={0}>
-    //       <Box
-    //         position="absolute"
-    //         textAlign="center"
-    //         justifyContent="center"
-    //         alignItems="center"
-    //         display="flex"
-    //         height="20px"
-    //         top="10px"
-    //         right="5%"
-    //         px="16px"
-    //         py="2px"
-    //         borderRadius="full"
-    //         border="0.2px solid"
-    //         borderColor="purple.600"
-    //         color="purple.700"
-    //         backgroundColor="purple.50"
-    //         fontSize="10px"
-    //       >
-    //         <Text>
-    //           {attendeeCount ?? 0} {(attendeeCount ?? 0) === 1 ? "Person" : "People"}{" "}
-    //           Enrolled
-    //         </Text>
-    //       </Box>
-    //       <HStack>
-    //         <Box px="20px">{getIcon()}</Box>
-    //         <VStack
-    //           alignItems="flex-start"
-    //           py="1rem"
-    //         >
-    //           <Text
-    //             fontSize="1.5rem"
-    //             fontWeight="bold"
-    //           >
-    //             {title}
-    //           </Text>
-
-    //           <HStack>
-    //             <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
-    //           </HStack>
-    //           <HStack>
-    //             <Text fontSize="sm">
-    //                 {formattedDate
-    //                   ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
-    //                   : "No date"}
-    //             </Text>
-    //           </HStack>
-    //         </VStack>
-    //       </HStack>
-    //     </CardBody>
-    //   </Card>
-    //   </Box>
-    // );
   }
 );

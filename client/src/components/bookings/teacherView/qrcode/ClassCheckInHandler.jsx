@@ -47,8 +47,6 @@ export const ClassCheckInHandler = () => {
 
         // Format current date as YYYY-MM-DD
         const today = new Date().toISOString().split("T")[0];
-        // console.log(decodeURIComponent(date));
-        // Class-specific endpoint
 
         const currentCheckIn = await backend.get(`/class-enrollments/test`, {
           params: {
