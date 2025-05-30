@@ -56,7 +56,9 @@ export const Discovery = () => {
         );
         setClasses(response.data);
 
-        const classTagsResponse = await backend.get("/class-tags/all-class-tags");
+        const classTagsResponse = await backend.get(
+          "/class-tags/all-class-tags"
+        );
         const classTags = {};
         classTagsResponse.data.forEach((tag) => {
           classTags[tag.classId] = tag.tagArray;
@@ -74,7 +76,9 @@ export const Discovery = () => {
         );
         setEvents(response.data);
 
-        const eventTagsResponse = await backend.get("/event-tags/all-event-tags");
+        const eventTagsResponse = await backend.get(
+          "/event-tags/all-event-tags"
+        );
         const eventTags = {};
         eventTagsResponse.data.forEach((tag) => {
           eventTags[tag.eventId] = tag.tagArray;

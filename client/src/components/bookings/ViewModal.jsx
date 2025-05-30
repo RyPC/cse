@@ -51,7 +51,6 @@ export const ViewModal = ({
 
   const { backend } = useBackendContext();
 
-
   const viewInfo = (
     <>
       <Text>
@@ -173,7 +172,10 @@ export const ViewModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <VStack align={"start"} wordBreak={"break-word"}>
+          <VStack
+            align={"start"}
+            wordBreak={"break-word"}
+          >
             <IconButton
               icon={<ArrowBackIcon />}
               onClick={onClose}

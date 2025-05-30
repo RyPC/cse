@@ -323,7 +323,6 @@ function TeacherEventViewModal({
               </HStack>
             </ModalHeader>
             <ModalBody bg="gray.50">
-
               <VStack>
                 <Box
                   bg="white"

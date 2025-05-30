@@ -172,12 +172,16 @@ export const Bookings = () => {
 
           const newClassTagsMap = {};
           const newEventTagsMap = {};
-          const classTagsRes = await backend.get(`/class-tags/enrolled-class-tags/${userId}`);
+          const classTagsRes = await backend.get(
+            `/class-tags/enrolled-class-tags/${userId}`
+          );
           classTagsRes.data.forEach((item) => {
             newClassTagsMap[item.classId] = item.tagArray;
           });
           // console.log("Student Class Tags Map:", newClassTagsMap);
-          const eventTagsRes = await backend.get(`/event-tags/enrolled-event-tags/${userId}`);
+          const eventTagsRes = await backend.get(
+            `/event-tags/enrolled-event-tags/${userId}`
+          );
           eventTagsRes.data.forEach((item) => {
             newEventTagsMap[item.eventId] = item.tagArray;
           });
@@ -186,7 +190,7 @@ export const Bookings = () => {
           setEventTagsMap(newEventTagsMap);
         } catch (error) {
           console.error("Error fetching data:", error);
-        } 
+        }
       };
       fetchData();
     }
@@ -291,7 +295,7 @@ export const Bookings = () => {
   //   return true;
   // };
 
-  const updateModal = (item, type="class") => {
+  const updateModal = (item, type = "class") => {
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
@@ -333,7 +337,6 @@ export const Bookings = () => {
       console.error("Error deleting enrollment:", error);
     }
   };
-
 
   const loadCorequisites = async (classId) => {
     try {
@@ -631,7 +634,7 @@ export const Bookings = () => {
                         >
                           <ClassCard
                             {...classItem}
-                            onClick={() => { 
+                            onClick={() => {
                               updateModal(classItem, "class");
                             }}
                             triggerRefresh={triggerRefresh}
@@ -890,7 +893,11 @@ export const Bookings = () => {
           coEvents={coEvents}
           type={cardType}
           isAttended={isAttendedItem}
-          tags={cardType === "class" ? classTagsMap[selectedCard?.id] : eventTagsMap[selectedCard?.id] || []}
+          tags={
+            cardType === "class"
+              ? classTagsMap[selectedCard?.id]
+              : eventTagsMap[selectedCard?.id] || []
+          }
         />
       ) : currentModal === "confirmation" ? (
         <ConfirmationModal

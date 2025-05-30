@@ -37,7 +37,7 @@ import { ClassRSVP } from "../rsvp/classRsvp.jsx";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 
 export const TeacherViewModal = memo(
-  ({ isOpen, onClose, setCurrentModal, classData, performances, }) => {
+  ({ isOpen, onClose, setCurrentModal, classData, performances }) => {
     const { backend } = useBackendContext();
     const [tagData, setTagData] = useState([]);
     // const [loading, setLoading] = useState(false);
@@ -66,7 +66,7 @@ export const TeacherViewModal = memo(
       } catch (error) {
         console.error("Error fetching tags for class:", error);
         setTagData([]);
-      // } finally {
+        // } finally {
         // setLoading(false);
       }
     };
@@ -221,9 +221,7 @@ export const TeacherViewModal = memo(
                       px={4}
                     >
                       <Text fontSize="sm">
-                        {tagData[0]?.name
-                          ? tagData[0].name
-                          : "No tags"}
+                        {tagData[0]?.name ? tagData[0].name : "No tags"}
                       </Text>
                     </Box>
                   </Flex>
