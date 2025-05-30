@@ -41,7 +41,10 @@ import {
 } from "react-icons/fa6";
 import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { createEmitAndSemanticDiagnosticsBuilderProgram } from "typescript";
+import {
+  createEmitAndSemanticDiagnosticsBuilderProgram,
+  isTemplateExpression,
+} from "typescript";
 
 import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
@@ -88,6 +91,7 @@ function TeacherEventViewModal({
   // temp for image
   const [imageSrc, setImageSrc] = useState("");
 
+  const [tagData, setTagData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
@@ -178,13 +182,41 @@ function TeacherEventViewModal({
     handleClose();
   };
 
-  useEffect(() => {
-    if (isOpenProp && !imageSrc) {
-      fetch("https://dog.ceo/api/breeds/image/random") // for fun
-        .then((res) => res.json())
-        .then((data) => setImageSrc(data.message));
+  const fetchTags = async () => {
+    if (!id) return;
+    try {
+      const response = await backend.get(`/event-tags/tags/${id}`);
+
+      if (response.data && response.data.length > 0) {
+        const responseTags = response.data.map((tagItem) => ({
+          id: tagItem.tag_id,
+          name: tagItem.tag,
+        }));
+        setTagData(responseTags);
+      } else {
+        setTagData([]);
+      }
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+      setTagData([]);
     }
-  }, [imageSrc, isOpenProp]);
+  };
+
+  useEffect(() => {
+    if (!isOpenProp) {
+      return;
+    }
+    fetchTags();
+  }, [backend, id, isOpenProp]);
+
+  // what the fuck??
+  // useEffect(() => {
+  //   if (isOpenProp && !imageSrc) {
+  //     fetch("https://dog.ceo/api/breeds/image/random") // for fun
+  //       .then((res) => res.json())
+  //       .then((data) => setImageSrc(data.message));
+  //   }
+  // }, [imageSrc, isOpenProp]);
 
   return (
     <>
@@ -372,6 +404,22 @@ function TeacherEventViewModal({
                 spacing={4}
                 align="center"
               >
+                <Flex
+                  pt={4}
+                  width="100%"
+                  justifyContent="flex-start"
+                >
+                  <Box
+                    border={"1px"}
+                    borderColor="gray.300"
+                    borderRadius="full"
+                    px={4}
+                  >
+                    <Text fontSize="sm">
+                      {tagData[0]?.name ? tagData[0].name : "No Tags"}
+                    </Text>
+                  </Box>
+                </Flex>
                 <Box
                   display="flex"
                   justifyContent="flex-start"

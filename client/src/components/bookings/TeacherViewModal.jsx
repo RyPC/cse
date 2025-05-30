@@ -37,61 +37,62 @@ import { ClassRSVP } from "../rsvp/classRsvp.jsx";
 import { QRCode } from "./teacherView/qrcode/QRCode.jsx";
 
 export const TeacherViewModal = memo(
-  ({ isOpen, onClose, setCurrentModal, classData, performances }) => {
+  ({ isOpen, onClose, setCurrentModal, classData, performances, }) => {
     const { backend } = useBackendContext();
     const [tagData, setTagData] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     const [instructorName, setInstructorName] = useState("");
 
-    useEffect(() => {
-      const fetchTags = async () => {
-        if (!classData?.id) {
-          return;
-        }
+    const fetchTags = async () => {
+      if (!classData?.id || !isOpen) {
+        return;
+      }
 
-        setLoading(true);
-        try {
-          const response = await backend.get(
-            `/class-tags/tags/${classData.id}`
-          );
+      // setLoading(true);
+      try {
+        const response = await backend.get(`/class-tags/tags/${classData.id}`);
 
-          if (response.data && response.data.length > 0) {
-            // Extract tags from the response
-            const processedTags = response.data.map((item) => ({
-              id: item.tagId,
-              name: item.tag,
-            }));
+        if (response.data && response.data.length > 0) {
+          // Extract tags from the response
+          const processedTags = response.data.map((item) => ({
+            id: item.tagId,
+            name: item.tag,
+          }));
 
-            setTagData(processedTags);
-          } else {
-            setTagData([]);
-          }
-        } catch (error) {
-          console.error("Error fetching tags for class:", error);
+          setTagData(processedTags);
+        } else {
           setTagData([]);
-        } finally {
-          setLoading(false);
         }
-      };
-      const fetchInstructor = async () => {
-        if (!classData?.id) {
-          return;
+      } catch (error) {
+        console.error("Error fetching tags for class:", error);
+        setTagData([]);
+      // } finally {
+        // setLoading(false);
+      }
+    };
+    const fetchInstructor = async () => {
+      if (!classData?.id || !isOpen) {
+        return;
+      }
+      try {
+        const res = await backend.get(
+          `/classes-taught/instructor/${classData.id}`
+        );
+        // console.log("TESTING", res);
+        if (res.data) {
+          const { firstName, lastName } = res.data[0];
+          setInstructorName(`${firstName} ${lastName}`);
         }
-        try {
-          const res = await backend.get(
-            `/classes-taught/instructor/${classData.id}`
-          );
-          console.log("TESTING", res);
-          if (res.data) {
-            const { firstName, lastName } = res.data[0];
-            setInstructorName(`${firstName} ${lastName}`);
-          }
-        } catch (err) {
-          console.error("Failed to fetch instructor:", err);
-          setInstructorName("Unavailable");
-        }
-      };
+      } catch (err) {
+        console.error("Failed to fetch instructor:", err);
+        setInstructorName("Unavailable");
+      }
+    };
 
+    useEffect(() => {
+      if (!isOpen) {
+        return;
+      }
       fetchTags();
       fetchInstructor();
     }, [backend, classData?.id]);
@@ -227,7 +228,7 @@ export const TeacherViewModal = memo(
                     <Box
                       border="1px"
                       borderColor="gray.300"
-                      borderRadius="2xl"
+                      borderRadius="full"
                       px={4}
                     >
                       <Text fontSize="0.8rem">

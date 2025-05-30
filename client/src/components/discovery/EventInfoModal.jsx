@@ -147,11 +147,9 @@ const EventInfoModal = ({
   };
 
   useEffect(() => {
-    // if (isOpenProp && !imageSrc) {
-    //   fetch("https://dog.ceo/api/breeds/image/random") // for fun
-    //     .then((res) => res.json())
-    //     .then((data) => setImageSrc(data.message));
-    // }
+    if (!isOpenProp) {
+      return;
+    }
     getTags();
     getStartTime();
   }, [isOpenProp]);

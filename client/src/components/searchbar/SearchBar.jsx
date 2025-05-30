@@ -52,8 +52,8 @@ export const SearchBar = ({ onSearch, tags = {}, tagFilter = {}, onTag }) => {
             "&::-webkit-scrollbar": {
               display: "none",
             },
-            "-ms-overflow-style": "none",
-            "scrollbar-width": "none",
+            MsOverflowStyle: "none",
+            scrollbarWidth: "none",
           }}
         >
           {Object.entries(tags).map(([id, name]) => (

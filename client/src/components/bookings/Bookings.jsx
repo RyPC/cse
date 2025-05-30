@@ -141,6 +141,7 @@ export const Bookings = () => {
               (tag) => tag.id
             );
           });
+          console.log(newClassTagsMap);
 
           // Set all the state
           setClassTagsMap(newClassTagsMap);
@@ -220,15 +221,8 @@ export const Bookings = () => {
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);
-    // console.log("classes:", classes);
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
-    // console.log(
-    //   "Attended classes and events:",
-    //   attended,
-    //   attendedClasses,
-    //   attendedEvents
-    // );
     setDrafts([...draftClasses, ...draftEvents]);
   }, [classes, events]);
 
@@ -246,7 +240,6 @@ export const Bookings = () => {
 
         setTagFilter(initialTagFilter);
         setTags(initialTags);
-        // console.log(initialTags);
       } catch (error) {
         console.error("Error fetching tags:", error);
       }
@@ -271,10 +264,8 @@ export const Bookings = () => {
 
         if (data.length > 0) {
           const eventId = data[0].eventId;
-          // console.log("Fetched coreqId:", eventId);
           setCoreqId(eventId);
         } else {
-          // console.log("No corequisite found for class:", selectedCard.id);
           setCoreqId(null);
         }
       } catch (err) {
@@ -301,45 +292,38 @@ export const Bookings = () => {
     setRefresh(refresh + 1);
     // console.log("Refresh triggered");
   };
+
   // https://dmitripavlutin.com/how-to-compare-objects-in-javascript/#4-deep-equality
-  const deepEquality = (object1, object2) => {
-    if (object1 === null || object2 === null) return object1 === object2;
-    const keys1 = Object.keys(object1);
-    const keys2 = Object.keys(object2);
+  // const deepequality = (object1, object2) => {
+  //   if (object1 === null || object2 === null) return object1 === object2;
+  //   const keys1 = Object.keys(object1);
+  //   const keys2 = Object.keys(object2);
 
-    if (keys1.length !== keys2.length) {
-      return false;
-    }
+  //   if (keys1.length !== keys2.length) {
+  //     return false;
+  //   }
 
-    for (const key of keys1) {
-      const val1 = object1[key];
-      const val2 = object2[key];
-      const areObjects = typeof val1 === "object" && typeof val2 === "object";
-      if (
-        (areObjects && !deepEquality(val1, val2)) ||
-        (!areObjects && val1 !== val2)
-      ) {
-        return false;
-      }
-    }
+  //   for (const key of keys1) {
+  //     const val1 = object1[key];
+  //     const val2 = object2[key];
+  //     const areObjects = typeof val1 === "object" && typeof val2 === "object";
+  //     if (
+  //       (areObjects && !deepEquality(val1, val2)) ||
+  //       (!areObjects && val1 !== val2)
+  //     ) {
+  //       return false;
+  //     }
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
 
-  const updateModal = (item) => {
-    const type =
-      classes.some((e) => deepEquality(e, item)) ||
-      draftClasses.some((e) => deepEquality(e, item))
-        ? "class"
-        : "event";
-    // console.log(
-    //   "update",
-    //   item,
-    //   classes,
-    //   draftClasses,
-    //   type,
-    //   deepEquality(classes[0], item)
-    // );
+  const updateModal = (item, type="class") => {
+    // const type = 
+      // classes.some((e) => deepEquality(e, item)) ||
+      // draftClasses.some((e) => deepEquality(e, item))
+      //   ? "class"
+      //   : "event";
     if (type === "class") loadCorequisites(item.id);
     setSelectedCard(item);
     setCardType(type);
@@ -676,6 +660,9 @@ export const Bookings = () => {
                             performances={events}
                             navigate={navigate}
                             onOpen={updateModal}
+                            onClick={() => {
+                              updateModal(classItem, "class");
+                            }}
                             tags={classTagsMap[classItem.id] || []}
                           />
                         );
@@ -704,7 +691,9 @@ export const Bookings = () => {
                         >
                           <ClassCard
                             {...classItem}
-                            onClick={() => updateModal(classItem)}
+                            onClick={() => { 
+                              updateModal(classItem, "class");
+                            }}
                             triggerRefresh={triggerRefresh}
                             onCloseModal={onCloseModal}
                             tags={classTags}
@@ -777,7 +766,9 @@ export const Bookings = () => {
                         <EventCard
                           key={eventItem.id}
                           {...eventItem}
-                          onClick={() => updateModal(eventItem)}
+                          onClick={() => {
+                            updateModal(eventItem, "event");
+                          }}
                           triggerRefresh={triggerRefresh}
                           onCloseModal={onCloseModal}
                           tags={eventTags}
@@ -816,7 +807,7 @@ export const Bookings = () => {
                           <ClassTeacherCard
                             key={item.id}
                             {...item}
-                            onClick={() => updateModal(item)}
+                            onClick={() => updateModal(item, "class")}
                             setSelectedCard={setSelectedCard}
                             performance={coEvents}
                             onOpen={updateModal}
@@ -838,7 +829,9 @@ export const Bookings = () => {
                             description={item.description}
                             capacity={item.capacity}
                             level={item.level}
-                            onClick={() => updateModal(item)}
+                            onClick={() => {
+                              updateModal(item, "event");
+                            }}
                             triggerRefresh={triggerRefresh}
                             onCloseModal={onCloseModal}
                           />
@@ -855,13 +848,17 @@ export const Bookings = () => {
                       <ClassCard
                         key={item.id}
                         {...item}
-                        onClick={() => updateModal(item)}
+                        onClick={() => {
+                          updateModal(item, "class");
+                        }}
                       />
                     ) : (
                       <EventCard
                         key={item.id}
                         {...item}
-                        onClick={() => updateModal(item)}
+                        onClick={() => {
+                          updateModal(item, "event");
+                        }}
                         triggerRefresh={triggerRefresh}
                       />
                     )
@@ -974,211 +971,3 @@ export const Bookings = () => {
     </Box>
   );
 };
-
-// const ClassTeacherCard = memo(
-//   ({
-//     id,
-//     title,
-//     location,
-//     date,
-//     description,
-//     capacity,
-//     level,
-//     costume,
-//     performance,
-//     attendeeCount,
-//     isDraft,
-//     recurrencePattern,
-//     isRecurring,
-//     startDate,
-//     endDate,
-//     startTime,
-//     endTime,
-//     navigate,
-//     setSelectedCard,
-//     tagId,
-//     onOpen,
-//   }) => {
-
-//     const [openTeacherModal, setOpenTeacherModal] = useState(false);
-
-//     const closeTeacherModal = () => {
-//       setOpenTeacherModal(false);
-//     };
-
-//     const formattedDate = date ? formatDate(date) : null;
-//     const formattedStartTime = startTime ? formatTime(startTime) : null;
-//     const formattedEndTime = endTime ? formatTime(endTime) : null;
-//     const getIcon = () => {
-//       const iconSize = 50;
-//       switch (tagId) {
-//         case 1:
-//           return <FaMusic size={iconSize} />;
-//         case 2:
-//           return <GiBallerinaShoes size={iconSize} />;
-//         case 3:
-//           return <FaMicrophoneAlt size={iconSize} />;
-//         case 4:
-//           return <GiBoombox size={iconSize} />;
-//         case 5:
-//           return <GiAbstract001 size={iconSize} />;
-//         case 6:
-//           return <GiCartwheel size={iconSize} />;
-//         case 7:
-//           return <GiTambourine size={iconSize} />;
-//         default:
-//           return <FaMusic size={iconSize} />;
-//       }
-//     };
-//     return (
-//       <Box
-//        display="flex"
-//        justifyContent="center"
-//        w={{ base: "100%", md: "30em" }}
-//       >
-
-//       <Card
-//         cursor="pointer"
-//         key={id}
-//         w={{ base: "90%", md: "30em" }}
-//         border="1px"
-//         borderColor="gray.300"
-//         bg="gray.50"
-//         onClick={
-//           isDraft
-//             ? () => {
-//                 const modalData = {
-//                   id,
-//                   title,
-//                   location,
-//                   date,
-//                   description,
-//                   capacity,
-//                   level,
-//                   costume,
-//                   performances: performance,
-//                   isRecurring,
-//                   recurrencePattern,
-//                   startDate,
-//                   endDate,
-//                   isDraft,
-//                   attendeeCount,
-//                   startTime,
-//                   endTime,
-//                 };
-//                 setSelectedCard(modalData);
-//                 onOpen({
-//                   id,
-//                   title,
-//                   location,
-//                   date,
-//                   description,
-//                   capacity,
-//                   isRecurring,
-//                   recurrencePattern,
-//                   startDate,
-//                   endDate,
-//                   level,
-//                   costume,
-//                   isDraft,
-//                   startTime,
-//                   endTime,
-//                 });
-//               }
-//             : () => {
-//                 const modalData = {
-//                   id,
-//                   title,
-//                   location,
-//                   date,
-//                   description,
-//                   capacity,
-//                   level,
-//                   costume,
-//                   isRecurring,
-//                   recurrencePattern,
-//                   performances: performance,
-//                   isDraft,
-//                   startDate,
-//                   endDate,
-//                   attendeeCount,
-//                   startTime,
-//                   endTime,
-//                 };
-//                 setSelectedCard(modalData);
-//                 onOpen({
-//                   id,
-//                   title,
-//                   location,
-//                   date,
-//                   description,
-//                   capacity,
-//                   level,
-//                   isRecurring,
-//                   recurrencePattern,
-//                   costume,
-//                   startDate,
-//                   endDate,
-//                   isDraft,
-//                   startTime,
-//                   endTime,
-//                 });
-//               }
-//           // : () => navigate(`/dashboard/classes/${classId}`)
-//         }
-//       >
-//         <CardBody px={0}>
-//           <Box
-//             position="absolute"
-//             textAlign="center"
-//             justifyContent="center"
-//             alignItems="center"
-//             display="flex"
-//             height="20px"
-//             top="10px"
-//             right="5%"
-//             px="16px"
-//             py="2px"
-//             borderRadius="full"
-//             border="0.2px solid"
-//             borderColor="purple.600"
-//             color="purple.700"
-//             backgroundColor="purple.50"
-//             fontSize="10px"
-//           >
-//             <Text>
-//               {attendeeCount ?? 0} {(attendeeCount ?? 0) === 1 ? "Person" : "People"}{" "}
-//               Enrolled
-//             </Text>
-//           </Box>
-//           <HStack>
-//             <Box px="20px">{getIcon()}</Box>
-//             <VStack
-//               alignItems="flex-start"
-//               py="1rem"
-//             >
-//               <Text
-//                 fontSize="1.5rem"
-//                 fontWeight="bold"
-//               >
-//                 {title}
-//               </Text>
-
-//               <HStack>
-//                 <Text fontSize="sm">{location ? `${location}` : "No location"}</Text>
-//               </HStack>
-//               <HStack>
-//                 <Text fontSize="sm">
-//                     {formattedDate
-//                       ? `${formattedDate} · ${formattedStartTime} - ${formattedEndTime}`
-//                       : "No date"}
-//                 </Text>
-//               </HStack>
-//             </VStack>
-//           </HStack>
-//         </CardBody>
-//       </Card>
-//       </Box>
-//     );
-//   }
-// );
