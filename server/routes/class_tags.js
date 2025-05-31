@@ -35,7 +35,7 @@ classTagsRouter.get("/enrolled-class-tags/:userId", async (req, res) => {
       FROM class_tags 
       JOIN tags ON class_tags.tag_id = tags.id
       JOIN class_enrollments ON class_tags.class_id = class_enrollments.class_id
-      WHERE class_enrollments.student_id = $1
+      WHERE class_enrollments.student_id = $1 AND class_enrollments.attendance IS NULL
       GROUP BY class_tags.class_id;`,
       [userId]
     );
@@ -78,6 +78,19 @@ classTagsRouter.get("/classes/:id", async (req, res) => {
 classTagsRouter.post("/", async (req, res) => {
   try {
     const { classId, tagId } = req.body;
+
+    const existingTag = await db.query(
+      `SELECT * FROM class_tags WHERE class_id = $1 AND tag_id = $2;`,
+      [classId, tagId]
+    );
+    if (existingTag.length > 0) {
+      return res.status(201).json(keysToCamel(existingTag));
+    }
+    if (!classId || !tagId) {
+      return res.status(400).json({ error: "Class ID and Tag ID are required." });
+    }
+
+
     const tags = await db.query(
       `INSERT INTO class_tags (class_id, tag_id) VALUES ($1, $2) RETURNING *;`,
       [classId, tagId]

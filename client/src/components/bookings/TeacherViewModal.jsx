@@ -150,7 +150,7 @@ export const TeacherViewModal = memo(
                     <Center>
                       <QRCode
                         id={classData?.id}
-                        type="Event"
+                        type="Class"
                       ></QRCode>
                     </Center>
                     <Box
