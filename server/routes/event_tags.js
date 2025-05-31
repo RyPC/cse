@@ -76,6 +76,19 @@ eventTagsRouter.get("/events/:id", async (req, res) => {
 eventTagsRouter.post("/", async (req, res) => {
   try {
     const { eventId, tagId } = req.body;
+
+    const existingTag = await db.query(
+      `SELECT * FROM event_tags WHERE event_id = $1 AND tag_id = $2;`,
+      [eventId, tagId]
+    );
+    if (existingTag.length > 0) {
+      return res.status(201).json(keysToCamel(existingTag));
+    }
+
+    if (!eventId || !tagId) {
+      return res.status(400).send("Event ID and Tag ID are required.");
+    }
+
     const tags = await db.query(
       `INSERT INTO event_tags (event_id, tag_id) VALUES ($1, $2) RETURNING *;`,
       [eventId, tagId]

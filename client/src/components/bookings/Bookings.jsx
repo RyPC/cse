@@ -265,7 +265,7 @@ export const Bookings = () => {
     const attendedEvents = events.filter((e) => e.attendance !== null);
     setAttended([...attendedClasses, ...attendedEvents]);
     setDrafts([...draftClasses, ...draftEvents]);
-  }, [classes, events]);
+  }, [classes, events, draftClasses, draftEvents]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -969,14 +969,15 @@ export const Bookings = () => {
                     <Text>No draft events or classes</Text>
                   )
                 ) : attended.length > 0 ? (
-                  attended.map((item) =>
-                    item.class_id ? (
+                  attended.map((item) => {
+                    return !item.callTime ? (
                       <ClassCard
                         key={item.id}
                         {...item}
                         onClick={() => {
                           updateModal(item, "class");
                         }}
+                        tags={classTagsMap[item.id] || []}
                       />
                     ) : (
                       <EventCard
@@ -990,6 +991,7 @@ export const Bookings = () => {
                         tags={eventTagsMap[item.id] || []}
                       />
                     )
+                  }
                   )
                 ) : (
                   <Text>No attended classes or events.</Text>
