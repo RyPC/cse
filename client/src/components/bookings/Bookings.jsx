@@ -1086,9 +1086,14 @@ export const Bookings = () => {
           type={cardType}
           isAttended={isAttendedItem}
           tags={
-            cardType === "class"
-              ? classTagsMap[selectedCard?.id]
-              : eventTagsMap[selectedCard?.id] || []
+            Array.from(
+              new Set(
+                (cardType === "class"
+                  ? classTagsMap[selectedCard?.id]
+                  : eventTagsMap[selectedCard?.id] || []
+                ).map(t => t.tag)
+              )
+            ).map(tag => ({ tag }))
           }
         />
       ) : currentModal === "confirmation" ? (
