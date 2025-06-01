@@ -7,6 +7,7 @@ import {
   ModalOverlay,
   Text,
   VStack,
+  Box,
 } from "@chakra-ui/react";
 
 export const ConfirmationModal = ({ isOpen, onClose, card }) => {
