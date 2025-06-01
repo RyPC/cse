@@ -1089,7 +1089,7 @@ export const Bookings = () => {
             Array.from(
               new Set(
                 (cardType === "class"
-                  ? classTagsMap[selectedCard?.id]
+                  ? classTagsMap[selectedCard?.id] || []
                   : eventTagsMap[selectedCard?.id] || []
                 ).map(t => t.tag)
               )
