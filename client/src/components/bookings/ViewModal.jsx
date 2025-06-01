@@ -228,7 +228,10 @@ export const ViewModal = ({
             </Button>
           </ModalFooter>
         )}
-        <PublishedReviews classId={card?.id} />
+        <PublishedReviews
+          classId={card?.id}
+          isAttended={isAttended}
+        />
       </ModalContent>
     </Modal>
   );
