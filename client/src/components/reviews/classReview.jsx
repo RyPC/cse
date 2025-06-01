@@ -52,7 +52,7 @@ const PublishedReviews = ({ classId, isAttended = false }) => {
         isAttended && (
           <>
             <StudentReview
-              displayName={user?.firstName}
+              displayName={user?.firstName + " " + user?.lastName}
               class_id={classId}
               student_id={user?.id}
               onUpdate={onUpdate}
@@ -65,7 +65,7 @@ const PublishedReviews = ({ classId, isAttended = false }) => {
         {reviews.map((review, index) => (
           <ReviewCardController
             key={index}
-            displayName={user?.firstName}
+            displayName={user?.firstName + " " + user?.lastName}
             reviewText={review.review}
             rating={review.rating}
             student_id={review.studentId}

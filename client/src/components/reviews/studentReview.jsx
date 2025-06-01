@@ -39,7 +39,7 @@ const StudentReview = ({
   const [review, setReview] = useState(reviewText ?? "");
   const [attended, setAttended] = useState(null);
   const [purpleHex] = useToken("colors", ["purple.600"]);
-  const [greyHex] = useToken("colors", ["gray.600"]);
+  const [greyHex] = useToken("colors", ["gray.400"]);
 
   const [stars, setStars] = useState(Array(5).fill(0));
 
@@ -116,8 +116,8 @@ const StudentReview = ({
             /> */}
             <Icon
               as={FaUserCircle}
-              w={50}
-              h={50}
+              w={45}
+              h={45}
               mb={2}
               color="gray.500"
             />
