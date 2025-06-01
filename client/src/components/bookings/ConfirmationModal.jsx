@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Modal,
   ModalBody,
@@ -8,6 +9,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { MdCheckCircle } from "react-icons/md";
 
 export const ConfirmationModal = ({ isOpen, onClose, card }) => {
   return (
