@@ -86,6 +86,7 @@ eventEnrollmentRouter.get("/student/:student_id", async (req, res) => {
         (SELECT COUNT(*) FROM event_enrollments WHERE event_id = e.id) as attendee_count
       FROM events e
       JOIN event_enrollments ee ON e.id = ee.event_id AND ee.student_id = $1
+      WHERE is_draft = False
       GROUP BY e.id, ee.attendance
     `,
       [req.params.student_id]

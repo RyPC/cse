@@ -95,6 +95,7 @@ classEnrollmentsRouter.get("/student/:student_id", async (req, res) => {
       FROM classes c
       JOIN ranked_enrollments ce ON c.id = ce.class_id AND ce.student_id = $1 AND ce.rn = 1
       LEFT JOIN scheduled_classes sc ON c.id = sc.class_id
+      WHERE c.is_draft = False
       ORDER BY c.id, sc.date DESC;
     `,
       [req.params.student_id]
