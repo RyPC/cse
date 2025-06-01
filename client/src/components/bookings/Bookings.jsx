@@ -170,6 +170,7 @@ export const Bookings = () => {
   };
 
   useEffect(() => {
+    if (!role) return;
     if (currentUser && role !== "student") {
       // First get all classes and events
       const fetchData = async () => {
@@ -258,7 +259,7 @@ export const Bookings = () => {
       };
       fetchData();
     }
-  }, [backend, currentUser, isTeacher, refresh]);
+  }, [backend, currentUser, refresh, role]);
 
   useEffect(() => {
     const attendedClasses = classes.filter((c) => c.attendance !== null);

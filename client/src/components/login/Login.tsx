@@ -20,7 +20,6 @@ import {
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { FaGoogle } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 
@@ -40,7 +39,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const { login, handleRedirectResult } = useAuthContext();
+  const { login, handleRedirectResult, updateRole} = useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -74,6 +73,8 @@ export const Login = () => {
       const response = await backend.get("/teachers");
       const teachers = response.data;
       const teacher = teachers.find((teach) => teach.email === data.email);
+      updateRole();
+
 
       if (teacher) {
         if (teacher.isActivated) {
