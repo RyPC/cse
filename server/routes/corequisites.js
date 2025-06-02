@@ -7,6 +7,31 @@ const corequisitesRouter = express.Router();
 
 corequisitesRouter.use(express.json());
 
+corequisitesRouter.get("/class/:classId", async (req, res) => {
+  const classId = req.params.classId;
+  try {
+    const result = await db.query(
+      ` SELECT * FROM corequisites WHERE class_id = $1;`, [classId]
+    );
+    // use the event_id from result to get the coreqs of the event
+    if (result?.data) {
+      res.status(404).json({ error: "Error fetching coreqs for this class." });
+      return;
+    }
+    // there should only be one event per class
+    const coreqEvent = result[0]?.event_id;
+    const coreqResult = await db.query(
+      `SELECT * FROM corequisites JOIN classes on classes.id = corequisites.class_id WHERE class_id != $1 AND event_id = $2;`, [classId, coreqEvent]
+    );
+
+    res.status(200).json(keysToCamel(coreqResult));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+    return;
+  }
+
+});
+
 corequisitesRouter.get("/", async (req, res) => {
   try {
     const result = await db.query(`

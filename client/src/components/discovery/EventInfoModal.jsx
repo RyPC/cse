@@ -203,26 +203,27 @@ const EventInfoModal = ({
               <br />
               <Divider orientation="horizontal" />
               <HStack width="100%">
-                {corequisites && corequisites.length > 0 && (
-                  <Box
-                    bg="#E8E7EF"
-                    borderRadius="md"
-                    width="100%"
-                    p={4}
+                <Box>
+                  <Text
+                    fontWeight="bold"
+                    mb="1"
                   >
-                    <Text as="b">Recommended</Text>
-                    <List>
-                      {corequisites.map((coreq, index) => (
-                        <ListItem key={index}>
-                          <ListIcon
-                            as={coreq.enrolled ? FaCircleCheck : FaTimesCircle}
-                          />
-                          {coreq.title}
-                        </ListItem>
+                    Included Classes
+                  </Text>
+                  <Text mb={2} fontSize="sm">
+                    All classes that will be participating in this performance.
+                  </Text>
+
+                  {corequisites && corequisites.length > 0 ? (
+                    <Box>
+                      {corequisites.map((prerequisite) => (
+                        <Tag borderRadius={"full"} bg="purple.200" textColor={"purple.800"} m={1} key={prerequisite.id}>{prerequisite.title}</Tag>
                       ))}
-                    </List>
-                  </Box>
-                )}
+                    </Box>
+                  ) : (
+                    <Text mt={1} fontSize={"md"}><em>No prerequisites for this class</em></Text>
+                  )}
+                </Box>
               </HStack>
             </VStack>
           </ModalBody>

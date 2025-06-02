@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   Badge,
@@ -32,7 +32,7 @@ export const SearchBar = ({ onSearch, tags = {}, tagFilter = {}, onTag }) => {
         <Input
           placeholder="Search"
           variant="filled"
-          borderRadius="full"
+          borderRadius="lg"
           borderColor={"gray.300"}
           bg="white.100"
           _hover={{ bg: "gray.200" }}
@@ -62,7 +62,7 @@ export const SearchBar = ({ onSearch, tags = {}, tagFilter = {}, onTag }) => {
               onClick={() => {
                 onTag(id)();
               }}
-              rounded="xl"
+              rounded="full"
               px={4}
               py={1}
               border={"1px"}

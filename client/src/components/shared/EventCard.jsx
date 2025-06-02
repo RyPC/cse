@@ -186,29 +186,32 @@ export const EventCard = memo(
           date={date}
           startTime={startTime}
           endTime={endTime}
+          capacity={capacity}
           setOpenRootModal={setOpenRootModal}
           openRootModal={openRootModal}
           user={user}
           tags={tags}
         />
-        <TeacherEventViewModal
-          isOpenProp={openTeacherModal}
-          handleClose={closeTeacherModal}
-          id={id}
-          location={location}
-          title={title}
-          description={description}
-          level={level}
-          date={date}
-          startTime={startTime}
-          endTime={endTime}
-          callTime={callTime}
-          costume={costume}
-          capacity={capacity}
-          triggerRefresh={triggerRefresh}
-          tags={tags}
-          magic={magic}
-        />
+        {role && role !== "student" && 
+          <TeacherEventViewModal
+            isOpenProp={openTeacherModal}
+            handleClose={closeTeacherModal}
+            id={id}
+            location={location}
+            title={title}
+            description={description}
+            level={level}
+            date={date}
+            startTime={startTime}
+            endTime={endTime}
+            callTime={callTime}
+            costume={costume}
+            capacity={capacity}
+            triggerRefresh={triggerRefresh}
+            tags={tags}
+            magic={magic}
+          />
+        }
       </Box>
     );
   }

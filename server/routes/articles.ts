@@ -17,16 +17,18 @@ interface ArticleRequest {
   s3_url?: string;
   description?: string;
   media_url?: string;
+  teacher_id?: number;
 }
 
 articlesRouter.get("/with-tags", async (req, res) => {
   try {
     const data = await db.query(`
-        SELECT a.id, a.s3_url, a.description, a.media_url, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+        SELECT a.id, a.s3_url, a.description, a.media_url, u.first_name, u.last_name, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
         FROM articles a
+          LEFT JOIN users u ON a.teacher_id = u.id
           LEFT JOIN article_tags av ON av.article_id = a.id
           LEFT JOIN tags t ON t.id = av.tag_id
-        GROUP BY a.id, a.s3_url, a.description, a.media_url
+        GROUP BY a.id, a.s3_url, a.description, a.media_url, u.first_name, u.last_name
         ORDER BY a.id;
       `);
 
@@ -72,12 +74,13 @@ articlesRouter.get("/with-tags/search/:name", async (req, res) => {
     const { name } = req.params;
     const data = await db.query(
       `
-        SELECT a.id, a.s3_url, a.description, a.media_url, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
+        SELECT a.id, a.s3_url, a.description, a.media_url, u.first_name, u.last_name, COALESCE(ARRAY_AGG(t.id) FILTER (WHERE t.id IS NOT NULL), '{}') AS tags 
         FROM articles a
+          LEFT JOIN users u ON a.teacher_id = u.id
           LEFT JOIN article_tags g ON g.article_id = a.id
           LEFT JOIN tags t ON t.id = g.tag_id
         WHERE a.description ILIKE $1
-        GROUP BY a.id, a.s3_url, a.description, a.media_url
+        GROUP BY a.id, a.s3_url, a.description, a.media_url, u.first_name, u.last_name
         ORDER BY a.id;
       `,
       [`%${name}%`]
@@ -93,16 +96,16 @@ articlesRouter.get("/with-tags/search/:name", async (req, res) => {
 articlesRouter.post("/", async (req, res) => {
   try {
     // Destructure the request body
-    const { s3_url, description, media_url } = req.body as ArticleRequest;
+    const { s3_url, description, media_url, teacher_id } = req.body as ArticleRequest;
     // Since its required in the schema send an error
-    if (!s3_url || !description || !media_url) {
+    if (!s3_url || !description || !media_url || !teacher_id) {
       return res.status(400).json({ error: "Missing required parameters" });
     }
     // Insert the new article into the database
     // Returning * will return the newly inserted row in the response
     const rows = await db.query(
-      "INSERT INTO articles (s3_url, description, media_url) VALUES ($1, $2, $3) RETURNING *",
-      [s3_url, description, media_url]
+      "INSERT INTO articles (s3_url, description, media_url, teacher_id) VALUES ($1, $2, $3, $4) RETURNING *",
+      [s3_url, description, media_url, teacher_id]
     );
     // Convert the snake_case keys to camelCase and send the response with status 201 (Created)
     res.status(201).json(keysToCamel(rows[0] as Article));

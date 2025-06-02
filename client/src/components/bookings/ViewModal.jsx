@@ -50,6 +50,25 @@ export const ViewModal = ({
   };
 
   const { backend } = useBackendContext();
+  const [corequisites, setCorequisites] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Fetch coreq class data needed
+      backend.get(`corequisites/class/${card?.id}`).then((response) => {
+        if (response?.data) {
+          setCorequisites(response.data);
+        } else {
+          setCorequisites([]);
+        }
+      }
+      ).catch((error) => {
+        console.error("Error fetching corequisites:", error);
+        setCorequisites([]);
+      });
+    }
+  }
+  , [isOpen, card, backend]);
 
   const viewInfo = (
     <>
@@ -89,31 +108,29 @@ export const ViewModal = ({
         {/* <HStack width="100%"> */}
         <Box>
           <Text
-            mr="20"
             fontWeight="bold"
-            mb="0.5rem"
+            mb="1"
           >
-            Recommended Prerequisites(s)
+            Recommended Prerequisite(s)
           </Text>
-          <Text>
+          <Text mb={2}>
             We recommend taking these classes before enrolling in this series.
           </Text>
 
-          {/* {classData?.prerequisites && classData?.prerequisites.length > 0 ? (
-            <Text fontSize="16px">
-              {classData?.prerequisites.map((prerequisite) => (
-                <Tag borderRadius={"full"} bg="purple.100" textColor={"purple.800"} key={prerequisite.id}>{prerequisite.title}</Tag>
+          {corequisites && corequisites.length > 0 ? (
+            <Box>
+              {corequisites.map((prerequisite) => (
+                <Tag borderRadius={"full"} bg="purple.200" textColor={"purple.800"} m={1} key={prerequisite.id}>{prerequisite.title}</Tag>
               ))}
-            </Text>
+            </Box>
           ) : (
-            <Text>No prerequisites for this class</Text>
-          )} */}
+            <Text mt={1} fontSize={"md"}><em>No prerequisites for this class</em></Text>
+          )}
         </Box>
         <Box>
           <Text
-            mr="20"
             fontWeight="bold"
-            mb="0.5rem"
+            mb="1"
           >
             Performance(s)
           </Text>
@@ -121,45 +138,22 @@ export const ViewModal = ({
             At the end of the class period, students will perform in a final
             performance.
           </Text>
-          {coEvents.map((performance) => (
-            <Tag
-              borderRadius={"full"}
-              bg="purple.200"
-              textColor={"purple.800"}
-              key={performance.id}
-            >
-              {performance.title}
-            </Tag>
-          ))}
+          {coEvents && coEvents.length > 0 ? (
+            coEvents.map((performance) => (
+              <Tag
+                borderRadius={"full"}
+                bg="purple.200"
+                textColor={"purple.800"}
+                key={performance.id}
+              >
+                {performance.title}
+              </Tag>
+            ))
+          ) : (
+            <Text fontSize={"md"}><em>No performances for this class</em></Text>
+          )}
         </Box>
         <Divider orientation="horizontal" />
-        {/* <Divider borderColor="gray.400" borderWidth="1px" my={4} /> */}
-        {/* {!isCorequisiteSignUp && (
-            <Box bg = "#E8E7EF" borderRadius="md" width = "100%" p={4}>
-              <Text as="b">
-                Recommended classes
-              </Text>
-              {!corequisites || corequisites.length === 0 ? (
-                <Text>No corequisites for this class</Text>
-              ) : (
-                <List>
-                  {corequisites.map((coreq, index) => (
-                    <ListItem key={index}>
-                      <ListIcon
-                        as={
-                          coreq.enrolled
-                            ? FaCircleCheck
-                            : FaTimesCircle
-                        }
-                      />
-                      {coreq.title}
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-            </Box>
-          )} */}
-        {/* </HStack> */}
       </VStack>
     </>
   );

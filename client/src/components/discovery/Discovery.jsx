@@ -354,6 +354,7 @@ export const Discovery = () => {
                 endTime={eventItem.endTime}
                 callTime={eventItem.callTime}
                 classId={eventItem.classId}
+                capacity={eventItem.capacity}
                 costume={eventItem.costume}
                 attendeeCount={eventItem.attendeeCount}
                 id={eventItem.id}

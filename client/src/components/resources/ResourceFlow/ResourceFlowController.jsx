@@ -11,8 +11,10 @@ import { SelectTagModal } from "./SelectTagModal";
 import { TitleModal } from "./TitleModal";
 import { UploadFileModal } from "./UploadFileModal";
 import { UploadLinkModal } from "./UploadLinkModal";
+import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 
 export const ControllerModal = ({ autoOpen = true }) => {
+  const { currentUser } = useAuthContext();
   const { backend } = useBackendContext();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -63,6 +65,10 @@ export const ControllerModal = ({ autoOpen = true }) => {
   };
 
   const ajax = async () => {
+    const teacherIdResponse = await backend.get(`/users/${currentUser?.uid}`);
+    const teacherId = teacherIdResponse.data.id;
+
+
     const url = new URL(s3URL);
     const urlBeforeQuery = url.origin + url.pathname;
     let resourceId;
@@ -75,6 +81,7 @@ export const ControllerModal = ({ autoOpen = true }) => {
         description: description,
         mediaUrl: link,
         classId: clsId,
+        teacherId: teacherId,
       });
 
       console.log("Video Response:", videoResponse);
@@ -99,6 +106,7 @@ export const ControllerModal = ({ autoOpen = true }) => {
         s3_url: urlBeforeQuery,
         description: title,
         media_url: link,
+        teacher_id: teacherId,
       });
 
       resourceId = articleResponse.data.id;

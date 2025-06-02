@@ -81,7 +81,9 @@ export const EventCheckInHandler = () => {
   return (
     <Box
       h="100vh"
-      bg="grey"
+      bg="white"
+      justify="center"
+      align="center"
     >
       <VStack
         spacing={4}
@@ -89,17 +91,10 @@ export const EventCheckInHandler = () => {
         justify="center"
         h="full"
         p={4}
+        w="80%"
       >
-        <Box
-          bg="white"
-          p={8}
-          borderRadius="full"
-          boxSize="200px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Text fontSize="4xl">✓</Text>
+        <Box fontSize="9xl" color={"purple.600"}>
+          <MdCheckCircle/>
         </Box>
         <Text
           fontSize="2xl"
@@ -107,9 +102,10 @@ export const EventCheckInHandler = () => {
         >
           You've checked in for
         </Text>
-        <Text fontSize="xl">{title}</Text>
+        <Text fontSize="xl" wordBreak="break-word">{title}</Text>
         <Button
-          colorScheme="blue"
+          textColor="white"
+          bg={"purple.600"}
           onClick={() => navigate("/bookings")}
           mt={4}
         >
