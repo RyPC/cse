@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 
-import { Box, Button, Flex, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  VStack,
+} from "@chakra-ui/react";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
@@ -12,6 +23,7 @@ import { EventCard } from "../shared/EventCard";
 export const Discovery = () => {
   // Active Tab Logic
   const [activeTab, setActiveTab] = useState("classes"); // Default to showing classes
+  const [tabIndex, setTabIndex] = useState(0);
   const [searchInput, setSearchInput] = useState("");
   const [refresh, setRefresh] = useState(0);
   const [lastToggledTag, setLastToggledTag] = useState(null);
@@ -235,136 +247,124 @@ export const Discovery = () => {
     }
   };
 
-  // console.log(classes)
   return (
     <Box>
-      <VStack
-        // mx="5%"
-        marginX={"auto"}
-        maxWidth="100%"
-        my={5}
-        mb={20} //added for mobile view of event/class cards; otherwise navbar covers it
+      <Flex
+        direction={"column"}
+        p={4}
       >
-        <Box
-          width="100%"
-          px={2}
+        <Tabs
+          colorScheme="purple"
+          index={tabIndex}
+          onChange={(index) => setTabIndex(index)}
         >
-          <Flex
-            gap="5"
-            justify="center"
-            borderBottom="1px solid"
-            borderColor="gray.200"
-          >
-            <Button
-              variant="unstyled"
-              borderBottom="2px solid"
-              borderColor={activeTab === "classes" ? "black" : "transparent"}
-              fontWeight={activeTab === "classes" ? "bold" : "normal"}
-              color={activeTab === "classes" ? "black" : "gray.500"}
-              borderRadius="0"
-              onClick={() => {
-                toggleClasses();
-              }}
-            >
-              Classes
-            </Button>
-            <Button
-              variant="unstyled"
-              borderBottom="2px solid"
-              borderColor={activeTab === "events" ? "black" : "transparent"}
-              fontWeight={activeTab === "events" ? "bold" : "normal"}
-              color={activeTab === "events" ? "black" : "gray.500"}
-              borderRadius="0"
-              onClick={() => {
-                toggleEvents();
-              }}
-            >
-              Events
-            </Button>
-          </Flex>
-        </Box>
-
-        <Box width={"90%"}>
-          <SearchBar
-            onSearch={(query) => {
-              if (activeTab === "events") {
-                searchEvents(query);
-              } else {
-                searchClasses(query);
-              }
-            }}
-            tags={tags}
-            tagFilter={tagFilter}
-            onTag={
-              activeTab === "events"
-                ? handleFilterToggle
-                : handleClassFilterToggle
-            }
-          />
-        </Box>
-
-        <Box
-          my="14px"
-          width={"90%"}
-        >
-          <Flex
-            display={activeTab === "events" ? "none" : "flex"}
-            align="center"
-            justify="center"
-            gap={5}
-            wrap="wrap"
-          >
-            {classes.map((classItem, index) => (
-              <ClassCard
-                id={classItem.id}
-                key={index}
-                title={classItem.title}
-                description={classItem.description}
-                location={classItem.location}
-                capacity={classItem.capacity}
-                level={classItem.level}
-                costume={classItem.costume}
-                date={classItem.date}
-                startTime={classItem.startTime}
-                endTime={classItem.endTime}
-                attendeeCount={classItem.attendeeCount}
-                user={user}
-                tags={classTagsMap[classItem.id] || []}
-              />
-            ))}
-          </Flex>
-
-          <Flex
-            display={activeTab === "classes" ? "none" : "flex"}
-            align="center"
-            justify="center"
-            gap={5}
-            // mt={5}
-            wrap="wrap"
-          >
-            {events.map((eventItem, index) => (
-              <EventCard
-                key={index}
-                title={eventItem.title}
-                location={eventItem.location}
-                description={eventItem.description}
-                level={eventItem.level}
-                date={eventItem.date}
-                startTime={eventItem.startTime}
-                endTime={eventItem.endTime}
-                callTime={eventItem.callTime}
-                classId={eventItem.classId}
-                costume={eventItem.costume}
-                attendeeCount={eventItem.attendeeCount}
-                id={eventItem.id}
-                setRefresh={setRefresh}
-                user={user}
-                tags={eventTagsMap[eventItem.id] || []}
-              />
-            ))}
-          </Flex>
-        </Box>
-      </VStack>
+          <Center>
+            <TabList>
+              <Tab
+                fontWeight={"bold"}
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                Classes
+              </Tab>
+              <Tab
+                fontWeight={"bold"}
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                Events
+              </Tab>
+            </TabList>
+          </Center>
+          <TabPanels>
+            <TabPanel>
+              <VStack
+                spacing={4}
+                align="stretch"
+              >
+                <SearchBar
+                  onSearch={(query) => searchClasses(query)}
+                  tags={tags}
+                  tagFilter={tagFilter}
+                  onTag={handleClassFilterToggle}
+                />
+                <Flex
+                  gap={5}
+                  wrap="wrap"
+                  justify="center"
+                >
+                  {classes.map((classItem, index) => (
+                    <ClassCard
+                      id={classItem.id}
+                      key={index}
+                      title={classItem.title}
+                      description={classItem.description}
+                      location={classItem.location}
+                      capacity={classItem.capacity}
+                      level={classItem.level}
+                      costume={classItem.costume}
+                      date={classItem.date}
+                      startTime={classItem.startTime}
+                      endTime={classItem.endTime}
+                      attendeeCount={classItem.attendeeCount}
+                      user={user}
+                      tags={classTagsMap[classItem.id] || []}
+                    />
+                  ))}
+                </Flex>
+              </VStack>
+            </TabPanel>
+            <TabPanel>
+              <VStack
+                spacing={4}
+                align="stretch"
+              >
+                <SearchBar
+                  onSearch={(query) => searchEvents(query)}
+                  tags={tags}
+                  tagFilter={tagFilter}
+                  onTag={handleFilterToggle}
+                />
+                <Flex
+                  gap={5}
+                  wrap="wrap"
+                  justify="center"
+                >
+                  {events.map((eventItem, index) => (
+                    <EventCard
+                      key={index}
+                      title={eventItem.title}
+                      location={eventItem.location}
+                      description={eventItem.description}
+                      level={eventItem.level}
+                      date={eventItem.date}
+                      startTime={eventItem.startTime}
+                      endTime={eventItem.endTime}
+                      callTime={eventItem.callTime}
+                      classId={eventItem.classId}
+                      capacity={eventItem.capacity}
+                      costume={eventItem.costume}
+                      attendeeCount={eventItem.attendeeCount}
+                      id={eventItem.id}
+                      setRefresh={setRefresh} // Pass the setRefresh function to EventCard
+                      user={user} // Pass the user data to EventCard
+                      tags={eventTagsMap[eventItem.id] || []} // Pass the tags for the event
+                    />
+                  ))}
+                </Flex>
+              </VStack>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </Flex>
       <Navbar />
     </Box>
   );

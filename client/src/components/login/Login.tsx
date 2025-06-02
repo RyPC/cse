@@ -39,7 +39,7 @@ export const Login = () => {
   const navigate = useNavigate();
   const toast = useToast();
 
-  const { login, handleRedirectResult, updateRole} = useAuthContext();
+  const { login, handleRedirectResult, updateRole } = useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -74,7 +74,6 @@ export const Login = () => {
       const teachers = response.data;
       const teacher = teachers.find((teach) => teach.email === data.email);
       updateRole();
-
 
       if (teacher) {
         if (teacher.isActivated) {

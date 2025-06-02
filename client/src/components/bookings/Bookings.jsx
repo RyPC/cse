@@ -7,6 +7,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Center,
   Flex,
   Heading,
   HStack,
@@ -691,38 +692,40 @@ export const Bookings = () => {
           colorScheme="blackAlpha"
           onChange={(index) => setTabIndex(index)}
         >
-          <TabList justifyContent="center">
-            <Tab
-              _selected={{
-                borderBottom: "2px",
-                borderColor: "purple.600",
-                fontWeight: "bold",
-                color: "purple.600",
-              }}
-            >
-              Classes
-            </Tab>
-            <Tab
-              _selected={{
-                borderBottom: "2px",
-                borderColor: "purple.600",
-                fontWeight: "bold",
-                color: "purple.600",
-              }}
-            >
-              Events
-            </Tab>
-            <Tab
-              _selected={{
-                borderBottom: "2px",
-                borderColor: "purple.600",
-                fontWeight: "bold",
-                color: "purple.600",
-              }}
-            >
-              {role !== "student" ? "Drafts" : "Attended"}
-            </Tab>
-          </TabList>
+          <Center>
+            <TabList justifyContent="center">
+              <Tab
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                Classes
+              </Tab>
+              <Tab
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                Events
+              </Tab>
+              <Tab
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                {role !== "student" ? "Drafts" : "Attended"}
+              </Tab>
+            </TabList>
+          </Center>
 
           <TabPanels>
             <TabPanel>
@@ -991,9 +994,8 @@ export const Bookings = () => {
                         triggerRefresh={triggerRefresh}
                         tags={eventTagsMap[item.id] || []}
                       />
-                    )
-                  }
-                  )
+                    );
+                  })
                 ) : (
                   <Text>No attended classes or events.</Text>
                 )}
