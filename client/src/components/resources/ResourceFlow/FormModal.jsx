@@ -110,7 +110,10 @@ export const FormModal = ({
 
       if (uploadResponse.ok) {
         setMessage("File uploaded successfully!");
-        setS3URL["setS3URL"](url);
+        console.log(s3URL);
+        console.log(s3URL["setS3URL"]);
+        console.log(setS3URL["setS3URL"]);
+        setS3URL(url);
         return true;
       } else {
         throw new Error("Failed to upload file.");

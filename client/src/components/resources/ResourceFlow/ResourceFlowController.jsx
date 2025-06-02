@@ -66,13 +66,14 @@ export const ControllerModal = ({ autoOpen = true }) => {
 
   const ajax = async () => {
     const teacherIdResponse = await backend.get(`/users/${currentUser?.uid}`);
-    const teacherId = teacherIdResponse.data.id;
+    const teacherId = teacherIdResponse.data[0].id;
+    console.log("Teacher ID:", teacherId);
 
     const url = new URL(s3URL);
     const urlBeforeQuery = url.origin + url.pathname;
     let resourceId;
 
-    if (link.includes("youtube")) {
+    if (link.includes("youtube") || link.includes("youtu.be")) {
       // Create video resource
       const videoResponse = await backend.post("/classes-videos", {
         title: title,
