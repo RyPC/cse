@@ -10,6 +10,7 @@ import {
   HStack,
   Icon,
   Text,
+  useToken,
 } from "@chakra-ui/react";
 
 import { FaUserCircle } from "react-icons/fa";
@@ -29,10 +30,12 @@ const ReviewCard = ({
   const [student, setStudent] = useState(null);
   const { backend } = useBackendContext();
   const [stars, setStars] = useState(Array(5).fill(0));
+  const [purpleHex] = useToken("colors", ["purple.600"]);
+  const [greyHex] = useToken("colors", ["gray.400"]);
 
   const colors = {
-    purple: "purple.600",
-    grey: "a9a9a9",
+    purple: purpleHex,
+    grey: greyHex,
   };
 
   useEffect(() => {
