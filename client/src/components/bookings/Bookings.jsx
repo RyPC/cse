@@ -994,9 +994,8 @@ export const Bookings = () => {
                         triggerRefresh={triggerRefresh}
                         tags={eventTagsMap[item.id] || []}
                       />
-                    )
-                  }
-                  )
+                    );
+                  })
                 ) : (
                   <Text>No attended classes or events.</Text>
                 )}

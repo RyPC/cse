@@ -210,18 +210,34 @@ const EventInfoModal = ({
                   >
                     Included Classes
                   </Text>
-                  <Text mb={2} fontSize="sm">
+                  <Text
+                    mb={2}
+                    fontSize="sm"
+                  >
                     All classes that will be participating in this performance.
                   </Text>
 
                   {corequisites && corequisites.length > 0 ? (
                     <Box>
                       {corequisites.map((prerequisite) => (
-                        <Tag borderRadius={"full"} bg="purple.200" textColor={"purple.800"} m={1} key={prerequisite.id}>{prerequisite.title}</Tag>
+                        <Tag
+                          borderRadius={"full"}
+                          bg="purple.200"
+                          textColor={"purple.800"}
+                          m={1}
+                          key={prerequisite.id}
+                        >
+                          {prerequisite.title}
+                        </Tag>
                       ))}
                     </Box>
                   ) : (
-                    <Text mt={1} fontSize={"md"}><em>No prerequisites for this class</em></Text>
+                    <Text
+                      mt={1}
+                      fontSize={"md"}
+                    >
+                      <em>No prerequisites for this class</em>
+                    </Text>
                   )}
                 </Box>
               </HStack>

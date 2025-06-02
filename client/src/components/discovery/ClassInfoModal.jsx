@@ -225,54 +225,81 @@ const ClassInfoModal = ({
               align="center"
               w="100%"
             >
-                <Box>
-                  <Text fontWeight={"bold"} mb="1">
-                    Recommended Prerequisite(s)
-                  </Text>
-                  <Text fontSize="sm" mb={2}>
-                    We recommend taking these classes before enrolling in this series.
-                  </Text>
-                  {coClasses && coClasses.length > 0 ? (
-                    <Box>
-                      {coClasses.map((prerequisite) => (
-                        <Tag
-                          borderRadius={"full"}
-                          bg="purple.200"
-                          textColor={"purple.800"}
-                          m={1}
-                          key={prerequisite.id}
-                        >
-                          {prerequisite.title}
-                        </Tag>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Text mt={1} fontSize={"md"}>
-                      <em>No prerequisites for this class</em>
-                    </Text>
-                  )}
-                </Box>
-
-                <Box>
+              <Box>
+                <Text
+                  fontWeight={"bold"}
+                  mb="1"
+                >
+                  Recommended Prerequisite(s)
+                </Text>
+                <Text
+                  fontSize="sm"
+                  mb={2}
+                >
+                  We recommend taking these classes before enrolling in this
+                  series.
+                </Text>
+                {coClasses && coClasses.length > 0 ? (
+                  <Box>
+                    {coClasses.map((prerequisite) => (
+                      <Tag
+                        borderRadius={"full"}
+                        bg="purple.200"
+                        textColor={"purple.800"}
+                        m={1}
+                        key={prerequisite.id}
+                      >
+                        {prerequisite.title}
+                      </Tag>
+                    ))}
+                  </Box>
+                ) : (
                   <Text
-                    fontWeight="bold"
-                    mb="1"
+                    mt={1}
+                    fontSize={"md"}
                   >
-                    Performance(s)
+                    <em>No prerequisites for this class</em>
                   </Text>
-                  <Text fontSize={"sm"} mb={2}>
-                    At the end of the class period, students will perform in a final performance.
+                )}
+              </Box>
+
+              <Box>
+                <Text
+                  fontWeight="bold"
+                  mb="1"
+                >
+                  Performance(s)
+                </Text>
+                <Text
+                  fontSize={"sm"}
+                  mb={2}
+                >
+                  At the end of the class period, students will perform in a
+                  final performance.
+                </Text>
+                {corequisites && corequisites.length > 0 ? (
+                  <Box>
+                    {corequisites.map((prerequisite) => (
+                      <Tag
+                        borderRadius={"full"}
+                        bg="purple.200"
+                        textColor={"purple.800"}
+                        m={1}
+                        key={prerequisite.id}
+                      >
+                        {prerequisite.title}
+                      </Tag>
+                    ))}
+                  </Box>
+                ) : (
+                  <Text
+                    mt={1}
+                    fontSize={"md"}
+                  >
+                    <em>No performances for this class</em>
                   </Text>
-                  {corequisites && corequisites.length > 0 ? (
-                    <Box>
-                      {corequisites.map((prerequisite) => (
-                        <Tag borderRadius={"full"} bg="purple.200" textColor={"purple.800"} m={1} key={prerequisite.id}>{prerequisite.title}</Tag>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Text mt={1} fontSize={"md"}><em>No performances for this class</em></Text>
-                  )}
-                </Box>
+                )}
+              </Box>
             </VStack>
           </ModalBody>
           <Flex

@@ -55,20 +55,21 @@ export const ViewModal = ({
   useEffect(() => {
     if (isOpen) {
       // Fetch coreq class data needed
-      backend.get(`corequisites/class/${card?.id}`).then((response) => {
-        if (response?.data) {
-          setCorequisites(response.data);
-        } else {
+      backend
+        .get(`corequisites/class/${card?.id}`)
+        .then((response) => {
+          if (response?.data) {
+            setCorequisites(response.data);
+          } else {
+            setCorequisites([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching corequisites:", error);
           setCorequisites([]);
-        }
-      }
-      ).catch((error) => {
-        console.error("Error fetching corequisites:", error);
-        setCorequisites([]);
-      });
+        });
     }
-  }
-  , [isOpen, card, backend]);
+  }, [isOpen, card, backend]);
 
   const viewInfo = (
     <>
@@ -120,11 +121,24 @@ export const ViewModal = ({
           {corequisites && corequisites.length > 0 ? (
             <Box>
               {corequisites.map((prerequisite) => (
-                <Tag borderRadius={"full"} bg="purple.200" textColor={"purple.800"} m={1} key={prerequisite.id}>{prerequisite.title}</Tag>
+                <Tag
+                  borderRadius={"full"}
+                  bg="purple.200"
+                  textColor={"purple.800"}
+                  m={1}
+                  key={prerequisite.id}
+                >
+                  {prerequisite.title}
+                </Tag>
               ))}
             </Box>
           ) : (
-            <Text mt={1} fontSize={"md"}><em>No prerequisites for this class</em></Text>
+            <Text
+              mt={1}
+              fontSize={"md"}
+            >
+              <em>No prerequisites for this class</em>
+            </Text>
           )}
         </Box>
         <Box>
@@ -150,7 +164,9 @@ export const ViewModal = ({
               </Tag>
             ))
           ) : (
-            <Text fontSize={"md"}><em>No performances for this class</em></Text>
+            <Text fontSize={"md"}>
+              <em>No performances for this class</em>
+            </Text>
           )}
         </Box>
         <Divider orientation="horizontal" />

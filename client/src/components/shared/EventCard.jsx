@@ -192,7 +192,7 @@ export const EventCard = memo(
           user={user}
           tags={tags}
         />
-        {role && role !== "student" && 
+        {role && role !== "student" && (
           <TeacherEventViewModal
             isOpenProp={openTeacherModal}
             handleClose={closeTeacherModal}
@@ -211,7 +211,7 @@ export const EventCard = memo(
             tags={tags}
             magic={magic}
           />
-        }
+        )}
       </Box>
     );
   }

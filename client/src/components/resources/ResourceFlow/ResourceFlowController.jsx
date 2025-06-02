@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useDisclosure } from "@chakra-ui/react";
 
+import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
 import { CardModal } from "./CardModal";
 import { FormModal } from "./FormModal";
@@ -11,7 +12,6 @@ import { SelectTagModal } from "./SelectTagModal";
 import { TitleModal } from "./TitleModal";
 import { UploadFileModal } from "./UploadFileModal";
 import { UploadLinkModal } from "./UploadLinkModal";
-import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
 
 export const ControllerModal = ({ autoOpen = true }) => {
   const { currentUser } = useAuthContext();
@@ -67,7 +67,6 @@ export const ControllerModal = ({ autoOpen = true }) => {
   const ajax = async () => {
     const teacherIdResponse = await backend.get(`/users/${currentUser?.uid}`);
     const teacherId = teacherIdResponse.data.id;
-
 
     const url = new URL(s3URL);
     const urlBeforeQuery = url.origin + url.pathname;

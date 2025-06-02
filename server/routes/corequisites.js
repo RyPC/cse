@@ -11,7 +11,8 @@ corequisitesRouter.get("/class/:classId", async (req, res) => {
   const classId = req.params.classId;
   try {
     const result = await db.query(
-      ` SELECT * FROM corequisites WHERE class_id = $1;`, [classId]
+      ` SELECT * FROM corequisites WHERE class_id = $1;`,
+      [classId]
     );
     // use the event_id from result to get the coreqs of the event
     if (result?.data) {
@@ -21,7 +22,8 @@ corequisitesRouter.get("/class/:classId", async (req, res) => {
     // there should only be one event per class
     const coreqEvent = result[0]?.event_id;
     const coreqResult = await db.query(
-      `SELECT * FROM corequisites JOIN classes on classes.id = corequisites.class_id WHERE class_id != $1 AND event_id = $2;`, [classId, coreqEvent]
+      `SELECT * FROM corequisites JOIN classes on classes.id = corequisites.class_id WHERE class_id != $1 AND event_id = $2;`,
+      [classId, coreqEvent]
     );
 
     res.status(200).json(keysToCamel(coreqResult));
@@ -29,7 +31,6 @@ corequisitesRouter.get("/class/:classId", async (req, res) => {
     res.status(500).json({ error: err.message });
     return;
   }
-
 });
 
 corequisitesRouter.get("/", async (req, res) => {

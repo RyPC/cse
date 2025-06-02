@@ -192,7 +192,8 @@ export const Resources = () => {
         >
           <Center>
             <TabList>
-              <Tab fontWeight="bold"
+              <Tab
+                fontWeight="bold"
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -202,7 +203,8 @@ export const Resources = () => {
               >
                 Videos
               </Tab>
-              <Tab fontWeight="bold"
+              <Tab
+                fontWeight="bold"
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -216,9 +218,7 @@ export const Resources = () => {
           </Center>
           <TabPanels>
             <TabPanel>
-              <Box
-                mb={4}
-              >
+              <Box mb={4}>
                 <SearchBar
                   onSearch={handleSearch}
                   tags={tags}
@@ -227,14 +227,33 @@ export const Resources = () => {
                   onTag={handleFilterToggle}
                 />
               </Box>
-              {
-                role !== "student" && (
-                  <HStack align="center" justify="center" mb={4} bg="gray.50" border="1px" borderRadius="lg" borderColor={"gray.300"} onClick={handleAddButtonClick} cursor="pointer" p={4}>
-                    <Text fontWeight={"bold"} fontSize={"xl"}>Add a Video</Text>
-                    <Text fontSize={"2xl"} fontWeight={"bold"}>+</Text>
-                  </HStack>
-                )
-              }
+              {role !== "student" && (
+                <HStack
+                  align="center"
+                  justify="center"
+                  mb={4}
+                  bg="gray.50"
+                  border="1px"
+                  borderRadius="lg"
+                  borderColor={"gray.300"}
+                  onClick={handleAddButtonClick}
+                  cursor="pointer"
+                  p={4}
+                >
+                  <Text
+                    fontWeight={"bold"}
+                    fontSize={"xl"}
+                  >
+                    Add a Video
+                  </Text>
+                  <Text
+                    fontSize={"2xl"}
+                    fontWeight={"bold"}
+                  >
+                    +
+                  </Text>
+                </HStack>
+              )}
 
               <Flex
                 wrap="wrap"
@@ -276,14 +295,33 @@ export const Resources = () => {
                   onTag={handleFilterToggle}
                 />
               </Box>
-              {
-                role !== "student" && (
-                  <HStack align="center" justify="center" mb={4} bg="gray.50" border="1px" borderRadius="lg" borderColor={"gray.300"} onClick={handleAddButtonClick} cursor="pointer" p={4}>
-                    <Text fontWeight={"bold"} fontSize={"xl"}>Add an Article</Text>
-                    <Text fontSize={"2xl"} fontWeight={"bold"}>+</Text>
-                  </HStack>
-                )
-              }
+              {role !== "student" && (
+                <HStack
+                  align="center"
+                  justify="center"
+                  mb={4}
+                  bg="gray.50"
+                  border="1px"
+                  borderRadius="lg"
+                  borderColor={"gray.300"}
+                  onClick={handleAddButtonClick}
+                  cursor="pointer"
+                  p={4}
+                >
+                  <Text
+                    fontWeight={"bold"}
+                    fontSize={"xl"}
+                  >
+                    Add an Article
+                  </Text>
+                  <Text
+                    fontSize={"2xl"}
+                    fontWeight={"bold"}
+                  >
+                    +
+                  </Text>
+                </HStack>
+              )}
               <Flex
                 wrap="wrap"
                 gap={4}
@@ -316,21 +354,6 @@ export const Resources = () => {
 
         {/* <UploadComponent /> */}
       </Flex>
-      {/* {role === "teacher" && (
-        <IconButton
-          icon={<span style={{ fontSize: "24px" }}>+</span>}
-          colorScheme="purple"
-          size="lg"
-          isRound
-          position="fixed"
-          bottom="95px"
-          right="24px"
-          zIndex={5}
-          boxShadow="lg"
-          aria-label="Add new item"
-          onClick={handleAddButtonClick}
-        />
-      )} */}
       {showModal && <ControllerModal autoOpen={true} />}
       <Navbar />
     </Box>

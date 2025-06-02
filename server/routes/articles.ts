@@ -96,7 +96,8 @@ articlesRouter.get("/with-tags/search/:name", async (req, res) => {
 articlesRouter.post("/", async (req, res) => {
   try {
     // Destructure the request body
-    const { s3_url, description, media_url, teacher_id } = req.body as ArticleRequest;
+    const { s3_url, description, media_url, teacher_id } =
+      req.body as ArticleRequest;
     // Since its required in the schema send an error
     if (!s3_url || !description || !media_url || !teacher_id) {
       return res.status(400).json({ error: "Missing required parameters" });

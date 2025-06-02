@@ -93,8 +93,11 @@ export const EventCheckInHandler = () => {
         p={4}
         w="80%"
       >
-        <Box fontSize="9xl" color={"purple.600"}>
-          <MdCheckCircle/>
+        <Box
+          fontSize="9xl"
+          color={"purple.600"}
+        >
+          <MdCheckCircle />
         </Box>
         <Text
           fontSize="2xl"
@@ -102,7 +105,12 @@ export const EventCheckInHandler = () => {
         >
           You've checked in for
         </Text>
-        <Text fontSize="xl" wordBreak="break-word">{title}</Text>
+        <Text
+          fontSize="xl"
+          wordBreak="break-word"
+        >
+          {title}
+        </Text>
         <Button
           textColor="white"
           bg={"purple.600"}
