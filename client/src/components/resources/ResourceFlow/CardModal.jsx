@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import {
@@ -28,8 +27,8 @@ import {
 import { IoIosArrowBack } from "react-icons/io";
 
 import { useAuthContext } from "../../../contexts/hooks/useAuthContext";
-import { ProgressBar } from "./ProgressBar";
 import { useBackendContext } from "../../../contexts/hooks/useBackendContext";
+import { ProgressBar } from "./ProgressBar";
 
 export const CardModal = ({
   isOpen,
@@ -55,7 +54,11 @@ export const CardModal = ({
 
   useEffect(() => {
     backend.get(`/users/${currentUser?.uid}`).then((response) => {
-      setUserName( response?.data[0]?.firstName && response?.data[0]?.lastName ? `${response?.data[0]?.firstName} ${response?.data[0]?.lastName}` : currentUser?.displayName || "current user" );
+      setUserName(
+        response?.data[0]?.firstName && response?.data[0]?.lastName
+          ? `${response?.data[0]?.firstName} ${response?.data[0]?.lastName}`
+          : currentUser?.displayName || "current user"
+      );
     });
   }, [currentUser, backend]);
 
