@@ -4,6 +4,9 @@ import {
   Box,
   Card,
   CardBody,
+  CardHeader,
+  Center,
+  Flex,
   Heading,
   HStack,
   Modal,
@@ -85,8 +88,6 @@ export const Bookings = () => {
 
   const [refresh, setRefresh] = useState(-1);
   const [magic, setMagic] = useState(-1);
-
-  const isTeacher = role === "teacher";
 
   const reloadStudentClasses = async () => {
     try {
@@ -622,38 +623,40 @@ export const Bookings = () => {
           colorScheme="blackAlpha"
           onChange={(index) => setTabIndex(index)}
         >
-          <TabList justifyContent="center">
-            <Tab
-              _selected={{
-                borderBottom: "2px",
-                borderColor: "purple.600",
-                fontWeight: "bold",
-                color: "purple.600",
-              }}
-            >
-              Classes
-            </Tab>
-            <Tab
-              _selected={{
-                borderBottom: "2px",
-                borderColor: "purple.600",
-                fontWeight: "bold",
-                color: "purple.600",
-              }}
-            >
-              Events
-            </Tab>
-            <Tab
-              _selected={{
-                borderBottom: "2px",
-                borderColor: "purple.600",
-                fontWeight: "bold",
-                color: "purple.600",
-              }}
-            >
-              {role !== "student" ? "Drafts" : "Attended"}
-            </Tab>
-          </TabList>
+          <Center>
+            <TabList justifyContent="center">
+              <Tab
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                Classes
+              </Tab>
+              <Tab
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                Events
+              </Tab>
+              <Tab
+                _selected={{
+                  borderBottom: "2px",
+                  borderColor: "purple.600",
+                  fontWeight: "bold",
+                  color: "purple.600",
+                }}
+              >
+                {role !== "student" ? "Drafts" : "Attended"}
+              </Tab>
+            </TabList>
+          </Center>
 
           <TabPanels>
             <TabPanel>

@@ -1,12 +1,12 @@
-import CoreqWarningModal from "../discovery/CoReqWarningModal";
+import { Box, Button, Text, VStack } from "@chakra-ui/react";
+
+import { MdCheck, MdCheckCircle } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 export const Playground = () => {
-  return (
-    <div>
-      <CoreqWarningModal
-        isOpen={true}
-        onClose={() => {}}
-      />
-    </div>
-  );
+  const title =
+    "classtitlethatisverylongandshouldbreakotherwiseiamgoingtohaveissueswiththelayout";
+  const navigate = useNavigate();
+
+  return <></>;
 };
