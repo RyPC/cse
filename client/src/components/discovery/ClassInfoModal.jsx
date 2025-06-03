@@ -67,6 +67,7 @@ const ClassInfoModal = ({
   const [description, setDescription] = useState("");
   const [capacity, setCapacity] = useState("");
   const [level, setLevel] = useState("");
+  const [coClasses, setCoClasses] = useState([]);
 
   const getTeacherName = async () => {
     const teacherName = await backend.get(`/classes-taught/instructor/${id}`);
@@ -122,9 +123,9 @@ const ClassInfoModal = ({
     setLevel(classData.data[0].level);
   };
 
-  const getPerformance = async () => {
-    const performanceData = await backend.get(`/corequisites/${id}`);
-    console.log(performanceData.data);
+  const getCoClasses = async () => {
+    const response = await backend.get(`/corequisites/class/${id}`);
+    setCoClasses(response.data);
   };
 
   useEffect(() => {
@@ -132,7 +133,7 @@ const ClassInfoModal = ({
       getTeacherName();
       getStartTime();
       initClass();
-      getPerformance();
+      getCoClasses();
     }
   }, [isOpenProp]);
 
@@ -222,42 +223,83 @@ const ClassInfoModal = ({
             <VStack
               spacing={4}
               align="center"
+              w="100%"
             >
-              {corequisites && corequisites.length !== 0 && (
-                <HStack width="100%">
-                  <Box
-                    bg="#E8E7EF"
-                    borderRadius="md"
-                    width="100%"
-                    p={4}
-                  >
-                    <VStack
-                      align="start"
-                      spacing={2}
-                    >
-                      <HStack align="center">
-                        <Text as="b">Recommended classes and events</Text>
-                      </HStack>
-                      {!corequisites || corequisites.length === 0 ? (
-                        <Text>No corequisites for this class</Text>
-                      ) : (
-                        <List>
-                          {corequisites.map((coreq, index) => (
-                            <ListItem key={index}>
-                              <ListIcon
-                                as={
-                                  coreq.enrolled ? FaCircleCheck : FaTimesCircle
-                                }
-                              />
-                              {coreq.title}
-                            </ListItem>
-                          ))}
-                        </List>
-                      )}
-                    </VStack>
+              <Box>
+                <Text
+                  fontWeight={"bold"}
+                  mb="1"
+                >
+                  Recommended Prerequisite(s)
+                </Text>
+                <Text
+                  fontSize="sm"
+                  mb={2}
+                >
+                  We recommend taking these classes before enrolling in this
+                  series.
+                </Text>
+                {coClasses && coClasses.length > 0 ? (
+                  <Box>
+                    {coClasses.map((prerequisite) => (
+                      <Tag
+                        borderRadius={"full"}
+                        bg="purple.200"
+                        textColor={"purple.800"}
+                        m={1}
+                        key={prerequisite.id}
+                      >
+                        {prerequisite.title}
+                      </Tag>
+                    ))}
                   </Box>
-                </HStack>
-              )}
+                ) : (
+                  <Text
+                    mt={1}
+                    fontSize={"md"}
+                  >
+                    <em>No prerequisites for this class</em>
+                  </Text>
+                )}
+              </Box>
+
+              <Box>
+                <Text
+                  fontWeight="bold"
+                  mb="1"
+                >
+                  Performance(s)
+                </Text>
+                <Text
+                  fontSize={"sm"}
+                  mb={2}
+                >
+                  At the end of the class period, students will perform in a
+                  final performance.
+                </Text>
+                {corequisites && corequisites.length > 0 ? (
+                  <Box>
+                    {corequisites.map((prerequisite) => (
+                      <Tag
+                        borderRadius={"full"}
+                        bg="purple.200"
+                        textColor={"purple.800"}
+                        m={1}
+                        key={prerequisite.id}
+                      >
+                        {prerequisite.title}
+                      </Tag>
+                    ))}
+                  </Box>
+                ) : (
+                  <Text
+                    mt={1}
+                    fontSize={"md"}
+                  >
+                    <em>No performances for this class</em>
+                  </Text>
+                )}
+              </Box>
             </VStack>
           </ModalBody>
           <Flex

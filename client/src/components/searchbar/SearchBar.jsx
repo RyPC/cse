@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   Badge,
@@ -13,9 +13,34 @@ import { FaSearch } from "react-icons/fa";
 
 export const SearchBar = ({ onSearch, tags = {}, tagFilter = {}, onTag }) => {
   const [searchInput, setSearchInput] = useState("");
+  const debounceTimeoutRef = useRef(null);
+
+  // Debounced search effect
+  useEffect(() => {
+    // Clear previous timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set new timeout for 200ms debounce
+    debounceTimeoutRef.current = setTimeout(() => {
+      onSearch(searchInput);
+    }, 200);
+
+    // Cleanup function to clear timeout on component unmount
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [searchInput, onSearch]);
 
   const handleEnterKeyDown = async (e) => {
-    if (e.key == "Enter") {
+    if (e.key === "Enter") {
+      // Clear debounce timeout and search immediately
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
       onSearch(searchInput);
     }
   };
@@ -32,7 +57,7 @@ export const SearchBar = ({ onSearch, tags = {}, tagFilter = {}, onTag }) => {
         <Input
           placeholder="Search"
           variant="filled"
-          borderRadius="full"
+          borderRadius="lg"
           borderColor={"gray.300"}
           bg="white.100"
           _hover={{ bg: "gray.200" }}
@@ -62,7 +87,7 @@ export const SearchBar = ({ onSearch, tags = {}, tagFilter = {}, onTag }) => {
               onClick={() => {
                 onTag(id)();
               }}
-              rounded="xl"
+              rounded="full"
               px={4}
               py={1}
               border={"1px"}

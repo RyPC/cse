@@ -306,7 +306,7 @@ export const TeacherViewModal = memo(
                       fontWeight="bold"
                       mb="0.5rem"
                     >
-                      Recommended Prerequisites(s)
+                      Recommended Prerequisite(s)
                     </Text>
                     <Text>
                       We recommend taking these classes before enrolling in this
