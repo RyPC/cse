@@ -1,9 +1,7 @@
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
-  Badge,
   Box,
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -11,9 +9,6 @@ import {
   Flex,
   Heading,
   HStack,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Modal,
   ModalBody,
   ModalContent,
@@ -44,7 +39,7 @@ import {
 //   GiCartwheel,
 //   GiTambourine,
 // } from "react-icons/gi";
-import { MdAdd, MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
+import { MdArrowBackIosNew, MdMoreHoriz } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
@@ -71,7 +66,6 @@ export const Bookings = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { currentUser, role } = useAuthContext();
   const { backend } = useBackendContext();
-  const [loading, setLoading] = useState(true);
   const [currentModal, setCurrentModal] = useState("view");
   const [classes, setClasses] = useState([]);
   const [events, setEvents] = useState([]);
@@ -89,14 +83,11 @@ export const Bookings = () => {
   const [coreqId, setCoreqId] = useState();
   const [tags, setTags] = useState([]);
   const [tagFilter, setTagFilter] = useState({});
-  const [lastToggledTag, setLastToggledTag] = useState(null);
   const [classTagsMap, setClassTagsMap] = useState({});
   const [eventTagsMap, setEventTagsMap] = useState({});
 
   const [refresh, setRefresh] = useState(-1);
   const [magic, setMagic] = useState(-1);
-
-  const isTeacher = role === "teacher";
 
   const reloadStudentClasses = async () => {
     try {
@@ -288,7 +279,7 @@ export const Bookings = () => {
       }
     };
     fetchTags();
-  }, []);
+  }, [backend]);
 
   const handleFilterToggle = (id) => () => {
     setTagFilter((prev) => ({
@@ -413,11 +404,6 @@ export const Bookings = () => {
     }
   };
 
-  const onOpenModal = (data) => {
-    setClassData(data);
-    onOpen();
-  };
-
   const triggerRefresh = () => {
     if (tabIndex === 0) {
       if (role !== "student") {
@@ -535,46 +521,73 @@ export const Bookings = () => {
       console.error("Error fetching corequisite enrollment:", error);
     }
   };
-
   const handleClassSearch = async (query) => {
-    if (currentUser && role === "student") {
-      // For students, search within their enrolled classes
-      const enrolledRes = await backend.get(
-        `/class-enrollments/student/${user_id}`
-      );
-      const allEnrolledClasses = enrolledRes.data;
+    try {
+      if (!query || query.trim() === "") {
+        // For empty search, reload the appropriate data based on role
+        if (role === "student") {
+          await reloadStudentClasses();
+        } else {
+          await reloadTeacherClasses();
+        }
+        return;
+      }
 
-      // Client-side search filtering
-      const filteredClasses = allEnrolledClasses.filter((cls) =>
-        cls.title.toLowerCase().includes(query.toLowerCase())
-      );
+      if (currentUser && role === "student") {
+        // For students, search within their enrolled classes
+        const enrolledRes = await backend.get(
+          `/class-enrollments/student/${user_id}`
+        );
+        const allEnrolledClasses = enrolledRes.data;
 
-      setClasses(filteredClasses);
-    } else {
-      // For teachers/admin, keep the existing server-side search
-      const searchRes = await backend.get(`/classes/search/${query}`);
-      setClasses(searchRes.data);
+        // Client-side search filtering
+        const filteredClasses = allEnrolledClasses.filter((cls) =>
+          cls.title.toLowerCase().includes(query.trim().toLowerCase())
+        );
+
+        setClasses(filteredClasses);
+      } else {
+        // For teachers/admin, use server-side search
+        const searchRes = await backend.get(`/classes/search/${query.trim()}`);
+        setClasses(searchRes.data);
+      }
+    } catch (error) {
+      console.error("Error searching classes:", error);
     }
   };
 
   const handleEventSearch = async (query) => {
-    if (currentUser && role === "student") {
-      // For students, search within their enrolled events
-      const enrolledRes = await backend.get(
-        `/event-enrollments/student/${user_id}`
-      );
-      const allEnrolledEvents = enrolledRes.data;
+    try {
+      if (!query || query.trim() === "") {
+        // For empty search, reload the appropriate data based on role
+        if (role === "student") {
+          await reloadStudentEvents();
+        } else {
+          await reloadTeacherEvents();
+        }
+        return;
+      }
 
-      // Client-side search filtering
-      const filteredEvents = allEnrolledEvents.filter((evt) =>
-        evt.title.toLowerCase().includes(query.toLowerCase())
-      );
+      if (currentUser && role === "student") {
+        // For students, search within their enrolled events
+        const enrolledRes = await backend.get(
+          `/event-enrollments/student/${user_id}`
+        );
+        const allEnrolledEvents = enrolledRes.data;
 
-      setEvents(filteredEvents);
-    } else {
-      // For teachers/admin, keep the existing server-side search
-      const searchRes = await backend.get(`/events/search/${query}`);
-      setEvents(searchRes.data);
+        // Client-side search filtering
+        const filteredEvents = allEnrolledEvents.filter((evt) =>
+          evt.title.toLowerCase().includes(query.trim().toLowerCase())
+        );
+
+        setEvents(filteredEvents);
+      } else {
+        // For teachers/admin, use server-side search
+        const searchRes = await backend.get(`/events/search/${query.trim()}`);
+        setEvents(searchRes.data);
+      }
+    } catch (error) {
+      console.error("Error searching events:", error);
     }
   };
 
@@ -598,103 +611,21 @@ export const Bookings = () => {
     }
   };
 
-  const reloadClasses = async () => {
-    await backend.get(`/classes/published`).then((res) => {
-      setClasses(res.data);
-    });
-
-    const attendedClasses = classes.filter((c) => c.attendance !== null);
-    const attendedEvents = events.filter((e) => e.attendance !== null);
-    setAttended([...attendedClasses, ...attendedEvents]);
-
-    if (selectedCard) {
-      loadCorequisites(selectedCard.id);
-    }
-  };
-
-  const reloadEvents = async () => {
-    await backend.get(`/events/published`).then((res) => {
-      setEvents(res.data);
-    });
-
-    const attendedClasses = classes.filter((c) => c.attendance !== null);
-    const attendedEvents = events.filter((e) => e.attendance !== null);
-    setAttended([...attendedClasses, ...attendedEvents]);
-
-    if (selectedCard) {
-      loadCorequisites(selectedCard.id);
-    }
-  };
-
-  const fetchClassData = async () => {
-    try {
-      const [classesResponse, classDataResponse] = await Promise.all([
-        backend.get("/scheduled-classes"),
-        backend.get("/classes"),
-      ]);
-
-      const classDataDict = new Map();
-      classDataResponse.data.forEach((cls) => classDataDict.set(cls.id, cls));
-
-      // console.log("Fetching tags for class:", clsId);
-      const response = await backend.get(`/class-tags/tags/${clsId}`);
-      // console.log("Raw tag data:", response.data);
-
-      const formattedData = classesResponse.data
-        .map((cls) => {
-          const fullData = classDataDict.get(cls.classId);
-
-          return fullData
-            ? {
-                classId: cls.classId,
-                date: stringToDate(cls.date),
-                startTime: stringToTime(cls.startTime),
-                endTime: stringToTime(cls.endTime),
-                title: fullData.title,
-                description: fullData.description,
-                location: fullData.location,
-                capacity: fullData.capacity,
-                level: fullData.level,
-                costume: fullData.costume,
-                isDraft: fullData.isDraft,
-              }
-            : null;
-        })
-        .filter(Boolean);
-
-      setClasses(formattedData);
-    } catch (error) {
-      console.error("Error fetching class data:", error);
-    }
-  };
-
-  const stringToDate = (date) => {
-    return new Date(date);
-  };
-
-  const stringToTime = (time) => {
-    const [hours, minutes] = time.split(":");
-    const d = new Date();
-    d.setHours(hours, minutes, 0);
-
-    return d;
-  };
-
   return (
-    <Box pt={2}>
-      <VStack
-        spacing={8}
-        sx={{ maxWidth: "100%", marginX: "auto" }}
+    <Box>
+      <Flex
+        direction={"column"}
+        p={4}
+        mb={20}
       >
         <Tabs
-          width="100%"
-          variant="line"
-          colorScheme="blackAlpha"
+          colorScheme="purple"
           onChange={(index) => setTabIndex(index)}
         >
           <Center>
-            <TabList justifyContent="center">
+            <TabList>
               <Tab
+                fontWeight={"bold"}
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -705,6 +636,7 @@ export const Bookings = () => {
                 Classes
               </Tab>
               <Tab
+                fontWeight={"bold"}
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -715,6 +647,7 @@ export const Bookings = () => {
                 Events
               </Tab>
               <Tab
+                fontWeight={"bold"}
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -805,12 +738,10 @@ export const Bookings = () => {
                   )
                 ) : classes.length > 0 ? (
                   classes.map((classItem) => {
-                    const isFilterActive =
-                      Object.values(tagFilter).some(Boolean);
                     const classTags = classTagsMap[classItem.id] || [];
 
                     if (
-                      !isFilterActive ||
+                      !Object.values(tagFilter).some(Boolean) ||
                       classTags.some((tag) => tagFilter[tag.id])
                     ) {
                       return (
@@ -882,15 +813,13 @@ export const Bookings = () => {
                       </CardBody>
                     </Card>
                   </Box>
-                )}
+                )}{" "}
                 {events.length > 0 ? (
                   events.map((eventItem) => {
-                    const isFilterActive =
-                      Object.values(tagFilter).some(Boolean);
                     const eventTags = eventTagsMap[eventItem.id] || [];
 
                     if (
-                      !isFilterActive ||
+                      !Object.values(tagFilter).some(Boolean) ||
                       eventTags.some((tag) => tagFilter[tag.id])
                     ) {
                       return (
@@ -923,11 +852,10 @@ export const Bookings = () => {
                 mb={20}
                 justifyContent={"center"}
               >
+                {" "}
                 {role !== "student" ? (
                   drafts.length > 0 ? (
                     drafts.map((item) => {
-                      const isFilterActive =
-                        Object.values(tagFilter).some(Boolean);
                       const classTags = classTagsMap[item.id] || [];
 
                       if (!item.callTime) {
@@ -1003,7 +931,6 @@ export const Bookings = () => {
             </TabPanel>
           </TabPanels>
         </Tabs>
-      </VStack>
       {role !== "student" ? (
         currentModal === "view" ? (
           // this is always going to be the view for classes
@@ -1110,6 +1037,7 @@ export const Bookings = () => {
           type={cardType}
         />
       )}
+      </Flex>
       <Navbar />
     </Box>
   );
