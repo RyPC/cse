@@ -612,20 +612,20 @@ export const Bookings = () => {
   };
 
   return (
-    <Box pt={2}>
-      <VStack
-        spacing={8}
-        sx={{ maxWidth: "100%", marginX: "auto" }}
+    <Box>
+      <Flex
+        direction={"column"}
+        p={4}
+        mb={20}
       >
         <Tabs
-          width="100%"
-          variant="line"
-          colorScheme="blackAlpha"
+          colorScheme="purple"
           onChange={(index) => setTabIndex(index)}
         >
           <Center>
-            <TabList justifyContent="center">
+            <TabList>
               <Tab
+                fontWeight={"bold"}
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -636,6 +636,7 @@ export const Bookings = () => {
                 Classes
               </Tab>
               <Tab
+                fontWeight={"bold"}
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -646,6 +647,7 @@ export const Bookings = () => {
                 Events
               </Tab>
               <Tab
+                fontWeight={"bold"}
                 _selected={{
                   borderBottom: "2px",
                   borderColor: "purple.600",
@@ -929,7 +931,6 @@ export const Bookings = () => {
             </TabPanel>
           </TabPanels>
         </Tabs>
-      </VStack>
       {role !== "student" ? (
         currentModal === "view" ? (
           // this is always going to be the view for classes
@@ -1036,6 +1037,7 @@ export const Bookings = () => {
           type={cardType}
         />
       )}
+      </Flex>
       <Navbar />
     </Box>
   );

@@ -31,6 +31,7 @@ export const Discovery = () => {
   const [events, setEvents] = useState([]);
   const [tags, setTags] = useState({});
   const [tagFilter, setTagFilter] = useState({});
+  const [initialTagFilter, setInitialTagFilter] = useState({});
   const [classTagsMap, setClassTagsMap] = useState({});
   const [eventTagsMap, setEventTagsMap] = useState({});
   const [user, setUser] = useState(null);
@@ -143,21 +144,21 @@ export const Discovery = () => {
   );
 
   // Tag filter handlers
-  const handleFilterToggle = (id) => () => {
+  const handleFilterToggle = useCallback((id) => () => {
       setTagFilter((prev) => ({
         ...prev,
         [id]: !prev[id],
       }));
       setLastToggledTag(id);
-    };
+    }, []);
 
-  const handleClassFilterToggle = (id) => () => {
+  const handleClassFilterToggle = useCallback((id) => () => {
       setTagFilter((prev) => ({
         ...prev,
         [id]: !prev[id],
       }));
       setLastToggledTag(id);
-    };
+    }, []);
 
   // Fetch user data
   useEffect(() => {
@@ -230,6 +231,7 @@ export const Discovery = () => {
         });
 
         setTagFilter(initialTagFilter);
+        setInitialTagFilter(initialTagFilter);
         setTags(initialTags);
       } catch (error) {
         console.error("Error fetching tags:", error);
@@ -239,13 +241,6 @@ export const Discovery = () => {
     fetchTags();
   }, [backend]);
 
-  // useEffect(() => {
-  //   if (tabIndex === 0) {
-  //     fetchAllClasses();
-  //   } else {
-  //     fetchAllEvents();
-  //   }
-  // }, [tabIndex]);
   // Tag filtering effect
   useEffect(() => {
     if (lastToggledTag === null) {
@@ -279,7 +274,10 @@ export const Discovery = () => {
         <Tabs
           colorScheme="purple"
           index={tabIndex}
-          onChange={(index) => setTabIndex(index)}
+          onChange={(index) => {
+            setTagFilter(initialTagFilter); // Reset tag filter when switching tabs
+            setTabIndex(index);
+          }}
         >
           <Center>
             <TabList>
