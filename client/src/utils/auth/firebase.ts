@@ -1,6 +1,6 @@
 import axios from "axios";
 import { initializeApp } from "firebase/app";
-import { getAuth, User } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail, User } from "firebase/auth";
 
 import { cookieKeys, setCookie } from "./cookie";
 
@@ -45,7 +45,7 @@ const REFRESH_URL = `https://securetoken.googleapis.com/v1/token?key=${
   import.meta.env.VITE_FIREBASE_APIKEY
 }`;
 
-export const refreshToken = async () => {
+const refreshToken = async () => {
   const currentUser = await getCurrentUser();
 
   if (currentUser) {
@@ -67,3 +67,9 @@ export const refreshToken = async () => {
   }
   return null;
 };
+
+const sendPasswordReset = async (email) => {
+  await sendPasswordResetEmail(auth, email);
+};
+
+export { refreshToken, sendPasswordReset };

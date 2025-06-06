@@ -65,16 +65,36 @@ usersRouter.post("/create", async (req, res) => {
   }
 });
 
+//Update a user's hidden value (for denying teacher requests)
+usersRouter.put("/hide", async (req, res) => {
+  try {
+    const { uid } = req.body;
+
+    const user = await db.query(
+      "UPDATE users SET hidden = True WHERE id = $1",
+      [uid]
+    );
+
+    res.status(200).json(keysToCamel(user));
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 // Update a user by ID
 usersRouter.put("/update", async (req, res) => {
   try {
-    const { email, firebaseUid } = req.body;
+    const { email, firebaseUid, firstName, lastName } = req.body;
 
     const user = await db.query(
-      "UPDATE users SET email = $1 WHERE firebase_uid = $2 RETURNING *",
-      [email, firebaseUid]
+      `UPDATE users
+       SET email = COALESCE($1, email),
+           first_name = COALESCE($2, first_name),
+           last_name = COALESCE($3, last_name)
+       WHERE firebase_uid = $4
+       RETURNING *`,
+      [email, firstName, lastName, firebaseUid]
     );
-
     res.status(200).json(keysToCamel(user));
   } catch (err) {
     res.status(400).send(err.message);

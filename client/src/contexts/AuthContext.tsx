@@ -9,6 +9,7 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
   User,
   UserCredential,
 } from "firebase/auth";
@@ -19,7 +20,21 @@ import { useBackendContext } from "./hooks/useBackendContext";
 
 interface AuthContextProps {
   currentUser: User | null;
-  signup: ({ email, password }: EmailPassword) => Promise<UserCredential>;
+  role: string | null;
+  teacherSignup: ({
+    firstName,
+    lastName,
+    experience,
+    email,
+    password,
+  }: TeacherSignup) => Promise<UserCredential>;
+  studentSignup: ({
+    firstName,
+    lastName,
+    level,
+    email,
+    password,
+  }: SignUp) => Promise<UserCredential>;
   login: ({ email, password }: EmailPassword) => Promise<UserCredential>;
   logout: () => Promise<void>;
   resetPassword: ({ email }: Pick<EmailPassword, "email">) => Promise<void>;
@@ -28,11 +43,29 @@ interface AuthContextProps {
     navigate: NavigateFunction,
     toast: CreateToastFnReturn
   ) => Promise<void>;
+  updateDisplayName: (user: UserCredential, fullName: string) => Promise<void>;
+  updateRole: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextProps | null>(null);
 
+interface SignUp {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  level: string;
+}
+
 interface EmailPassword {
+  email: string;
+  password: string;
+}
+
+interface TeacherSignup {
+  firstName: string;
+  lastName: string;
+  experience: string;
   email: string;
   password: string;
 }
@@ -42,8 +75,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
 
-  const signup = async ({ email, password }: EmailPassword) => {
+  const studentSignup = async ({
+    firstName,
+    lastName,
+    email,
+    password,
+    level,
+  }: SignUp) => {
     if (currentUser) {
       signOut(auth);
     }
@@ -54,7 +94,40 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       password
     );
 
-    await backend.post("/users/create", {
+    await backend.post("/students", {
+      firebaseUid: userCredential.user.uid,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      role: "user",
+      userRole: "student",
+      level: level,
+    });
+
+    return userCredential;
+  };
+
+  const teacherSignup = async ({
+    firstName,
+    lastName,
+    experience,
+    email,
+    password,
+  }: TeacherSignup) => {
+    if (currentUser) {
+      signOut(auth);
+    }
+
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    await backend.post("/teachers", {
+      firstName: firstName,
+      lastName: lastName,
+      experience: experience,
       email: email,
       firebaseUid: userCredential.user.uid,
     });
@@ -103,6 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           } catch (e) {
             await backend.delete(`/users/${result.user.uid}`);
             toast({
+              position: "top",
               title: "An error occurred",
               description: `Account was not created: ${e.message}`,
               status: "error",
@@ -116,6 +190,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateDisplayName = async (
+    userCredential: UserCredential,
+    fullName: string
+  ) => {
+    if (userCredential?.user) {
+      try {
+        await updateProfile(userCredential.user, { displayName: fullName });
+      } catch (error) {
+        console.error("error", error);
+      }
+    } else {
+      console.error("No user is signed in.");
+    }
+  };
+
+  const updateRole = async () => {
+    if (currentUser) {
+      try {
+        const response = await backend.get(`/users/${currentUser.uid}`);
+
+        if (response.data && response.data[0].userRole) {
+          setRole(response.data[0].userRole);
+        } else {
+          console.warn("User role not found in API response");
+        }
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+      }
+    }
+  };
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setCurrentUser(user);
@@ -125,15 +230,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    if (currentUser) {
+      updateRole();
+    }
+  }, [currentUser]);
+
   return (
     <AuthContext.Provider
       value={{
+        role,
         currentUser,
-        signup,
+        studentSignup,
+        teacherSignup,
         login,
         logout,
         resetPassword,
         handleRedirectResult,
+        updateDisplayName,
+        updateRole,
       }}
     >
       {loading ? <Spinner /> : children}

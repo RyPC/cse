@@ -5,19 +5,19 @@ import crypto from "crypto";
 import aws from "aws-sdk";
 
 const region =
-  process.env.NODE_ENV === "DEVELOPMENT"
+  process.env.NODE_ENV === "development"
     ? process.env.DEV_S3_REGION
     : process.env.PROD_S3_REGION;
 const accessKeyId =
-  process.env.NODE_ENV === "DEVELOPMENT"
+  process.env.NODE_ENV === "development"
     ? process.env.DEV_S3_ACCESS_KEY_ID
     : process.env.PROD_S3_ACCESS_KEY_ID;
 const secretAccessKey =
-  process.env.NODE_ENV === "DEVELOPMENT"
+  process.env.NODE_ENV === "development"
     ? process.env.DEV_SECRET_ACCESS_KEY
     : process.env.PROD_S3_SECRET_ACCESS_KEY;
 
-// initialize a S3 instance
+// initialize an S3 instance
 const s3 = new aws.S3({
   region,
   accessKeyId,

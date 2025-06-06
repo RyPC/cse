@@ -1,40 +1,52 @@
 import { useEffect } from "react";
 
 import {
+  Box,
   Button,
   Center,
   Link as ChakraLink,
   FormControl,
   FormErrorMessage,
   FormHelperText,
+  FormLabel,
   Heading,
+  Image,
   Input,
+  Select,
   Stack,
+  Text,
   useToast,
   VStack,
 } from "@chakra-ui/react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { FaGoogle } from "react-icons/fa6";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 import { useAuthContext } from "../../contexts/hooks/useAuthContext";
 import { useBackendContext } from "../../contexts/hooks/useBackendContext";
-import { authenticateGoogleUser } from "../../utils/auth/providers";
 
-const signupSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+const signupSchema = z
+  .object({
+    firstName: z.string().min(1, "Please include your first name."),
+    lastName: z.string().min(1, "Please include your last name."),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters long"),
+    confirmPassword: z.string().min(1, "Please confirm your password."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 export const Signup = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { signup, handleRedirectResult } = useAuthContext();
+  const { studentSignup, handleRedirectResult, updateRole, login } =
+    useAuthContext();
   const { backend } = useBackendContext();
 
   const {
@@ -48,13 +60,21 @@ export const Signup = () => {
 
   const handleSignup = async (data: SignupFormValues) => {
     try {
-      const user = await signup({
+      const user = await studentSignup({
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         password: data.password,
+        level: "beginner",
       });
 
       if (user) {
-        navigate("/dashboard");
+        login({
+          email: data.email,
+          password: data.password,
+        });
+        updateRole();
+        navigate("/discovery");
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -63,93 +83,130 @@ export const Signup = () => {
           description: err.message,
           status: "error",
           variant: "subtle",
+          position: "top",
         });
       }
     }
-  };
-
-  const handleGoogleSignup = async () => {
-    await authenticateGoogleUser();
   };
 
   useEffect(() => {
     handleRedirectResult(backend, navigate, toast);
   }, [backend, handleRedirectResult, navigate, toast]);
 
-  return (
-    <VStack
-      spacing={8}
-      sx={{ width: 300, marginX: "auto" }}
-    >
-      <Heading>Signup</Heading>
+  const handleBack = () => {
+    navigate("/landing");
+  };
 
-      <form
-        onSubmit={handleSubmit(handleSignup)}
-        style={{ width: "100%" }}
+  return (
+    <Box mt={"5vh"}>
+      <VStack
+        spacing={4}
+        sx={{ width: 350, marginX: "auto" }}
+        mt={5}
       >
-        <Stack spacing={2}>
-          <FormControl
-            isInvalid={!!errors.email}
-            w={"100%"}
+        <Text
+          fontSize={"2xl"}
+          fontWeight={"bold"}
+        >
+          Enter your details
+        </Text>
+        <form
+          onSubmit={handleSubmit(handleSignup)}
+          style={{ width: "100%" }}
+        >
+          <VStack
+            spacing={4}
+            alignItems="stretch"
           >
-            <Center>
+            <FormControl isInvalid={!!errors.firstName}>
+              <FormLabel>First Name</FormLabel>
               <Input
-                placeholder="Email"
+                type="text"
+                size={"md"}
+                {...register("firstName")}
+                isRequired
+                autoComplete="given-name"
+              />
+              <FormErrorMessage>
+                {errors.firstName?.message?.toString()}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.lastName}>
+              <FormLabel>Last Name</FormLabel>
+              <Input
+                type="text"
+                size={"md"}
+                {...register("lastName")}
+                isRequired
+                autoComplete="family-name"
+              />
+              <FormErrorMessage>
+                {errors.lastName?.message?.toString()}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.email}>
+              <FormLabel>Email Address</FormLabel>
+              <Input
                 type="email"
-                size={"lg"}
+                size={"md"}
                 {...register("email")}
-                name="email"
                 isRequired
                 autoComplete="email"
               />
-            </Center>
-            <FormErrorMessage>
-              {errors.email?.message?.toString()}
-            </FormErrorMessage>
-          </FormControl>
-          <FormControl isInvalid={!!errors.password}>
-            <Center>
+              <FormErrorMessage>
+                {errors.email?.message?.toString()}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.password}>
+              <FormLabel>Password</FormLabel>
               <Input
-                placeholder="Password"
                 type="password"
-                size={"lg"}
+                size={"md"}
                 {...register("password")}
-                name="password"
                 isRequired
-                autoComplete="password"
+                autoComplete="new-password"
               />
-            </Center>
-            <FormErrorMessage>
-              {errors.password?.message?.toString()}
-            </FormErrorMessage>
-            <ChakraLink
-              as={Link}
-              to="/login"
+              <FormErrorMessage>
+                {errors.password?.message?.toString()}
+              </FormErrorMessage>
+            </FormControl>
+            <FormControl isInvalid={!!errors.confirmPassword}>
+              <FormLabel>Confirm Password Again</FormLabel>
+              <Input
+                type="password"
+                size={"md"}
+                {...register("confirmPassword")}
+                isRequired
+                autoComplete="new-password"
+              />
+              <FormErrorMessage>
+                {errors.confirmPassword?.message?.toString()}
+              </FormErrorMessage>
+            </FormControl>
+            <Button
+              type="submit"
+              size={"lg"}
+              bg="#6A1B9A"
+              color="white"
+              _hover={{ bg: "#4A148C" }}
+              isDisabled={Object.keys(errors).length > 0}
+              mt={4}
+              w="100%"
             >
-              <FormHelperText>Click here to login</FormHelperText>
-            </ChakraLink>
-          </FormControl>
-
-          <Button
-            type="submit"
-            size={"lg"}
-            sx={{ width: "100%" }}
-            isDisabled={Object.keys(errors).length > 0}
-          >
-            Signup
-          </Button>
-        </Stack>
-      </form>
-
-      <Button
-        leftIcon={<FaGoogle />}
-        variant={"solid"}
-        size={"lg"}
-        onClick={handleGoogleSignup}
-        sx={{ width: "100%" }}
-      >
-        Signup with Google
-      </Button>
-    </VStack>
+              Confirm
+            </Button>
+            <Button
+              variant="outline"
+              size={"lg"}
+              onClick={handleBack}
+              w="100%"
+              mt={2}
+            >
+              Back
+            </Button>
+          </VStack>
+        </form>
+      </VStack>
+    </Box>
   );
 };
